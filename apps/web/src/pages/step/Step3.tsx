@@ -1132,41 +1132,6 @@ export default function Step3() {
           </div>
         </section>
 
-        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              borderRadius: 999,
-              background: `${C.ikb}15`,
-              padding: '4px 12px',
-              fontSize: 12,
-              fontWeight: 600,
-              color: C.ikb,
-              fontFamily: F.mono,
-              letterSpacing: '0.04em',
-            }}
-          >
-            <span
-              style={{
-                height: 6,
-                width: 6,
-                borderRadius: '50%',
-                background: C.ikb,
-                animation: 'ikb-pulse 1.6s ease-in-out infinite',
-                display: 'inline-block',
-              }}
-            />
-            模型已就绪
-          </span>
-        </div>
-
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 人设竞争力雷达 */}
           <div
@@ -2000,6 +1965,255 @@ export default function Step3() {
             >
               进入内容系统 →
             </button>
+          </div>
+        </div>
+
+        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 999,
+              background: `${C.ikb}15`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.ikb,
+              fontFamily: F.mono,
+              letterSpacing: '0.04em',
+            }}
+          >
+            <span
+              style={{
+                height: 6,
+                width: 6,
+                borderRadius: '50%',
+                background: C.ikb,
+                animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                display: 'inline-block',
+              }}
+            />
+            模型已就绪
+          </span>
+        </div>
+
+        <div className="mb-8 grid grid-cols-12 gap-6">
+          {/* 人设竞争力雷达 */}
+          <div
+            className="col-span-5 ikb-hovercard"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.ikb}18`,
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p
+                  className="ikb-gradtext"
+                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                >
+                  82
+                </p>
+                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              </div>
+            </div>
+            {(() => {
+              const dims = radarDims;
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+              const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+              return (
+                <svg viewBox="0 0 260 244" className="w-full">
+                  <defs>
+                    <linearGradient id="radarFillS3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                  ))}
+                  {dims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                  })}
+                  <polygon points={dataPoly} fill="url(#radarFillS3)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                  })}
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div className="mt-2 grid grid-cols-3 gap-y-2">
+              {radarDims.map((d) => (
+                <div key={d.label} className="flex items-center gap-1.5">
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 90 天曝光 / 涨粉预估 */}
+          <div
+            className="col-span-7 ikb-hovercard"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.burgundy}18`,
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>90 天曝光预估</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {(['曝光', '涨粉', '互动'] as const).map((t, i) => (
+                  <span
+                    key={t}
+                    style={{
+                      borderRadius: 4,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fontFamily: F.mono,
+                      background: i === 0 ? C.ikb : '#f1f3f9',
+                      color: i === 0 ? '#fff' : '#6b7280',
+                    }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="mb-3 flex items-end gap-3">
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>1.24M</p>
+              <span
+                style={{
+                  marginBottom: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
+              </span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+            </div>
+            {(() => {
+              const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
+              const W = 560;
+              const H = 168;
+              const padL = 6;
+              const padR = 6;
+              const padT = 12;
+              const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = 110;
+              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                  <defs>
+                    <linearGradient id="trendFillS3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="trendLineS3" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL}
+                      x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke="#f1f3f9"
+                      strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#trendFillS3)" />
+                  <path d={line} fill="none" stroke="url(#trendLineS3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  {data.map((v, i) =>
+                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
+                  )}
+                </svg>
+              );
+            })()}
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
+              {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

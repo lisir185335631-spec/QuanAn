@@ -422,245 +422,6 @@ export default function Step6() {
       {/* ── 有真数据 → 数据洞察 + 结果区 ──────────────────── */}
       {hasResult && (
         <>
-          {/* ── 数据洞察(雷达 + 情绪曲线)─────────────────────── */}
-          <div className="mb-3 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
-            <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
-            <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
-            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
-              <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
-              模型已就绪
-            </span>
-          </div>
-          <div className="mb-8 grid grid-cols-12 gap-6">
-            {/* 拍摄完备度雷达 */}
-            <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-                  </span>
-                  <div>
-                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>拍摄完备度雷达</h3>
-                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>
-                    {Math.round(radarDims.reduce((s, d) => s + d.value, 0) / radarDims.length)}
-                  </p>
-                  <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
-                </div>
-              </div>
-              {(() => {
-                const cx = 130;
-                const cy = 122;
-                const R = 88;
-                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-                const pt = (i: number, r: number): [number, number] => [
-                  cx + r * Math.cos(ang(i)),
-                  cy + r * Math.sin(ang(i)),
-                ];
-                const poly = (r: number) =>
-                  radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-                const dataPoly = radarDims
-                  .map((d, i) =>
-                    pt(i, R * (d.value / 100))
-                      .map((n) => n.toFixed(1))
-                      .join(','),
-                  )
-                  .join(' ');
-                return (
-                  <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="拍摄完备度雷达图">
-                    <defs>
-                      <linearGradient id="s6-radarFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                        <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                      </linearGradient>
-                    </defs>
-                    {[0.25, 0.5, 0.75, 1].map((f) => (
-                      <polygon
-                        key={f}
-                        points={poly(R * f)}
-                        fill="none"
-                        stroke="#e8ebf2"
-                        strokeWidth="1"
-                      />
-                    ))}
-                    {radarDims.map((_, i) => {
-                      const [x, y] = pt(i, R);
-                      return (
-                        <line
-                          key={i}
-                          x1={cx}
-                          y1={cy}
-                          x2={x}
-                          y2={y}
-                          stroke="#eef1f6"
-                          strokeWidth="1"
-                        />
-                      );
-                    })}
-                    <polygon
-                      points={dataPoly}
-                      fill="url(#s6-radarFill)"
-                      stroke={C.ikb}
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    />
-                    {radarDims.map((d, i) => {
-                      const [x, y] = pt(i, R * (d.value / 100));
-                      return (
-                        <circle
-                          key={i}
-                          cx={x}
-                          cy={y}
-                          r="3.2"
-                          fill="#fff"
-                          stroke={d.color}
-                          strokeWidth="2"
-                        />
-                      );
-                    })}
-                    {radarDims.map((d, i) => {
-                      const [x, y] = pt(i, R + 16);
-                      return (
-                        <text
-                          key={i}
-                          x={x}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="#6b7280"
-                          fontSize="10.5"
-                          fontWeight="600"
-                        >
-                          {d.label}
-                        </text>
-                      );
-                    })}
-                  </svg>
-                );
-              })()}
-              <div className="mt-2 grid grid-cols-3 gap-y-2">
-                {radarDims.map((d) => (
-                  <div key={d.label} className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                    <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{Math.round(d.value)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 情绪节奏曲线 */}
-            <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-                  </span>
-                  <div>
-                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>情绪节奏曲线</h3>
-                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>沿 {result.shotList.length} 个镜头情绪强度推演</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {['强度', '节奏', '峰值'].map((t, i) => (
-                    <span
-                      key={t}
-                      className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                      style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-3 flex items-end gap-3">
-                <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                  {Math.max(...emotionCurve)}
-                </p>
-                <span className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                  <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
-                  峰值
-                </span>
-                <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
-              </div>
-              {emotionCurve.length >= 2 && (() => {
-                const data = emotionCurve;
-                const W = 560;
-                const H = 168;
-                const padL = 6;
-                const padR = 6;
-                const padT = 12;
-                const padB = 8;
-                const innerW = W - padL - padR;
-                const innerH = H - padT - padB;
-                const max = 100;
-                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-                const y = (v: number) => padT + innerH * (1 - v / max);
-                const line = data
-                  .map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`)
-                  .join(' ');
-                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-                return (
-                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="情绪节奏曲线图">
-                    <defs>
-                      <linearGradient id="s6-trendFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="s6-trendLine" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor={C.ikb} />
-                        <stop offset="55%" stopColor={C.accent3} />
-                        <stop offset="100%" stopColor={C.burgundy} />
-                      </linearGradient>
-                    </defs>
-                    {[0, 0.33, 0.66, 1].map((f) => (
-                      <line
-                        key={f}
-                        x1={padL}
-                        x2={W - padR}
-                        y1={(padT + innerH * f).toFixed(1)}
-                        y2={(padT + innerH * f).toFixed(1)}
-                        stroke="#f1f3f9"
-                        strokeWidth="1"
-                      />
-                    ))}
-                    <path d={area} fill="url(#s6-trendFill)" />
-                    <path
-                      d={line}
-                      fill="none"
-                      stroke="url(#s6-trendLine)"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    {data.map((v, i) =>
-                      i % 2 === 0 ? (
-                        <circle
-                          key={i}
-                          cx={x(i)}
-                          cy={y(v)}
-                          r="3.4"
-                          fill="#fff"
-                          stroke={C.ikb}
-                          strokeWidth="2"
-                        />
-                      ) : null,
-                    )}
-                  </svg>
-                );
-              })()}
-              <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
-                {result.shotList.filter((_, i) => i % 3 === 0).map((_, i) => (
-                  <span key={i * 3}>{`镜头${i * 3 + 1}`}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* ── KPI 卡 ─────────────────────────────────────────── */}
           <div className="mb-8 grid grid-cols-4 gap-6">
             {/* 分镜镜头 · 环形进度 */}
@@ -922,6 +683,245 @@ export default function Step6() {
                 </button>
               </div>
               <p className="text-[14px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{result.schedule}</p>
+            </div>
+          </div>
+
+          {/* ── 数据洞察(雷达 + 情绪曲线)─────────────────────── */}
+          <div className="mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+            <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
+            <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
+              <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
+              模型已就绪
+            </span>
+          </div>
+          <div className="mb-8 grid grid-cols-12 gap-6">
+            {/* 拍摄完备度雷达 */}
+            <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+              <div className="mb-1 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
+                  </span>
+                  <div>
+                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>拍摄完备度雷达</h3>
+                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>
+                    {Math.round(radarDims.reduce((s, d) => s + d.value, 0) / radarDims.length)}
+                  </p>
+                  <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
+                </div>
+              </div>
+              {(() => {
+                const cx = 130;
+                const cy = 122;
+                const R = 88;
+                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+                const pt = (i: number, r: number): [number, number] => [
+                  cx + r * Math.cos(ang(i)),
+                  cy + r * Math.sin(ang(i)),
+                ];
+                const poly = (r: number) =>
+                  radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+                const dataPoly = radarDims
+                  .map((d, i) =>
+                    pt(i, R * (d.value / 100))
+                      .map((n) => n.toFixed(1))
+                      .join(','),
+                  )
+                  .join(' ');
+                return (
+                  <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="拍摄完备度雷达图">
+                    <defs>
+                      <linearGradient id="s6-radarFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                        <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                      </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((f) => (
+                      <polygon
+                        key={f}
+                        points={poly(R * f)}
+                        fill="none"
+                        stroke="#e8ebf2"
+                        strokeWidth="1"
+                      />
+                    ))}
+                    {radarDims.map((_, i) => {
+                      const [x, y] = pt(i, R);
+                      return (
+                        <line
+                          key={i}
+                          x1={cx}
+                          y1={cy}
+                          x2={x}
+                          y2={y}
+                          stroke="#eef1f6"
+                          strokeWidth="1"
+                        />
+                      );
+                    })}
+                    <polygon
+                      points={dataPoly}
+                      fill="url(#s6-radarFill)"
+                      stroke={C.ikb}
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
+                    {radarDims.map((d, i) => {
+                      const [x, y] = pt(i, R * (d.value / 100));
+                      return (
+                        <circle
+                          key={i}
+                          cx={x}
+                          cy={y}
+                          r="3.2"
+                          fill="#fff"
+                          stroke={d.color}
+                          strokeWidth="2"
+                        />
+                      );
+                    })}
+                    {radarDims.map((d, i) => {
+                      const [x, y] = pt(i, R + 16);
+                      return (
+                        <text
+                          key={i}
+                          x={x}
+                          y={y}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill="#6b7280"
+                          fontSize="10.5"
+                          fontWeight="600"
+                        >
+                          {d.label}
+                        </text>
+                      );
+                    })}
+                  </svg>
+                );
+              })()}
+              <div className="mt-2 grid grid-cols-3 gap-y-2">
+                {radarDims.map((d) => (
+                  <div key={d.label} className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                    <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                    <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{Math.round(d.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 情绪节奏曲线 */}
+            <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
+                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
+                  </span>
+                  <div>
+                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>情绪节奏曲线</h3>
+                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>沿 {result.shotList.length} 个镜头情绪强度推演</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {['强度', '节奏', '峰值'].map((t, i) => (
+                    <span
+                      key={t}
+                      className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                      style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-3 flex items-end gap-3">
+                <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+                  {Math.max(...emotionCurve)}
+                </p>
+                <span className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                  <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
+                  峰值
+                </span>
+                <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
+              </div>
+              {emotionCurve.length >= 2 && (() => {
+                const data = emotionCurve;
+                const W = 560;
+                const H = 168;
+                const padL = 6;
+                const padR = 6;
+                const padT = 12;
+                const padB = 8;
+                const innerW = W - padL - padR;
+                const innerH = H - padT - padB;
+                const max = 100;
+                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+                const y = (v: number) => padT + innerH * (1 - v / max);
+                const line = data
+                  .map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`)
+                  .join(' ');
+                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+                return (
+                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="情绪节奏曲线图">
+                    <defs>
+                      <linearGradient id="s6-trendFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="s6-trendLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={C.ikb} />
+                        <stop offset="55%" stopColor={C.accent3} />
+                        <stop offset="100%" stopColor={C.burgundy} />
+                      </linearGradient>
+                    </defs>
+                    {[0, 0.33, 0.66, 1].map((f) => (
+                      <line
+                        key={f}
+                        x1={padL}
+                        x2={W - padR}
+                        y1={(padT + innerH * f).toFixed(1)}
+                        y2={(padT + innerH * f).toFixed(1)}
+                        stroke="#f1f3f9"
+                        strokeWidth="1"
+                      />
+                    ))}
+                    <path d={area} fill="url(#s6-trendFill)" />
+                    <path
+                      d={line}
+                      fill="none"
+                      stroke="url(#s6-trendLine)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {data.map((v, i) =>
+                      i % 2 === 0 ? (
+                        <circle
+                          key={i}
+                          cx={x(i)}
+                          cy={y(v)}
+                          r="3.4"
+                          fill="#fff"
+                          stroke={C.ikb}
+                          strokeWidth="2"
+                        />
+                      ) : null,
+                    )}
+                  </svg>
+                );
+              })()}
+              <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
+                {result.shotList.filter((_, i) => i % 3 === 0).map((_, i) => (
+                  <span key={i * 3}>{`镜头${i * 3 + 1}`}</span>
+                ))}
+              </div>
             </div>
           </div>
         </>

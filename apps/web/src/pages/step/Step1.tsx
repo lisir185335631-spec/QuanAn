@@ -468,170 +468,6 @@ export default function Step1() {
           ))}
         </div>
 
-        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              borderRadius: 999,
-              background: `${C.ikb}15`,
-              padding: '4px 12px',
-              fontSize: 12,
-              fontWeight: 600,
-              color: C.ikb,
-              fontFamily: F.mono,
-              letterSpacing: '0.04em',
-            }}
-          >
-            <span
-              style={{
-                height: 6,
-                width: 6,
-                borderRadius: '50%',
-                background: C.ikb,
-                animation: 'ikb-pulse 1.6s ease-in-out infinite',
-                display: 'inline-block',
-              }}
-            />
-            模型已就绪
-          </span>
-        </div>
-        <div className="mb-8 grid grid-cols-12 gap-6">
-          {/* 赛道吸引力雷达 */}
-          <div
-            className="col-span-5 ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `${C.ikb}18`,
-                    color: C.ikb,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道吸引力雷达</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <p
-                  className="ikb-gradtext"
-                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
-                >
-                  81
-                </p>
-                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
-              </div>
-            </div>
-            {renderRadar()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
-              {S1_RADAR_DIMS.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 赛道热度趋势 */}
-          <div
-            className="col-span-7 ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `${C.burgundy}18`,
-                    color: C.burgundyText,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道热度趋势</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {(['热度', '流量', '竞争'] as const).map((t, i) => (
-                  <span
-                    key={t}
-                    style={{
-                      borderRadius: 4,
-                      padding: '4px 10px',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      fontFamily: F.mono,
-                      background: i === 0 ? C.ikb : '#f1f3f9',
-                      color: i === 0 ? '#fff' : '#6b7280',
-                    }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>100</p>
-              <span
-                style={{
-                  marginBottom: 4,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  borderRadius: 999,
-                  background: `${C.ikb}15`,
-                  padding: '2px 8px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: C.ikb,
-                  fontFamily: F.mono,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
-              </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较同期基线</span>
-            </div>
-            {renderTrend()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
-              {S1_TREND_LABELS.map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* ── Filters + search ───────────────────────────────── */}
         <div className="mb-6 flex flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2">
@@ -862,6 +698,170 @@ export default function Step1() {
             })}
           </div>
         )}
+
+        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 999,
+              background: `${C.ikb}15`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.ikb,
+              fontFamily: F.mono,
+              letterSpacing: '0.04em',
+            }}
+          >
+            <span
+              style={{
+                height: 6,
+                width: 6,
+                borderRadius: '50%',
+                background: C.ikb,
+                animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                display: 'inline-block',
+              }}
+            />
+            模型已就绪
+          </span>
+        </div>
+        <div className="mb-8 grid grid-cols-12 gap-6">
+          {/* 赛道吸引力雷达 */}
+          <div
+            className="col-span-5 ikb-hovercard"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.ikb}18`,
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道吸引力雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p
+                  className="ikb-gradtext"
+                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                >
+                  81
+                </p>
+                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              </div>
+            </div>
+            {renderRadar()}
+            <div className="mt-2 grid grid-cols-3 gap-y-2">
+              {S1_RADAR_DIMS.map((d) => (
+                <div key={d.label} className="flex items-center gap-1.5">
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 赛道热度趋势 */}
+          <div
+            className="col-span-7 ikb-hovercard"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.burgundy}18`,
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道热度趋势</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {(['热度', '流量', '竞争'] as const).map((t, i) => (
+                  <span
+                    key={t}
+                    style={{
+                      borderRadius: 4,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fontFamily: F.mono,
+                      background: i === 0 ? C.ikb : '#f1f3f9',
+                      color: i === 0 ? '#fff' : '#6b7280',
+                    }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="mb-3 flex items-end gap-3">
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>100</p>
+              <span
+                style={{
+                  marginBottom: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
+              </span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较同期基线</span>
+            </div>
+            {renderTrend()}
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
+              {S1_TREND_LABELS.map((m) => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Sticky action bar ────────────────────────────────── */}

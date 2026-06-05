@@ -430,6 +430,98 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
         })}
       </div>
 
+      {/* ── 产品矩阵(真结果) ──────────────────────────────── */}
+      <div
+        className="relative overflow-hidden rounded-xl border p-6"
+        style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 60%, ${C.base} 100%)` }}
+      >
+        <div
+          className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.ikb}07` }}
+        />
+        <div className="relative">
+          <div className="mb-4 flex items-center gap-3">
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-lg"
+              style={{ background: C.grad }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>grid_view</span>
+            </span>
+            <div>
+              <span
+                className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
+                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
+                Product Matrix
+              </span>
+              <h3 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>产品矩阵</h3>
+            </div>
+          </div>
+          <div className="space-y-3" data-testid="mn-product-matrix">
+            {productMatrix.map((item, idx) => {
+              const dotColors = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
+              const c = dotColors[idx % dotColors.length]!;
+              return (
+                <div key={idx} className="flex items-start gap-3 rounded-lg border bg-white p-4" style={{ borderColor: C.line }}>
+                  <span
+                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                    style={{ backgroundColor: c, fontFamily: F.mono }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <p className="text-[14px] leading-relaxed" style={{ color: C.ink, fontFamily: F.cn }}>{item}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 定价策略 ────────────────────────────────────────── */}
+      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+        <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>sell</span>
+          </span>
+          定价策略
+        </h3>
+        <div
+          className="rounded-lg border p-4"
+          style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(to right, ${C.base}, ${C.paper})` }}
+          data-testid="mn-pricing-strategy"
+        >
+          <p className="text-[14px] leading-relaxed" style={{ color: C.ink, fontFamily: F.cn }}>{pricingStrategy}</p>
+        </div>
+      </div>
+
+      {/* ── 转化漏斗 ────────────────────────────────────────── */}
+      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+        <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>filter_alt</span>
+          </span>
+          转化漏斗
+        </h3>
+        <div className="space-y-3" data-testid="mn-conversion-funnel">
+          {conversionFunnel.map((step, idx) => {
+            const phaseColors = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
+            const c = phaseColors[idx % phaseColors.length]!;
+            return (
+              <div key={idx} className="flex items-center gap-3 rounded-lg border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <span
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white"
+                  style={{ backgroundColor: c, fontFamily: F.mono }}
+                >
+                  {idx + 1}
+                </span>
+                <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{step}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ── 数据洞察 band (雷达 + 趋势) ─────────────────────── */}
       <div className="grid grid-cols-12 gap-6">
         {/* 变现能力雷达 */}
@@ -542,98 +634,6 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               <span key={m}>{m}</span>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* ── 产品矩阵(真结果) ──────────────────────────────── */}
-      <div
-        className="relative overflow-hidden rounded-xl border p-6"
-        style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 60%, ${C.base} 100%)` }}
-      >
-        <div
-          className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full blur-2xl"
-          style={{ background: `${C.ikb}07` }}
-        />
-        <div className="relative">
-          <div className="mb-4 flex items-center gap-3">
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-lg"
-              style={{ background: C.grad }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>grid_view</span>
-            </span>
-            <div>
-              <span
-                className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-              >
-                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
-                Product Matrix
-              </span>
-              <h3 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>产品矩阵</h3>
-            </div>
-          </div>
-          <div className="space-y-3" data-testid="mn-product-matrix">
-            {productMatrix.map((item, idx) => {
-              const dotColors = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
-              const c = dotColors[idx % dotColors.length]!;
-              return (
-                <div key={idx} className="flex items-start gap-3 rounded-lg border bg-white p-4" style={{ borderColor: C.line }}>
-                  <span
-                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
-                    style={{ backgroundColor: c, fontFamily: F.mono }}
-                  >
-                    {idx + 1}
-                  </span>
-                  <p className="text-[14px] leading-relaxed" style={{ color: C.ink, fontFamily: F.cn }}>{item}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 定价策略 ────────────────────────────────────────── */}
-      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
-        <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>sell</span>
-          </span>
-          定价策略
-        </h3>
-        <div
-          className="rounded-lg border p-4"
-          style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(to right, ${C.base}, ${C.paper})` }}
-          data-testid="mn-pricing-strategy"
-        >
-          <p className="text-[14px] leading-relaxed" style={{ color: C.ink, fontFamily: F.cn }}>{pricingStrategy}</p>
-        </div>
-      </div>
-
-      {/* ── 转化漏斗 ────────────────────────────────────────── */}
-      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
-        <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>filter_alt</span>
-          </span>
-          转化漏斗
-        </h3>
-        <div className="space-y-3" data-testid="mn-conversion-funnel">
-          {conversionFunnel.map((step, idx) => {
-            const phaseColors = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
-            const c = phaseColors[idx % phaseColors.length]!;
-            return (
-              <div key={idx} className="flex items-center gap-3 rounded-lg border p-4" style={{ borderColor: C.line, background: C.base }}>
-                <span
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white"
-                  style={{ backgroundColor: c, fontFamily: F.mono }}
-                >
-                  {idx + 1}
-                </span>
-                <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{step}</p>
-              </div>
-            );
-          })}
         </div>
       </div>
 

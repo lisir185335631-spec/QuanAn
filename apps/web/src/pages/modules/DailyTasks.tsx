@@ -988,6 +988,221 @@ export default function DailyTasks() {
         )}
       </header>
 
+      {/* ── KPI 卡一排 (3 stats + 今日完成率) ──────────────────────────────── */}
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+        {liveStats.map((stat, i) => {
+          const meta = STAT_ICON_META[i] ?? STAT_ICON_META[0]!;
+          return (
+            <div
+              key={stat.id}
+              data-testid="stat-card"
+              className="ikb-hovercard"
+              style={{
+                borderRadius: 12,
+                border: `1px solid ${C.line}`,
+                background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+                padding: 20,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    background: meta.iconBg,
+                    color: meta.iconColor,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>
+                    {meta.icon}
+                  </span>
+                </span>
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    background: meta.badge,
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: meta.badgeText,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  {stat.label}
+                </span>
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0 }}>{stat.value}</p>
+                {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', margin: '6px 0 0', fontFamily: F.cn }}>
+                  {isHistoryError
+                    ? <span style={{ color: '#ef4444' }}>数据加载失败</span>
+                    : stat.label}
+                </p>
+                {/* P3: 30-day window disclaimer on the two cumulative stats */}
+                {(stat.id === 'total-days' || stat.id === 'total-tasks') && !isHistoryError && (
+                  <p style={{ marginTop: 2, fontSize: 10, color: '#b0b8c8', fontFamily: F.cn }}>近 30 天</p>
+                )}
+              </div>
+              {/* P12: mini bar chart is purely decorative */}
+              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
+                {[40, 60, 50, 80, 70, 90, typeof stat.value === 'number' && stat.value > 0 ? 100 : 20].map((h, j) => (
+                  <div
+                    key={j}
+                    style={{
+                      flex: 1,
+                      borderRadius: '2px 2px 0 0',
+                      opacity: 0.7,
+                      height: `${h}%`,
+                      background: meta.barColor,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
+        <div
+          className="ikb-hovercard"
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.ikb}28`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: 20,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span
+              style={{
+                display: 'flex',
+                height: 36,
+                width: 36,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                background: `${C.ikb}14`,
+                color: C.ikb,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>donut_large</span>
+            </span>
+            {/* 今日 badge — ikb 蓝(正向) */}
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                background: `${C.ikb}14`,
+                border: `1px solid ${C.ikb}28`,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: C.ikb,
+                fontFamily: F.mono,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>
+              今日
+            </span>
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>
+                {todayPct}
+                <span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
+            </div>
+            <ProgressRing pct={todayPct} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── 今日进度卡 ──────────────────────────────────────────────────────── */}
+      <div style={{ marginBottom: 32 }}>
+        <TodayProgressSection completed={completedCount} total={totalCount} />
+      </div>
+
+      {/* ── 任务清单 ─────────────────────────────────────────────────────────── */}
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>checklist</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日任务清单</h2>
+        <span
+          style={{
+            marginLeft: 8,
+            borderRadius: 9999,
+            background: `${C.ikb}14`,
+            border: `1px solid ${C.ikb}28`,
+            padding: '2px 10px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: C.ikb,
+            fontFamily: F.mono,
+          }}
+        >
+          {tasks.length > 0 ? tasks.length : DAILY_TASKS_MOCK.length} 项
+        </span>
+        {/* regenerate button */}
+        <button
+          type="button"
+          data-testid="daily-tasks-regenerate"
+          disabled={regenerateToday.isPending}
+          onClick={() => regenerateToday.mutate()}
+          className="ikb-focusring"
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            borderRadius: 8,
+            border: `1px solid ${C.line}`,
+            background: C.paper,
+            padding: '6px 12px',
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#6b7280',
+            fontFamily: F.cn,
+            cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
+            opacity: regenerateToday.isPending ? 0.5 : 1,
+            transition: 'border-color 0.15s, color 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            if (!regenerateToday.isPending) {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+            }
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+            (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+          }}
+        >
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 15 }}>refresh</span>
+          {regenerateToday.isPending ? '生成中…' : '重新生成'}
+        </button>
+      </div>
+      <div style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {tasks.length > 0
+          ? tasks.map((task) => (
+              <TaskRow
+                key={task.id}
+                task={task}
+                onComplete={handleComplete}
+                markingIds={markingIds}
+              />
+            ))
+          : DAILY_TASKS_MOCK.map((task) => (
+              <MockTaskRow key={task.id} task={task} />
+            ))}
+      </div>
+
       {/* ── 数据洞察 band ────────────────────────────────────────────────────── */}
       {/* P1: removed "历史数据综合评估" wording → "参考基准 · 示例"; deleted "模型已就绪" badge */}
       <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1252,221 +1467,6 @@ export default function DailyTasks() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* ── KPI 卡一排 (3 stats + 今日完成率) ──────────────────────────────── */}
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
-        {liveStats.map((stat, i) => {
-          const meta = STAT_ICON_META[i] ?? STAT_ICON_META[0]!;
-          return (
-            <div
-              key={stat.id}
-              data-testid="stat-card"
-              className="ikb-hovercard"
-              style={{
-                borderRadius: 12,
-                border: `1px solid ${C.line}`,
-                background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 8,
-                    background: meta.iconBg,
-                    color: meta.iconColor,
-                  }}
-                >
-                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>
-                    {meta.icon}
-                  </span>
-                </span>
-                <span
-                  style={{
-                    borderRadius: 9999,
-                    background: meta.badge,
-                    padding: '2px 8px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: meta.badgeText,
-                    fontFamily: F.mono,
-                  }}
-                >
-                  {stat.label}
-                </span>
-              </div>
-              <div style={{ marginTop: 16 }}>
-                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0 }}>{stat.value}</p>
-                {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
-                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', margin: '6px 0 0', fontFamily: F.cn }}>
-                  {isHistoryError
-                    ? <span style={{ color: '#ef4444' }}>数据加载失败</span>
-                    : stat.label}
-                </p>
-                {/* P3: 30-day window disclaimer on the two cumulative stats */}
-                {(stat.id === 'total-days' || stat.id === 'total-tasks') && !isHistoryError && (
-                  <p style={{ marginTop: 2, fontSize: 10, color: '#b0b8c8', fontFamily: F.cn }}>近 30 天</p>
-                )}
-              </div>
-              {/* P12: mini bar chart is purely decorative */}
-              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
-                {[40, 60, 50, 80, 70, 90, typeof stat.value === 'number' && stat.value > 0 ? 100 : 20].map((h, j) => (
-                  <div
-                    key={j}
-                    style={{
-                      flex: 1,
-                      borderRadius: '2px 2px 0 0',
-                      opacity: 0.7,
-                      height: `${h}%`,
-                      background: meta.barColor,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
-        <div
-          className="ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.ikb}28`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: 20,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                display: 'flex',
-                height: 36,
-                width: 36,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 8,
-                background: `${C.ikb}14`,
-                color: C.ikb,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>donut_large</span>
-            </span>
-            {/* 今日 badge — ikb 蓝(正向) */}
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 2,
-                borderRadius: 9999,
-                background: `${C.ikb}14`,
-                border: `1px solid ${C.ikb}28`,
-                padding: '2px 8px',
-                fontSize: 11,
-                fontWeight: 700,
-                color: C.ikb,
-                fontFamily: F.mono,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>
-              今日
-            </span>
-          </div>
-          <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>
-                {todayPct}
-                <span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
-              </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
-            </div>
-            <ProgressRing pct={todayPct} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── 今日进度卡 ──────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 32 }}>
-        <TodayProgressSection completed={completedCount} total={totalCount} />
-      </div>
-
-      {/* ── 任务清单 ─────────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>checklist</span>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日任务清单</h2>
-        <span
-          style={{
-            marginLeft: 8,
-            borderRadius: 9999,
-            background: `${C.ikb}14`,
-            border: `1px solid ${C.ikb}28`,
-            padding: '2px 10px',
-            fontSize: 12,
-            fontWeight: 700,
-            color: C.ikb,
-            fontFamily: F.mono,
-          }}
-        >
-          {tasks.length > 0 ? tasks.length : DAILY_TASKS_MOCK.length} 项
-        </span>
-        {/* regenerate button */}
-        <button
-          type="button"
-          data-testid="daily-tasks-regenerate"
-          disabled={regenerateToday.isPending}
-          onClick={() => regenerateToday.mutate()}
-          className="ikb-focusring"
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            borderRadius: 8,
-            border: `1px solid ${C.line}`,
-            background: C.paper,
-            padding: '6px 12px',
-            fontSize: 12,
-            fontWeight: 600,
-            color: '#6b7280',
-            fontFamily: F.cn,
-            cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
-            opacity: regenerateToday.isPending ? 0.5 : 1,
-            transition: 'border-color 0.15s, color 0.15s',
-          }}
-          onMouseEnter={(e) => {
-            if (!regenerateToday.isPending) {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
-              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
-            }
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-            (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
-          }}
-        >
-          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 15 }}>refresh</span>
-          {regenerateToday.isPending ? '生成中…' : '重新生成'}
-        </button>
-      </div>
-      <div style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {tasks.length > 0
-          ? tasks.map((task) => (
-              <TaskRow
-                key={task.id}
-                task={task}
-                onComplete={handleComplete}
-                markingIds={markingIds}
-              />
-            ))
-          : DAILY_TASKS_MOCK.map((task) => (
-              <MockTaskRow key={task.id} task={task} />
-            ))}
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
