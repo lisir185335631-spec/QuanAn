@@ -639,6 +639,13 @@ export default function AcquisitionVideo() {
         </div>
       </section>
 
+      {/* ── 结果区 · hasResult 门控 ─────────────────────────────── */}
+      {hasResult ? (
+        <AcquisitionVideoResult result={acquisitionContent} isFallback={isFallback} />
+      ) : (
+        <AcquisitionVideoEmptyState />
+      )}
+
       {/* ── 数据洞察(雷达 + 趋势) · 示例/参考 ──────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
         <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
@@ -824,13 +831,6 @@ export default function AcquisitionVideo() {
           </div>
         </div>
       </div>
-
-      {/* ── 结果区 · hasResult 门控 ─────────────────────────────── */}
-      {hasResult ? (
-        <AcquisitionVideoResult result={acquisitionContent} isFallback={isFallback} />
-      ) : (
-        <AcquisitionVideoEmptyState />
-      )}
 
       {/* ── 反馈 footer ──────────────────────────────────────────── */}
       <div className="flex items-center gap-3 border-t pt-6" style={{ borderColor: C.line }}>

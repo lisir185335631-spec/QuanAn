@@ -949,9 +949,6 @@ export default function Trending() {
         myFavorites={kpiData?.myFavorites}
       />
 
-      {/* 数据洞察 band */}
-      <TrendingInsights />
-
       {/* 筛选卡 */}
       <TrendingFilterCard
         industry={industry}
@@ -1043,6 +1040,9 @@ export default function Trending() {
           onChange={() => {}}
         />
       </div>
+
+      {/* 数据洞察 band */}
+      <TrendingInsights />
     </IKBLayout>
   );
 }

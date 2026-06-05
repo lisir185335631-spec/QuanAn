@@ -711,6 +711,120 @@ export default function Evolution() {
           />
         </div>
 
+        {/* §5 2-col: 洞察 + 反馈 */}
+        <div className="grid grid-cols-2 gap-6">
+          <InsightCard items={insights} />
+          <FeedbackCard items={feedbacks} />
+        </div>
+
+        {/* §6 深度学习档案 — 显示计数 + 跳转入口 (不再用 EVOLUTION_ARCHIVE_MOCK) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-[16px] font-extrabold" style={{ color: C.ink }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
+              {EVOLUTION_ARCHIVE_TITLE}
+            </h2>
+            <button
+              type="button"
+              data-testid="add-learning-link"
+              onClick={() => navigate('/deep-learning')}
+              className="ikb-focusring flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors"
+              style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
+              aria-label="新增深度学习"
+            >
+              <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>add</span>
+              {EVOLUTION_ARCHIVE_ADD}
+            </button>
+          </div>
+
+          {deepLearningCount > 0 ? (
+            <div
+              data-testid="archive-count-card"
+              className="flex items-center justify-between rounded-xl px-5 py-4"
+              style={{ border: `1px solid ${C.line}`, background: C.paper }}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: C.ikb + '18' }}
+                >
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
+                </span>
+                <div>
+                  <p className="text-[13px] font-bold" style={{ color: C.ink }}>
+                    已完成 {deepLearningCount} 个深度学习档案
+                  </p>
+                  <p className="mt-0.5 text-[11px]" style={{ color: '#6b7280' }}>
+                    点击「新增学习」继续积累 · 或在深度学习页查看详情
+                  </p>
+                </div>
+              </div>
+              <span
+                data-testid="archive-chip-archive-1"
+                className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ background: C.ikb + '18', color: C.ikb }}
+              >
+                {EVOLUTION_ARCHIVE_DONE_CHIP}
+              </span>
+            </div>
+          ) : (
+            <div
+              data-testid="archive-empty"
+              className="rounded-xl px-5 py-6 text-center"
+              style={{ border: `1px dashed ${C.line}`, background: C.base }}
+            >
+              <p className="text-[13px]" style={{ color: '#6b7280' }}>
+                还没有深度学习档案 · 点击「新增学习」开始积累
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* §7 进化设置 */}
+        <section className="space-y-4">
+          <h2 className="text-[16px] font-extrabold" style={{ color: C.ink }}>{EVOLUTION_SETTINGS_TITLE}</h2>
+          <SettingRow
+            testid="setting-row-auto"
+            label={EVOLUTION_SETTING_AUTO_LABEL}
+            desc={EVOLUTION_SETTING_AUTO_DESC}
+            control={
+              <button
+                type="button"
+                data-testid="auto-toggle"
+                onClick={() => {
+                  const next = !autoOn;
+                  setAutoOnLocal(next);
+                  updateConfig.mutate({ autoEvolutionEnabled: next });
+                  toast.info(next ? EVOLUTION_TOAST_AUTO_ON : EVOLUTION_TOAST_AUTO_OFF);
+                }}
+                className="ikb-focusring relative h-7 w-12 rounded-full transition-colors"
+                style={{ background: autoOn ? C.ikb : '#e5e7eb' }}
+                aria-pressed={autoOn}
+                aria-label="自动进化开关"
+              >
+                <span
+                  className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${
+                    autoOn ? 'left-5' : 'left-0.5'
+                  }`}
+                />
+              </button>
+            }
+          />
+          <SettingRow
+            testid="setting-row-direction"
+            label={EVOLUTION_SETTING_DIR_LABEL}
+            desc={EVOLUTION_SETTING_DIR_DESC}
+            control={
+              <span
+                className="rounded-md px-3 py-1 text-[12px] font-semibold"
+                style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
+              >
+                {currentDirection || EVOLUTION_DIR_DEFAULT_TAG}
+              </span>
+            }
+          />
+        </section>
+
         {/* §4 数据洞察 band */}
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>insights</span>
@@ -886,120 +1000,6 @@ export default function Evolution() {
             </div>
           </div>
         </div>
-
-        {/* §5 2-col: 洞察 + 反馈 */}
-        <div className="grid grid-cols-2 gap-6">
-          <InsightCard items={insights} />
-          <FeedbackCard items={feedbacks} />
-        </div>
-
-        {/* §6 深度学习档案 — 显示计数 + 跳转入口 (不再用 EVOLUTION_ARCHIVE_MOCK) */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-[16px] font-extrabold" style={{ color: C.ink }}>
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
-              {EVOLUTION_ARCHIVE_TITLE}
-            </h2>
-            <button
-              type="button"
-              data-testid="add-learning-link"
-              onClick={() => navigate('/deep-learning')}
-              className="ikb-focusring flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors"
-              style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
-              aria-label="新增深度学习"
-            >
-              <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>add</span>
-              {EVOLUTION_ARCHIVE_ADD}
-            </button>
-          </div>
-
-          {deepLearningCount > 0 ? (
-            <div
-              data-testid="archive-count-card"
-              className="flex items-center justify-between rounded-xl px-5 py-4"
-              style={{ border: `1px solid ${C.line}`, background: C.paper }}
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className="flex h-8 w-8 items-center justify-center rounded-full"
-                  style={{ background: C.ikb + '18' }}
-                >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
-                </span>
-                <div>
-                  <p className="text-[13px] font-bold" style={{ color: C.ink }}>
-                    已完成 {deepLearningCount} 个深度学习档案
-                  </p>
-                  <p className="mt-0.5 text-[11px]" style={{ color: '#6b7280' }}>
-                    点击「新增学习」继续积累 · 或在深度学习页查看详情
-                  </p>
-                </div>
-              </div>
-              <span
-                data-testid="archive-chip-archive-1"
-                className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                style={{ background: C.ikb + '18', color: C.ikb }}
-              >
-                {EVOLUTION_ARCHIVE_DONE_CHIP}
-              </span>
-            </div>
-          ) : (
-            <div
-              data-testid="archive-empty"
-              className="rounded-xl px-5 py-6 text-center"
-              style={{ border: `1px dashed ${C.line}`, background: C.base }}
-            >
-              <p className="text-[13px]" style={{ color: '#6b7280' }}>
-                还没有深度学习档案 · 点击「新增学习」开始积累
-              </p>
-            </div>
-          )}
-        </section>
-
-        {/* §7 进化设置 */}
-        <section className="space-y-4">
-          <h2 className="text-[16px] font-extrabold" style={{ color: C.ink }}>{EVOLUTION_SETTINGS_TITLE}</h2>
-          <SettingRow
-            testid="setting-row-auto"
-            label={EVOLUTION_SETTING_AUTO_LABEL}
-            desc={EVOLUTION_SETTING_AUTO_DESC}
-            control={
-              <button
-                type="button"
-                data-testid="auto-toggle"
-                onClick={() => {
-                  const next = !autoOn;
-                  setAutoOnLocal(next);
-                  updateConfig.mutate({ autoEvolutionEnabled: next });
-                  toast.info(next ? EVOLUTION_TOAST_AUTO_ON : EVOLUTION_TOAST_AUTO_OFF);
-                }}
-                className="ikb-focusring relative h-7 w-12 rounded-full transition-colors"
-                style={{ background: autoOn ? C.ikb : '#e5e7eb' }}
-                aria-pressed={autoOn}
-                aria-label="自动进化开关"
-              >
-                <span
-                  className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${
-                    autoOn ? 'left-5' : 'left-0.5'
-                  }`}
-                />
-              </button>
-            }
-          />
-          <SettingRow
-            testid="setting-row-direction"
-            label={EVOLUTION_SETTING_DIR_LABEL}
-            desc={EVOLUTION_SETTING_DIR_DESC}
-            control={
-              <span
-                className="rounded-md px-3 py-1 text-[12px] font-semibold"
-                style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
-              >
-                {currentDirection || EVOLUTION_DIR_DEFAULT_TAG}
-              </span>
-            }
-          />
-        </section>
 
       </div>
     </IKBLayout>

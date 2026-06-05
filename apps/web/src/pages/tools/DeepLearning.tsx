@@ -1237,182 +1237,6 @@ export default function DeepLearning() {
         {/* ── Header ──────────────────────────────────────────── */}
         <DeepLearningHeaderPioneer />
 
-        {/* ── 数据洞察 band ────────────────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
-          <span
-            className="material-symbols-outlined text-[20px]"
-            style={{ color: C.ikb }}
-            aria-hidden={true}
-          >insights</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力数据洞察</h2>
-          <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
-          <span
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
-          >
-            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
-            模型已就绪
-          </span>
-        </div>
-
-        {/* ── 数据洞察: 雷达 + 趋势 ───────────────────────────── */}
-        <div className="mb-8 grid grid-cols-12 gap-6">
-          {/* AI 学习能力雷达 */}
-          <div
-            className="col-span-5 ikb-hovercard rounded-xl border p-6"
-            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
-          >
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: `${C.ikb}12`, color: C.ikb }}
-                >
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-                </span>
-                <div>
-                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力雷达</h3>
-                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估（模拟示意）</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb, fontFamily: F.display }}>86</p>
-                <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>综合分</p>
-              </div>
-            </div>
-            {(() => {
-              const cx = 130;
-              const cy = 122;
-              const R = 88;
-              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-              const poly = (r: number) => radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-              const dataPoly = radarDims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-              return (
-                <svg viewBox="0 0 260 244" className="w-full">
-                  <defs>
-                    <linearGradient id="dl-radarFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                    </linearGradient>
-                  </defs>
-                  {[0.25, 0.5, 0.75, 1].map((f) => (
-                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
-                  ))}
-                  {radarDims.map((_, i) => {
-                    const [x, y] = pt(i, R);
-                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
-                  })}
-                  <polygon points={dataPoly} fill="url(#dl-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                  {radarDims.map((d, i) => {
-                    const [x, y] = pt(i, R * (d.value / 100));
-                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                  })}
-                  {radarDims.map((d, i) => {
-                    const [x, y] = pt(i, R + 16);
-                    return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                        {d.label}
-                      </text>
-                    );
-                  })}
-                </svg>
-              );
-            })()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
-              {radarDims.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                  <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 训练样本积累趋势 */}
-          <div
-            className="col-span-7 ikb-hovercard rounded-xl border p-6"
-            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-                >
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-                </span>
-                <div>
-                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>训练样本积累</h3>
-                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>按当前学习档案测算</p>
-                </div>
-              </div>
-              <span
-                className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
-              >
-                <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+86%
-              </span>
-            </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>{archives.length}</p>
-              <span className="mb-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
-            </div>
-            {(() => {
-              const data = [10, 18, 22, 30, 42, 38, 55, 62, 58, 70, 80, 96];
-              const W = 560;
-              const H = 168;
-              const padL = 6;
-              const padR = 6;
-              const padT = 12;
-              const padB = 8;
-              const innerW = W - padL - padR;
-              const innerH = H - padT - padB;
-              const max = 110;
-              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-              const y = (v: number) => padT + innerH * (1 - v / max);
-              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-              return (
-                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-                  <defs>
-                    <linearGradient id="dl-trendFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                    </linearGradient>
-                    <linearGradient id="dl-trendLine" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={C.ikb} />
-                      <stop offset="100%" stopColor={C.burgundy} />
-                    </linearGradient>
-                  </defs>
-                  {[0, 0.33, 0.66, 1].map((f) => (
-                    <line
-                      key={f}
-                      x1={padL}
-                      x2={W - padR}
-                      y1={(padT + innerH * f).toFixed(1)}
-                      y2={(padT + innerH * f).toFixed(1)}
-                      stroke={C.line}
-                      strokeWidth="1"
-                    />
-                  ))}
-                  <path d={area} fill="url(#dl-trendFill)" />
-                  <path d={line} fill="none" stroke="url(#dl-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  {data.map((v, i) =>
-                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
-                  )}
-                </svg>
-              );
-            })()}
-            <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-              {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* ── KPI 卡一排(4 卡) ────────────────────────────────── */}
         <div className="mb-8 grid grid-cols-4 gap-6">
           {/* 档案数 · 蓝 */}
@@ -1616,6 +1440,182 @@ export default function DeepLearning() {
 
         {/* ── 使用说明 ─────────────────────────────────────────── */}
         <UsageInstructionsPioneer />
+
+        {/* ── 数据洞察 band ────────────────────────────────────── */}
+        <div className="mb-3 flex items-center gap-2">
+          <span
+            className="material-symbols-outlined text-[20px]"
+            style={{ color: C.ikb }}
+            aria-hidden={true}
+          >insights</span>
+          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力数据洞察</h2>
+          <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
+          <span
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
+          >
+            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
+            模型已就绪
+          </span>
+        </div>
+
+        {/* ── 数据洞察: 雷达 + 趋势 ───────────────────────────── */}
+        <div className="mb-8 grid grid-cols-12 gap-6">
+          {/* AI 学习能力雷达 */}
+          <div
+            className="col-span-5 ikb-hovercard rounded-xl border p-6"
+            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
+          >
+            <div className="mb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: `${C.ikb}12`, color: C.ikb }}
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
+                </span>
+                <div>
+                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力雷达</h3>
+                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估（模拟示意）</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb, fontFamily: F.display }}>86</p>
+                <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>综合分</p>
+              </div>
+            </div>
+            {(() => {
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+              const poly = (r: number) => radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = radarDims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+              return (
+                <svg viewBox="0 0 260 244" className="w-full">
+                  <defs>
+                    <linearGradient id="dl-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                  ))}
+                  {radarDims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
+                  })}
+                  <polygon points={dataPoly} fill="url(#dl-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                  {radarDims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                  })}
+                  {radarDims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div className="mt-2 grid grid-cols-3 gap-y-2">
+              {radarDims.map((d) => (
+                <div key={d.label} className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 训练样本积累趋势 */}
+          <div
+            className="col-span-7 ikb-hovercard rounded-xl border p-6"
+            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
+                </span>
+                <div>
+                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>训练样本积累</h3>
+                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>按当前学习档案测算</p>
+                </div>
+              </div>
+              <span
+                className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
+                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
+              >
+                <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+86%
+              </span>
+            </div>
+            <div className="mb-3 flex items-end gap-3">
+              <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>{archives.length}</p>
+              <span className="mb-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
+            </div>
+            {(() => {
+              const data = [10, 18, 22, 30, 42, 38, 55, 62, 58, 70, 80, 96];
+              const W = 560;
+              const H = 168;
+              const padL = 6;
+              const padR = 6;
+              const padT = 12;
+              const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = 110;
+              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                  <defs>
+                    <linearGradient id="dl-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="dl-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL}
+                      x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke={C.line}
+                      strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#dl-trendFill)" />
+                  <path d={line} fill="none" stroke="url(#dl-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  {data.map((v, i) =>
+                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
+                  )}
+                </svg>
+              );
+            })()}
+            <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+              {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       </main>
     </IKBLayout>
   );

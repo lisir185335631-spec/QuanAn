@@ -381,8 +381,148 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* ── 活动节点流 ─────────────────────────────────────── */}
+        <section
+          style={{
+            overflow: 'hidden',
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: C.paper,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: `1px solid ${C.line}`,
+              background: C.grad,
+              padding: '16px 24px',
+              color: '#fff',
+            }}
+          >
+            <h3
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 18,
+                fontWeight: 800,
+                margin: 0,
+                fontFamily: F.cn,
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  height: 14,
+                  width: 4,
+                  borderRadius: 9999,
+                  background: 'rgba(255,255,255,0.8)',
+                  flexShrink: 0,
+                }}
+              />
+              活动节点流
+            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.2)', padding: '4px 12px', fontSize: 12, fontWeight: 600, color: '#fff', fontFamily: F.mono }}>
+                <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'inline-block' }} />
+                实时监控
+              </span>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.8)' }}>sort</span>
+            </div>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', textAlign: 'left', fontSize: 14, borderCollapse: 'collapse' }}>
+              <thead style={{ borderBottom: `1px solid ${C.line}`, background: C.base }}>
+                <tr>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>标识符</th>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>来源</th>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>状态</th>
+                  <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>延迟</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TABLE_ROWS.map((r) => {
+                  const chip = ICON_CHIP_COLORS[r.chipIdx % ICON_CHIP_COLORS.length] ?? ICON_CHIP_COLORS[0]!;
+                  // Status badge & latency badge styling
+                  const statusStyle =
+                    r.tone === 'green'
+                      ? { background: `${C.ikb}0d`, color: C.ikb, borderColor: `${C.ikb}30` }
+                      : r.tone === 'yellow'
+                        ? { background: '#FEFCE0', color: '#8A6A00', borderColor: '#F3E08A' }
+                        : { background: '#fef2f2', color: C.burgundyText, borderColor: '#fca5a5' };
+                  const dotColor =
+                    r.tone === 'green' ? C.ikb : r.tone === 'yellow' ? '#F3C200' : C.burgundy;
+                  const latencyStyle =
+                    r.tone === 'green'
+                      ? { background: `${C.ikb}0d`, color: C.ikb }
+                      : r.tone === 'yellow'
+                        ? { background: '#FEFCE0', color: '#8A6A00' }
+                        : { background: '#fef2f2', color: C.burgundyText };
+                  return (
+                    <tr
+                      key={r.id}
+                      style={{ borderBottom: `1px solid ${C.base}`, transition: 'background 0.15s' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = C.base; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = ''; }}
+                    >
+                      <td style={{ padding: '16px 24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span
+                            style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: chip.bg, color: chip.text }}
+                          >
+                            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>{r.icon}</span>
+                          </span>
+                          <span style={{ fontFamily: F.mono, fontSize: 13, color: '#4b5563' }}>{r.id}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px 24px', fontWeight: 500, color: C.ink, fontFamily: F.cn }}>{r.src}</td>
+                      <td style={{ padding: '16px 24px' }}>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            borderRadius: 9999,
+                            border: `1px solid ${statusStyle.borderColor}`,
+                            background: statusStyle.background,
+                            color: statusStyle.color,
+                            padding: '4px 10px',
+                            fontSize: 12,
+                            fontWeight: 500,
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          <span style={{ height: 6, width: 6, borderRadius: '50%', background: dotColor, display: 'inline-block', flexShrink: 0 }} />
+                          {r.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <span
+                          style={{
+                            borderRadius: 6,
+                            padding: '2px 8px',
+                            fontFamily: F.mono,
+                            fontSize: 13,
+                            fontWeight: 600,
+                            background: latencyStyle.background,
+                            color: latencyStyle.color,
+                          }}
+                        >
+                          {r.latency}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* ── 数据洞察 band (雷达 + 趋势) ──────────────────────── */}
-        <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ marginTop: 32, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>数据洞察</h2>
           <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
@@ -567,146 +707,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-        {/* ── 活动节点流 ─────────────────────────────────────── */}
-        <section
-          style={{
-            overflow: 'hidden',
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: C.paper,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderBottom: `1px solid ${C.line}`,
-              background: C.grad,
-              padding: '16px 24px',
-              color: '#fff',
-            }}
-          >
-            <h3
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                fontSize: 18,
-                fontWeight: 800,
-                margin: 0,
-                fontFamily: F.cn,
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  height: 14,
-                  width: 4,
-                  borderRadius: 9999,
-                  background: 'rgba(255,255,255,0.8)',
-                  flexShrink: 0,
-                }}
-              />
-              活动节点流
-            </h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.2)', padding: '4px 12px', fontSize: 12, fontWeight: 600, color: '#fff', fontFamily: F.mono }}>
-                <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'inline-block' }} />
-                实时监控
-              </span>
-              <span aria-hidden={true} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.8)' }}>sort</span>
-            </div>
-          </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', textAlign: 'left', fontSize: 14, borderCollapse: 'collapse' }}>
-              <thead style={{ borderBottom: `1px solid ${C.line}`, background: C.base }}>
-                <tr>
-                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>标识符</th>
-                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>来源</th>
-                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>状态</th>
-                  <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>延迟</th>
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_ROWS.map((r) => {
-                  const chip = ICON_CHIP_COLORS[r.chipIdx % ICON_CHIP_COLORS.length] ?? ICON_CHIP_COLORS[0]!;
-                  // Status badge & latency badge styling
-                  const statusStyle =
-                    r.tone === 'green'
-                      ? { background: `${C.ikb}0d`, color: C.ikb, borderColor: `${C.ikb}30` }
-                      : r.tone === 'yellow'
-                        ? { background: '#FEFCE0', color: '#8A6A00', borderColor: '#F3E08A' }
-                        : { background: '#fef2f2', color: C.burgundyText, borderColor: '#fca5a5' };
-                  const dotColor =
-                    r.tone === 'green' ? C.ikb : r.tone === 'yellow' ? '#F3C200' : C.burgundy;
-                  const latencyStyle =
-                    r.tone === 'green'
-                      ? { background: `${C.ikb}0d`, color: C.ikb }
-                      : r.tone === 'yellow'
-                        ? { background: '#FEFCE0', color: '#8A6A00' }
-                        : { background: '#fef2f2', color: C.burgundyText };
-                  return (
-                    <tr
-                      key={r.id}
-                      style={{ borderBottom: `1px solid ${C.base}`, transition: 'background 0.15s' }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = C.base; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = ''; }}
-                    >
-                      <td style={{ padding: '16px 24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span
-                            style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: chip.bg, color: chip.text }}
-                          >
-                            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>{r.icon}</span>
-                          </span>
-                          <span style={{ fontFamily: F.mono, fontSize: 13, color: '#4b5563' }}>{r.id}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: '16px 24px', fontWeight: 500, color: C.ink, fontFamily: F.cn }}>{r.src}</td>
-                      <td style={{ padding: '16px 24px' }}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            borderRadius: 9999,
-                            border: `1px solid ${statusStyle.borderColor}`,
-                            background: statusStyle.background,
-                            color: statusStyle.color,
-                            padding: '4px 10px',
-                            fontSize: 12,
-                            fontWeight: 500,
-                            fontFamily: F.cn,
-                          }}
-                        >
-                          <span style={{ height: 6, width: 6, borderRadius: '50%', background: dotColor, display: 'inline-block', flexShrink: 0 }} />
-                          {r.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                        <span
-                          style={{
-                            borderRadius: 6,
-                            padding: '2px 8px',
-                            fontFamily: F.mono,
-                            fontSize: 13,
-                            fontWeight: 600,
-                            background: latencyStyle.background,
-                            color: latencyStyle.color,
-                          }}
-                        >
-                          {r.latency}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </div>
     </IKBLayout>
   );

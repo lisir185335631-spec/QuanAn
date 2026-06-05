@@ -575,6 +575,178 @@ export default function BoomGenerate() {
         </div>
       </header>
 
+      {/* ── KPI 概览一排 (4 卡) ────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 爆款元素 · 蓝 · 环形 */}
+        <div
+          className="rounded-xl border p-5 ikb-hovercard"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
+            </span>
+            <span
+              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+            >
+              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>全库
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+                {totalElements}
+                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
+              </p>
+              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label="爆款元素覆盖率">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="100 100" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* 选中元素 · 玫红 · 进度条 */}
+        <div
+          className="rounded-xl border p-5 ikb-hovercard"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
+            </span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            >选中</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              {selectedKeys.length}
+              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选中元素</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.burgundy}18` }}>
+            <div
+              className="h-2 rounded-full"
+              style={{
+                width: `${Math.min(100, Math.round((selectedKeys.length / totalElements) * 100))}%`,
+                background: `linear-gradient(to right, ${C.burgundy}, ${C.accent3})`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 生成结果 · 紫 · 迷你柱 */}
+        <div
+          className="rounded-xl border p-5 ikb-hovercard"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.accent3}12`, color: C.accent3 }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
+            </span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+            >结果库</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              {BOOM_ENTRIES.length}
+              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 篇</span>
+            </p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>生成结果</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1" aria-hidden={true}>
+            {[64, 88, 72, 96, 82].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.accent3}70` }} />
+            ))}
+          </div>
+        </div>
+
+        {/* 命中率 · 蓝 · chip */}
+        <div
+          className="rounded-xl border p-5 ikb-hovercard"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>gps_fixed</span>
+            </span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+            >
+              命中率
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              87
+              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> %</span>
+            </p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>命中率</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1" aria-hidden={true}>
+            {['共鸣', '转化', '爆款'].map((k) => (
+              <span
+                key={k}
+                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 元素多选 ────────────────────────────────────────── */}
+      <div className="mb-6">
+        <BoomElementsPicker selectedKeys={selectedKeys} onChange={setSelectedKeys} />
+      </div>
+
+      {/* ── 设置 ────────────────────────────────────────────── */}
+      <div className="mb-6">
+        <BoomSettings
+          industry={industry}
+          topic={topic}
+          onIndustryChange={setIndustry}
+          onTopicChange={setTopic}
+        />
+      </div>
+
+      {/* ── CTA ─────────────────────────────────────────────── */}
+      <div className="mb-8">
+        <BoomCTA onClick={handleGenerate} />
+      </div>
+
+      {/* ── 元素组合分析 ────────────────────────────────────── */}
+      <div className="mb-8">
+        <BoomAnalysis />
+      </div>
+
+      {/* ── 结果列表 ─────────────────────────────────────────── */}
+      <BoomResultList entries={BOOM_ENTRIES} />
+
       {/* ── 数据洞察(雷达 + 趋势) ─────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
         <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
@@ -757,178 +929,6 @@ export default function BoomGenerate() {
           </div>
         </div>
       </div>
-
-      {/* ── KPI 概览一排 (4 卡) ────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
-        {/* 爆款元素 · 蓝 · 环形 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}12`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
-            </span>
-            <span
-              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>全库
-            </span>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                {totalElements}
-                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
-            </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label="爆款元素覆盖率">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="100 100" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* 选中元素 · 玫红 · 进度条 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
-            >选中</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              {selectedKeys.length}
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选中元素</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.burgundy}18` }}>
-            <div
-              className="h-2 rounded-full"
-              style={{
-                width: `${Math.min(100, Math.round((selectedKeys.length / totalElements) * 100))}%`,
-                background: `linear-gradient(to right, ${C.burgundy}, ${C.accent3})`,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* 生成结果 · 紫 · 迷你柱 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.accent3}12`, color: C.accent3 }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
-            >结果库</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              {BOOM_ENTRIES.length}
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 篇</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>生成结果</p>
-          </div>
-          <div className="mt-3 flex h-6 items-end gap-1" aria-hidden={true}>
-            {[64, 88, 72, 96, 82].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.accent3}70` }} />
-            ))}
-          </div>
-        </div>
-
-        {/* 命中率 · 蓝 · chip */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}12`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>gps_fixed</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              命中率
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              87
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> %</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>命中率</p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1" aria-hidden={true}>
-            {['共鸣', '转化', '爆款'].map((k) => (
-              <span
-                key={k}
-                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-              >
-                {k}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 元素多选 ────────────────────────────────────────── */}
-      <div className="mb-6">
-        <BoomElementsPicker selectedKeys={selectedKeys} onChange={setSelectedKeys} />
-      </div>
-
-      {/* ── 设置 ────────────────────────────────────────────── */}
-      <div className="mb-6">
-        <BoomSettings
-          industry={industry}
-          topic={topic}
-          onIndustryChange={setIndustry}
-          onTopicChange={setTopic}
-        />
-      </div>
-
-      {/* ── CTA ─────────────────────────────────────────────── */}
-      <div className="mb-8">
-        <BoomCTA onClick={handleGenerate} />
-      </div>
-
-      {/* ── 元素组合分析 ────────────────────────────────────── */}
-      <div className="mb-8">
-        <BoomAnalysis />
-      </div>
-
-      {/* ── 结果列表 ─────────────────────────────────────────── */}
-      <BoomResultList entries={BOOM_ENTRIES} />
     </IKBLayout>
   );
 }

@@ -946,8 +946,11 @@ export default function IpPlan() {
         {/* ── 进度卡 ─────────────────────────────────────────── */}
         <IpPlanProgressCard percent={percent} completed={completed} total={total} />
 
+        {/* ── 步骤清单 ────────────────────────────────────────── */}
+        <IpPlanStepList steps={IP_PLAN_STEPS} />
+
         {/* ── 数据洞察 band ───────────────────────────────────── */}
-        <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ marginBottom: 4, marginTop: 32, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>数据洞察</h2>
           <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· IP 成熟度综合评估</span>
@@ -978,9 +981,6 @@ export default function IpPlan() {
           <IpMaturityRadar />
           <IpProgressTrend completed={completed} total={total} />
         </div>
-
-        {/* ── 步骤清单 ────────────────────────────────────────── */}
-        <IpPlanStepList steps={IP_PLAN_STEPS} />
 
         {/* ── 底部 CTA ────────────────────────────────────────── */}
         {remaining > 0 && firstUncompleted && (
