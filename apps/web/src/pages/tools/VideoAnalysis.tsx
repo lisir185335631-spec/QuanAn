@@ -725,7 +725,7 @@ export default function VideoAnalysis() {
       <div className="space-y-6">
 
         {/* ── 选题策略 ──────────────────────────────────────── */}
-        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div className="flex items-center gap-2.5 px-6 py-4" style={{ background: C.grad }}>
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
               <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>target</span>
@@ -777,7 +777,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 钩子分析 ──────────────────────────────────────── */}
-        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.burgundy}, #c4304e)` }}
@@ -839,7 +839,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 叙事结构 ──────────────────────────────────────── */}
-        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
@@ -894,7 +894,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 爆款元素 + 公式 ───────────────────────────────── */}
-        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.burgundy})` }}

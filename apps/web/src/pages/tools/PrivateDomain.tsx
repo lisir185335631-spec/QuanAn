@@ -773,7 +773,7 @@ export default function PrivateDomain() {
 
         {/* 引流话术 trafficScripts */}
         <div
-          className="rounded-xl border bg-white p-6 ikb-hovercard"
+          className="rounded-xl border bg-white p-6"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -889,7 +889,7 @@ export default function PrivateDomain() {
 
         {/* 朋友圈话术 momentsScripts */}
         <div
-          className="rounded-xl border bg-white p-6 ikb-hovercard"
+          className="rounded-xl border bg-white p-6"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -955,7 +955,7 @@ export default function PrivateDomain() {
 
         {/* 销售话术 salesScripts */}
         <div
-          className="rounded-xl border bg-white p-6 ikb-hovercard"
+          className="rounded-xl border bg-white p-6"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -1109,7 +1109,7 @@ export default function PrivateDomain() {
 
         {/* 成交 SOP · Day 时间线 */}
         <div
-          className="rounded-xl border bg-white p-6 ikb-hovercard"
+          className="rounded-xl border bg-white p-6"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -1171,7 +1171,7 @@ export default function PrivateDomain() {
 
         {/* 关键指标 keyMetrics · 全部 5 项 */}
         <div
-          className="rounded-xl border p-6 ikb-hovercard"
+          className="rounded-xl border p-6"
           style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg, ${C.base}, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-5 flex items-center justify-between">

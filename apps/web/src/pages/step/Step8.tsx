@@ -1002,7 +1002,7 @@ export default function Step8() {
           // Border color: use 20% opacity of the accent color
           const cardBorderColor = `${aColor}33`;
           return (
-            <div key={key} className="ikb-hovercard overflow-hidden rounded-xl border bg-white" style={{ borderColor: cardBorderColor }}>
+            <div key={key} className="overflow-hidden rounded-xl border bg-white" style={{ borderColor: cardBorderColor }}>
               <div className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: C.line }}>
                 <div className="flex items-center gap-3">
                   <span

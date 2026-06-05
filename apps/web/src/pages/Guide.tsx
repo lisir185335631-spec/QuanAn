@@ -292,7 +292,6 @@ function SectionAccordion({ section }: { section: GuideSection }) {
   return (
     <div
       data-testid={`section-accordion-${section.id}`}
-      className="ikb-hovercard"
       style={{
         overflow: 'hidden',
         borderRadius: 12,

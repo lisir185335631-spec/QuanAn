@@ -422,7 +422,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             <div
               key={item.id}
               data-testid={`ps-recommended-item-${item.id}`}
-              className="ikb-hovercard rounded-xl border"
+              className="rounded-xl border"
               style={{ borderColor: C.line, background: C.paper }}
             >
               {/* Icon tile — ps-prefix on inline gradient */}
@@ -1248,7 +1248,7 @@ export default function PresentStyles() {
             <div
               key={style.id}
               data-testid={`style-card-${style.id}`}
-              className="ikb-hovercard flex flex-col rounded-xl border"
+              className="flex flex-col rounded-xl border"
               style={{ borderColor: C.line, background: C.paper }}
             >
               {/* Icon tile */}
