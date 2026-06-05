@@ -462,7 +462,7 @@ export default function AcquisitionVideo() {
                     onClick={() => setIndustry(opt.value)}
                     aria-pressed={active}
                     data-state={active ? 'active' : 'inactive'}
-                    className="ikb-focusring group relative flex items-center gap-2.5 overflow-hidden rounded-xl border p-3 text-left transition-all"
+                    className="ikb-hovercard ikb-focusring group relative flex items-center gap-2.5 overflow-hidden rounded-xl border p-3 text-left transition-all"
                     style={{
                       borderColor: active ? C.ikb : C.line,
                       background: active ? `${C.ikb}06` : C.paper,

@@ -144,6 +144,7 @@
   background: var(--ikb-grad) !important;
   background-image: var(--ikb-grad) !important;
   border-color: transparent !important;
+  color: #ffffff !important; /* 元素自身的直接文本节点(如 chip 的 {label})也转白 */
   transform: translateY(-5px);
   box-shadow: 0 18px 38px -14px rgba(43, 83, 230, 0.48), 0 8px 18px -10px rgba(123, 59, 224, 0.36);
 }

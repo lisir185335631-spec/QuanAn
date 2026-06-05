@@ -575,7 +575,7 @@ export default function Generate() {
                     aria-pressed={active}
                     data-state={active ? 'active' : 'inactive'}
                     onClick={() => setScriptKey(type.key)}
-                    className={`ikb-focusring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'ikb-card shadow-sm' : 'border-[#e5e7eb] bg-[#f9f9f9] hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    className={`ikb-hovercard ikb-focusring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'shadow-sm' : 'border-[#e5e7eb] bg-[#f9f9f9]'}`}
                     style={active ? { borderColor: C.ikb, background: `${C.ikb}06` } : undefined}
                   >
                     <span
@@ -636,7 +636,7 @@ export default function Generate() {
                             aria-pressed={selected}
                             data-state={selected ? 'active' : 'inactive'}
                             onClick={() => handleToggleElement(el.key)}
-                            className={`ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all ${selected ? 'ikb-card' : 'border-[#e5e7eb] bg-[#f9f9f9] text-[#6b7280] hover:border-[#c7d2fe]'}`}
+                            className={`ikb-hovercard ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all ${selected ? '' : 'border-[#e5e7eb] bg-[#f9f9f9] text-[#6b7280]'}`}
                             style={selected ? { borderColor: C.ikb, background: `${C.ikb}06`, color: C.ikb } : undefined}
                           >
                             <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>{ELEMENT_ICONS[el.key] ?? 'label'}</span>

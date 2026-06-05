@@ -867,7 +867,7 @@ export default function Step3() {
                         key={p.key}
                         onClick={() => setPlatform(p.key)}
                         aria-pressed={active}
-                        className="ikb-focusring"
+                        className="ikb-hovercard ikb-focusring"
                         style={{
                           position: 'relative',
                           display: 'flex',
