@@ -153,9 +153,12 @@
 .ikb-hovercard:hover :where(.material-symbols-outlined) {
   color: #ffffff !important;
 }
-/* 徽标 / 胶囊 / chip / 图标方块 → 磨砂半透明白(均为 Tailwind 圆角工具类) */
-.ikb-hovercard:hover :where(.rounded-full, .rounded, .rounded-md, .rounded-lg) {
-  background: rgba(255, 255, 255, 0.2) !important;
+/* 徽标 / 胶囊 / chip / 图标方块 / 嵌套子面板 → 磨砂半透明白(均为 Tailwind 圆角工具类)
+ * 含 rounded-xl/2xl:卡内"内联浅底(C.base / ${色}08)子面板"hover 时也磨砂,
+ * 否则文字被转白却压在没磨砂的浅底上 → 看不清。后代选择器只命中卡【内部】的圆角块,
+ * 不影响 .ikb-hovercard 卡片本身(它是 hover 元素、非自身后代)。 */
+.ikb-hovercard:hover :where(.rounded-full, .rounded, .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl) {
+  background: rgba(255, 255, 255, 0.18) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
 }
 /* 内部白底 / 浅底小面板 → 磨砂(防渐变上留死白块) */
