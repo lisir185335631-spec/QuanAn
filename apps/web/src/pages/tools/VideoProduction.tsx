@@ -332,9 +332,9 @@ export default function VideoProduction() {
           ) : hasResult ? (
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-              style={{ background: '#f0fdf4', color: '#166534', fontFamily: F.mono }}
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
               已生成
             </span>
           ) : (
@@ -511,7 +511,7 @@ export default function VideoProduction() {
             </span>
             <span
               className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: '#f0fdf4', color: '#166534', fontFamily: F.mono }}
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
             >
               <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>
               {hasResult ? '完整' : '示例'}
@@ -1121,9 +1121,9 @@ export default function VideoProduction() {
           <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: '#f0fdf4', color: '#166534', fontFamily: F.mono }}
+            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
           >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#16a34a]" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: C.ikb }} />
             模型已就绪
           </span>
         </div>
@@ -1269,7 +1269,7 @@ export default function VideoProduction() {
                   <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>情绪节奏曲线</h3>
                   <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
                     沿 {kpiSceneCount} 个场景情绪强度推演
-                    {!hasResult && <span className="ml-1" style={{ color: '#d97706' }}>（示例）</span>}
+                    {!hasResult && <span className="ml-1" style={{ color: C.purpleText }}>（示例）</span>}
                   </p>
                 </div>
               </div>

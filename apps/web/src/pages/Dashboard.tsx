@@ -450,16 +450,16 @@ export default function Dashboard() {
                     r.tone === 'green'
                       ? { background: `${C.ikb}0d`, color: C.ikb, borderColor: `${C.ikb}30` }
                       : r.tone === 'yellow'
-                        ? { background: '#FEFCE0', color: '#8A6A00', borderColor: '#F3E08A' }
-                        : { background: '#fef2f2', color: C.burgundyText, borderColor: '#fca5a5' };
+                        ? { background: `${C.accent3}0d`, color: C.purpleText, borderColor: `${C.accent3}30` }
+                        : { background: `${C.burgundy}08`, color: C.burgundyText, borderColor: `${C.burgundy}30` };
                   const dotColor =
-                    r.tone === 'green' ? C.ikb : r.tone === 'yellow' ? '#F3C200' : C.burgundy;
+                    r.tone === 'green' ? C.ikb : r.tone === 'yellow' ? C.accent3 : C.burgundy;
                   const latencyStyle =
                     r.tone === 'green'
                       ? { background: `${C.ikb}0d`, color: C.ikb }
                       : r.tone === 'yellow'
-                        ? { background: '#FEFCE0', color: '#8A6A00' }
-                        : { background: '#fef2f2', color: C.burgundyText };
+                        ? { background: `${C.accent3}0d`, color: C.purpleText }
+                        : { background: `${C.burgundy}08`, color: C.burgundyText };
                   return (
                     <tr
                       key={r.id}

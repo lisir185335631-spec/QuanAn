@@ -265,11 +265,11 @@ const STAT_VARIANT_STYLES: Record<StatVariant, StatVariantStyle> = {
     chipColor: C.ikb,
   },
   needsImprove: {
-    borderColor: '#fecaca',
+    borderColor: `${C.burgundy}40`,
     iconBg: C.burgundy + '18',
     iconColor: C.burgundy,
     icon: 'thumb_down',
-    chipBg: '#fef2f2',
+    chipBg: `${C.burgundy}08`,
     chipColor: C.burgundyText,
   },
   learning: {

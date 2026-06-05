@@ -593,7 +593,8 @@ export default function Step8() {
       {generateMutation.isError && !hasResult && (
         <div
           data-testid="step8-error"
-          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
+          className="mb-6 flex items-center justify-between gap-3 rounded-xl border p-4 text-[13px] font-medium"
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
         >
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>error</span>
@@ -602,7 +603,8 @@ export default function Step8() {
           <button
             type="button"
             onClick={handleRegenerateAll}
-            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
+            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
           >
             重试
           </button>
@@ -625,7 +627,8 @@ export default function Step8() {
       {dbQuery.isError && !hasResult && (
         <div
           data-testid="step8-db-error"
-          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
+          className="mb-6 flex items-center justify-between gap-3 rounded-xl border p-4 text-[13px] font-medium"
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
         >
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>error</span>
@@ -634,7 +637,8 @@ export default function Step8() {
           <button
             type="button"
             onClick={() => void dbQuery.refetch()}
-            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
+            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
           >
             重试
           </button>
@@ -927,7 +931,7 @@ export default function Step8() {
             <div className="mb-2 flex items-center gap-2">
               <span
                 className="flex h-7 w-7 items-center justify-center rounded-full"
-                style={{ background: '#166534' }}
+                style={{ background: 'rgba(255,255,255,0.2)' }}
               >
                 <span className="material-symbols-outlined text-[16px] text-white" aria-hidden={true}>check_circle</span>
               </span>

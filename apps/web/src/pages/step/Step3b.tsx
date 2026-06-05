@@ -904,12 +904,12 @@ export default function Step3b() {
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 12,
-              border: '1px solid #dc262630',
-              background: '#fef2f2',
+              border: `1px solid ${C.burgundy}30`,
+              background: `${C.burgundy}08`,
               padding: 16,
               fontSize: 14,
               fontWeight: 500,
-              color: '#991b1b',
+              color: C.burgundyText,
               fontFamily: F.cn,
             }}
           >
@@ -929,12 +929,12 @@ export default function Step3b() {
               className="ikb-focusring"
               style={{
                 flexShrink: 0,
-                border: '1px solid #dc262630',
+                border: `1px solid ${C.burgundy}30`,
                 background: '#fff',
                 padding: '6px 16px',
                 fontSize: 12,
                 fontWeight: 700,
-                color: '#991b1b',
+                color: C.burgundyText,
                 cursor: 'pointer',
                 fontFamily: F.mono,
               }}
@@ -975,12 +975,12 @@ export default function Step3b() {
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 12,
-              border: '1px solid #dc262630',
-              background: '#fef2f2',
+              border: `1px solid ${C.burgundy}30`,
+              background: `${C.burgundy}08`,
               padding: 16,
               fontSize: 13,
               fontWeight: 500,
-              color: '#991b1b',
+              color: C.burgundyText,
               fontFamily: F.cn,
             }}
           >
@@ -995,12 +995,12 @@ export default function Step3b() {
               className="ikb-focusring"
               style={{
                 flexShrink: 0,
-                border: '1px solid #dc262630',
+                border: `1px solid ${C.burgundy}30`,
                 background: '#fff',
                 padding: '6px 16px',
                 fontSize: 12,
                 fontWeight: 700,
-                color: '#991b1b',
+                color: C.burgundyText,
                 cursor: 'pointer',
                 fontFamily: F.mono,
               }}
@@ -1585,15 +1585,15 @@ export default function Step3b() {
                 ))}
               </ul>
             </div>
-            <div style={{ border: '1px solid #fee2e2', background: '#fff5f5', padding: 20 }}>
-              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: '#991b1b', fontFamily: F.cn }}>
+            <div style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}08`, padding: 20 }}>
+              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">cancel</span>
                 避免这样说
               </h4>
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {result.contentPersona.speakingDonts.map((d, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: '#dc2626', display: 'inline-block' }} aria-hidden="true" />
+                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
                     {d}
                   </li>
                 ))}
