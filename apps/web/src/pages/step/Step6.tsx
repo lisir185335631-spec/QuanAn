@@ -213,23 +213,12 @@ export default function Step6() {
             type="button"
             onClick={handleCopyAll}
             disabled={!canBulkActions}
-            aria-label="复制全部"
-            className={btnSecondary}
-            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
-          >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
-            复制全部
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            disabled={!canBulkActions}
-            aria-label="复制 JSON"
+            aria-label="复制方案"
             className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
             style={{ fontFamily: F.mono }}
           >
             <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
-            复制 JSON
+            复制方案
           </button>
         </div>
       </header>

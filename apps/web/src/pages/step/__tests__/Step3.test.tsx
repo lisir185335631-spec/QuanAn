@@ -135,17 +135,17 @@ describe('Step3 integration (US-010b)', () => {
 
   it('toolbar bulk action buttons are enabled with mock data (canBulkActions = !isLoading, AC-4 D-302)', () => {
     renderStep3();
-    // Toolbar buttons: 智能优化, 重新生成, 导出方案
+    // Toolbar buttons: 智能优化, 重新生成, 复制全部
     expect(screen.getByRole('button', { name: /智能优化/ })).not.toBeDisabled();
     expect(screen.getByRole('button', { name: /重新生成/ })).not.toBeDisabled();
-    expect(screen.getByRole('button', { name: /导出方案/ })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /复制全部/ })).not.toBeDisabled();
   });
 
-  // ── AC-6: toolbar 导出方案 → clipboard.writeText ──────────────────────────
+  // ── AC-6: toolbar 复制全部 → clipboard.writeText ──────────────────────────
 
-  it('toolbar 导出方案 onClick triggers clipboard.writeText with serialized content (AC-6)', async () => {
+  it('toolbar 复制全部 onClick triggers clipboard.writeText with serialized content (AC-6)', async () => {
     renderStep3();
-    const exportBtn = screen.getByRole('button', { name: /导出方案/ });
+    const exportBtn = screen.getByRole('button', { name: /复制全部/ });
     fireEvent.click(exportBtn);
     await waitFor(() => {
       expect(mockClipboardWriteText).toHaveBeenCalledWith(expect.any(String));
@@ -217,16 +217,16 @@ describe('Step3 image gen stub toast (US-006)', () => {
     );
   });
 
-  it('导出方案 button is rendered and clickable (replaces VideoReferenceCaseSection stub)', () => {
+  it('复制全部 button is rendered and clickable (replaces VideoReferenceCaseSection stub)', () => {
     renderStep3();
     // The VideoReferenceCaseSection no longer exists in the new UI.
     // Verify the export/copy button is present instead.
-    expect(screen.getByRole('button', { name: /导出方案/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /复制全部/ })).toBeInTheDocument();
   });
 
-  it('导出方案 button triggers clipboard.writeText (replaces BackgroundImageDesignSection stub)', async () => {
+  it('复制全部 button triggers clipboard.writeText (replaces BackgroundImageDesignSection stub)', async () => {
     renderStep3();
-    const exportBtn = screen.getByRole('button', { name: /导出方案/ });
+    const exportBtn = screen.getByRole('button', { name: /复制全部/ });
     fireEvent.click(exportBtn);
     await waitFor(() => {
       expect(mockClipboardWriteText).toHaveBeenCalledWith(expect.any(String));

@@ -365,7 +365,7 @@ export default function AcquisitionVideo() {
             className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-semibold text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
             style={{ fontFamily: F.mono }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>download</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
             复制方案
           </button>
         </div>

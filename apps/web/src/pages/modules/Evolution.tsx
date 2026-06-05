@@ -221,7 +221,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
                     : lvl.id === 'L2'
                       ? 'menu_book'
                       : lvl.id === 'L3'
-                        ? 'eco'
+                        ? 'rocket_launch'
                         : lvl.id === 'L4'
                           ? 'park'
                           : 'workspace_premium'}
@@ -707,7 +707,6 @@ export default function Evolution() {
             label={EVOLUTION_STAT_LABELS.satisfaction}
             value={satisfactionRate}
             unit="%"
-            showDelta
           />
         </div>
 

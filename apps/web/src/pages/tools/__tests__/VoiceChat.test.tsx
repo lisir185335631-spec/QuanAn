@@ -146,9 +146,9 @@ describe('VoiceChat · 接真流式后端', () => {
     expect(screen.getByTestId('message-copy-btn')).toHaveTextContent('复制');
   });
 
-  it('初始状态 status chip 显 "连接中"', () => {
+  it('初始状态 status chip 显 "在线"', () => {
     renderVC();
-    expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+    expect(screen.getByTestId('status-online')).toHaveTextContent('在线');
   });
 
   // ── 发送消息 ─────────────────────────────────────────────────────────────
@@ -220,7 +220,7 @@ describe('VoiceChat · 接真流式后端', () => {
   });
 
   // ── done 后 finalize ─────────────────────────────────────────────────────
-  it('done chunk 后 streaming=false, status 恢复 "连接中"', async () => {
+  it('done chunk 后 streaming=false, status 恢复 "在线"', async () => {
     renderVC();
     fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '完成测试' } });
     fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
@@ -235,7 +235,7 @@ describe('VoiceChat · 接真流式后端', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+      expect(screen.getByTestId('status-online')).toHaveTextContent('在线');
     });
   });
 
@@ -315,7 +315,7 @@ describe('VoiceChat · 接真流式后端', () => {
   });
 
   // ── 错误态 ────────────────────────────────────────────────────────────────
-  it('onError: toast.error 触发, status 恢复 "连接中"', async () => {
+  it('onError: toast.error 触发, status 恢复 "在线"', async () => {
     renderVC();
     fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '错误测试' } });
     fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
@@ -324,7 +324,7 @@ describe('VoiceChat · 接真流式后端', () => {
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalled();
-      expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+      expect(screen.getByTestId('status-online')).toHaveTextContent('在线');
     });
   });
 
