@@ -363,7 +363,7 @@ export default function Generate() {
 
       {/* ── 2 列配置区(固定 grid-cols-2 · 禁断点) ─────────── */}
       <div className="mb-8 grid grid-cols-2 gap-6">
-        {/* 左列:脚本类型 + 爆款元素 + 文案主题 */}
+        {/* 左列:脚本类型 */}
         <div className="space-y-5">
           {/* ── GenerateScriptPicker inline ── */}
           <section
@@ -417,6 +417,10 @@ export default function Generate() {
             </div>
           </section>
 
+        </div>
+
+        {/* 右列:爆款元素 + 文案主题 + 生成结果 */}
+        <div className="space-y-5">
           {/* ── GenerateElementsPicker inline ── */}
           <section
             className="rounded-xl border p-5"
@@ -538,10 +542,7 @@ export default function Generate() {
               </button>
             </div>
           </section>
-        </div>
 
-        {/* 右列:生成结果 ── GenerateResult inline ── */}
-        <div className="space-y-5">
           {/* ── GenerateResult inline ── */}
           <section
             className="ikb-hovercard overflow-hidden rounded-xl border"
