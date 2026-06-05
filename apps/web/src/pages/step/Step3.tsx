@@ -704,7 +704,7 @@ export default function Step3() {
             <button
               type="button"
               onClick={handleCopyAll}
-              aria-label="导出方案"
+              aria-label="复制全部"
               className="ikb-gradbtn"
               style={{
                 display: 'flex',
@@ -721,8 +721,8 @@ export default function Step3() {
                 cursor: 'pointer',
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">download</span>
-              导出方案
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">content_copy</span>
+              复制全部
             </button>
           </div>
         </header>

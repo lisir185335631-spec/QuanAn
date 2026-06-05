@@ -624,7 +624,7 @@ export default function VoiceChat() {
                   style={{ color: C.ikb }}
                   data-testid="status-online"
                 >
-                  连接中
+                  在线
                 </span>
               </>
             )}
