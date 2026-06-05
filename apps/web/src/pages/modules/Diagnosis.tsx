@@ -674,7 +674,6 @@ export default function Diagnosis() {
 
           {/* Wizard card — IKB 白纸面 + 墨线边 */}
           <div
-            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.line}`,

@@ -550,7 +550,7 @@ export default function Generate() {
         <div className="space-y-5">
           {/* ── GenerateScriptPicker inline ── */}
           <section
-            className="ikb-hovercard rounded-xl border p-6"
+            className="rounded-xl border p-6"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-5 flex items-center gap-3">
@@ -602,7 +602,7 @@ export default function Generate() {
 
           {/* ── GenerateElementsPicker inline ── */}
           <section
-            className="ikb-hovercard rounded-xl border p-5"
+            className="rounded-xl border p-5"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-4 flex items-center gap-3">
@@ -653,7 +653,7 @@ export default function Generate() {
 
           {/* ── GenerateTopicForm inline ── */}
           <section
-            className="ikb-hovercard rounded-xl border p-5"
+            className="rounded-xl border p-5"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-2 flex items-center justify-between">

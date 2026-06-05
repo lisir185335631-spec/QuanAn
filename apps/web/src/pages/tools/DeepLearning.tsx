@@ -150,7 +150,7 @@ function SampleFormPioneer({
   return (
     <div
       data-testid="sample-form"
-      className="ikb-hovercard relative overflow-hidden rounded-xl p-6"
+      className="relative overflow-hidden rounded-xl p-6"
       style={{ background: `linear-gradient(135deg,${C.paper},${C.base})`, border: `1px solid ${C.line}` }}
     >
       {/* ambient glows */}
@@ -496,7 +496,7 @@ function SampleFormPioneer({
         {parseAnalysis && (
           <div
             data-testid="parse-result"
-            className="rounded-xl border p-5 space-y-4 ikb-hovercard"
+            className="rounded-xl border p-5 space-y-4"
             style={{ borderColor: `${C.ikb}28`, background: `${C.ikb}06` }}
           >
             <p
