@@ -469,7 +469,7 @@ export default function Analysis() {
         {/* ── AnalysisStructure · 结构拆解 ─────────────────────────────────── */}
         <section
           data-testid="analysis-structure"
-          className="overflow-hidden rounded-xl border ikb-hovercard"
+          className="overflow-hidden rounded-xl border"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div

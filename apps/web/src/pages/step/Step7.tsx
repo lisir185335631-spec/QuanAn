@@ -847,7 +847,7 @@ export default function Step7() {
       {/* ── 生成结果(全宽) · hasResult 门控 ───────────────── */}
       {hasResult && (
         <>
-          <div className="ikb-hovercard mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
             <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: C.line }}>
               <div className="flex items-center gap-3">
                 <span className="ikb-gradbtn flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-lg">

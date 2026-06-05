@@ -669,7 +669,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
   return (
     <div
       data-testid={`archive-card-${row.id}`}
-      className="ikb-hovercard rounded-xl border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ background: C.paper, border: `1px solid ${C.line}` }}
     >
       {/* header row */}
@@ -921,7 +921,7 @@ function UsageInstructionsPioneer() {
   return (
     <div
       data-testid="usage-instructions"
-      className="rounded-xl border p-6 space-y-5 ikb-hovercard"
+      className="rounded-xl border p-6 space-y-5"
       style={{ borderColor: C.line, background: C.paper }}
     >
       <div className="flex items-center gap-3 pb-4" style={{ borderBottom: `1px solid ${C.line}` }}>
@@ -1259,7 +1259,7 @@ export default function DeepLearning() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* AI 学习能力雷达 */}
           <div
-            className="col-span-5 rounded-xl border p-6 ikb-hovercard"
+            className="col-span-5 ikb-hovercard rounded-xl border p-6"
             style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
           >
             <div className="mb-1 flex items-center justify-between">
@@ -1332,7 +1332,7 @@ export default function DeepLearning() {
 
           {/* 训练样本积累趋势 */}
           <div
-            className="col-span-7 rounded-xl border p-6 ikb-hovercard"
+            className="col-span-7 ikb-hovercard rounded-xl border p-6"
             style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
           >
             <div className="mb-4 flex items-start justify-between">

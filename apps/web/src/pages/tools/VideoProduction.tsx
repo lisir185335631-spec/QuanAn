@@ -919,7 +919,7 @@ export default function VideoProduction() {
 
         {/* ── 分镜脚本 section ─────────────────────────────── */}
         <div
-          className="ikb-hovercard rounded-xl border p-6"
+          className="rounded-xl border p-6"
           style={{ borderColor: `${C.ikb}25`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 50%, ${C.base} 100%)` }}
         >
           <div className="mb-6 flex items-center justify-between">
@@ -1117,7 +1117,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── 拍摄方案 section ──────────────────────────────── */}
-        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span
@@ -1223,7 +1223,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── 口播提词器 section ──────────────────────────────── */}
-        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span
@@ -1284,7 +1284,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── BGM 配乐建议 section ──────────────────────────── */}
-        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center gap-3">
             <span
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"

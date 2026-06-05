@@ -570,7 +570,6 @@ export default function Dashboard() {
 
         {/* ── 活动节点流 ─────────────────────────────────────── */}
         <section
-          className="ikb-hovercard"
           style={{
             overflow: 'hidden',
             borderRadius: 12,

@@ -383,7 +383,7 @@ function InsightCard({ items }: { items: InsightItem[] }) {
   return (
     <div
       data-testid="insight-card"
-      className="ikb-hovercard rounded-xl p-5"
+      className="rounded-xl p-5"
       style={{ border: `1px solid ${C.ikb}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">
@@ -473,7 +473,7 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
   return (
     <div
       data-testid="feedback-card"
-      className="ikb-hovercard rounded-xl p-5"
+      className="rounded-xl p-5"
       style={{ border: `1px solid ${C.accent3}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">

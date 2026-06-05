@@ -1036,7 +1036,7 @@ export default function Step4b() {
       {/* ── Main grid: 收入轨迹 + 右侧 ─────────────────────── */}
       <div className="grid grid-cols-3 gap-6">
         {/* Left col-span-2: 收入轨迹分析 */}
-        <div className="ikb-hovercard col-span-2 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+        <div className="col-span-2 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
           <div className="ikb-gradbtn flex items-center justify-between px-6 py-4 text-white">
             <div className="flex items-center gap-2.5">
               <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
@@ -1056,7 +1056,7 @@ export default function Step4b() {
               return (
                 <div
                   key={stage.number}
-                  className="ikb-hovercard rounded p-6"
+                  className="rounded p-6"
                   style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
                 >
                   {/* Stage header */}
@@ -1118,7 +1118,7 @@ export default function Step4b() {
                         {stage.productMatrix.map((product, pi) => (
                           <div
                             key={pi}
-                            className="ikb-hovercard rounded p-4"
+                            className="rounded p-4"
                             style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.05)' }}
                           >
                             <div className="mb-2 flex items-start justify-between gap-2">
@@ -1272,7 +1272,7 @@ export default function Step4b() {
         <div className="flex flex-col gap-6">
           {/* 收入结构模型 */}
           <div
-            className="ikb-hovercard rounded p-6"
+            className="rounded p-6"
             style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
           >
             <h3 className="mb-1 text-[16px] font-bold" style={{ color: C.ink }}>收入结构模型</h3>
@@ -1299,7 +1299,7 @@ export default function Step4b() {
             </div>
             <div className="space-y-4">
               {donutSegments.map((seg) => (
-                <div key={seg.name} className="ikb-hovercard rounded p-3" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                <div key={seg.name} className="rounded p-3" style={{ border: `1px solid ${C.line}`, background: C.base }}>
                   <div className="mb-1.5 flex items-center gap-2">
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: seg.color }} />
                     <span className="flex-1 text-[12px] font-semibold text-[#374151]">{seg.name}</span>
@@ -1337,7 +1337,7 @@ export default function Step4b() {
       </div>
 
       {/* ── 节点性能指标 table ──────────────────────────────── */}
-      <div className="ikb-hovercard mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+      <div className="mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
         <div className="ikb-gradbtn flex items-center justify-between px-6 py-4 text-white" style={{ borderBottom: `1px solid ${C.line}` }}>
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
@@ -1403,7 +1403,7 @@ export default function Step4b() {
       </div>
 
       {/* ── 成功案例参考 cards ──────────────────────────────── */}
-      <div className="ikb-hovercard mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+      <div className="mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
         <div
           className="flex items-center justify-between px-6 py-4 text-white"
           style={{ background: `linear-gradient(110deg, ${C.burgundy} 0%, #9B2A51 100%)` }}
@@ -1422,7 +1422,7 @@ export default function Step4b() {
           {generated.successCases.map((sc, idx) => (
             <div
               key={sc.title}
-              className="ikb-hovercard rounded p-5"
+              className="rounded p-5"
               style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
             >
               <div className="mb-3 flex items-start gap-3">
@@ -1454,7 +1454,7 @@ export default function Step4b() {
       </div>
 
       {/* ── 市场分析 card ───────────────────────────────────── */}
-      <div className="ikb-hovercard mt-6 rounded p-6" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+      <div className="mt-6 rounded p-6" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
         <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold" style={{ color: C.ink }}>
           <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.ikb}15`, color: C.ikb }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>insights</span>
@@ -1468,7 +1468,7 @@ export default function Step4b() {
             { key: '竞争格局', val: generated.marketAnalysis.competition },
             { key: '变现潜力', val: generated.marketAnalysis.monetizationPotential },
           ].map((item) => (
-            <div key={item.key} className="ikb-hovercard rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+            <div key={item.key} className="rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
               <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>
                 <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 2 }} aria-hidden={true} />
                 {item.key}

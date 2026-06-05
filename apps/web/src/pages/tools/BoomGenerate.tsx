@@ -403,7 +403,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
 
   return (
     <div
-      className="overflow-hidden rounded-xl border ikb-hovercard"
+      className="overflow-hidden rounded-xl border"
       style={{ borderColor: C.line, background: C.paper }}
     >
       <div

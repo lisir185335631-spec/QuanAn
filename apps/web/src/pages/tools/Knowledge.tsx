@@ -360,7 +360,7 @@ function OpeningTab() {
         {filtered.map((f) => (
           <div
             key={f.num}
-            className="rounded-xl border p-4 space-y-3 ikb-hovercard"
+            className="rounded-xl border p-4 space-y-3"
             style={{ borderColor: C.line, background: C.paper }}
             data-testid={`opening-card-${f.num}`}
           >
@@ -466,7 +466,7 @@ function CoreTab() {
         {filtered.map((f, i) => (
           <div
             key={f.name}
-            className="rounded-xl border p-4 space-y-3 ikb-hovercard"
+            className="rounded-xl border p-4 space-y-3"
             style={{ borderColor: C.line, background: C.paper }}
             data-testid={`core-card-${i}`}
           >

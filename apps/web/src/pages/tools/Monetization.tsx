@@ -547,7 +547,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
 
       {/* ── 产品矩阵(真结果) ──────────────────────────────── */}
       <div
-        className="ikb-hovercard relative overflow-hidden rounded-xl border p-6"
+        className="relative overflow-hidden rounded-xl border p-6"
         style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 60%, ${C.base} 100%)` }}
       >
         <div
@@ -594,7 +594,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       </div>
 
       {/* ── 定价策略 ────────────────────────────────────────── */}
-      <div className="ikb-hovercard rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
         <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>sell</span>
@@ -611,7 +611,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       </div>
 
       {/* ── 转化漏斗 ────────────────────────────────────────── */}
-      <div className="ikb-hovercard rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
         <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>filter_alt</span>
