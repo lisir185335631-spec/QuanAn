@@ -143,7 +143,7 @@ export function DiagnosisStepCard({
                   data-testid={`diagnosis-stage-${s.value}`}
                   data-state={stage === s.value ? 'selected' : 'unselected'}
                   className={cn(
-                    'cursor-pointer flex flex-col gap-1 rounded-xl border px-4 py-3.5 transition-all',
+                    'ikb-hovercard cursor-pointer flex flex-col gap-1 rounded-xl border px-4 py-3.5 transition-all',
                     stage === s.value
                       ? 'shadow-sm'
                       : 'border-[#e5e7eb] bg-white hover:bg-[#F3F5FC]',
@@ -196,7 +196,7 @@ export function DiagnosisStepCard({
                   data-testid={`diagnosis-checkbox-${item}`}
                   data-state={checked ? 'checked' : 'unchecked'}
                   className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 transition-all',
+                    'ikb-hovercard flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 transition-all',
                     checked
                       ? 'shadow-sm'
                       : 'border-[#e5e7eb] bg-white hover:bg-[#F3F5FC]',

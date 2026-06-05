@@ -162,7 +162,7 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
                       aria-pressed={selected}
                       data-state={selected ? 'active' : 'inactive'}
                       onClick={() => toggleKey(item.key)}
-                      className={`ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all ${selected ? 'ikb-card' : 'border-[#e5e7eb] bg-[#f9f9f9] text-[#6b7280] hover:border-[#c7d2fe]'}`}
+                      className={`ikb-hovercard ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all ${selected ? '' : 'border-[#e5e7eb] bg-[#f9f9f9] text-[#6b7280]'}`}
                       style={selected ? { borderColor: C.ikb, background: `${C.ikb}06`, color: C.ikb } : undefined}
                     >
                       <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>

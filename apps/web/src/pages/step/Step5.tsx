@@ -873,7 +873,7 @@ export default function Step5() {
                       handleGenerateCategory(cat.id);
                     }
                   }}
-                  className="ikb-focusring group relative flex flex-col items-start gap-2 overflow-hidden rounded-xl border p-4 text-left transition-all"
+                  className="ikb-hovercard ikb-focusring group relative flex flex-col items-start gap-2 overflow-hidden rounded-xl border p-4 text-left transition-all"
                   style={{
                     borderColor: active ? C.ikb : C.line,
                     background: active ? `${C.ikb}06` : C.paper,

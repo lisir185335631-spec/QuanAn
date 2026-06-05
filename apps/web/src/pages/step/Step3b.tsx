@@ -526,7 +526,7 @@ export default function Step3b() {
                         role="radio"
                         aria-checked={active}
                         onClick={() => setPlatform(p.key)}
-                        className="ikb-focusring"
+                        className="ikb-hovercard ikb-focusring"
                         style={{
                           position: 'relative',
                           display: 'flex',

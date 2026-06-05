@@ -684,7 +684,7 @@ export default function Step4() {
                       aria-checked={active}
                       aria-label={`目标平台：${p.label}`}
                       onClick={() => setPlatform(p.key)}
-                      className="ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
+                      className="ikb-hovercard ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
                       style={{ borderColor: active ? C.ikb : C.line, background: active ? `${C.ikb}06` : C.paper }}
                     >
                       <span
@@ -727,7 +727,7 @@ export default function Step4() {
                       aria-checked={active}
                       aria-label={`转化目标：${g.label}`}
                       onClick={() => setGoal(g.key)}
-                      className="ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
+                      className="ikb-hovercard ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
                       style={{ borderColor: active ? C.ikb : C.line, background: active ? `${C.ikb}06` : C.paper }}
                     >
                       <span

@@ -180,7 +180,7 @@ function SampleFormPioneer({
             data-testid="tab-upload"
             type="button"
             onClick={() => handleTabClick('upload')}
-            className="ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
+            className="ikb-hovercard ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
             style={
               activeTab === 'upload'
                 ? { borderColor: C.ikb, background: C.ikb, color: C.paper, fontFamily: F.cn }
@@ -194,7 +194,7 @@ function SampleFormPioneer({
             data-testid="tab-paste"
             type="button"
             onClick={() => handleTabClick('paste')}
-            className="ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
+            className="ikb-hovercard ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
             style={
               activeTab === 'paste'
                 ? { borderColor: C.ikb, background: C.ikb, color: C.paper, fontFamily: F.cn }

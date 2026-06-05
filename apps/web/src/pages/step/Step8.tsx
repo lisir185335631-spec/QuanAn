@@ -384,7 +384,7 @@ export default function Step8() {
                       key={p.id}
                       onClick={() => setPlatform(p.id)}
                       aria-pressed={active}
-                      className={`ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all`}
+                      className={`ikb-hovercard ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all`}
                       style={
                         active
                           ? { borderColor: C.ikb, background: `${C.ikb}06` }
@@ -438,7 +438,7 @@ export default function Step8() {
                       key={opt.value}
                       onClick={() => setExperience(opt.value)}
                       aria-pressed={active}
-                      className="ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
+                      className="ikb-hovercard ikb-focusring group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all"
                       style={
                         active
                           ? { borderColor: C.ikb, background: `${C.ikb}06` }

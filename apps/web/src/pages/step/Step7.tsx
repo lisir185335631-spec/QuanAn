@@ -700,7 +700,7 @@ export default function Step7() {
                   key={type.id}
                   onClick={() => setSelectedScriptTypeId(type.id)}
                   aria-pressed={active}
-                  className={`ikb-focusring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#2B53E6]' : 'hover:border-[#2B53E6]/40'}`}
+                  className={`ikb-hovercard ikb-focusring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#2B53E6]' : ''}`}
                   style={active ? { borderColor: C.ikb, background: `${C.ikb}06` } : { borderColor: C.line, background: C.base }}
                 >
                   <span
@@ -756,7 +756,7 @@ export default function Step7() {
                             key={el.id}
                             onClick={() => handleToggleElement(el.id)}
                             aria-pressed={selected}
-                            className="ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all"
+                            className="ikb-hovercard ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all"
                             style={
                               selected
                                 ? { borderColor: C.ikb, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }

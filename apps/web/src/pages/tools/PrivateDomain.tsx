@@ -348,7 +348,7 @@ export default function PrivateDomain() {
                 onClick={() => setActiveScenario(s.id)}
                 aria-label={`选择场景：${s.name}`}
                 aria-pressed={active}
-                className="ikb-focusring group relative flex flex-col items-center gap-2 overflow-hidden rounded-xl border p-4 text-center transition-all"
+                className="ikb-hovercard ikb-focusring group relative flex flex-col items-center gap-2 overflow-hidden rounded-xl border p-4 text-center transition-all"
                 style={{
                   borderColor: active ? C.ikb : C.line,
                   background: active ? `${C.ikb}08` : C.paper,
