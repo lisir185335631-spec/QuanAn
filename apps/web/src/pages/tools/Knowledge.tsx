@@ -72,7 +72,6 @@ const STAGE_ACCENT: Record<string, { color: string; bg: string; border: string }
 // ── ScriptTab ──────────────────────────────────────────────────────────────────
 function ScriptTab() {
   const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const lowerQuery = search.trim().toLowerCase();
   const filtered = lowerQuery
@@ -113,7 +112,6 @@ function ScriptTab() {
       {/* grid — fixed 4 cols */}
       <div className="grid grid-cols-4 gap-4">
         {filtered.map((s) => {
-          const isExpanded = expanded[s.key] ?? false;
           return (
             <div
               key={s.key}
@@ -166,27 +164,17 @@ function ScriptTab() {
               {/* methodology */}
               <p className="text-[11px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{s.methodology}</p>
 
-              {/* expand cases */}
+              {/* expand cases — disabled (no data yet) */}
               <button
                 type="button"
                 data-testid={`script-cases-${s.key}`}
-                onClick={() => setExpanded((v) => ({ ...v, [s.key]: !v[s.key] }))}
-                className="ikb-focusring flex items-center gap-1 text-[11px] transition-colors w-full hover:text-[#2B53E6]"
+                disabled
+                className="flex items-center gap-1 text-[11px] cursor-not-allowed opacity-40"
                 style={{ color: '#6b7280', fontFamily: F.cn }}
               >
                 <span>实战案例</span>
-                <span
-                  className={`material-symbols-outlined text-[13px] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                  aria-hidden={true}
-                >
-                  expand_more
-                </span>
+                <span className="text-[11px]" style={{ color: '#9ca3af', fontFamily: F.cn }}>· 敬请期待</span>
               </button>
-              {isExpanded && (
-                <p className="text-[11px] pl-2 border-l-2" style={{ color: '#6b7280', borderColor: C.line, fontFamily: F.cn }}>
-                  暂无案例数据
-                </p>
-              )}
             </div>
           );
         })}

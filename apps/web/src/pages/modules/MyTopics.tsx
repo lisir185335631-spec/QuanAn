@@ -73,10 +73,10 @@ function getSourceLabel(source: MyTopicItem['source']): string {
 }
 
 function getSourceColor(source: MyTopicItem['source']): { bg: string; text: string; border: string } {
-  if (source === 'step5') return { bg: C.ikb, text: '#fff', border: C.ikb };
-  if (source === 'trending') return { bg: C.burgundy, text: '#fff', border: C.burgundy };
-  // manual: 紫底白字
-  return { bg: C.accent3, text: '#fff', border: C.accent3 };
+  if (source === 'step5') return { bg: `${C.ikb}12`, text: C.ikb, border: `${C.ikb}40` };
+  if (source === 'trending') return { bg: `${C.burgundy}12`, text: C.burgundyText, border: `${C.burgundy}40` };
+  // manual: 紫描边
+  return { bg: `${C.accent3}12`, text: C.purpleText, border: `${C.accent3}40` };
 }
 
 function getSourceIcon(source: MyTopicItem['source']): string {
@@ -280,7 +280,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
           style={{
             borderRadius: 8,
             border: `1px solid ${C.line}`,
-            background: '#e8e8e8',
+            background: C.base,
             padding: '4px 12px',
             fontSize: 12,
             fontWeight: 700,
@@ -550,7 +550,7 @@ function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
       {MY_TOPICS_FILTERS.map(({ key, label }, idx) => {
         const isActive = active === key;
         // 轮转三色: all=蓝, step5=蓝, trending=玫红, manual=紫
-        const chipAccent = [C.ikb, C.ikb, C.burgundy, C.accent3][idx % 4] ?? C.ikb;
+        const chipAccent = [C.ikb, C.accent3, C.burgundy, C.ikb][idx % 4] ?? C.ikb;
         return (
           <button
             key={key}

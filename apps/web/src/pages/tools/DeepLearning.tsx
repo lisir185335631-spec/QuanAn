@@ -213,7 +213,7 @@ function SampleFormPioneer({
               className="rounded-lg border p-3 text-[12px]"
               style={{ borderColor: `${C.accent3}30`, background: `${C.accent3}08`, color: C.purpleText, fontFamily: F.cn }}
             >
-              文件上传暂用文件链接提交（S3 直传 PRD-7 上线后启用）
+              粘贴素材链接即可，文件直传即将上线
             </div>
             <div>
               <label
