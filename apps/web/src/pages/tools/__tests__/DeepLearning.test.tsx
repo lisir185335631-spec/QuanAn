@@ -768,7 +768,7 @@ describe('DeepLearning · upload tab', () => {
   it('upload-tab-content 含诚实说明文字', () => {
     renderPage();
     fireEvent.click(screen.getByTestId('tab-upload'));
-    expect(screen.getByTestId('upload-tab-content')).toHaveTextContent('文件上传暂用文件链接提交');
+    expect(screen.getByTestId('upload-tab-content')).toHaveTextContent('文件直传即将上线');
   });
 
   it('file-url-input 可输入', () => {

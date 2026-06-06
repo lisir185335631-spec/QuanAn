@@ -1129,7 +1129,7 @@ export default function VideoAnalysis() {
           type="button"
           onClick={handleFeedbackDown}
           aria-label="没有帮助"
-          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
           style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_down</span>

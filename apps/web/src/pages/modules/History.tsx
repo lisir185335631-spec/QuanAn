@@ -72,7 +72,10 @@ function rowToCard(row: HistoryRow): CardEntry {
 function buildKpi(rows: HistoryRow[], totalCount: number, weekCount: number) {
   const scriptTypes = new Set(rows.map((r) => r.scriptType ?? '')).size;
   const latest = rows[0]?.createdAt
-    ? formatTs(rows[0].createdAt).split(' ')[0] ?? '—'
+    ? (() => {
+        const d = typeof rows[0].createdAt === 'string' ? new Date(rows[0].createdAt) : rows[0].createdAt;
+        return `${d.getMonth() + 1}/${d.getDate()}`;
+      })()
     : '—';
   return [
     { label: '记录总数', value: String(totalCount), sub: '全部生成记录', color: C.ikb, bg: `${C.ikb}10` },

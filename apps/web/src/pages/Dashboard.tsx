@@ -364,7 +364,7 @@ export default function Dashboard() {
                 />
                 <span
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: phase.done ? 600 : i === DEPLOY_PHASES.length - 2 ? 700 : 400,
                     color: phase.done
                       ? C.ikb

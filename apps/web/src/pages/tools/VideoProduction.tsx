@@ -343,7 +343,7 @@ export default function VideoProduction() {
               style={{ background: `${C.line}80`, color: '#6b7280', fontFamily: F.mono }}
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[#6b7280]" />
-              待输入/准备就绪
+              待输入
             </span>
           )}
         </div>

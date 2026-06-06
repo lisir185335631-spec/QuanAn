@@ -438,7 +438,7 @@ export default function Step7() {
             </div>
 
             {/* 爆款元素 · 迷你柱 · 玫红 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
@@ -460,7 +460,7 @@ export default function Step7() {
             </div>
 
             {/* 已选元素 · 进度条 · 紫 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
@@ -486,7 +486,7 @@ export default function Step7() {
             </div>
 
             {/* 文案字数 · chip · 蓝 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>

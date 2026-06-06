@@ -320,7 +320,7 @@ function IKBAccountCard({
                 transition: 'border-color 0.15s, color 0.15s',
               }}
               onMouseEnter={(e) => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; (e.currentTarget as HTMLButtonElement).style.color = C.accent3; } }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
+              onMouseLeave={(e) => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; } }}
             >
               <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 swap_horiz
@@ -521,7 +521,7 @@ export default function Accounts() {
                 bolt
               </span>
             </span>
-            <span style={{ borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+            <span style={{ borderRadius: 9999, background: `${C.burgundy}12`, border: `1px solid ${C.burgundy}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>
               运营中
             </span>
           </div>

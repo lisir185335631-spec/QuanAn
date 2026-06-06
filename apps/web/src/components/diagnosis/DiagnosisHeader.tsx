@@ -27,8 +27,7 @@ export function DiagnosisHeader({ currentStep, totalSteps }: DiagnosisHeaderProp
       </div>
       {/* H1 */}
       <h1
-        className="text-[40px] font-extrabold tracking-tighter"
-        style={{ color: '#161D33' }}
+        className="ikb-gradtext text-[40px] font-extrabold tracking-tighter"
       >
         {DIAGNOSIS_H1}
       </h1>

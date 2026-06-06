@@ -473,7 +473,7 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
           className="material-symbols-outlined"
           style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color }}
         >
-          star
+          quiz
         </span>
         <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{faq.q}</p>
       </div>
