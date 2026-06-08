@@ -1,0 +1,220 @@
+/* ============================================================================
+ * QuanAn · 首页 home-next 专用 · 苹果 iOS 26 "Liquid Glass" 液态玻璃质感命脉
+ * 仅 /home-next 预览使用 · 与全站 ikb-hero.css 完全隔离 · 定稿后随首页合并
+ *
+ * 质感四层(对照根因分析技术清单):
+ *   1. 流体动态背景(多层 gradient + @keyframes 漂移 + 光带扫掠)
+ *   2. 胶片噪点层(SVG feTurbulence overlay · 去"软件截图"感)
+ *   3. 真玻璃材质(backdrop-blur+saturate + 多层 inset 高光/底反光 + 氛围光 + 折射叠层)
+ *   4. 棱镜边缘色散(conic-gradient + mask-composite + @property 角度动画)
+ * ========================================================================== */
+
+.lg-root {
+  --lg-navy: #1b3a6b;
+  --lg-steel: #4a6fa5;
+  --lg-deep: #16294d;
+  --lg-sky: #a8c5e0;
+  --lg-mist: #eaf2fa;
+  --lg-cn: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  --lg-mono: 'SF Mono', ui-monospace, 'JetBrains Mono', 'Menlo', monospace;
+}
+
+/* 让 conic 角度可被动画驱动(现代浏览器) */
+@property --lg-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 135deg;
+}
+
+/* ── 1. 流体动态背景 · fixed 全屏 · 脱离 IKBLayout 的 zoom 与浅色 main ────── */
+.lg-fluid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 82% 62% at 26% 28%, rgba(128, 168, 218, 0.92) 0%, transparent 60%),
+    radial-gradient(ellipse 74% 58% at 80% 70%, rgba(62, 100, 154, 0.82) 0%, transparent 58%),
+    radial-gradient(ellipse 112% 92% at 60% 12%, rgba(208, 228, 247, 0.74) 0%, transparent 56%),
+    linear-gradient(135deg, #26426f 0%, #365b91 34%, #527aae 60%, #243f6c 100%);
+  background-size: 200% 200%, 220% 220%, 185% 185%, 165% 165%;
+  animation:
+    lg-fluid-a 28s ease-in-out infinite,
+    lg-fluid-b 36s ease-in-out infinite reverse;
+}
+/* 斜向白色光脊扫掠 ::before 已按用户要求删除（2026-06-08） */
+/* 紫/粉/黄彩色光斑点缀(丰富色调 · 冷蓝为主 + 彩光) */
+.lg-fluid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 42% 38% at 16% 78%, rgba(122, 59, 224, 0.32) 0%, transparent 62%),
+    radial-gradient(ellipse 38% 32% at 88% 26%, rgba(239, 62, 107, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 26% at 72% 90%, rgba(246, 211, 0, 0.13) 0%, transparent 60%);
+  background-size: 160% 160%, 150% 150%, 140% 140%;
+  animation: lg-fluid-a 32s ease-in-out infinite reverse;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+@keyframes lg-fluid-a {
+  0%, 100% { background-position: 0% 50%, 100% 50%, 50% 0%, 0% 50%; }
+  50% { background-position: 100% 50%, 0% 50%, 50% 100%, 100% 50%; }
+}
+@keyframes lg-fluid-b {
+  0%, 100% { background-position: 50% 0%; }
+  50% { background-position: 50% 100%; }
+}
+@keyframes lg-sweep {
+  0%, 100% { transform: translate(-14%, -7%) rotate(-1deg); }
+  50% { transform: translate(14%, 7%) rotate(1deg); }
+}
+
+/* ── 2. 胶片噪点层 · fixed 全屏 overlay ──────────────────────────────────── */
+.lg-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 170px 170px;
+}
+
+/* ── 3. 真玻璃材质 ──────────────────────────────────────────────────────── */
+.lg-glass {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.36) 0%,
+    rgba(255, 255, 255, 0.15) 100%
+  );
+  backdrop-filter: blur(26px) saturate(200%) brightness(1.16);
+  -webkit-backdrop-filter: blur(26px) saturate(200%) brightness(1.16);
+  border: 0.5px solid rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.07),             /* 外层描边(两层描边·外) */
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.65),       /* 顶部高光线 */
+    inset 0 -12px 26px -14px rgba(6, 14, 38, 0.5),   /* 底部内阴影(玻璃厚度) */
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),     /* 边缘细线(两层描边·内) */
+    0 26px 52px -14px rgba(8, 20, 48, 0.55),         /* 主投影 */
+    0 20px 52px -16px rgba(122, 59, 224, 0.26),      /* 底部紫色渐变阴影(参考图·重点) */
+    0 0 70px -26px rgba(120, 170, 255, 0.5);         /* 蓝色氛围光 */
+  transition:
+    background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease,
+    backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease;
+}
+/* 折射近似叠层（配合 GlassFilters.tsx 的 #lg-distort SVG 滤镜） */
+.lg-refract::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  filter: url(#lg-distort);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  opacity: 0.45;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+/* specular 高光随鼠标跟手（--lg-mx/--lg-my 由 JS 写入百分比） */
+.lg-spec::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    220px circle at var(--lg-mx, 50%) var(--lg-my, -20%),
+    rgba(255, 255, 255, 0.4),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.lg-spec:hover::before { opacity: 1; }
+
+/* hover 色调变化(用户要的"颜色跟着变"):玻璃提亮 + 边框点亮 + 冷蓝光晕 */
+.lg-spec:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.26) 100%
+  );
+  backdrop-filter: blur(26px) saturate(220%) brightness(1.3);
+  -webkit-backdrop-filter: blur(26px) saturate(220%) brightness(1.3);
+  border-color: rgba(200, 220, 255, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(200, 220, 255, 0.32),              /* 外描边点亮 */
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.82),
+    inset 0 -10px 22px -12px rgba(6, 14, 38, 0.4),
+    0 22px 46px -10px rgba(8, 20, 48, 0.55),
+    0 0 44px -2px rgba(130, 185, 255, 0.72),          /* 冷蓝 */
+    0 16px 46px -12px rgba(122, 59, 224, 0.5),        /* 紫光晕(参考图) */
+    0 0 58px -8px rgba(239, 62, 107, 0.34); /* 粉光晕 */
+}
+
+/* ── 4. 棱镜边缘色散（Hero 胶囊专用）────────────────────────────────────── */
+.lg-prism::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--lg-angle, 135deg),
+    #ff6ed0, #ff4e7e, #ff8c42, #ffe066, #7effb2, #00d4ff, #4d8cff, #c97bff, #ff6ed0
+  );
+  padding: 2.4px;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(3px);
+  opacity: 1;
+  animation: lg-prism-rotate 9s linear infinite;
+  pointer-events: none;
+}
+@keyframes lg-prism-rotate {
+  to { --lg-angle: 495deg; }
+}
+
+/* ── 文字原语 ──────────────────────────────────────────────────────────── */
+.lg-cn { font-family: var(--lg-cn); color: #fff; }
+.lg-mono { font-family: var(--lg-mono); letter-spacing: 0.14em; }
+
+/* 降级：浏览器不支持 backdrop-filter 时退一层半透明实色，避免变透明无玻璃 */
+@supports not (backdrop-filter: blur(1px)) {
+  .lg-glass { background: rgba(46, 74, 120, 0.55); }
+}
+
+/* 渐变 CTA 按钮(参考图 LOG IN · 紫粉渐变 + 内阴影 + 外发光) */
+.lg-gradbtn {
+  background: linear-gradient(120deg, #7a3be0 0%, #a24bd6 46%, #ef3e6b 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 10px rgba(60, 10, 90, 0.38),
+    0 10px 28px -8px rgba(122, 59, 224, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: filter 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.lg-gradbtn:hover {
+  filter: brightness(1.12) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 10px rgba(60, 10, 90, 0.38),
+    0 14px 36px -8px rgba(122, 59, 224, 0.78),
+    0 0 42px -6px rgba(239, 62, 107, 0.5);
+}
+
+/* 尊重「减少动态」无障碍偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .lg-fluid,
+  .lg-fluid::after,
+  .lg-prism::before { animation: none; }
+}

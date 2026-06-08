@@ -164,12 +164,13 @@ describe('TopicAgent', () => {
     expect(agent.config.memory.l2_read).toContain('stepData');
   });
 
-  // AC-9: invalid category rejects
-  it('AC-9: invalid category rejects with ZodError', async () => {
+  // AC-9: invalid category → ZodError → fallback (US-015: BaseSpecialist catches input ZodError and falls back)
+  it('AC-9: invalid category → ZodError → fallback response (US-015)', async () => {
+    // BaseSpecialist now catches ZodError from inputSchema.parse and falls back gracefully
     const agent = new TopicAgent(makeStreamGateway(makeContent('traffic')));
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: { category: 'invalid_cat' as TopicCategory } }),
-    ).rejects.toThrow();
+    const res = await agent.execute({ ...BASE_REQ, userInput: { category: 'invalid_cat' as TopicCategory } });
+    expect(res.isFallback).toBe(true);
+    expect(TopicOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
   // viralPotential enum validation

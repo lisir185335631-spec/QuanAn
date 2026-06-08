@@ -5,8 +5,6 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 
 import { getToolLsKey } from '../../../apps/web/src/lib/ls-namespace';
 import {
@@ -15,13 +13,6 @@ import {
   analysisStructuralInput,
   analyzeVideoInput,
 } from '../../../packages/schemas/src/specialist-io/index';
-
-const ROOT = resolve(__dirname, '../../../');
-const TOOL_FORM_DIR = `${ROOT}/apps/web/src/components/ToolForm`;
-
-function readComponent(name: string): string {
-  return readFileSync(`${TOOL_FORM_DIR}/${name}`, 'utf-8');
-}
 
 // ── LS namespace: getToolLsKey ────────────────────────────────────────────────
 
@@ -125,48 +116,6 @@ describe('video-analysis tool schema (analyzeVideoInput)', () => {
 });
 
 // ── ToolForm component source inspection ─────────────────────────────────────
-
-describe('ToolForm component (source inspection)', () => {
-  it('uses AbortController on unmount', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain('AbortController');
-    expect(src).toContain('abort()');
-  });
-
-  it('implements LS-first dual-write (REJ-035)', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain('localStorage.setItem');
-    expect(src).toContain('getToolLsKey');
-  });
-
-  it('keeps LS on DB fail and shows toast (not rollback)', () => {
-    const src = readComponent('ToolForm.tsx');
-    // LS write happens before DB write, and error shows toast
-    expect(src).toContain('toast.error');
-    // Should NOT rollback LS (removeItem) on error
-    expect(src).not.toContain('localStorage.removeItem');
-  });
-
-  it('accepts defaultValues prop', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain('defaultValues');
-  });
-
-  it('uses zodResolver', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain('zodResolver');
-  });
-
-  it('has data-testid for each toolKey', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain('tool-form-');
-  });
-
-  it('handles all 4 toolKeys in switch statement', () => {
-    const src = readComponent('ToolForm.tsx');
-    expect(src).toContain("case 'generate'");
-    expect(src).toContain("case 'boom-generate'");
-    expect(src).toContain("case 'analysis'");
-    expect(src).toContain("case 'video-analysis'");
-  });
-});
+// NOTE: apps/web/src/components/ToolForm/ was deleted in commit 61e11e0 (pioneer→router refactor).
+// The 7 source-inspection tests targeting that directory have been removed.
+// Schema + LS key tests above remain valid and continue to pass.

@@ -1,7 +1,7 @@
 /**
  * MyTopics.test.tsx — PRD-15 US-007 AC-9 (重写版)
  * 源码自省测试 (readFileSync+toContain) · Node 环境 · 无 React render
- * 断言当前先锋白接真设计:
+ * 断言当前 IKB 红蓝紫设计:
  *   tRPC list + countBySource · source filter chip · search 防抖 · copy/download
  *   TopicCard · 空态 · accountId 安全 · 无旧 PRD-15 遗留(删 view-card-btn/edit/delete/modal 等)
  */
@@ -27,8 +27,8 @@ describe('Page structure (先锋白设计)', () => {
     expect(lines).toBeGreaterThan(200);
   });
 
-  it('renders PioneerLayout wrapper', () => {
-    expect(src(MY_TOPICS_PAGE)).toContain('PioneerLayout');
+  it('renders IKBLayout wrapper', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('IKBLayout');
   });
 
   it('data-testid="my-topics-page" root wrapper', () => {

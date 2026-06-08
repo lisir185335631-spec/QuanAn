@@ -121,18 +121,20 @@ describe('LivestreamAgent', () => {
     expect(LivestreamOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
-  // ── edge: experience 非法 → input zod 拒 (AC-5) ──────────────────────────
+  // ── edge: experience 非法 → input zod 拒 → fallback (AC-5, US-015) ──────────────────────────
 
-  it('edge: invalid experience value → ZodError before LLM call (AC-5)', async () => {
+  it('edge: invalid experience value → ZodError → fallback response (AC-5, US-015)', async () => {
+    // BaseSpecialist now catches ZodError from inputSchema.parse and falls back gracefully
+    // (only TypeError/ReferenceError are re-thrown as programming errors)
     const gateway = makeGateway([VALID_LIVESTREAM_CONTENT]);
     const agent = new LivestreamAgent(gateway);
-    await expect(
-      agent.execute({
-        ...BASE_REQ,
-        userInput: { experience: '专家' as 'new手', topic: '测试' },
-      }),
-    ).rejects.toThrow();
-    // LLM gateway should NOT have been called
+    const res = await agent.execute({
+      ...BASE_REQ,
+      userInput: { experience: '专家' as 'new手', topic: '测试' },
+    });
+    expect(res.isFallback).toBe(true);
+    expect(LivestreamOutputSchema.safeParse(res.result).success).toBe(true);
+    // LLM gateway should NOT have been called (fallback triggered before LLM)
     expect((gateway.complete as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
   });
 

@@ -1,7 +1,7 @@
 /**
  * US-007 AC-2/3/5: LivestreamAgent real LLM integration tests (2 sub_functions)
- * skipIf: no API keys present (CI safe · cost controlled)
- * test_command: cd apps/api && pnpm vitest run src/specialists/__tests__/LivestreamAgent.real-llm.test.ts
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
+ * test_command: RUN_REAL_LLM=1 cd apps/api && pnpm vitest run src/specialists/__tests__/LivestreamAgent.real-llm.test.ts
  *
  * SHIELD(PRD-19 §11.11.4): 2 sub_function 各自独立测试 — discriminator 严守
  */
@@ -37,14 +37,14 @@ vi.mock('@/workers/rag', () => ({
   },
 }));
 
-// ── Test suite (skipped when no API keys) ─────────────────────────────────────
+// ── Test suite (skipped unless RUN_REAL_LLM=1) ────────────────────────────────
 
-const skipIfNoKey = !process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY;
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
 
 // AC-4: 6-module field names strictly defined
 const EXPECTED_6_MODULES = ['opening', 'warmup', 'product', 'conversion', 'faq', 'closing'] as const;
 
-describe.skipIf(skipIfNoKey)('LivestreamAgent real LLM', () => {
+describe.skipIf(skipRealLlm)('LivestreamAgent real LLM', () => {
   const TEST_ACCOUNT_ID = 9999;
 
   let mockCostLogCreate: ReturnType<typeof vi.fn>;
@@ -75,7 +75,7 @@ describe.skipIf(skipIfNoKey)('LivestreamAgent real LLM', () => {
 
       // AC-2: isFallback=false + real model + real tokens
       expect(result.isFallback).toBe(false);
-      expect(result.modelUsed).toMatch(/claude|gpt/);
+      expect(result.modelUsed).toMatch(/claude|gpt|deepseek/);
       expect(result.tokensUsed.total).toBeGreaterThan(0);
       expect(result.durationMs).toBeLessThan(60_000);
 
@@ -127,7 +127,7 @@ describe.skipIf(skipIfNoKey)('LivestreamAgent real LLM', () => {
 
       // AC-2: isFallback=false + real model + real tokens
       expect(result.isFallback).toBe(false);
-      expect(result.modelUsed).toMatch(/claude|gpt/);
+      expect(result.modelUsed).toMatch(/claude|gpt|deepseek/);
       expect(result.tokensUsed.total).toBeGreaterThan(0);
       expect(result.durationMs).toBeLessThan(60_000);
 
