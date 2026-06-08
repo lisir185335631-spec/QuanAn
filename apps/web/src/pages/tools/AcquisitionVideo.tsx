@@ -1,18 +1,17 @@
 /**
  * AcquisitionVideo.tsx — /acquisition-video 获客型视频制作
  * 阶段2 接真: trpc.acquisitionVideo.generate
- * hasResult 门控 · 三态 + isFallback · IKB 红蓝紫渐变体系
- * 逻辑零改动 · testid 全保留 · 只换皮
- * 2026-06-04
+ * hasResult 门控 · 三态 + isFallback · 液态玻璃体系
+ * 逻辑零改动 · testid 全保留 · 只换皮(IKB → LiquidGlass)
+ * 2026-06-08
  */
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   ACQUISITION_VIDEO_CTA_GENERATE,
   ACQUISITION_VIDEO_CUSTOMER_LABEL,
@@ -108,11 +107,11 @@ const MIN_FIELD_LENGTH = 10;
 
 const RADAR_DIMS_AV = [
   { label: '钩子力',   value: 90, color: C.ikb },
-  { label: '痛点共鸣', value: 85, color: C.burgundy },
-  { label: '信任塑造', value: 80, color: C.accent3 },
+  { label: '痛点共鸣', value: 85, color: C.accent3 },
+  { label: '信任塑造', value: 80, color: C.yellow },
   { label: 'CTA引导',  value: 88, color: C.ikb },
-  { label: '真实感',   value: 78, color: C.burgundy },
-  { label: '转化预期', value: 82, color: C.accent3 },
+  { label: '真实感',   value: 78, color: C.accent3 },
+  { label: '转化预期', value: 82, color: C.yellow },
 ];
 
 const TREND_DATA_AV = [20, 35, 55, 72, 68, 85, 92, 80, 95, 88, 100, 96];
@@ -127,98 +126,153 @@ interface AcquisitionVideoResultProps {
 
 function AcquisitionVideoResult({ result, isFallback }: AcquisitionVideoResultProps) {
   // Rotating accent colors for keyMessages badges
-  const BADGE_COLORS: [string, string][] = [
-    [C.ikb, '#fff'],
-    [C.burgundy, '#fff'],
-    [C.accent3, '#fff'],
-  ];
+  const BADGE_COLORS = [C.ikb, C.accent3, C.yellow];
 
   return (
-    <section aria-label="获客方案结果" data-testid="av-result-panel">
+    <section aria-label="获客方案结果" data-testid="av-result-panel" style={{ marginBottom: 32 }}>
       {/* isFallback 降级提示 */}
       {isFallback && (
-        <div
-          data-testid="av-fallback-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
-          style={{ borderColor: `${C.accent3}40`, background: `${C.accent3}0a`, color: C.purpleText, fontFamily: F.cn }}
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.accent3 }}>info</span>
-          当前为降级结果，AI 模型暂时不可用，已使用备用方案。
-        </div>
+        <Reveal>
+          <div
+            data-testid="av-fallback-notice"
+            className="lg-glass"
+            style={{
+              marginBottom: 20,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              borderRadius: 14,
+              padding: '14px 18px',
+              fontSize: 14,
+              color: C.purpleText,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.accent3, flexShrink: 0 }}>info</span>
+            当前为降级结果，AI 模型暂时不可用，已使用备用方案。
+          </div>
+        </Reveal>
       )}
 
       {/* 获客脚本 */}
-      <div className="mb-6">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>movie</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>获客视频脚本</h2>
-        </div>
-        <div
-          data-testid="av-script"
-          className="rounded-xl border p-6 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, fontFamily: F.cn }}
+      <Reveal style={{ marginBottom: 16 }}>
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ borderRadius: 18, padding: 24 }}
         >
-          <p className="whitespace-pre-line text-[14px] leading-relaxed" style={{ color: C.ink }}>{result.script}</p>
-        </div>
-      </div>
+          <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span
+              style={{
+                display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
+                borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>movie</span>
+            </span>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客视频脚本</h2>
+          </div>
+          <p
+            data-testid="av-script"
+            style={{ whiteSpace: 'pre-line', fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}
+          >
+            {result.script}
+          </p>
+        </motion.div>
+      </Reveal>
 
       {/* CTA 脚本 */}
-      <div className="mb-6">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.burgundy }}>ads_click</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>行动号召 (CTA)</h2>
-        </div>
-        <div
-          data-testid="av-cta-script"
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, fontFamily: F.cn }}
+      <Reveal style={{ marginBottom: 16 }}>
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ borderRadius: 18, padding: 24 }}
         >
-          <p className="text-[14px] leading-relaxed" style={{ color: C.ink }}>{result.ctaScript}</p>
-        </div>
-      </div>
+          <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span
+              style={{
+                display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
+                borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.accent3,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>ads_click</span>
+            </span>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>行动号召 (CTA)</h2>
+          </div>
+          <p
+            data-testid="av-cta-script"
+            style={{ fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}
+          >
+            {result.ctaScript}
+          </p>
+        </motion.div>
+      </Reveal>
 
       {/* 转化路径 */}
-      <div className="mb-6">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.accent3 }}>conversion_path</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>转化路径</h2>
-        </div>
-        <div
-          data-testid="av-conversion-path"
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: `${C.accent3}30`, background: `${C.accent3}08`, fontFamily: F.cn }}
+      <Reveal style={{ marginBottom: 16 }}>
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ borderRadius: 18, padding: 24 }}
         >
-          <p className="text-[14px] leading-relaxed" style={{ color: C.ink }}>{result.conversionPath}</p>
-        </div>
-      </div>
+          <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span
+              style={{
+                display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
+                borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.yellow,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>conversion_path</span>
+            </span>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>转化路径</h2>
+          </div>
+          <p
+            data-testid="av-conversion-path"
+            style={{ fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}
+          >
+            {result.conversionPath}
+          </p>
+        </motion.div>
+      </Reveal>
 
       {/* 核心卖点 keyMessages */}
-      <div className="mb-8">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>lightbulb</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>核心卖点</h2>
+      <Reveal>
+        <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>lightbulb</span>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>核心卖点</h2>
         </div>
-        <div data-testid="av-key-messages" className="space-y-3">
+        <RevealGroup data-testid="av-key-messages" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {result.keyMessages.map((msg, i) => {
-            const [bg, fg] = BADGE_COLORS[i % 3]!;
+            const badgeColor = BADGE_COLORS[i % 3]!;
             return (
-              <div
-                key={i}
-                className="flex items-start gap-4 rounded-xl border p-4 ikb-hovercard"
-                style={{ borderColor: C.line, background: C.paper }}
-              >
-                <span
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[13px] font-extrabold"
-                  style={{ backgroundColor: bg, color: fg, fontFamily: F.mono }}
+              <Item key={i}>
+                <motion.div
+                  className="lg-glass lg-spec"
+                  whileHover={{ y: -3 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  style={{ borderRadius: 14, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', gap: 14 }}
                 >
-                  {i + 1}
-                </span>
-                <p className="text-[14px] leading-relaxed" style={{ color: C.ink, fontFamily: F.cn }}>{msg}</p>
-              </div>
+                  <span
+                    style={{
+                      display: 'flex', height: 28, width: 28, flexShrink: 0, alignItems: 'center', justifyContent: 'center',
+                      borderRadius: 8, fontSize: 13, fontWeight: 800, color: '#fff',
+                      background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
+                      fontFamily: F.mono, textShadow: C.textShadow, border: `1px solid ${badgeColor}50`,
+                    }}
+                  >
+                    {i + 1}
+                  </span>
+                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn }}>{msg}</p>
+                </motion.div>
+              </Item>
             );
           })}
-        </div>
-      </div>
+        </RevealGroup>
+      </Reveal>
     </section>
   );
 }
@@ -227,17 +281,27 @@ function AcquisitionVideoResult({ result, isFallback }: AcquisitionVideoResultPr
 
 function AcquisitionVideoEmptyState() {
   return (
-    <div
-      data-testid="av-empty-state"
-      className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20 text-center"
-      style={{ borderColor: C.line, background: C.base }}
-    >
-      <span className="material-symbols-outlined mb-4 text-[48px]" aria-hidden={true} style={{ color: '#6b7280' }}>
-        movie
-      </span>
-      <p className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>填写左侧信息，点击「生成获客方案」</p>
-      <p className="mt-2 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>AI 将为你生成转化导向的获客视频脚本</p>
-    </div>
+    <Reveal>
+      <div
+        data-testid="av-empty-state"
+        className="lg-glass"
+        style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          borderRadius: 20, padding: '64px 32px', textAlign: 'center',
+          border: `1.5px dashed rgba(255,255,255,0.22)`,
+        }}
+      >
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 48, color: 'rgba(255,255,255,0.35)', marginBottom: 16 }}>
+          movie
+        </span>
+        <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+          填写左侧信息，点击「生成获客方案」
+        </p>
+        <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+          AI 将为你生成转化导向的获客视频脚本
+        </p>
+      </div>
+    </Reveal>
   );
 }
 
@@ -312,332 +376,458 @@ export default function AcquisitionVideo() {
   }
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
+      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ flexShrink: 0 }}>
+          {/* chip 标签行 */}
+          <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
-              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               创作引擎
             </span>
             <span
-              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                background: 'rgba(168,197,224,0.18)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               获客视频
             </span>
-          </div>
+          </Reveal>
+          {/* 主标题 — 冷蓝渐变字 */}
           <h1
-            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
-            style={{ fontFamily: F.display }}
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: 52,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
           >
             {ACQUISITION_VIDEO_H1}
           </h1>
           <p
-            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
-            style={{ color: '#5A6173', fontFamily: F.cn }}
+            style={{
+              marginTop: 10,
+              maxWidth: 820,
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: 'rgba(255,255,255,0.75)',
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             {ACQUISITION_VIDEO_SUBTITLE}
           </p>
         </div>
-        <div className="flex shrink-0 flex-nowrap gap-3">
+        {/* 操作按钮 */}
+        <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
           <button
             type="button"
             aria-label="智能优化功能开发中"
             data-testid="av-optimize-btn"
             disabled
             onClick={() => toast.info('优化功能开发中')}
-            className="ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-            style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            className="lg-glass"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap',
+              borderRadius: 12, padding: '10px 16px', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+              fontFamily: F.mono, cursor: 'not-allowed', opacity: 0.45, border: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_fix_high</span>
             智能优化
           </button>
-          <button
+          <motion.button
             type="button"
             data-testid="av-copy-btn"
             disabled={!hasResult}
             onClick={handleCopyPlan}
             aria-label="复制方案"
-            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-semibold text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
-            style={{ fontFamily: F.mono }}
+            whileHover={hasResult ? { y: -3 } : {}}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            className="lg-gradbtn"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap',
+              borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700,
+              fontFamily: F.mono, cursor: hasResult ? 'pointer' : 'not-allowed',
+              opacity: hasResult ? 1 : 0.4, border: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
             复制方案
-          </button>
+          </motion.button>
         </div>
       </header>
 
       {/* ── loading banner ───────────────────────────────────── */}
       {isPending && (
-        <div
-          data-testid="av-loading-banner"
-          className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
-          style={{ borderColor: `${C.ikb}40`, background: `${C.ikb}0a`, color: C.ikb, fontFamily: F.cn }}
-        >
-          <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden={true}>
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-          </svg>
-          AI 正在生成获客方案，大约需要 15-30 秒…
-        </div>
+        <Reveal>
+          <div
+            data-testid="av-loading-banner"
+            className="lg-glass"
+            style={{
+              marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12,
+              borderRadius: 14, padding: '14px 18px', fontSize: 14, color: C.ikb,
+              fontFamily: F.cn, textShadow: C.textShadow,
+            }}
+          >
+            <svg style={{ height: 20, width: 20, animation: 'spin 1s linear infinite', flexShrink: 0 }} viewBox="0 0 24 24" fill="none" aria-hidden={true}>
+              <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            AI 正在生成获客方案，大约需要 15-30 秒…
+          </div>
+        </Reveal>
       )}
 
       {/* ── error notice ─────────────────────────────────────── */}
       {isError && (
-        <div
-          data-testid="av-error-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
-          style={{ borderColor: `${C.burgundy}40`, background: `${C.burgundy}08`, color: C.burgundyText, fontFamily: F.cn }}
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
-          生成失败，请检查网络后重试。
-          <button
-            type="button"
-            onClick={handleGenerate}
-            className="ikb-focusring ml-auto rounded-lg px-3 py-1 text-[12px] font-bold text-white"
-            style={{ background: C.burgundy, fontFamily: F.mono }}
+        <Reveal>
+          <div
+            data-testid="av-error-notice"
+            className="lg-glass"
+            style={{
+              marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12,
+              borderRadius: 14, padding: '14px 18px', fontSize: 14,
+              color: 'rgba(255,255,255,0.88)', fontFamily: F.cn, textShadow: C.textShadow,
+            }}
           >
-            重试
-          </button>
-        </div>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.accent3, flexShrink: 0 }}>error</span>
+            生成失败，请检查网络后重试。
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="lg-gradbtn"
+              style={{
+                marginLeft: 'auto', borderRadius: 8, padding: '6px 14px', fontSize: 12,
+                fontWeight: 700, fontFamily: F.mono, border: 'none', cursor: 'pointer',
+              }}
+            >
+              重试
+            </button>
+          </div>
+        </Reveal>
       )}
 
       {/* ── 输入卡 ───────────────────────────────────────────── */}
-      <section
-        className="relative mb-12 overflow-hidden rounded-xl border p-6"
-        style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
-      >
-        {/* 装饰光晕 — 浅 */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl" style={{ background: `${C.ikb}08` }} />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl" style={{ background: `${C.burgundy}06` }} />
+      <Reveal style={{ marginBottom: 36 }}>
+        <div
+          className="lg-glass"
+          style={{ borderRadius: 22, padding: 28, overflow: 'hidden', position: 'relative' }}
+        >
+          {/* 装饰光晕 */}
+          <div style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: '50%', background: 'rgba(168,197,224,0.12)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -70, left: '33%', width: 180, height: 180, borderRadius: '50%', background: 'rgba(168,197,224,0.08)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
-        <div className="relative mb-6 flex items-center justify-between border-b pb-5" style={{ borderColor: C.line }}>
-          <div className="flex items-center gap-3">
-            <span
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
-              style={{ background: C.grad }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true}>movie</span>
-            </span>
-            <div>
-              <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>获客信息</h2>
-              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>填写行业与客户信息 · AI 据此生成精准获客视频方案</p>
-            </div>
-          </div>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+          {/* 卡头 */}
+          <div
+            style={{
+              position: 'relative', marginBottom: 24, display: 'flex', alignItems: 'center',
+              justifyContent: 'space-between', paddingBottom: 20,
+              borderBottom: `0.5px solid ${C.line}`,
+            }}
           >
-            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
-            待生成
-          </span>
-        </div>
-
-        <div className="relative space-y-7">
-          {/* 行业 · 可视化选择卡 */}
-          <div>
-            <p
-              id="av-industry-label"
-              className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide before:h-3.5 before:w-1 before:rounded-full before:content-['']"
-              style={{ color: C.ink, fontFamily: F.cn, '--tw-gradient-from': C.ikb, '--tw-gradient-to': C.burgundy } as React.CSSProperties}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <span
-                className="mr-1 inline-block h-3.5 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
-                aria-hidden={true}
-              />
-              {ACQUISITION_VIDEO_INDUSTRY_LABEL}
-            </p>
-            <div role="group" aria-labelledby="av-industry-label" className="grid grid-cols-4 gap-3">
-              {INDUSTRY_OPTIONS.map((opt) => {
-                const active = industry === opt.value;
-                return (
-                  <button
-                    type="button"
-                    key={opt.value}
-                    onClick={() => setIndustry(opt.value)}
-                    aria-pressed={active}
-                    data-state={active ? 'active' : 'inactive'}
-                    className="ikb-hovercard ikb-focusring group relative flex items-center gap-2.5 overflow-hidden rounded-xl border p-3 text-left transition-all"
-                    style={{
-                      borderColor: active ? C.ikb : C.line,
-                      background: active ? `${C.ikb}06` : C.paper,
-                      boxShadow: active ? `0 0 0 1px ${C.ikb}40` : undefined,
-                    }}
-                  >
-                    <span className="text-[20px]">{opt.label.split(' ')[0]}</span>
-                    <span className="text-[13px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{opt.label.split(' ').slice(1).join(' ')}</span>
-                    <span
-                      className="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full transition-all"
+                style={{
+                  display: 'flex', height: 44, width: 44, alignItems: 'center', justifyContent: 'center',
+                  borderRadius: 14, color: '#fff',
+                  background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(100,150,220,0.4))',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>movie</span>
+              </span>
+              <div>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客信息</h2>
+                <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>填写行业与客户信息 · AI 据此生成精准获客视频方案</p>
+              </div>
+            </div>
+            <span
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999,
+                padding: '4px 12px', fontSize: 12, fontWeight: 600,
+                background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono,
+              }}
+            >
+              <span style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: C.ikb, animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite' }} />
+              待生成
+            </span>
+          </div>
+
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 28 }}>
+            {/* 行业 · 可视化选择卡 */}
+            <div>
+              <p
+                id="av-industry-label"
+                style={{
+                  margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
+                  fontSize: 14, fontWeight: 800, letterSpacing: '0.04em',
+                  color: C.ink, fontFamily: F.cn, textShadow: C.textShadow,
+                }}
+              >
+                <span
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, flexShrink: 0, background: `linear-gradient(to bottom, ${C.ikb}, ${C.accent3})` }}
+                  aria-hidden={true}
+                />
+                {ACQUISITION_VIDEO_INDUSTRY_LABEL}
+              </p>
+              <div role="group" aria-labelledby="av-industry-label" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                {INDUSTRY_OPTIONS.map((opt) => {
+                  const active = industry === opt.value;
+                  return (
+                    <motion.button
+                      type="button"
+                      key={opt.value}
+                      onClick={() => setIndustry(opt.value)}
+                      aria-pressed={active}
+                      data-state={active ? 'active' : 'inactive'}
+                      whileHover={{ y: -3 }}
+                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                      className={active ? 'lg-glass' : 'lg-glass'}
                       style={{
-                        background: active ? C.ikb : 'transparent',
-                        border: active ? 'none' : `1px solid ${C.line}`,
-                        color: active ? '#fff' : 'transparent',
+                        position: 'relative', display: 'flex', alignItems: 'center', gap: 10,
+                        borderRadius: 14, padding: 12, textAlign: 'left',
+                        border: active ? `1px solid ${C.ikb}` : `0.5px solid ${C.line}`,
+                        background: active ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.07)',
+                        boxShadow: active ? `0 0 0 1px rgba(168,197,224,0.4)` : undefined,
+                        cursor: 'pointer',
                       }}
                     >
-                      <span className="material-symbols-outlined text-[12px]" aria-hidden={true}>check</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 转化目标 · 下拉选择 */}
-          <div>
-            <label
-              htmlFor="av-conversion-goal"
-              className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-              style={{ color: C.ink, fontFamily: F.cn }}
-            >
-              <span
-                className="inline-block h-3.5 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
-                aria-hidden={true}
-              />
-              转化目标
-            </label>
-            <select
-              id="av-conversion-goal"
-              data-testid="av-conversion-goal-select"
-              value={conversionGoal}
-              onChange={(e) => setConversionGoal(e.target.value)}
-              className="ikb-input ikb-focusring w-full rounded-xl border px-4 py-3 text-[14px] transition-all"
-              style={{ borderColor: C.line, background: C.paper, color: C.ink, fontFamily: F.cn }}
-            >
-              {CONVERSION_GOAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* 客户画像 · 框式编辑器 */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <label
-                htmlFor="av-customer-profile"
-                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
-              >
-                <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
-                  aria-hidden={true}
-                />
-                {ACQUISITION_VIDEO_CUSTOMER_LABEL}
-                <span className="ml-1 font-normal text-[12px]" style={{ color: C.burgundyText }}>*</span>
-              </label>
-              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-                <span className="material-symbols-outlined text-[14px]" aria-hidden={true} style={{ color: C.burgundy }}>auto_awesome</span>
-                AI 据此精准定位受众
-              </span>
-            </div>
-            <div
-              className="overflow-hidden rounded-xl border transition-all focus-within:ring-1"
-              style={{
-                background: C.base,
-                borderColor: customerProfileError ? C.burgundy : C.line,
-                ['--tw-ring-color' as string]: customerProfileError ? C.burgundy : C.ikb,
-              }}
-            >
-              <textarea
-                id="av-customer-profile"
-                data-testid="av-customer-profile-input"
-                value={customerProfile}
-                onChange={(e) => setCustomerProfile(e.target.value)}
-                rows={3}
-                placeholder="例如：想要创业的 25-40 岁宝妈，有积蓄但缺方向"
-                className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
-                style={{ color: C.ink, fontFamily: F.cn }}
-                required
-              />
-              <div
-                className="flex items-center justify-between gap-3 border-t px-4 py-2.5"
-                style={{ borderColor: C.line, background: `${C.paper}99` }}
-              >
-                {customerProfileError ? (
-                  <span data-testid="av-customer-profile-error" className="text-[11px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>{customerProfileError}</span>
-                ) : (
-                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>可包含年龄段、职业、痛点、消费能力</span>
-                )}
-                <span className="shrink-0 text-[11px] tabular-nums" style={{ color: '#6b7280', fontFamily: F.mono }}>{customerProfile.length} 字</span>
+                      <span style={{ fontSize: 20 }}>{opt.label.split(' ')[0]}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{opt.label.split(' ').slice(1).join(' ')}</span>
+                      <span
+                        style={{
+                          position: 'absolute', right: 8, top: 8, display: 'flex',
+                          height: 16, width: 16, alignItems: 'center', justifyContent: 'center',
+                          borderRadius: '50%', fontSize: 12,
+                          background: active ? C.ikb : 'transparent',
+                          border: active ? 'none' : `1px solid ${C.line}`,
+                          color: active ? '#fff' : 'transparent',
+                        }}
+                      >
+                        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>check</span>
+                      </span>
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          {/* 产品亮点 · 框式编辑器 */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
+            {/* 转化目标 · 下拉选择 */}
+            <div>
               <label
-                htmlFor="av-product-highlights"
-                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
+                htmlFor="av-conversion-goal"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10,
+                  fontSize: 14, fontWeight: 800, letterSpacing: '0.04em',
+                  color: C.ink, fontFamily: F.cn, textShadow: C.textShadow,
+                }}
               >
                 <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, flexShrink: 0, background: `linear-gradient(to bottom, ${C.ikb}, ${C.accent3})` }}
                   aria-hidden={true}
                 />
-                {ACQUISITION_VIDEO_PRODUCT_LABEL}
-                <span className="ml-1 font-normal text-[12px]" style={{ color: C.burgundyText }}>*</span>
+                转化目标
               </label>
-              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-                <span className="material-symbols-outlined text-[14px]" aria-hidden={true} style={{ color: C.burgundy }}>auto_awesome</span>
-                AI 据此塑造信任感
-              </span>
-            </div>
-            <div
-              className="overflow-hidden rounded-xl border transition-all focus-within:ring-1"
-              style={{
-                background: C.base,
-                borderColor: productHighlightsError ? C.burgundy : C.line,
-                ['--tw-ring-color' as string]: productHighlightsError ? C.burgundy : C.ikb,
-              }}
-            >
-              <textarea
-                id="av-product-highlights"
-                data-testid="av-product-highlights-input"
-                value={productHighlights}
-                onChange={(e) => setProductHighlights(e.target.value)}
-                rows={3}
-                placeholder="例如：零基础可学、3个月回本、一对一指导"
-                className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
-                style={{ color: C.ink, fontFamily: F.cn }}
-                required
-              />
-              <div
-                className="flex items-center justify-between gap-3 border-t px-4 py-2.5"
-                style={{ borderColor: C.line, background: `${C.paper}99` }}
+              <select
+                id="av-conversion-goal"
+                data-testid="av-conversion-goal-select"
+                value={conversionGoal}
+                onChange={(e) => setConversionGoal(e.target.value)}
+                style={{
+                  width: '100%', borderRadius: 12, padding: '12px 16px', fontSize: 14,
+                  color: C.ink, fontFamily: F.cn, background: 'rgba(255,255,255,0.10)',
+                  border: `0.5px solid ${C.line}`, outline: 'none',
+                  appearance: 'none', WebkitAppearance: 'none', backdropFilter: 'blur(8px)',
+                }}
               >
-                {productHighlightsError ? (
-                  <span data-testid="av-product-highlights-error" className="text-[11px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>{productHighlightsError}</span>
-                ) : (
-                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>可包含核心优势、回本周期、服务保障</span>
-                )}
-                <span className="shrink-0 text-[11px] tabular-nums" style={{ color: '#6b7280', fontFamily: F.mono }}>{productHighlights.length} 字</span>
+                {CONVERSION_GOAL_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value} style={{ background: '#0a1628', color: '#fff' }}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 客户画像 · 框式编辑器 */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <label
+                  htmlFor="av-customer-profile"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    fontSize: 14, fontWeight: 800, letterSpacing: '0.04em',
+                    color: C.ink, fontFamily: F.cn, textShadow: C.textShadow,
+                  }}
+                >
+                  <span
+                    style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, flexShrink: 0, background: `linear-gradient(to bottom, ${C.ikb}, ${C.accent3})` }}
+                    aria-hidden={true}
+                  />
+                  {ACQUISITION_VIDEO_CUSTOMER_LABEL}
+                  <span style={{ marginLeft: 4, fontWeight: 400, fontSize: 12, color: C.accent3 }}>*</span>
+                </label>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
+                  AI 据此精准定位受众
+                </span>
+              </div>
+              <div
+                style={{
+                  overflow: 'hidden', borderRadius: 14,
+                  background: 'rgba(255,255,255,0.07)',
+                  border: `0.5px solid ${customerProfileError ? C.accent3 : C.line}`,
+                }}
+              >
+                <textarea
+                  id="av-customer-profile"
+                  data-testid="av-customer-profile-input"
+                  value={customerProfile}
+                  onChange={(e) => setCustomerProfile(e.target.value)}
+                  rows={3}
+                  placeholder="例如：想要创业的 25-40 岁宝妈，有积蓄但缺方向"
+                  style={{
+                    width: '100%', resize: 'none', border: 'none', background: 'transparent',
+                    padding: 16, fontSize: 14, lineHeight: 1.65, color: C.ink,
+                    fontFamily: F.cn, outline: 'none',
+                  }}
+                  required
+                />
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    gap: 12, borderTop: `0.5px solid ${C.line}`, padding: '8px 16px',
+                    background: 'rgba(255,255,255,0.04)',
+                  }}
+                >
+                  {customerProfileError ? (
+                    <span data-testid="av-customer-profile-error" style={{ fontSize: 11, color: C.accent3, fontFamily: F.cn }}>{customerProfileError}</span>
+                  ) : (
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn }}>可包含年龄段、职业、痛点、消费能力</span>
+                  )}
+                  <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.45)' }}>{customerProfile.length} 字</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-end">
-            <button
-              type="button"
-              data-testid="av-generate-btn"
-              onClick={handleGenerate}
-              disabled={isPending || !isFormValid}
-              className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>movie</span>
-              {ACQUISITION_VIDEO_CTA_GENERATE}
-            </button>
+            {/* 产品亮点 · 框式编辑器 */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <label
+                  htmlFor="av-product-highlights"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    fontSize: 14, fontWeight: 800, letterSpacing: '0.04em',
+                    color: C.ink, fontFamily: F.cn, textShadow: C.textShadow,
+                  }}
+                >
+                  <span
+                    style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, flexShrink: 0, background: `linear-gradient(to bottom, ${C.ikb}, ${C.accent3})` }}
+                    aria-hidden={true}
+                  />
+                  {ACQUISITION_VIDEO_PRODUCT_LABEL}
+                  <span style={{ marginLeft: 4, fontWeight: 400, fontSize: 12, color: C.accent3 }}>*</span>
+                </label>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
+                  AI 据此塑造信任感
+                </span>
+              </div>
+              <div
+                style={{
+                  overflow: 'hidden', borderRadius: 14,
+                  background: 'rgba(255,255,255,0.07)',
+                  border: `0.5px solid ${productHighlightsError ? C.accent3 : C.line}`,
+                }}
+              >
+                <textarea
+                  id="av-product-highlights"
+                  data-testid="av-product-highlights-input"
+                  value={productHighlights}
+                  onChange={(e) => setProductHighlights(e.target.value)}
+                  rows={3}
+                  placeholder="例如：零基础可学、3个月回本、一对一指导"
+                  style={{
+                    width: '100%', resize: 'none', border: 'none', background: 'transparent',
+                    padding: 16, fontSize: 14, lineHeight: 1.65, color: C.ink,
+                    fontFamily: F.cn, outline: 'none',
+                  }}
+                  required
+                />
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    gap: 12, borderTop: `0.5px solid ${C.line}`, padding: '8px 16px',
+                    background: 'rgba(255,255,255,0.04)',
+                  }}
+                >
+                  {productHighlightsError ? (
+                    <span data-testid="av-product-highlights-error" style={{ fontSize: 11, color: C.accent3, fontFamily: F.cn }}>{productHighlightsError}</span>
+                  ) : (
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn }}>可包含核心优势、回本周期、服务保障</span>
+                  )}
+                  <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.45)' }}>{productHighlights.length} 字</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 生成按钮 */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <motion.button
+                type="button"
+                data-testid="av-generate-btn"
+                onClick={handleGenerate}
+                disabled={isPending || !isFormValid}
+                whileHover={(!isPending && isFormValid) ? { y: -4 } : {}}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-gradbtn"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, borderRadius: 14,
+                  padding: '12px 32px', fontSize: 12, fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: F.mono,
+                  cursor: (isPending || !isFormValid) ? 'not-allowed' : 'pointer',
+                  opacity: (isPending || !isFormValid) ? 0.4 : 1, border: 'none',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>movie</span>
+                {ACQUISITION_VIDEO_CTA_GENERATE}
+              </motion.button>
+            </div>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* ── 结果区 · hasResult 门控 ─────────────────────────────── */}
       {hasResult ? (
@@ -647,213 +837,238 @@ export default function AcquisitionVideo() {
       )}
 
       {/* ── 数据洞察(雷达 + 趋势) · 示例/参考 ──────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
-        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
-        <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 行业参考数据 · 示例</span>
-        <span
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-          style={{ background: `${C.line}80`, color: '#6b7280', fontFamily: F.mono }}
-        >
-          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#6b7280' }} />
-          示例数据
-        </span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
-        {/* 获客视频力雷达 */}
-        <div
-          className="col-span-5 rounded-xl border p-6 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.ikb}12`, color: C.ikb }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>获客视频力雷达</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>行业参考模型 · 示例</p>
+      <div style={{ marginTop: 40 }}>
+        <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>· 行业参考数据 · 示例</span>
+          <span
+            style={{
+              marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
+              borderRadius: 9999, padding: '4px 12px', fontSize: 12, fontWeight: 600,
+              background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.45)', fontFamily: F.mono,
+            }}
+          >
+            <span style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.45)' }} />
+            示例数据
+          </span>
+        </Reveal>
+        <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 20 }}>
+          {/* 获客视频力雷达 */}
+          <Reveal>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
+                  </span>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客视频力雷达</h3>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>行业参考模型 · 示例</p>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ margin: 0, fontSize: 26, fontWeight: 700, lineHeight: 1, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: F.display }}>84</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 10, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>参考分</p>
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>84</p>
-              <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>参考分</p>
-            </div>
-          </div>
-          {(() => {
-            const dims = RADAR_DIMS_AV;
-            const cx = 130;
-            const cy = 122;
-            const R = 88;
-            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-            return (
-              <svg viewBox="0 0 260 244" className="w-full">
-                <defs>
-                  <linearGradient id="acq-radarFillAV" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+              {(() => {
+                const dims = RADAR_DIMS_AV;
+                const cx = 130;
+                const cy = 122;
+                const R = 88;
+                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+                const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+                const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+                const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+                return (
+                  <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="acq-radarFillAV" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                        <stop offset="100%" stopColor={C.accent3} stopOpacity="0.12" />
+                      </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((f) => (
+                      <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                    ))}
+                    {dims.map((_, i) => {
+                      const [x, y] = pt(i, R);
+                      return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
+                    })}
+                    <polygon points={dataPoly} fill="url(#acq-radarFillAV)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                    {dims.map((d, i) => {
+                      const [x, y] = pt(i, R * (d.value / 100));
+                      return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
+                    })}
+                    {dims.map((d, i) => {
+                      const [x, y] = pt(i, R + 16);
+                      return (
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+                          {d.label}
+                        </text>
+                      );
+                    })}
+                  </svg>
+                );
+              })()}
+              <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px 0' }}>
+                {RADAR_DIMS_AV.map((d) => (
+                  <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                  </div>
                 ))}
-                {dims.map((_, i) => {
-                  const [x, y] = pt(i, R);
-                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
-                })}
-                <polygon points={dataPoly} fill="url(#acq-radarFillAV)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R * (d.value / 100));
-                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                })}
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R + 16);
-                  return (
-                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                      {d.label}
-                    </text>
-                  );
-                })}
-              </svg>
-            );
-          })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
-            {RADAR_DIMS_AV.map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          </Reveal>
 
-        {/* 获客转化漏斗 / 注意力曲线 */}
-        <div
-          className="col-span-7 rounded-xl border p-6 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>获客转化漏斗 / 注意力曲线</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>12 周行业参考预估 · 示例</p>
+          {/* 获客转化漏斗 / 注意力曲线 */}
+          <Reveal>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.accent3 }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                  </span>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客转化漏斗 / 注意力曲线</h3>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>12 周行业参考预估 · 示例</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {(['注意力', '互动', '转化'] as const).map((t, i) => (
+                    <span
+                      key={t}
+                      style={{
+                        borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600,
+                        background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
+                        color: i === 0 ? '#0a1628' : 'rgba(255,255,255,0.55)',
+                        fontFamily: F.mono,
+                      }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {(['注意力', '互动', '转化'] as const).map((t, i) => (
+              <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                <p style={{ margin: 0, fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>96%</p>
                 <span
-                  key={t}
-                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
                   style={{
-                    background: i === 0 ? C.ikb : C.base,
-                    color: i === 0 ? '#fff' : '#6b7280',
-                    fontFamily: F.mono,
+                    marginBottom: 2, display: 'inline-flex', alignItems: 'center', gap: 2,
+                    borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 700,
+                    background: 'rgba(168,197,224,0.22)', color: C.ikb, fontFamily: F.mono,
                   }}
                 >
-                  {t}
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+380%
                 </span>
-              ))}
-            </div>
-          </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>96%</p>
-            <span
-              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+380%
-            </span>
-            <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>参考值 · 第 12 周</span>
-          </div>
-          {(() => {
-            const data = TREND_DATA_AV;
-            const W = 560;
-            const H = 168;
-            const padL = 6;
-            const padR = 6;
-            const padT = 12;
-            const padB = 8;
-            const innerW = W - padL - padR;
-            const innerH = H - padT - padB;
-            const max = 110;
-            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-            const y = (v: number) => padT + innerH * (1 - v / max);
-            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-            return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-                <defs>
-                  <linearGradient id="acq-trendFillAV" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="acq-trendLineAV" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor={C.ikb} />
-                    <stop offset="100%" stopColor={C.burgundy} />
-                  </linearGradient>
-                </defs>
-                {[0, 0.33, 0.66, 1].map((f) => (
-                  <line
-                    key={f}
-                    x1={padL}
-                    x2={W - padR}
-                    y1={(padT + innerH * f).toFixed(1)}
-                    y2={(padT + innerH * f).toFixed(1)}
-                    stroke={C.line}
-                    strokeWidth="1"
-                  />
+                <span style={{ marginBottom: 2, fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>参考值 · 第 12 周</span>
+              </div>
+              {(() => {
+                const data = TREND_DATA_AV;
+                const W = 560;
+                const H = 168;
+                const padL = 6;
+                const padR = 6;
+                const padT = 12;
+                const padB = 8;
+                const innerW = W - padL - padR;
+                const innerH = H - padT - padB;
+                const max = 110;
+                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+                const y = (v: number) => padT + innerH * (1 - v / max);
+                const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+                return (
+                  <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="acq-trendFillAV" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="acq-trendLineAV" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={C.ikb} />
+                        <stop offset="100%" stopColor={C.accent3} />
+                      </linearGradient>
+                    </defs>
+                    {[0, 0.33, 0.66, 1].map((f) => (
+                      <line
+                        key={f}
+                        x1={padL}
+                        x2={W - padR}
+                        y1={(padT + innerH * f).toFixed(1)}
+                        y2={(padT + innerH * f).toFixed(1)}
+                        stroke={C.line}
+                        strokeWidth="1"
+                      />
+                    ))}
+                    <path d={area} fill="url(#acq-trendFillAV)" />
+                    <path d={line} fill="none" stroke="url(#acq-trendLineAV)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    {data.map((v, i) =>
+                      i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
+                    )}
+                  </svg>
+                );
+              })()}
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
+                {TREND_LABELS_AV.map((m) => (
+                  <span key={m}>{m}</span>
                 ))}
-                <path d={area} fill="url(#acq-trendFillAV)" />
-                <path d={line} fill="none" stroke="url(#acq-trendLineAV)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                {data.map((v, i) =>
-                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
-                )}
-              </svg>
-            );
-          })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
-            {TREND_LABELS_AV.map((m) => (
-              <span key={m}>{m}</span>
-            ))}
-          </div>
+              </div>
+            </motion.div>
+          </Reveal>
         </div>
       </div>
 
       {/* ── 反馈 footer ──────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 border-t pt-6" style={{ borderColor: C.line }}>
-        <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{ACQUISITION_VIDEO_FOOTER_FEEDBACK}</p>
-        <button
+      <div
+        style={{
+          marginTop: 40, display: 'flex', alignItems: 'center', gap: 12,
+          borderTop: `0.5px solid ${C.line}`, paddingTop: 24,
+        }}
+      >
+        <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>{ACQUISITION_VIDEO_FOOTER_FEEDBACK}</p>
+        <motion.button
           type="button"
           onClick={handleFeedbackUp}
           aria-label="有帮助"
-          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
-          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+          whileHover={{ y: -3 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          className="lg-glass"
+          style={{
+            display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
+            borderRadius: 10, color: 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer',
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_up</span>
-        </button>
-        <button
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>thumb_up</span>
+        </motion.button>
+        <motion.button
           type="button"
           onClick={handleFeedbackDown}
           aria-label="无帮助"
-          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
-          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+          whileHover={{ y: -3 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          className="lg-glass"
+          style={{
+            display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
+            borderRadius: 10, color: 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer',
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_down</span>
-        </button>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>thumb_down</span>
+        </motion.button>
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
