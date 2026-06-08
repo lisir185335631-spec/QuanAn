@@ -1,6 +1,7 @@
 /**
  * TrendingFilters — PRD-15 US-006 AC-3
  * Platform multi-select (6) + IndustryDropdown + time range + sort + search
+ * 液态玻璃皮(kept for testid/type compliance — hidden in Trending.tsx)
  */
 
 import { Search } from 'lucide-react';

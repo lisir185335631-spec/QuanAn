@@ -1,17 +1,16 @@
 /**
  * Trending.tsx — /trending 全网爆款库
- * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳
+ * 液态玻璃皮 · LiquidShell 外壳
  * 阶段2: 接真后端 trpc.trending.listWithFavorites / favorite / kpiStats
  * testid 全保留 · 字面锁常量全保留 · 逻辑零回退 · 禁断点 · 禁旧 token
  */
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Reveal, RevealGroup, Item } from '@/components/home-next/ikb/system';
 import { STEP1_INDUSTRIES_56 } from '@/lib/constants/industries';
 import type { Industry } from '@/lib/constants/industries';
 import {
@@ -59,33 +58,78 @@ TRENDING_PLATFORM_OPTIONS.forEach((opt) => {
 // ─── inline TrendingHero ─────────────────────────────────────────────────────
 function TrendingHero() {
   return (
-    <header className="mb-12 flex flex-row items-center justify-between gap-8">
-      <div className="shrink-0">
-        <div className="mb-3 flex items-center gap-3">
+    <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+      <div style={{ flexShrink: 0 }}>
+        {/* chip 标签行 */}
+        <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
-            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-            style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            style={{
+              borderRadius: 9999,
+              border: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.10)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ink,
+              fontFamily: F.mono,
+              textShadow: C.textShadow,
+            }}
           >
             工具
           </span>
           <span
-            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-            style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            style={{
+              borderRadius: 9999,
+              border: `0.5px solid rgba(168,197,224,0.55)`,
+              background: 'rgba(168,197,224,0.18)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ikb,
+              fontFamily: F.mono,
+              textShadow: C.textShadow,
+            }}
           >
             爆款库
           </span>
-        </div>
+        </Reveal>
+        {/* 主标题 — 冷蓝渐变字 */}
         <h1
           data-testid="trending-h1"
-          className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
-          style={{ fontFamily: F.display }}
+          style={{
+            whiteSpace: 'nowrap',
+            fontSize: 52,
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            fontFamily: F.display,
+            margin: 0,
+            background: C.grad,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            textShadow: 'none',
+          }}
         >
           {TRENDING_H1}
         </h1>
         <p
           data-testid="trending-subtitle"
-          className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
-          style={{ color: '#5A6173', fontFamily: F.cn }}
+          style={{
+            marginTop: 10,
+            maxWidth: 820,
+            fontSize: 16,
+            lineHeight: 1.6,
+            color: C.burgundyText,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
         >
           {TRENDING_SUBTITLE}
         </p>
@@ -132,13 +176,12 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
   });
 
   return (
-    <div className="relative" ref={ref}>
+    <div style={{ position: 'relative' }} ref={ref}>
       <label
         htmlFor="tr-industry-btn"
-        className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-        style={{ color: C.ink, fontFamily: F.cn }}
+        style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
       >
-        <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
+        <span style={{ marginRight: 4, display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, rgba(255,255,255,0.5))` }} />
         {TRENDING_FILTER_INDUSTRY_LABEL}
       </label>
       <button
@@ -148,45 +191,76 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         data-testid="trending-industry-btn"
-        className="ikb-focusring flex w-full items-center justify-between rounded-lg border px-4 py-3 text-[14px] transition-all hover:border-[#2B53E6]"
-        style={{ borderColor: C.line, background: C.base, fontFamily: F.cn, color: C.ink }}
+        className="lg-glass lg-spec"
+        style={{
+          display: 'flex',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderRadius: 10,
+          padding: '10px 16px',
+          fontSize: 14,
+          fontFamily: F.cn,
+          color: C.ink,
+          cursor: 'pointer',
+          background: 'none',
+          border: `0.5px solid ${C.line}`,
+          textShadow: C.textShadow,
+        }}
       >
         <span>{selected.emoji} {selected.label}</span>
-        <span className="material-symbols-outlined ml-2 shrink-0 text-[18px]" aria-hidden={true} style={{ color: '#6b7280' }}>expand_more</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', marginLeft: 8, flexShrink: 0 }}>expand_more</span>
       </button>
 
       {open && (
         <div
-          className="absolute left-0 top-full z-20 mt-2 w-[480px] p-4 shadow-xl"
-          style={{ border: `1px solid ${C.line}`, background: C.paper, borderRadius: 12 }}
+          className="lg-glass"
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '100%',
+            zIndex: 20,
+            marginTop: 8,
+            width: 480,
+            padding: 16,
+            borderRadius: 12,
+          }}
         >
           {/* search */}
-          <div className="relative mb-3">
-            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" aria-hidden={true} style={{ color: '#6b7280' }}>search</span>
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }}>search</span>
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={TRENDING_IND_SEARCH_PLACEHOLDER}
               aria-label="搜索行业"
-              className="ikb-input w-full rounded-lg border py-2 pl-9 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
+              style={{
+                width: '100%',
+                borderRadius: 8,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.08)',
+                padding: '8px 12px 8px 36px',
+                fontSize: 14,
+                color: C.ink,
+                fontFamily: F.cn,
+                outline: 'none',
+              }}
             />
           </div>
 
           {/* chip tabs */}
-          <div className="mb-3 flex flex-wrap gap-2" role="radiogroup" aria-label="行业分类筛选">
+          <div style={{ marginBottom: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }} role="radiogroup" aria-label="行业分类筛选">
             {TRENDING_IND_TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 aria-pressed={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="ikb-focusring rounded-md px-3 py-1 text-[12px] font-semibold transition-colors"
                 style={
                   activeTab === tab.id
-                    ? { background: C.ikb, color: '#fff', fontFamily: F.mono }
-                    : { background: C.base, color: '#6b7280', fontFamily: F.mono }
+                    ? { borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 700, background: C.ikb, color: 'rgba(30,50,90,0.9)', fontFamily: F.mono, cursor: 'pointer', border: 'none' }
+                    : { borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, cursor: 'pointer', border: `0.5px solid ${C.line}` }
                 }
               >
                 {tab.emoji ? `${tab.emoji} ` : ''}{tab.label}
@@ -195,17 +269,16 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
           </div>
 
           {/* 2-col grid */}
-          <div className="grid max-h-60 grid-cols-2 gap-1 overflow-y-auto">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
             {filteredInds.map((ind) => (
               <button
                 key={ind.id}
                 type="button"
                 onClick={() => { onSelect(ind.id); setOpen(false); setQuery(''); }}
-                className="ikb-focusring flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-[14px] transition-colors"
                 style={
                   selected.id === ind.id
-                    ? { border: `1px solid ${C.ikb}`, background: `${C.ikb}08`, color: C.ikb, fontFamily: F.cn }
-                    : { color: C.ink, fontFamily: F.cn }
+                    ? { display: 'flex', alignItems: 'center', gap: 8, borderRadius: 8, padding: '10px 12px', textAlign: 'left', fontSize: 14, border: `1px solid ${C.ikb}`, background: 'rgba(168,197,224,0.15)', color: C.ikb, fontFamily: F.cn, cursor: 'pointer' }
+                    : { display: 'flex', alignItems: 'center', gap: 8, borderRadius: 8, padding: '10px 12px', textAlign: 'left', fontSize: 14, color: C.ink, fontFamily: F.cn, cursor: 'pointer', border: 'none', background: 'transparent' }
                 }
               >
                 <span>{ind.emoji}</span>
@@ -215,7 +288,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
           </div>
 
           {/* footer count */}
-          <p className="mt-3 text-right text-[12px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
+          <p style={{ marginTop: 12, textAlign: 'right', fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
             {TRENDING_IND_TOTAL_TPL(STEP1_INDUSTRIES_56.length)}
           </p>
         </div>
@@ -232,14 +305,11 @@ interface PlatformChipsProps {
 function PlatformChips({ platformKey, onSelect }: PlatformChipsProps) {
   return (
     <div>
-      <p
-        className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-        style={{ color: C.ink, fontFamily: F.cn }}
-      >
-        <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
+      <p style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+        <span style={{ marginRight: 4, display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, rgba(255,255,255,0.5))` }} />
         {TRENDING_FILTER_PLATFORM_LABEL}
       </p>
-      <div className="flex flex-wrap gap-2">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {/* 全部平台 */}
         <button
           type="button"
@@ -247,11 +317,11 @@ function PlatformChips({ platformKey, onSelect }: PlatformChipsProps) {
           aria-label={`平台: ${TRENDING_PLATFORM_ALL}`}
           data-testid="trending-platform-all"
           onClick={() => onSelect('all')}
-          className="ikb-focusring rounded-lg border px-3 py-2 text-[13px] font-semibold transition-all"
+          className={platformKey === 'all' ? 'lg-glass lg-spec' : ''}
           style={
             platformKey === 'all'
-              ? { borderColor: C.ikb, background: `${C.ikb}08`, color: C.ikb, fontFamily: F.cn }
-              : { borderColor: C.line, background: C.paper, color: '#6b7280', fontFamily: F.cn }
+              ? { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: C.ikb, fontFamily: F.cn, cursor: 'pointer', border: `1px solid ${C.ikb}`, background: 'rgba(168,197,224,0.15)', textShadow: C.textShadow }
+              : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
           }
         >
           {TRENDING_PLATFORM_ALL}
@@ -267,11 +337,10 @@ function PlatformChips({ platformKey, onSelect }: PlatformChipsProps) {
               aria-label={`平台: ${opt.label}`}
               data-testid={`trending-platform-${opt.key}`}
               onClick={() => onSelect(opt.key)}
-              className="ikb-focusring rounded-lg border px-3 py-2 text-[13px] font-semibold transition-all"
               style={
                 active
-                  ? { borderColor: colour, backgroundColor: `${colour}15`, color: colour }
-                  : { borderColor: C.line, background: C.paper, color: '#6b7280', fontFamily: F.cn }
+                  ? { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, borderColor: colour, backgroundColor: `${colour}22`, color: colour, fontFamily: F.cn, cursor: 'pointer', border: `1px solid ${colour}` }
+                  : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
               }
             >
               {opt.emoji} {opt.label}
@@ -303,89 +372,122 @@ function TrendingFilterCard({
   onFetch,
 }: TrendingFilterCardProps) {
   return (
-    <section
-      data-testid="trending-filter-card"
-      className="relative mb-12 overflow-hidden rounded-xl border p-6"
-      style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-    >
-      <div
-        className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: `${C.ikb}08` }}
-      />
-      <div
-        className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: `${C.burgundy}06` }}
-      />
-
-      {/* card header */}
-      <div className="relative mb-6 flex items-center justify-between border-b pb-5" style={{ borderColor: C.line }}>
-        <div className="flex items-center gap-3">
-          <span
-            className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
-            style={{ background: C.grad }}
-          >
-            <span className="material-symbols-outlined" aria-hidden={true}>filter_alt</span>
-          </span>
-          <div>
-            <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>筛选参数</h2>
-            <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选择行业 · 平台 · 关键词 · 抓取最新爆款内容</p>
-          </div>
-        </div>
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-          style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-        >
-          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
-          数据就绪
-        </span>
-      </div>
-
-      <div className="relative space-y-7">
-        {/* 行业 select */}
-        <IndustryDropdown selected={industry} onSelect={onIndustryChange} />
-
-        {/* 平台 chips */}
-        <PlatformChips platformKey={platformKey} onSelect={onPlatformChange} />
-
-        {/* 关键词 input + CTA */}
-        <div className="grid grid-cols-[1fr_auto] items-end gap-4">
-          <div>
-            <label
-              htmlFor="tr-keywords"
-              className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-              style={{ color: C.ink, fontFamily: F.cn }}
+    <Reveal>
+      <section
+        data-testid="trending-filter-card"
+        className="lg-glass"
+        style={{ position: 'relative', marginBottom: 40, overflow: 'hidden', borderRadius: 20, padding: 24 }}
+      >
+        {/* card header */}
+        <div style={{ position: 'relative', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `0.5px solid ${C.line}`, paddingBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span
+              style={{
+                display: 'flex',
+                height: 44,
+                width: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 12,
+                background: C.grad,
+                color: 'rgba(30,50,90,0.85)',
+              }}
             >
-              <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
-              {TRENDING_FILTER_KEYWORDS_LABEL}
-            </label>
-            <div className="relative">
-              <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" aria-hidden={true} style={{ color: '#6b7280' }}>tag</span>
-              <input
-                id="tr-keywords"
-                type="text"
-                value={keywords}
-                onChange={(e) => onKeywordsChange(e.target.value)}
-                placeholder={TRENDING_FILTER_KEYWORDS_PLACEHOLDER}
-                data-testid="trending-keywords-input"
-                className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-                style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
-              />
+              <span className="material-symbols-outlined" aria-hidden={true}>filter_alt</span>
+            </span>
+            <div>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>筛选参数</h2>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>选择行业 · 平台 · 关键词 · 抓取最新爆款内容</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onFetch}
-            data-testid="trending-fetch-btn"
-            aria-label={TRENDING_FETCH_BTN}
-            className="ikb-gradbtn ikb-focusring flex items-center gap-2 whitespace-nowrap rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px"
-            style={{ fontFamily: F.mono }}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 9999,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              background: 'rgba(168,197,224,0.18)',
+              color: C.ikb,
+              fontFamily: F.mono,
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>refresh</span>
-            {TRENDING_FETCH_BTN}
-          </button>
+            <span style={{ height: 6, width: 6, borderRadius: 9999, backgroundColor: C.ikb, display: 'inline-block', animation: 'lg-pulse 1.6s ease-in-out infinite' }} />
+            数据就绪
+          </span>
         </div>
-      </div>
-    </section>
+
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* 行业 select */}
+          <IndustryDropdown selected={industry} onSelect={onIndustryChange} />
+
+          {/* 平台 chips */}
+          <PlatformChips platformKey={platformKey} onSelect={onPlatformChange} />
+
+          {/* 关键词 input + CTA */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'end', gap: 16 }}>
+            <div>
+              <label
+                htmlFor="tr-keywords"
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+              >
+                <span style={{ marginRight: 4, display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, rgba(255,255,255,0.5))` }} />
+                {TRENDING_FILTER_KEYWORDS_LABEL}
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }}>tag</span>
+                <input
+                  id="tr-keywords"
+                  type="text"
+                  value={keywords}
+                  onChange={(e) => onKeywordsChange(e.target.value)}
+                  placeholder={TRENDING_FILTER_KEYWORDS_PLACEHOLDER}
+                  data-testid="trending-keywords-input"
+                  style={{
+                    width: '100%',
+                    borderRadius: 10,
+                    border: `0.5px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.08)',
+                    padding: '12px 12px 12px 40px',
+                    fontSize: 14,
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onFetch}
+              data-testid="trending-fetch-btn"
+              aria-label={TRENDING_FETCH_BTN}
+              className="lg-gradbtn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                borderRadius: 12,
+                padding: '12px 28px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                fontFamily: F.mono,
+                cursor: 'pointer',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>refresh</span>
+              {TRENDING_FETCH_BTN}
+            </button>
+          </div>
+        </div>
+      </section>
+    </Reveal>
   );
 }
 
@@ -409,10 +511,10 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
   return (
     <div
       data-testid="trending-search-bar"
-      className="mb-6 flex items-center justify-between gap-4"
+      style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}
     >
-      <div className="relative flex-1">
-        <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" aria-hidden={true} style={{ color: '#6b7280' }}>search</span>
+      <div style={{ position: 'relative', flex: 1 }}>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }}>search</span>
         <input
           type="text"
           aria-label="搜索爆款内容"
@@ -420,13 +522,23 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
           onChange={(e) => onChange(e.target.value)}
           placeholder={TRENDING_SEARCH_PLACEHOLDER}
           data-testid="trending-search-input"
-          className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-          style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
+          style={{
+            width: '100%',
+            borderRadius: 10,
+            border: `0.5px solid ${C.line}`,
+            background: 'rgba(255,255,255,0.08)',
+            padding: '12px 12px 12px 40px',
+            fontSize: 14,
+            color: C.ink,
+            fontFamily: F.cn,
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
         />
       </div>
       {/* Visible sort control — wired to query */}
-      <div className="flex shrink-0 items-center gap-1.5" role="radiogroup" aria-label="排序方式">
-        <span className="text-[12px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>排序:</span>
+      <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 6 }} role="radiogroup" aria-label="排序方式">
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>排序:</span>
         {SORT_OPTIONS.map((opt) => (
           <button
             key={opt.value}
@@ -435,11 +547,10 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
             aria-label={`排序: ${opt.label}`}
             data-testid={`trending-sort-${opt.value}`}
             onClick={() => onSortChange(opt.value)}
-            className="ikb-focusring rounded-lg border px-3 py-1.5 text-[12px] font-semibold transition-all"
             style={
               sort === opt.value
-                ? { borderColor: C.ikb, background: `${C.ikb}08`, color: C.ikb, fontFamily: F.mono }
-                : { borderColor: C.line, background: C.paper, color: '#6b7280', fontFamily: F.mono }
+                ? { borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, border: `1px solid ${C.ikb}`, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono, cursor: 'pointer', textShadow: C.textShadow }
+                : { borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, cursor: 'pointer' }
             }
           >
             {opt.label}
@@ -448,8 +559,7 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
       </div>
       <p
         data-testid="trending-count"
-        className="shrink-0 text-[13px]"
-        style={{ color: '#6b7280', fontFamily: F.cn }}
+        style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}
       >
         {TRENDING_COUNT_TPL(count)}
       </p>
@@ -469,7 +579,6 @@ interface TrendingKPIProps {
 function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPIProps) {
   const displayTotal = total ?? TRENDING_FAKE_TOTAL;
 
-  // Three-colour rotation: [C.ikb, C.burgundy, C.accent3]
   const kpiCards = [
     {
       label: '爆款总数',
@@ -477,12 +586,11 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
       unit: '条',
       icon: 'local_fire_department',
       accentColor: C.ikb,
-      bgColor: `${C.ikb}12`,
+      bgColor: 'rgba(168,197,224,0.18)',
       badge: '全量',
-      badgeColor: C.ikb,
       chart: (
         <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label={`爆款总数 ${displayTotal} 条环形进度`}>
-          <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.18)" strokeWidth="3.5" />
           <circle
             cx="18" cy="18" r="15.915"
             fill="none" stroke={C.ikb} strokeWidth="3.5"
@@ -497,14 +605,13 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
       value: weekNew !== null && weekNew !== undefined ? String(weekNew) : '—',
       unit: '条',
       icon: 'add_circle',
-      accentColor: C.burgundy,
-      bgColor: `${C.burgundy}12`,
+      accentColor: C.yellow,
+      bgColor: 'rgba(228,238,255,0.18)',
       badge: '本周',
-      badgeColor: C.burgundyText,
       chart: (
-        <div className="flex h-6 items-end gap-0.5" aria-hidden={true}>
+        <div style={{ display: 'flex', height: 24, alignItems: 'flex-end', gap: 2 }} aria-hidden={true}>
           {[70, 90, 60, 80, 55].map((h, i) => (
-            <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.burgundy}70` }} />
+            <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', height: `${h}%`, background: 'rgba(228,238,255,0.5)' }} />
           ))}
         </div>
       ),
@@ -515,12 +622,11 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
       unit: '',
       icon: 'category',
       accentColor: C.accent3,
-      bgColor: `${C.accent3}12`,
+      bgColor: 'rgba(168,197,224,0.18)',
       badge: '筛选中',
-      badgeColor: C.purpleText,
       chart: (
-        <div className="h-2 w-full rounded-full" style={{ background: `${C.accent3}18` }} aria-hidden={true}>
-          <div className="h-2 rounded-full" style={{ width: '72%', background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
+        <div style={{ height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }} aria-hidden={true}>
+          <div style={{ height: 8, borderRadius: 9999, width: '72%', background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
         </div>
       ),
     },
@@ -530,13 +636,12 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
       unit: '条',
       icon: 'bookmark',
       accentColor: C.ikb,
-      bgColor: `${C.ikb}12`,
+      bgColor: 'rgba(168,197,224,0.18)',
       badge: '已收藏',
-      badgeColor: C.ikb,
       chart: (
-        <div className="flex flex-wrap gap-1" aria-hidden={true}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} aria-hidden={true}>
           {['热门', '互动', '转化'].map((k) => (
-            <span key={k} className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>{k}</span>
+            <span key={k} style={{ borderRadius: 4, padding: '2px 6px', fontSize: 10, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono }}>{k}</span>
           ))}
         </div>
       ),
@@ -544,51 +649,60 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
   ];
 
   return (
-    <div className="mb-8 grid grid-cols-4 gap-6" data-testid="trending-kpi">
+    <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }} data-testid="trending-kpi">
       {kpiCards.map((k) => (
-        <div
-          key={k.label}
-          className="ikb-hovercard rounded-xl border p-5"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ backgroundColor: k.bgColor, color: k.accentColor }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>{k.icon}</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ backgroundColor: k.bgColor, color: k.badgeColor, fontFamily: F.mono }}
-            >
-              {k.badge}
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[26px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              {k.value}
-              {k.unit && <span className="text-[14px]" style={{ color: '#6b7280', fontFamily: F.cn }}> {k.unit}</span>}
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{k.label}</p>
-          </div>
-          <div className="mt-3 h-12 w-full">{k.chart}</div>
-        </div>
+        <Item key={k.label}>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: k.bgColor,
+                  color: k.accentColor,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>{k.icon}</span>
+              </span>
+              <span
+                style={{ background: k.bgColor, color: k.accentColor, borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, fontFamily: F.mono }}
+              >
+                {k.badge}
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
+                {k.value}
+                {k.unit && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 4 }}>{k.unit}</span>}
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+            </div>
+            <div style={{ marginTop: 12, height: 48, width: '100%' }}>{k.chart}</div>
+          </motion.div>
+        </Item>
       ))}
-    </div>
+    </RevealGroup>
   );
 }
 
 // ─── Data Insights (radar + trend) ───────────────────────────────────────────
 
 function TrendingInsights() {
-  // Three-colour rotation: [C.ikb, C.burgundy, C.accent3]
   const RADAR_DIMS = [
     { label: '热度', value: 90, color: C.ikb },
-    { label: '互动', value: 82, color: C.burgundy },
+    { label: '互动', value: 82, color: C.yellow },
     { label: '传播', value: 76, color: C.accent3 },
     { label: '转化', value: 85, color: C.ikb },
-    { label: '时效', value: 70, color: C.burgundy },
+    { label: '时效', value: 70, color: C.yellow },
     { label: '共鸣', value: 88, color: C.accent3 },
   ];
 
@@ -596,175 +710,192 @@ function TrendingInsights() {
 
   return (
     <>
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
-        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
-        <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+      <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>数据洞察</h2>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-          style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 9999,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            background: 'rgba(168,197,224,0.18)',
+            color: C.ikb,
+            fontFamily: F.mono,
+          }}
         >
-          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
+          <span style={{ height: 6, width: 6, borderRadius: 9999, backgroundColor: C.ikb, display: 'inline-block' }} />
           模型已就绪
         </span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
+      </Reveal>
+      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 爆款趋势雷达 */}
-        <div
-          className="ikb-hovercard col-span-5 rounded-xl border p-6"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>爆款趋势雷达</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>85</p>
-              <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
-            </div>
-          </div>
-          {(() => {
-            const dims = RADAR_DIMS;
-            const cx = 130;
-            const cy = 122;
-            const R = 88;
-            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-            return (
-              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="爆款趋势雷达图">
-                <defs>
-                  <linearGradient id="trd-radarFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
-                ))}
-                {dims.map((_, i) => {
-                  const [x, y] = pt(i, R);
-                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
-                })}
-                <polygon points={dataPoly} fill="url(#trd-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R * (d.value / 100));
-                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                })}
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R + 16);
-                  return (
-                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                      {d.label}
-                    </text>
-                  );
-                })}
-              </svg>
-            );
-          })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
-            {RADAR_DIMS.map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 全网热度曲线 */}
-        <div
-          className="ikb-hovercard col-span-7 rounded-xl border p-6"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>全网热度曲线</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>2025—2026 月均热度指数</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {['热度', '互动', '传播'].map((t, i) => (
-                <span
-                  key={t}
-                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                  style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
-                >
-                  {t}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 24 }}
+          >
+            <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
                 </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>爆款趋势雷达</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, margin: 0, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: F.display }}>85</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              </div>
+            </div>
+            {(() => {
+              const dims = RADAR_DIMS;
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+              const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+              return (
+                <svg viewBox="0 0 260 244" style={{ width: '100%' }} role="img" aria-label="爆款趋势雷达图">
+                  <defs>
+                    <linearGradient id="trd-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.15)" stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                  ))}
+                  {dims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.10)" strokeWidth="1" />;
+                  })}
+                  <polygon points={dataPoly} fill="url(#trd-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
+                  })}
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.7)" fontSize="10.5" fontWeight="600">
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {RADAR_DIMS.map((d) => (
+                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ height: 8, width: 8, borderRadius: 9999, backgroundColor: d.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
               ))}
             </div>
-          </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>+115%</p>
-            <span
-              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>持续增长
-            </span>
-            <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>较同期基线</span>
-          </div>
-          {(() => {
-            const data = TREND_DATA;
-            const W = 560; const H = 168;
-            const padL = 6; const padR = 6; const padT = 12; const padB = 8;
-            const innerW = W - padL - padR;
-            const innerH = H - padT - padB;
-            const max = 130;
-            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-            const y = (v: number) => padT + innerH * (1 - v / max);
-            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-            return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="全网热度曲线图">
-                <defs>
-                  <linearGradient id="trd-trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="trd-trendLine" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor={C.ikb} />
-                    <stop offset="55%" stopColor={C.accent3} />
-                    <stop offset="100%" stopColor={C.burgundy} />
-                  </linearGradient>
-                </defs>
-                {[0, 0.33, 0.66, 1].map((f) => (
-                  <line
-                    key={f}
-                    x1={padL} x2={W - padR}
-                    y1={(padT + innerH * f).toFixed(1)}
-                    y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9" strokeWidth="1"
-                  />
+          </motion.div>
+        </Item>
+
+        {/* 全网热度曲线 */}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 24 }}
+          >
+            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(228,238,255,0.18)', color: C.yellow }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>全网热度曲线</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>2025—2026 月均热度指数</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {['热度', '互动', '传播'].map((t, i) => (
+                  <span
+                    key={t}
+                    style={i === 0 ? { background: C.ikb, color: 'rgba(30,50,90,0.9)', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 700, fontFamily: F.mono } : { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 700, fontFamily: F.mono }}
+                  >
+                    {t}
+                  </span>
                 ))}
-                <path d={area} fill="url(#trd-trendFill)" />
-                <path d={line} fill="none" stroke="url(#trd-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                {data.map((v, i) =>
-                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
-                )}
-              </svg>
-            );
-          })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
-            {['1月', '3月', '5月', '7月', '9月', '12月'].map((m) => (
-              <span key={m}>{m}</span>
-            ))}
-          </div>
-        </div>
-      </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+              <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>+115%</p>
+              <span
+                style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>持续增长
+              </span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>较同期基线</span>
+            </div>
+            {(() => {
+              const data = TREND_DATA;
+              const W = 560; const H = 168;
+              const padL = 6; const padR = 6; const padT = 12; const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = 130;
+              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} role="img" aria-label="全网热度曲线图">
+                  <defs>
+                    <linearGradient id="trd-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="trd-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="55%" stopColor={C.accent3} />
+                      <stop offset="100%" stopColor={C.yellow} />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL} x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke="rgba(255,255,255,0.08)" strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#trd-trendFill)" />
+                  <path d={line} fill="none" stroke="url(#trd-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  {data.map((v, i) =>
+                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
+                  )}
+                </svg>
+              );
+            })()}
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+              {['1月', '3月', '5月', '7月', '9月', '12月'].map((m) => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
+          </motion.div>
+        </Item>
+      </RevealGroup>
     </>
   );
 }
@@ -780,29 +911,55 @@ interface PaginationProps {
 function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
   return (
-    <div className="mt-6 flex items-center justify-center gap-2" data-testid="trending-pagination">
+    <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }} data-testid="trending-pagination">
       <button
         type="button"
         aria-label="上一页"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
-        className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors disabled:opacity-40"
-        style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+        className="lg-glass lg-spec"
+        style={{
+          display: 'flex',
+          height: 36,
+          width: 36,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          color: 'rgba(255,255,255,0.55)',
+          cursor: page <= 1 ? 'not-allowed' : 'pointer',
+          opacity: page <= 1 ? 0.4 : 1,
+          padding: 0,
+          background: 'none',
+          border: `0.5px solid ${C.line}`,
+        }}
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>chevron_left</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>chevron_left</span>
       </button>
-      <span className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-        第 <span className="font-bold" style={{ color: C.ink }}>{page}</span> / {totalPages} 页
+      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+        第 <span style={{ fontWeight: 700, color: C.ink }}>{page}</span> / {totalPages} 页
       </span>
       <button
         type="button"
         aria-label="下一页"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
-        className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors disabled:opacity-40"
-        style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+        className="lg-glass lg-spec"
+        style={{
+          display: 'flex',
+          height: 36,
+          width: 36,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          color: 'rgba(255,255,255,0.55)',
+          cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+          opacity: page >= totalPages ? 0.4 : 1,
+          padding: 0,
+          background: 'none',
+          border: `0.5px solid ${C.line}`,
+        }}
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>chevron_right</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>chevron_right</span>
       </button>
     </div>
   );
@@ -814,11 +971,11 @@ function TrendingTableSkeleton() {
   return (
     <div
       data-testid="trending-skeleton"
-      className="animate-pulse rounded-xl border p-4"
-      style={{ borderColor: C.line, background: C.paper }}
+      className="lg-glass"
+      style={{ borderRadius: 16, padding: 16, animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
     >
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="mb-3 h-10 rounded-lg" style={{ background: C.base }} />
+        <div key={i} style={{ marginBottom: 12, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.08)' }} />
       ))}
     </div>
   );
@@ -938,7 +1095,7 @@ export default function Trending() {
   }, [platformKey, industryId, debouncedSearch, sort]);
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       <TrendingHero />
 
       {/* KPI 概览一排 */}
@@ -981,17 +1138,26 @@ export default function Trending() {
       {isError && !isLoading && (
         <div
           data-testid="trending-error"
-          className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20 text-center"
-          style={{ borderColor: `${C.burgundy}40`, background: `${C.burgundy}08` }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 20,
+            border: `1px dashed rgba(255,255,255,0.2)`,
+            padding: '80px 0',
+            textAlign: 'center',
+            background: 'rgba(255,255,255,0.04)',
+          }}
         >
-          <span className="material-symbols-outlined mb-3 text-[40px]" aria-hidden={true} style={{ color: C.burgundy }}>wifi_off</span>
-          <p className="text-[16px] font-bold" style={{ color: '#6b7280', fontFamily: F.cn }}>加载失败</p>
-          <p className="mt-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>网络错误，请稍后重试</p>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(255,255,255,0.4)' }}>wifi_off</span>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>加载失败</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
           <button
             type="button"
             onClick={() => void refetch()}
-            className="ikb-gradbtn ikb-focusring mt-4 rounded-xl px-6 py-2 text-[13px] font-bold text-white"
-            style={{ fontFamily: F.mono }}
+            className="lg-gradbtn"
+            style={{ marginTop: 16, borderRadius: 12, padding: '8px 24px', fontSize: 13, fontWeight: 700, fontFamily: F.mono, cursor: 'pointer' }}
           >
             重试
           </button>
@@ -1001,12 +1167,21 @@ export default function Trending() {
       {!isLoading && !isError && items.length === 0 && (
         <div
           data-testid="trending-grid-empty"
-          className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20 text-center"
-          style={{ borderColor: `${C.ikb}30`, background: C.base }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 20,
+            border: `1px dashed rgba(168,197,224,0.3)`,
+            padding: '80px 0',
+            textAlign: 'center',
+            background: 'rgba(168,197,224,0.05)',
+          }}
         >
-          <span className="material-symbols-outlined mb-3 text-[40px]" aria-hidden={true} style={{ color: `${C.ikb}50` }}>search_off</span>
-          <p className="text-[16px] font-bold" style={{ color: '#6b7280', fontFamily: F.cn }}>暂无匹配内容</p>
-          <p className="mt-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(168,197,224,0.4)' }}>search_off</span>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>暂无匹配内容</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
         </div>
       )}
 
@@ -1034,7 +1209,7 @@ export default function Trending() {
       />
 
       {/* TrendingFilters — kept for testid/type compliance; hidden pending sort UI refactor */}
-      <div className="mt-8 hidden" aria-hidden="true">
+      <div style={{ marginTop: 32, display: 'none' }} aria-hidden="true">
         <TrendingFilters
           filters={{ platforms: [], industry: '', timeRange: 'week', sort: 'likeCount', search: '' }}
           onChange={() => {}}
@@ -1043,7 +1218,7 @@ export default function Trending() {
 
       {/* 数据洞察 band */}
       <TrendingInsights />
-    </IKBLayout>
+    </LiquidShell>
   );
 }
 

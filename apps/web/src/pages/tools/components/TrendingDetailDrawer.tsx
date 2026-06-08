@@ -1,16 +1,14 @@
 /**
  * TrendingDetailDrawer — PRD-15 US-006 AC-9
  * 右侧 Drawer · 显示原文链接 + 完整内容 + 3 操作按钮
- * IKB 红蓝紫渐变换皮
+ * 液态玻璃皮
  */
-
-import '@/styles/ikb-hero.css';
 
 import { Bookmark, Copy, ExternalLink, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
+import { C, F } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -28,7 +26,7 @@ const PLATFORM_LABELS: Record<string, string> = {
 };
 
 // Three-colour chip rotation for tag badges
-const CHIP_COLOURS = [C.ikb, C.burgundy, C.accent3] as const;
+const CHIP_COLOURS = [C.ikb, C.yellow, C.accent3] as const;
 
 interface TrendingDetailDrawerProps {
   itemId: number | null;
@@ -71,22 +69,27 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
       <SheetContent
         side="right"
         className="w-[480px] sm:max-w-[480px] p-0"
+        style={{
+          background: 'linear-gradient(180deg, rgba(20,34,70,0.95) 0%, rgba(16,28,56,0.98) 100%)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          borderLeft: `0.5px solid rgba(255,255,255,0.18)`,
+        }}
       >
         {/* Header */}
         <SheetHeader
           className="px-6 pt-6 pb-4"
-          style={{ borderBottom: `1px solid ${C.line}` }}
+          style={{ borderBottom: `0.5px solid rgba(255,255,255,0.15)` }}
         >
           <SheetTitle
-            className="text-base font-semibold"
-            style={{ color: C.ink, fontFamily: F.cn }}
+            style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
           >
             爆款详情
           </SheetTitle>
         </SheetHeader>
 
         {isLoading && (
-          <div className="flex items-center justify-center h-40 text-sm" style={{ color: '#6b7280', fontFamily: F.cn }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
             加载中…
           </div>
         )}
@@ -94,15 +97,14 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
         {isError && !isLoading && (
           <div
             data-testid="drawer-error"
-            className="flex flex-col items-center justify-center h-40 gap-3 text-center px-6"
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 160, gap: 12, textAlign: 'center', padding: '0 24px' }}
           >
-            <p className="text-sm" style={{ color: '#6b7280', fontFamily: F.cn }}>加载失败，请重试</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>加载失败，请重试</p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigate(0)}
-              className="ikb-focusring text-xs"
-              style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
+              style={{ borderColor: 'rgba(255,255,255,0.2)', color: C.ink, fontFamily: F.cn, background: 'rgba(255,255,255,0.08)', fontSize: 12 }}
             >
               重试
             </Button>
@@ -110,23 +112,26 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
         )}
 
         {!isLoading && !isError && !detail && (
-          <div className="flex items-center justify-center h-40 text-sm" style={{ color: '#6b7280', fontFamily: F.cn }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
             暂无数据
           </div>
         )}
 
         {detail && !isLoading && !isError && (
           <ScrollArea className="h-[calc(100vh-160px)]">
-            <div className="px-6 py-4 space-y-4">
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* Platform badge + industry chip */}
-              <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {/* Platform badge — identity colour preserved */}
                 <span
-                  className="text-xs px-2 py-0.5 rounded font-semibold"
                   style={{
+                    fontSize: 12,
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    fontWeight: 700,
                     color: CHIP_COLOURS[0],
-                    backgroundColor: `${CHIP_COLOURS[0]}14`,
-                    border: `1px solid ${CHIP_COLOURS[0]}30`,
+                    backgroundColor: 'rgba(168,197,224,0.15)',
+                    border: `1px solid rgba(168,197,224,0.3)`,
                     fontFamily: F.mono,
                   }}
                 >
@@ -134,11 +139,13 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
                 </span>
                 {detail.industry && (
                   <span
-                    className="text-xs px-2 py-0.5 rounded"
                     style={{
+                      fontSize: 12,
+                      padding: '2px 8px',
+                      borderRadius: 4,
                       color: CHIP_COLOURS[1],
-                      backgroundColor: `${CHIP_COLOURS[1]}14`,
-                      border: `1px solid ${CHIP_COLOURS[1]}30`,
+                      backgroundColor: 'rgba(228,238,255,0.12)',
+                      border: `1px solid rgba(228,238,255,0.25)`,
                       fontFamily: F.mono,
                     }}
                   >
@@ -149,15 +156,14 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
 
               {/* Title */}
               <h2
-                className="text-body-md font-semibold leading-snug"
                 data-testid="drawer-title"
-                style={{ color: C.ink, fontFamily: F.display }}
+                style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.45, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}
               >
                 {detail.title}
               </h2>
 
               {/* Stats */}
-              <div className="flex items-center gap-4 text-xs" style={{ color: '#6b7280', fontFamily: F.mono }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
                 <span>👍 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.likeCount.toLocaleString()}</span></span>
                 <span>💬 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.commentCount.toLocaleString()}</span></span>
                 <span>🔁 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.shareCount.toLocaleString()}</span></span>
@@ -169,35 +175,30 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
                   href={detail.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs hover:underline"
-                  style={{ color: C.ikb, fontFamily: F.cn }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.ikb, fontFamily: F.cn, textDecoration: 'none' }}
                   data-testid="drawer-source-url"
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
+                  <ExternalLink style={{ height: 14, width: 14 }} />
                   查看原文
                 </a>
               )}
 
               {/* Content block */}
               <div
-                className="rounded p-3"
-                style={{
-                  background: C.base,
-                  border: `1px solid ${C.line}`,
-                }}
+                className="lg-glass"
+                style={{ borderRadius: 12, padding: 12 }}
               >
-                <p className="text-xs mb-1.5" style={{ color: '#6b7280', fontFamily: F.mono }}>完整内容</p>
+                <p style={{ fontSize: 12, marginBottom: 6, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>完整内容</p>
                 <p
-                  className="text-sm whitespace-pre-wrap leading-relaxed"
                   data-testid="drawer-content"
-                  style={{ color: C.ink, fontFamily: F.cn }}
+                  style={{ fontSize: 14, whiteSpace: 'pre-wrap', lineHeight: 1.65, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}
                 >
                   {detail.contentText ?? '暂无内容文本'}
                 </p>
               </div>
 
               {/* Crawled at */}
-              <p className="text-xs" style={{ color: '#6b7280', fontFamily: F.mono }}>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
                 抓取时间：{new Date(detail.crawledAt).toLocaleString('zh-CN')}
               </p>
             </div>
@@ -206,47 +207,51 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
 
         {/* Action buttons */}
         <div
-          className="absolute bottom-0 left-0 right-0 p-4 flex gap-2"
           style={{
-            borderTop: `1px solid ${C.line}`,
-            backgroundColor: C.paper,
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: 16,
+            display: 'flex',
+            gap: 8,
+            borderTop: `0.5px solid rgba(255,255,255,0.15)`,
+            backgroundColor: 'rgba(16,28,56,0.95)',
           }}
         >
-          {/* 次按钮 — IKB 描边 */}
+          {/* 次按钮 — 液态玻璃描边 */}
           <Button
             variant="outline"
             size="sm"
-            className="ikb-focusring flex-1 gap-1.5 text-xs"
-            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
+            style={{ flex: 1, gap: 6, fontSize: 12, borderColor: 'rgba(255,255,255,0.2)', color: C.ink, fontFamily: F.cn, background: 'rgba(255,255,255,0.07)' }}
             onClick={handleCopyContent}
             data-testid="drawer-copy-btn"
             disabled={!detail}
           >
-            <Copy className="h-3.5 w-3.5" />
+            <Copy style={{ height: 14, width: 14 }} />
             复制内容
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="ikb-focusring flex-1 gap-1.5 text-xs"
-            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
+            style={{ flex: 1, gap: 6, fontSize: 12, borderColor: 'rgba(255,255,255,0.2)', color: C.ink, fontFamily: F.cn, background: 'rgba(255,255,255,0.07)' }}
             onClick={handleSaveToLibrary}
             data-testid="drawer-save-btn"
             disabled={!detail}
           >
-            <Bookmark className="h-3.5 w-3.5" />
+            <Bookmark style={{ height: 14, width: 14 }} />
             保存到我的库
           </Button>
-          {/* 主按钮 — ikb-gradbtn 流光渐变 */}
+          {/* 主按钮 — lg-gradbtn 紫粉渐变 */}
           <button
             type="button"
-            className="ikb-gradbtn ikb-focusring flex-1 flex items-center justify-center gap-1.5 text-xs rounded-md px-3 py-2 font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ fontFamily: F.cn }}
+            className="lg-gradbtn"
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, borderRadius: 6, padding: '8px 12px', fontWeight: 700, fontFamily: F.cn, cursor: 'pointer', opacity: !detail ? 0.5 : 1 }}
             onClick={handleStep7}
             data-testid="drawer-step7-btn"
             disabled={!detail}
           >
-            <Zap className="h-3.5 w-3.5" />
+            <Zap style={{ height: 14, width: 14 }} />
             一键到 Step 7
           </button>
         </div>
