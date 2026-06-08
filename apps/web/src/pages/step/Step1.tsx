@@ -1,17 +1,17 @@
 /**
- * /step/1 · 选择行业赛道 — 红蓝紫渐变 IKB 体系
+ * /step/1 · 选择行业赛道 — 液态玻璃皮(iOS26 LiquidGlass 体系)
  *
  * 数据/行为保留:56 行业 + 分类 tabs + 搜索过滤 + 选择 + 自定义行业 modal + 跳 /step/3。
- * 视觉换向:IKBLayout 外壳 + Step 01 chip + bento 行业卡网格 + sticky 操作栏。
+ * 视觉换向:LiquidShell 外壳 + lg-glass 卡片 + Reveal/RevealGroup/Item 入场 + 冷蓝渐变字。
  */
-import '@/styles/ikb-hero.css';
 
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { C, F } from '@/components/home/ikb/system';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
-import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   type Industry,
   STEP1_INDUSTRIES_56,
@@ -34,9 +34,9 @@ const S1_KPI = [
     unit: '个',
     badge: '全覆盖',
     badgeColor: C.ikb,
-    badgeBg: `${C.ikb}18`,
+    badgeBg: 'rgba(168,197,224,0.22)',
     iconColor: C.ikb,
-    iconBg: `${C.ikb}18`,
+    iconBg: 'rgba(168,197,224,0.18)',
     extra: null,
   },
   {
@@ -46,9 +46,9 @@ const S1_KPI = [
     unit: '%',
     badge: '+18%',
     badgeColor: C.ikb,
-    badgeBg: `${C.ikb}18`,
-    iconColor: C.burgundyText,
-    iconBg: `${C.burgundy}18`,
+    badgeBg: 'rgba(168,197,224,0.22)',
+    iconColor: 'rgba(255,255,255,0.94)',
+    iconBg: 'rgba(255,255,255,0.12)',
     extra: 'ring',
   },
   {
@@ -57,10 +57,10 @@ const S1_KPI = [
     value: '0',
     unit: '个',
     badge: '选择中',
-    badgeColor: C.purpleText,
-    badgeBg: `${C.yellow}28`,
-    iconColor: C.purpleText,
-    iconBg: `${C.yellow}28`,
+    badgeColor: 'rgba(255,255,255,0.9)',
+    badgeBg: 'rgba(228,238,255,0.18)',
+    iconColor: 'rgba(255,255,255,0.9)',
+    iconBg: 'rgba(228,238,255,0.18)',
     extra: 'bar',
   },
   {
@@ -70,9 +70,9 @@ const S1_KPI = [
     unit: '/100',
     badge: '↑热门',
     badgeColor: C.ikb,
-    badgeBg: `${C.ikb}18`,
+    badgeBg: 'rgba(168,197,224,0.22)',
     iconColor: C.ikb,
-    iconBg: `${C.ikb}18`,
+    iconBg: 'rgba(168,197,224,0.18)',
     extra: null,
   },
 ] as const;
@@ -80,19 +80,19 @@ const S1_KPI = [
 // ── 赛道吸引力雷达六维(S1 suffix 防 id 冲突) ─────────────────────────────────
 const S1_RADAR_DIMS = [
   { label: '市场规模', value: 88, color: C.ikb },
-  { label: '增长性', value: 82, color: C.burgundy },
-  { label: '变现力', value: 90, color: C.accent3 },
+  { label: '增长性', value: 82, color: 'rgba(255,255,255,0.95)' },
+  { label: '变现力', value: 90, color: C.ikb },
   { label: '竞争度', value: 72, color: C.ikb },
-  { label: '门槛', value: 68, color: C.burgundy },
-  { label: '政策', value: 85, color: C.accent3 },
+  { label: '门槛', value: 68, color: 'rgba(255,255,255,0.95)' },
+  { label: '政策', value: 85, color: C.ikb },
 ];
 
 // ── 赛道热度趋势数据 ─────────────────────────────────────────────────────────
 const S1_TREND_DATA = [22, 35, 44, 58, 70, 83, 92, 100];
 const S1_TREND_LABELS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'];
 
-// ── 行业卡 icon tile 颜色轮转(红蓝紫三主色) ────────────────────────────────────────
-const S1_TILE_COLORS = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
+// ── 行业卡 icon tile 颜色轮转(冷蓝体系) ──────────────────────────────────────
+const S1_TILE_COLORS = [C.ikb, 'rgba(255,255,255,0.95)', C.ikb, C.ikb, 'rgba(255,255,255,0.95)'];
 
 // ── 行业卡微指标静态热度(循环分配) · 占位假数据,待接入真实 API ────────────────────
 const S1_HEAT = [92, 85, 88, 78, 83, 90, 72, 86, 80, 94, 75, 88, 82, 76, 89, 84, 71, 93,
@@ -158,25 +158,25 @@ export default function Step1() {
         <defs>
           <linearGradient id="radarFillS1" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-            <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0.95)" stopOpacity="0.12" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75, 1].map((f) => (
-          <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+          <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
         ))}
         {dims.map((_, i) => {
           const [x, y] = pt(i, R);
-          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />;
         })}
         <polygon points={dataPoly} fill="url(#radarFillS1)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
         {dims.map((d, i) => {
           const [x, y] = pt(i, R * (d.value / 100));
-          return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+          return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
         })}
         {dims.map((d, i) => {
           const [x, y] = pt(i, R + 16);
           return (
-            <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+            <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
               {d.label}
             </text>
           );
@@ -210,7 +210,7 @@ export default function Step1() {
           </linearGradient>
           <linearGradient id="trendLineS1" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor={C.ikb} />
-            <stop offset="100%" stopColor={C.burgundy} />
+            <stop offset="100%" stopColor="rgba(255,255,255,0.95)" />
           </linearGradient>
         </defs>
         {[0, 0.33, 0.66, 1].map((f) => (
@@ -220,64 +220,70 @@ export default function Step1() {
             x2={W - padR}
             y1={(padT + innerH * f).toFixed(1)}
             y2={(padT + innerH * f).toFixed(1)}
-            stroke="#f1f3f9"
+            stroke="rgba(255,255,255,0.10)"
             strokeWidth="1"
           />
         ))}
         <path d={area} fill="url(#trendFillS1)" />
         <path d={line} fill="none" stroke="url(#trendLineS1)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {data.map((v, i) =>
-          i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
+          i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
         )}
       </svg>
     );
   }
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       <div className="pb-28">
         {/* ── Header ─────────────────────────────────────────── */}
         <header className="mb-12 flex flex-row items-center justify-between gap-8">
           <div className="shrink-0">
-            <div className="mb-3 flex items-center gap-3">
+            <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span
                 style={{
-                  fontFamily: F.mono,
-                  fontSize: 11,
-                  letterSpacing: '0.18em',
+                  borderRadius: 9999,
+                  border: `0.5px solid ${C.line}`,
+                  background: 'rgba(255,255,255,0.10)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
-                  borderRadius: 8,
-                  border: `1px solid ${C.line}`,
-                  background: C.base,
                   color: C.ink,
-                  padding: '4px 10px',
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
                 }}
               >
                 战略节点
               </span>
               <span
                 style={{
-                  fontFamily: F.mono,
-                  fontSize: 11,
-                  letterSpacing: '0.18em',
+                  borderRadius: 9999,
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.18)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
-                  borderRadius: 8,
-                  border: `1px solid ${C.yellow}55`,
-                  background: `${C.yellow}18`,
-                  color: C.purpleText,
-                  padding: '4px 10px',
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
                 }}
               >
                 赛道选择
               </span>
-            </div>
+            </Reveal>
             <h1
               style={{
                 fontFamily: F.display,
-                fontWeight: 400,
-                fontSize: 40,
+                fontWeight: 800,
+                fontSize: 52,
                 lineHeight: 1.05,
-                letterSpacing: '-0.01em',
+                letterSpacing: '-0.02em',
                 margin: 0,
                 whiteSpace: 'nowrap',
                 background: C.grad,
@@ -285,13 +291,14 @@ export default function Step1() {
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 color: 'transparent',
+                textShadow: 'none',
               }}
             >
               STEP 01 · {STEP1_PAGE_H1}
             </h1>
             <p
               className="mt-2 max-w-2xl"
-              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
+              style={{ fontSize: 16, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}
             >
               {STEP1_SUBTITLE_PART1}
               <span style={{ fontWeight: 700, color: C.ikb }}>{STEP1_SUBTITLE_COUNT}</span>
@@ -302,7 +309,7 @@ export default function Step1() {
                 onClick={() => setCustomModalOpen(true)}
                 style={{
                   fontWeight: 600,
-                  color: C.burgundyText,
+                  color: 'rgba(255,255,255,0.94)',
                   textDecoration: 'underline',
                   textUnderlineOffset: 2,
                   background: 'none',
@@ -311,6 +318,7 @@ export default function Step1() {
                   fontFamily: F.cn,
                   fontSize: 16,
                   padding: 0,
+                  textShadow: C.textShadow,
                 }}
               >
                 {STEP1_SUBTITLE_CUSTOM_LINK}
@@ -319,19 +327,19 @@ export default function Step1() {
             </p>
           </div>
           <div className="flex shrink-0 flex-nowrap gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={() => setCustomModalOpen(true)}
-              className="ikb-focusring"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass lg-spec ikb-focusring"
               style={{
                 display: 'flex',
                 flexShrink: 0,
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
-                borderRadius: 10,
-                border: `1px solid ${C.line}`,
-                background: C.paper,
+                borderRadius: 12,
                 padding: '10px 16px',
                 fontFamily: F.mono,
                 fontSize: 12,
@@ -340,26 +348,26 @@ export default function Step1() {
                 textTransform: 'uppercase',
                 color: C.ink,
                 cursor: 'pointer',
-                transition: 'background 0.2s, border-color 0.2s',
+                border: 'none',
+                textShadow: C.textShadow,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.base; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.paper; }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
               自定义行业
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={handleSubmit}
               disabled={!hasSelection}
-              className="ikb-gradbtn"
+              whileHover={hasSelection ? { y: -3 } : undefined}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
               style={{
                 display: 'flex',
                 flexShrink: 0,
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
-                borderRadius: 10,
+                borderRadius: 12,
                 padding: '10px 18px',
                 fontFamily: F.cn,
                 fontSize: 13,
@@ -368,114 +376,114 @@ export default function Step1() {
                 border: 'none',
                 cursor: hasSelection ? 'pointer' : 'not-allowed',
                 opacity: hasSelection ? 1 : 0.4,
+                background: C.grad,
+                textShadow: C.textShadow,
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
               确认并进入下一步
-            </button>
+            </motion.button>
           </div>
         </header>
 
         {/* ── KPI 概览卡(4 张)──────────────────────────────── */}
-        <div className="mb-8 grid grid-cols-4 gap-6">
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
           {S1_KPI.map((kpi, idx) => (
-            <div
-              key={kpi.label}
-              className="ikb-hovercard"
-              style={{
-                border: `1px solid ${C.line}`,
-                background: C.paper,
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 8,
-                    background: kpi.iconBg,
-                    color: kpi.iconColor,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{kpi.icon}</span>
-                </span>
-                <span
-                  style={{
-                    borderRadius: 999,
-                    padding: '2px 10px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    fontFamily: F.mono,
-                    letterSpacing: '0.06em',
-                    background: kpi.badgeBg,
-                    color: kpi.badgeColor,
-                  }}
-                >
-                  {idx === 1 ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>trending_up</span>
-                      {kpi.badge}
-                    </span>
-                  ) : kpi.badge}
-                </span>
-              </div>
-              <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                <div>
-                  <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                    {idx === 2 ? (hasSelection ? '1' : '0') : kpi.value}
-                    <span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}>{kpi.unit}</span>
-                  </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>{kpi.label}</p>
-                </div>
-                {kpi.extra === 'ring' && (
-                  <div style={{ height: 48, width: 48, flexShrink: 0 }}>
-                    <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
-                      <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
-                      <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.burgundy} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              {kpi.extra === 'bar' && (
-                <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.yellow}22` }}>
-                  <div
+            <Item key={kpi.label}>
+              <motion.div
+                className="lg-glass lg-spec"
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 20, padding: 22 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span
                     style={{
-                      height: 8,
-                      borderRadius: 999,
-                      background: C.grad,
-                      width: hasSelection ? '100%' : '4%',
-                      transition: 'width 0.4s',
+                      display: 'flex',
+                      height: 38,
+                      width: 38,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      background: kpi.iconBg,
+                      color: kpi.iconColor,
                     }}
-                  />
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{kpi.icon}</span>
+                  </span>
+                  <span
+                    style={{
+                      borderRadius: 999,
+                      padding: '2px 10px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      fontFamily: F.mono,
+                      letterSpacing: '0.06em',
+                      background: kpi.badgeBg,
+                      color: kpi.badgeColor,
+                    }}
+                  >
+                    {idx === 1 ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>trending_up</span>
+                        {kpi.badge}
+                      </span>
+                    ) : kpi.badge}
+                  </span>
                 </div>
-              )}
-              {kpi.extra === null && idx === 3 && (
-                <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
-                  {[68, 82, 75, 90, 78].map((h, i) => (
+                <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                  <div>
+                    <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                      {idx === 2 ? (hasSelection ? '1' : '0') : kpi.value}
+                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400, marginLeft: 4 }}>{kpi.unit}</span>
+                    </p>
+                    <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+                  </div>
+                  {kpi.extra === 'ring' && (
+                    <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                      <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                {kpi.extra === 'bar' && (
+                  <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: 'rgba(228,238,255,0.15)' }}>
                     <div
-                      key={i}
                       style={{
-                        flex: 1,
-                        borderRadius: '2px 2px 0 0',
-                        background: `${C.ikb}99`,
-                        height: `${h}%`,
+                        height: 8,
+                        borderRadius: 999,
+                        background: C.grad,
+                        width: hasSelection ? '100%' : '4%',
+                        transition: 'width 0.4s',
                       }}
                     />
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+                {kpi.extra === null && idx === 3 && (
+                  <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
+                    {[68, 82, 75, 90, 78].map((h, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          flex: 1,
+                          borderRadius: '2px 2px 0 0',
+                          background: `rgba(168,197,224,0.6)`,
+                          height: `${h}%`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </Item>
           ))}
-        </div>
+        </RevealGroup>
 
         {/* ── Filters + search ───────────────────────────────── */}
-        <div className="mb-6 flex flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap gap-2">
+        <Reveal style={{ marginBottom: 24, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {STEP1_TABS.map((tab) => {
               const active = activeTabId === tab.id;
               return (
@@ -488,9 +496,9 @@ export default function Step1() {
                   className="ikb-focusring"
                   style={{
                     borderRadius: 9999,
-                    border: active ? `1px solid ${C.ikb}` : `1px solid rgba(22,32,72,0.18)`,
-                    background: active ? C.ikb : C.paper,
-                    color: active ? '#fff' : '#5A6173',
+                    border: active ? `1px solid rgba(168,197,224,0.7)` : `0.5px solid ${C.line}`,
+                    background: active ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.08)',
+                    color: active ? C.ikb : 'rgba(255,255,255,0.65)',
                     padding: '8px 16px',
                     fontSize: 12,
                     fontWeight: 700,
@@ -499,17 +507,19 @@ export default function Step1() {
                     fontFamily: F.mono,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
+                    backdropFilter: 'blur(8px)',
+                    textShadow: C.textShadow,
                   }}
                   onMouseEnter={(e) => {
                     if (!active) {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(168,197,224,0.5)';
                       (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!active) {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(22,32,72,0.18)';
-                      (e.currentTarget as HTMLButtonElement).style.color = '#5A6173';
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.65)';
                     }
                   }}
                 >
@@ -518,8 +528,17 @@ export default function Step1() {
               );
             })}
           </div>
-          <div className="relative">
-            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 18, color: '#6b7280' }}>
+          <div
+            className="lg-glass"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              borderRadius: 12,
+              padding: '8px 14px',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb, flexShrink: 0 }}>
               search
             </span>
             <input
@@ -528,192 +547,197 @@ export default function Step1() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={STEP1_SEARCH_PLACEHOLDER}
               data-testid="industry-search"
-              className="ikb-input"
               style={{
-                width: 256,
-                borderRadius: 10,
-                border: `1px solid ${C.line}`,
-                background: C.paper,
-                padding: '8px 16px 8px 40px',
+                width: 220,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
                 fontSize: 14,
                 fontFamily: F.cn,
                 color: C.ink,
-                transition: 'border-color 0.2s',
               }}
             />
           </div>
-        </div>
+        </Reveal>
 
         {/* ── Industry bento grid ────────────────────────────── */}
         {filteredIndustries.length === 0 ? (
-          <div
-            style={{
-              borderRadius: 12,
-              border: `1px dashed rgba(22,32,72,0.22)`,
-              background: C.base,
-              padding: '64px 0',
-              textAlign: 'center',
-            }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>未找到匹配的行业</p>
-            <button
-              type="button"
-              onClick={() => setCustomModalOpen(true)}
+          <Reveal>
+            <div
+              className="lg-glass"
               style={{
-                marginTop: 8,
-                fontSize: 14,
-                fontWeight: 600,
-                color: C.ikb,
-                textDecoration: 'underline',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: F.cn,
+                borderRadius: 16,
+                padding: '64px 0',
+                textAlign: 'center',
               }}
             >
-              尝试自定义输入 →
-            </button>
-          </div>
+              <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>未找到匹配的行业</p>
+              <button
+                type="button"
+                onClick={() => setCustomModalOpen(true)}
+                style={{
+                  marginTop: 8,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: C.ikb,
+                  textDecoration: 'underline',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: F.cn,
+                  textShadow: C.textShadow,
+                }}
+              >
+                尝试自定义输入 →
+              </button>
+            </div>
+          </Reveal>
         ) : (
-          <div className="mb-12 grid grid-cols-6 gap-4">
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 14, marginBottom: 48 }}>
             {filteredIndustries.map((ind, idx) => {
               const active = selectedIndustry?.label === ind.label;
               const tileColor = S1_TILE_COLORS[idx % S1_TILE_COLORS.length]!;
               const heat = S1_HEAT[idx % S1_HEAT.length] ?? 80;
               return (
-                <button
-                  key={ind.label}
-                  type="button"
-                  data-testid={`industry-card-${ind.label}`}
-                  data-state={active ? 'active' : 'inactive'}
-                  onClick={() => handleSelectIndustry(ind)}
-                  className={`ikb-focusring ikb-hovercard`}
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    cursor: 'pointer',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: 8,
-                    overflow: 'hidden',
-                    borderRadius: 12,
-                    padding: 16,
-                    textAlign: 'left',
-                    border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
-                    background: active ? `${C.ikb}08` : C.paper,
-                    boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
-                  }}
-                >
-                  {/* 选中 check 徽标 */}
-                  <span
+                <Item key={ind.label}>
+                  <motion.button
+                    type="button"
+                    data-testid={`industry-card-${ind.label}`}
+                    data-state={active ? 'active' : 'inactive'}
+                    onClick={() => handleSelectIndustry(ind)}
+                    whileHover={{ y: -4 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-glass lg-spec ikb-focusring"
                     style={{
-                      position: 'absolute',
-                      right: 10,
-                      top: 10,
+                      position: 'relative',
                       display: 'flex',
-                      height: 16,
-                      width: 16,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '50%',
-                      background: active ? C.ikb : C.paper,
-                      border: active ? 'none' : `1px solid ${C.line}`,
-                      color: active ? '#fff' : 'transparent',
-                      transition: 'all 0.2s',
+                      cursor: 'pointer',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: 8,
+                      overflow: 'hidden',
+                      borderRadius: 16,
+                      padding: 16,
+                      textAlign: 'left',
+                      width: '100%',
+                      border: active ? `1.5px solid rgba(168,197,224,0.7)` : `0.5px solid ${C.line}`,
+                      background: active ? 'rgba(168,197,224,0.18)' : 'rgba(255,255,255,0.08)',
+                      boxShadow: active ? `0 2px 16px rgba(168,197,224,0.25)` : 'none',
                     }}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 12 }}>check</span>
-                  </span>
-
-                  {/* 彩色 icon tile */}
-                  <span
-                    style={{
-                      display: 'flex',
-                      height: 40,
-                      width: 40,
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 20,
-                      borderRadius: 8,
-                      boxShadow: `0 2px 8px ${tileColor}40`,
-                      backgroundColor: tileColor,
-                    }}
-                  >
-                    {ind.emoji}
-                  </span>
-
-                  {/* 行业名 + 副标 */}
-                  <div style={{ width: '100%', minWidth: 0 }}>
-                    <h3
+                    {/* 选中 check 徽标 */}
+                    <span
                       style={{
-                        fontSize: 14,
-                        fontWeight: 700,
-                        lineHeight: 1.25,
-                        fontFamily: F.cn,
-                        color: active ? C.ikb : C.ink,
-                        margin: 0,
+                        position: 'absolute',
+                        right: 10,
+                        top: 10,
+                        display: 'flex',
+                        height: 16,
+                        width: 16,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        background: active ? C.ikb : 'rgba(255,255,255,0.12)',
+                        border: active ? 'none' : `0.5px solid ${C.line}`,
+                        color: active ? '#fff' : 'transparent',
+                        transition: 'all 0.2s',
                       }}
                     >
-                      {ind.label}
-                    </h3>
-                    <p
+                      <span className="material-symbols-outlined" style={{ fontSize: 12 }}>check</span>
+                    </span>
+
+                    {/* 彩色 icon tile */}
+                    <span
                       style={{
-                        marginTop: 2,
-                        fontSize: 10,
-                        fontWeight: 700,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                        color: '#6b7280',
-                        fontFamily: F.mono,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        margin: '2px 0 0',
+                        display: 'flex',
+                        height: 40,
+                        width: 40,
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 20,
+                        borderRadius: 10,
+                        background: 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.28))',
+                        boxShadow: `0 2px 8px rgba(168,197,224,0.25)`,
+                        color: tileColor,
                       }}
                     >
-                      {ind.category}
-                    </p>
-                  </div>
+                      {ind.emoji}
+                    </span>
 
-                  {/* 微指标: 热度进度条 */}
-                  <div style={{ width: '100%' }}>
-                    <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10 }}>
-                      <span style={{ color: '#6b7280', fontFamily: F.mono }}>热度</span>
-                      <span
+                    {/* 行业名 + 副标 */}
+                    <div style={{ width: '100%', minWidth: 0 }}>
+                      <h3
                         style={{
+                          fontSize: 14,
                           fontWeight: 700,
-                          color: active ? C.ikb : '#6b7280',
-                          fontFamily: F.mono,
+                          lineHeight: 1.25,
+                          fontFamily: F.cn,
+                          color: active ? C.ikb : C.ink,
+                          margin: 0,
+                          textShadow: C.textShadow,
                         }}
                       >
-                        {heat}%
-                      </span>
-                    </div>
-                    <div style={{ height: 4, width: '100%', borderRadius: 999, background: '#f3f4f6' }}>
-                      <div
+                        {ind.label}
+                      </h3>
+                      <p
                         style={{
-                          height: 4,
-                          borderRadius: 999,
-                          transition: 'all 0.3s',
-                          width: `${heat}%`,
-                          background: active ? C.grad : tileColor,
-                          opacity: active ? 1 : 0.65,
+                          marginTop: 2,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          color: 'rgba(255,255,255,0.6)',
+                          fontFamily: F.mono,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          margin: '2px 0 0',
                         }}
-                      />
+                      >
+                        {ind.category}
+                      </p>
                     </div>
-                  </div>
-                </button>
+
+                    {/* 微指标: 热度进度条 */}
+                    <div style={{ width: '100%' }}>
+                      <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10 }}>
+                        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>热度</span>
+                        <span
+                          style={{
+                            fontWeight: 700,
+                            color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                            fontFamily: F.mono,
+                          }}
+                        >
+                          {heat}%
+                        </span>
+                      </div>
+                      <div style={{ height: 4, width: '100%', borderRadius: 999, background: 'rgba(255,255,255,0.12)' }}>
+                        <div
+                          style={{
+                            height: 4,
+                            borderRadius: 999,
+                            transition: 'all 0.3s',
+                            width: `${heat}%`,
+                            background: active ? C.grad : 'rgba(168,197,224,0.55)',
+                            opacity: active ? 1 : 0.8,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </motion.button>
+                </Item>
               );
             })}
-          </div>
+          </RevealGroup>
         )}
 
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
+        <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -721,7 +745,7 @@ export default function Step1() {
               alignItems: 'center',
               gap: 6,
               borderRadius: 999,
-              background: `${C.ikb}15`,
+              background: 'rgba(168,197,224,0.18)',
               padding: '4px 12px',
               fontSize: 12,
               fontWeight: 600,
@@ -742,139 +766,150 @@ export default function Step1() {
             />
             模型已就绪
           </span>
-        </div>
+        </Reveal>
+
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 赛道吸引力雷达 */}
-          <div
-            className="col-span-5 ikb-hovercard"
-            style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 8,
-                    background: `${C.ikb}18`,
-                    color: C.ikb,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道吸引力雷达</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <p
-                  className="ikb-gradtext"
-                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
-                >
-                  81
-                </p>
-                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
-              </div>
-            </div>
-            {renderRadar()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
-              {S1_RADAR_DIMS.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 赛道热度趋势 */}
-          <div
-            className="col-span-7 ikb-hovercard"
-            style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 8,
-                    background: `${C.burgundy}18`,
-                    color: C.burgundyText,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道热度趋势</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {(['热度', '流量', '竞争'] as const).map((t, i) => (
+          <Reveal style={{ gridColumn: 'span 5' }}>
+            <motion.div
+              className="lg-glass"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24, height: '100%' }}
+            >
+              <div className="mb-1 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
                   <span
-                    key={t}
                     style={{
-                      borderRadius: 4,
-                      padding: '4px 10px',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      fontFamily: F.mono,
-                      background: i === 0 ? C.ikb : '#f1f3f9',
-                      color: i === 0 ? '#fff' : '#6b7280',
+                      display: 'flex',
+                      height: 38,
+                      width: 38,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      background: 'rgba(168,197,224,0.22)',
+                      color: C.ikb,
                     }}
                   >
-                    {t}
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
                   </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>赛道吸引力雷达</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p
+                    style={{
+                      fontSize: 26,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      margin: 0,
+                      fontFamily: F.display,
+                      background: C.grad,
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      color: 'transparent',
+                      textShadow: 'none',
+                    }}
+                  >
+                    81
+                  </p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                </div>
+              </div>
+              {renderRadar()}
+              <div className="mt-2 grid grid-cols-3 gap-y-2">
+                {S1_RADAR_DIMS.map((d) => (
+                  <div key={d.label} className="flex items-center gap-1.5">
+                    <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
+                  </div>
                 ))}
               </div>
-            </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>100</p>
-              <span
-                style={{
-                  marginBottom: 4,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  borderRadius: 999,
-                  background: `${C.ikb}15`,
-                  padding: '2px 8px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: C.ikb,
-                  fontFamily: F.mono,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
-              </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较同期基线</span>
-            </div>
-            {renderTrend()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
-              {S1_TREND_LABELS.map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-            </div>
-          </div>
+            </motion.div>
+          </Reveal>
+
+          {/* 赛道热度趋势 */}
+          <Reveal style={{ gridColumn: 'span 7' }}>
+            <motion.div
+              className="lg-glass"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24, height: '100%' }}
+            >
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    style={{
+                      display: 'flex',
+                      height: 38,
+                      width: 38,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      background: 'rgba(255,255,255,0.12)',
+                      color: 'rgba(255,255,255,0.94)',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>赛道热度趋势</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {(['热度', '流量', '竞争'] as const).map((t, i) => (
+                    <span
+                      key={t}
+                      style={{
+                        borderRadius: 6,
+                        padding: '4px 10px',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        fontFamily: F.mono,
+                        background: i === 0 ? 'rgba(168,197,224,0.35)' : 'rgba(255,255,255,0.10)',
+                        color: i === 0 ? C.ikb : 'rgba(255,255,255,0.6)',
+                        textShadow: C.textShadow,
+                      }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-3 flex items-end gap-3">
+                <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>100</p>
+                <span
+                  style={{
+                    marginBottom: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    borderRadius: 999,
+                    background: 'rgba(168,197,224,0.18)',
+                    padding: '2px 8px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
+                </span>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较同期基线</span>
+              </div>
+              {renderTrend()}
+              <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>
+                {S1_TREND_LABELS.map((m) => (
+                  <span key={m}>{m}</span>
+                ))}
+              </div>
+            </motion.div>
+          </Reveal>
         </div>
       </div>
 
@@ -887,10 +922,11 @@ export default function Step1() {
             left: 0,
             right: 0,
             zIndex: 30,
-            borderTop: `1px solid ${C.line}`,
-            background: 'rgba(255,255,255,0.96)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: `0 -4px 20px ${C.ikb}0F`,
+            borderTop: `0.5px solid ${C.line}`,
+            background: 'rgba(18,34,66,0.82)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            boxShadow: `0 -4px 24px rgba(168,197,224,0.12)`,
           }}
         >
           <div
@@ -905,20 +941,21 @@ export default function Step1() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontSize: 14, color: '#5A6173', fontFamily: F.cn }}>已选择:</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, textShadow: C.textShadow }}>已选择:</span>
               <span
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
                   borderRadius: 999,
-                  border: `1px solid ${C.ikb}33`,
-                  background: `${C.ikb}12`,
+                  border: `0.5px solid rgba(168,197,224,0.45)`,
+                  background: 'rgba(168,197,224,0.18)',
                   padding: '4px 12px',
                   fontSize: 12,
                   fontWeight: 700,
                   color: C.ikb,
                   fontFamily: F.cn,
+                  textShadow: C.textShadow,
                 }}
               >
                 {selectedLabel}
@@ -935,22 +972,23 @@ export default function Step1() {
                     padding: 0,
                     display: 'inline-flex',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.burgundy; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.94)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
                 >
                   <span className="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
               </span>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={handleSubmit}
-              className="ikb-gradbtn"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                borderRadius: 10,
+                borderRadius: 12,
                 padding: '12px 32px',
                 fontSize: 14,
                 fontWeight: 700,
@@ -960,11 +998,13 @@ export default function Step1() {
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: F.cn,
+                background: C.grad,
+                textShadow: C.textShadow,
               }}
             >
               确认并进入下一步
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-            </button>
+            </motion.button>
           </div>
         </div>
       )}
@@ -975,6 +1015,6 @@ export default function Step1() {
         hideTrigger
         onConfirm={handleCustomConfirm}
       />
-    </IKBLayout>
+    </LiquidShell>
   );
 }
