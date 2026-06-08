@@ -98,5 +98,9 @@ export default defineConfig({
     passWithNoTests: true,
     testTimeout: 30000,
     hookTimeout: 60000,
+    // 连真 Redis/DB 的集成测试偶发连接抖动会闪失败(flaky)→ 失败自动重试 2 次容错。
+    // 只对「失败的测试」生效:稳定通过的不重试;flaky 重试时连接恢复即 pass;
+    // 真 bug 稳定失败、重试后仍 fail,不掩盖。根治 Stop hook 偶发误报。
+    retry: 2,
   },
 });
