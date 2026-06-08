@@ -1,12 +1,12 @@
 /**
  * PrivateDomainHistoryView — ui/_14 设计稿 · 历史回看 · PRD-15 US-005
- * AC-5: DenseTable 列历史记录 · 点击恢复 View 1-3 状态
+ * 液态玻璃皮 · 业务逻辑/testid 零改动
  */
 
-import { Clock, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-import { Button } from '@/components/ui/button';
 import { trpc } from '@/lib/trpc';
+import { C, F } from '@/components/home-next/ikb/system';
 
 import type { PhaseData } from './PhaseCard';
 
@@ -60,76 +60,143 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
     onRestore(parsed.phases, parsed.summary, row.inputSummary ?? '');
   }
 
+  const thStyle: React.CSSProperties = {
+    padding: '10px 16px',
+    textAlign: 'left',
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.45)',
+    fontFamily: F.mono,
+  };
+
+  const tdStyle: React.CSSProperties = {
+    padding: '10px 16px',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
+    fontFamily: F.cn,
+    verticalAlign: 'middle',
+  };
+
   return (
-    <div className="space-y-4" data-testid="private-domain-history-view">
-      <div className="flex items-center justify-between">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="private-domain-history-view">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p className="text-label-sm text-muted-foreground uppercase tracking-wide">历史记录</p>
-          <p className="text-body-sm text-on-surface-variant mt-0.5">点击记录恢复之前的 SOP 方案</p>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.55)',
+              fontFamily: F.mono,
+            }}
+          >
+            历史记录
+          </p>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>
+            点击记录恢复之前的 SOP 方案
+          </p>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
+        <motion.button
+          type="button"
           onClick={() => void refetch()}
+          whileHover={{ y: -3 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          className="lg-glass"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            borderRadius: 10, padding: '7px 14px',
+            fontSize: 12, fontWeight: 600,
+            color: 'rgba(255,255,255,0.7)',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            fontFamily: F.cn,
+          }}
           data-testid="history-refresh-btn"
         >
-          <RefreshCw className="h-4 w-4 mr-1.5" />
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>refresh</span>
           刷新
-        </Button>
+        </motion.button>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8 text-body-sm text-muted-foreground" data-testid="history-loading">
+        <div
+          style={{ textAlign: 'center', padding: '32px 0', fontSize: 13, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn }}
+          data-testid="history-loading"
+        >
           加载中…
         </div>
       ) : rows.length === 0 ? (
         <div
-          className="rounded-lg border border-dashed border-border p-8 text-center"
+          className="lg-glass"
+          style={{
+            borderRadius: 14,
+            padding: 32,
+            textAlign: 'center',
+            border: `0.5px dashed ${C.line}`,
+          }}
           data-testid="history-empty"
         >
-          <Clock className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-body-sm text-muted-foreground">暂无历史记录</p>
-          <p className="text-body-xs text-muted-foreground mt-1">
+          <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: 8 }}>history</span>
+          <p style={{ margin: '0 0 4px', fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>暂无历史记录</p>
+          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.35)', fontFamily: F.cn }}>
             生成第一份私域 SOP 后，记录将出现在这里
           </p>
         </div>
       ) : (
         <div
-          className="rounded-lg border border-border overflow-hidden"
+          className="lg-glass"
+          style={{ borderRadius: 14, overflow: 'hidden' }}
           data-testid="history-table"
         >
-          <table className="w-full text-body-sm">
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr className="border-b border-border bg-muted/40">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground w-28">时间</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">产品描述</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground w-20">操作</th>
+              <tr style={{ borderBottom: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.04)' }}>
+                <th style={{ ...thStyle, width: 100 }}>时间</th>
+                <th style={thStyle}>产品描述</th>
+                <th style={{ ...thStyle, width: 80 }}>操作</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 cursor-pointer hover:bg-muted/30 transition-colors"
+                  style={{
+                    borderBottom: `0.5px solid ${C.line}`,
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
+                  }}
                   onClick={() => handleRestore(row)}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(168,197,224,0.08)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'; }}
                   data-testid={`history-row-${row.id}`}
                 >
-                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                  <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>
                     {formatDate(row.createdAt)}
                   </td>
-                  <td className="px-4 py-3 text-on-surface max-w-xs truncate">
+                  <td style={{ ...tdStyle, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {row.inputSummary ?? '—'}
                   </td>
-                  <td className="px-4 py-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-primary text-label-sm"
+                  <td style={tdStyle}>
+                    <motion.button
+                      type="button"
+                      whileHover={{ y: -2 }}
+                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                      style={{
+                        borderRadius: 8, padding: '4px 12px',
+                        fontSize: 12, fontWeight: 600,
+                        color: C.ikb,
+                        background: 'rgba(168,197,224,0.14)',
+                        border: 'none', cursor: 'pointer',
+                        fontFamily: F.cn,
+                      }}
                       onClick={(e) => { e.stopPropagation(); handleRestore(row); }}
                       data-testid={`restore-btn-${row.id}`}
                     >
                       恢复
-                    </Button>
+                    </motion.button>
                   </td>
                 </tr>
               ))}

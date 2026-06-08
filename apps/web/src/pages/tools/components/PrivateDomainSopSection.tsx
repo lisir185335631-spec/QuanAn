@@ -1,8 +1,7 @@
-// PRD-29.13 · 私域成交流程 · SOP 执行流程 5 step
-import { ChevronRight } from 'lucide-react';
+// PRD-29.13 · 私域成交流程 · SOP 执行流程 5 step · 液态玻璃皮
+import { motion } from 'framer-motion';
 
-import { SubCard } from '@/components/ui/sub-card';
-import { cn } from '@/lib/utils';
+import { C, F } from '@/components/home-next/ikb/system';
 
 interface SopStep {
   day: string;
@@ -18,36 +17,115 @@ interface PrivateDomainSopSectionProps {
 
 export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSectionProps) {
   return (
-    <SubCard className={cn('space-y-4', className)}>
-      <h3 className="text-base font-semibold text-on-surface flex items-center gap-2">
-        📅 SOP执行流程
+    <div
+      className={`lg-glass${className ? ` ${className}` : ''}`}
+      style={{ borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}
+    >
+      <h3
+        style={{
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 15,
+          fontWeight: 700,
+          color: C.ikb,
+          fontFamily: F.cn,
+          textShadow: C.textShadow,
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }}>calendar_month</span>
+        SOP执行流程
       </h3>
-      <div className="space-y-4">
-        {sop.map((step, i) => (
-          <div key={i} className="grid grid-cols-[80px_1fr_24px] gap-4 items-start">
-            {/* 左 · Day chip */}
-            <div className="flex items-start pt-0.5">
-              <span className="bg-primary/15 border border-primary/30 text-primary rounded-full px-3 py-1 text-xs font-mono whitespace-nowrap">
-                {step.day}
-              </span>
-            </div>
+      <div style={{ position: 'relative' }}>
+        {/* timeline track */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 14,
+            top: 0,
+            bottom: 0,
+            width: 1.5,
+            background: `linear-gradient(to bottom, ${C.ikb}, ${C.accent3})`,
+            opacity: 0.45,
+          }}
+          aria-hidden={true}
+        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {sop.map((step, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 24px', gap: 14, alignItems: 'flex-start' }}>
+              {/* 左 · Day chip */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', paddingTop: 2 }}>
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    border: `0.5px solid rgba(168,197,224,0.4)`,
+                    background: 'rgba(168,197,224,0.12)',
+                    padding: '3px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {step.day}
+                </span>
+              </div>
 
-            {/* 中 · title + goal + desc */}
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-on-surface">{step.title}</p>
-              <span className="inline-block text-xs text-muted-foreground bg-border/20 rounded px-2 py-0.5">
-                目标：{step.goal}
-              </span>
-              <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
-            </div>
+              {/* 中 · title + goal + desc */}
+              <motion.div
+                className="lg-glass"
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 12, padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}
+              >
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                  {step.title}
+                </p>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    alignSelf: 'flex-start',
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.55)',
+                    background: 'rgba(255,255,255,0.07)',
+                    borderRadius: 6,
+                    padding: '2px 8px',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  目标：{step.goal}
+                </span>
+                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                  {step.desc}
+                </p>
+              </motion.div>
 
-            {/* 右 · chevron */}
-            <div className="flex items-start pt-1">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              {/* 右 · step number */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', paddingTop: 4 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 20,
+                    width: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '50%',
+                    background: 'rgba(168,197,224,0.25)',
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  {i + 1}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </SubCard>
+    </div>
   );
 }
