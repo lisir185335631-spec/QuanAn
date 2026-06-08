@@ -1,15 +1,14 @@
 /**
- * AiVideo.tsx — /ai-video STORYBOARD 工具页 · IKB 红蓝紫渐变体系
- * IKBLayout 外壳 · inline IKB 卡 · 逻辑/testid 零改动
- * 2026-06-04
+ * AiVideo.tsx — /ai-video STORYBOARD 工具页 · iOS26 液态玻璃体系
+ * LiquidShell 外壳 · lg-glass 卡 · 逻辑/testid 零改动
+ * 2026-06-09
  */
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   AI_VIDEO_ADVICE,
   AI_VIDEO_CHIP_SUBTITLE,
@@ -44,10 +43,10 @@ import { VIDEO_TYPES } from '@/lib/constants/video-types';
 // ── 雷达六维数据 ──────────────────────────────────────────────────────────────
 const RADAR_DIMS = [
   { label: '脚本质量', value: 90, color: C.ikb },
-  { label: '分镜节奏', value: 85, color: C.burgundy },
+  { label: '分镜节奏', value: 85, color: 'rgba(255,255,255,0.85)' },
   { label: '视觉表现', value: 88, color: C.accent3 },
   { label: '平台适配', value: 82, color: C.ikb },
-  { label: '时长把控', value: 78, color: C.burgundy },
+  { label: '时长把控', value: 78, color: 'rgba(255,255,255,0.85)' },
   { label: '转化引导', value: 92, color: C.accent3 },
 ];
 
@@ -81,43 +80,70 @@ function InlinePlatformCard({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       aria-pressed={selected}
       data-testid={`platform-card-${platform.key}`}
-      className="ikb-hovercard group relative flex items-center gap-3 overflow-hidden p-3.5 text-left transition-all ikb-focusring"
+      className="lg-glass"
+      whileHover={{ y: -3 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
       style={{
-        borderColor: selected ? C.ikb : C.line,
-        background: selected ? `${C.ikb}08` : C.paper,
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        overflow: 'hidden',
+        padding: '12px 14px',
+        textAlign: 'left',
         borderRadius: 12,
-        border: `1px solid ${selected ? C.ikb : C.line}`,
+        border: selected ? `1px solid ${C.ikb}` : `1px solid ${C.line}`,
+        background: selected ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.08)',
+        cursor: 'pointer',
+        outline: 'none',
       }}
     >
       <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
-        style={{ backgroundColor: PLATFORM_COLORS[platform.key] ?? '#888' }}
+        style={{
+          display: 'flex',
+          height: 40,
+          width: 40,
+          flexShrink: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          backgroundColor: PLATFORM_COLORS[platform.key] ?? '#888',
+          color: '#fff',
+        }}
       >
-        <span className="material-symbols-outlined text-[22px]" aria-hidden={true}>
+        <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>
           {PLATFORM_ICONS[platform.key] ?? 'device_hub'}
         </span>
       </span>
-      <span className="min-w-0">
-        <span className="block text-[14px] font-bold" style={{ color: C.ink }}>{platform.label}</span>
+      <span style={{ minWidth: 0 }}>
+        <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{platform.label}</span>
       </span>
       <span
-        className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all"
         style={{
-          background: selected ? C.ikb : C.paper,
+          position: 'absolute',
+          right: 10,
+          top: 10,
+          display: 'flex',
+          height: 16,
+          width: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          background: selected ? C.ikb : 'transparent',
           color: selected ? '#fff' : 'transparent',
           border: selected ? 'none' : `1px solid ${C.line}`,
         }}
       >
-        <span className="material-symbols-outlined text-[12px]" aria-hidden={true}>
+        <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>
           check
         </span>
       </span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -132,33 +158,52 @@ function InlineVideoTypeCard({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       aria-pressed={selected}
       data-testid={`video-type-card-${type.key}`}
-      className="ikb-hovercard relative flex flex-col items-start gap-1 p-4 text-left transition-all ikb-focusring"
+      className="lg-glass"
+      whileHover={{ y: -3 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
       style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 4,
+        padding: 16,
+        textAlign: 'left',
         borderRadius: 12,
-        border: `1px solid ${selected ? C.ikb : C.line}`,
-        background: selected ? `${C.ikb}08` : C.paper,
+        border: selected ? `1px solid ${C.ikb}` : `1px solid ${C.line}`,
+        background: selected ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.08)',
+        cursor: 'pointer',
+        outline: 'none',
       }}
     >
-      <span className="block text-[14px] font-bold" style={{ color: C.ink }}>{type.label}</span>
-      <span className="text-[12px]" style={{ color: '#6b7280' }}>{type.desc}</span>
+      <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{type.desc}</span>
       <span
-        className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all"
         style={{
-          background: selected ? C.ikb : C.paper,
+          position: 'absolute',
+          right: 10,
+          top: 10,
+          display: 'flex',
+          height: 16,
+          width: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          background: selected ? C.ikb : 'transparent',
           color: selected ? '#fff' : 'transparent',
           border: selected ? 'none' : `1px solid ${C.line}`,
         }}
       >
-        <span className="material-symbols-outlined text-[12px]" aria-hidden={true}>
+        <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>
           check
         </span>
       </span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -166,26 +211,30 @@ function InlineVideoTypeCard({
 function InlineEmptyPlaceholderCard() {
   return (
     <div
-      className="flex flex-col items-center p-12 text-center"
+      className="lg-glass"
       style={{
-        borderRadius: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: 48,
+        textAlign: 'center',
+        borderRadius: 16,
         border: `2px dashed ${C.line}`,
-        background: C.base,
       }}
       data-testid="ai-video-empty-card"
     >
-      <span className="material-symbols-outlined mb-6 text-[64px]" aria-hidden={true} style={{ color: '#6b7280' }}>
+      <span className="material-symbols-outlined" style={{ fontSize: 64, marginBottom: 24, color: 'rgba(255,255,255,0.4)' }} aria-hidden={true}>
         movie
       </span>
-      <h3 className="mb-3 text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{AI_VIDEO_EMPTY_H3}</h3>
-      <p className="mb-6 max-w-md text-[14px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{AI_VIDEO_EMPTY_DESC}</p>
-      <ul className="flex flex-col gap-2 text-left">
+      <h3 style={{ marginBottom: 12, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{AI_VIDEO_EMPTY_H3}</h3>
+      <p style={{ marginBottom: 24, maxWidth: 440, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{AI_VIDEO_EMPTY_DESC}</p>
+      <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'left', listStyle: 'none', padding: 0, margin: 0 }}>
         {AI_VIDEO_EMPTY_BULLETS.map((bullet) => (
-          <li key={bullet} className="flex items-start gap-2">
-            <span className="material-symbols-outlined mt-0.5 text-[16px]" aria-hidden={true} style={{ color: C.ikb }}>
+          <li key={bullet} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 16, color: C.ikb, flexShrink: 0 }} aria-hidden={true}>
               chevron_right
             </span>
-            <span className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{bullet}</span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{bullet}</span>
           </li>
         ))}
       </ul>
@@ -209,46 +258,76 @@ function InlineResultTitleCard({
 }) {
   return (
     <div
-      className="relative overflow-hidden p-6 ikb-hovercard"
+      className="lg-glass"
       style={{
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        position: 'relative',
+        overflow: 'hidden',
+        padding: 24,
+        borderRadius: 16,
       }}
       data-testid="result-title-card"
     >
       <div
-        className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: `${C.ikb}12` }}
+        style={{
+          pointerEvents: 'none',
+          position: 'absolute',
+          right: -48,
+          top: -48,
+          height: 176,
+          width: 176,
+          borderRadius: '50%',
+          filter: 'blur(32px)',
+          background: 'rgba(168,197,224,0.18)',
+        }}
       />
-      <div className="relative flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
           <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-lg"
-            style={{ background: C.grad }}
+            style={{
+              display: 'flex',
+              height: 48,
+              width: 48,
+              flexShrink: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 14,
+              background: C.grad,
+            }}
           >
-            <span className="material-symbols-outlined text-white" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ color: '#fff', fontSize: 24 }} aria-hidden={true}>
               movie
             </span>
           </div>
           <div>
             <span
-              className="mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
-              style={{ background: `${C.ikb}18`, color: C.ikb }}
+              style={{
+                marginBottom: 6,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 9999,
+                padding: '2px 10px',
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                background: 'rgba(168,197,224,0.2)',
+                color: C.ikb,
+              }}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
+              <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
               Storyboard
             </span>
-            <h2 className="mb-2 text-[20px] font-bold" style={{ color: C.ink }}>{title}</h2>
-            <div className="flex items-center gap-4 text-[13px]" style={{ color: '#6b7280' }}>
-              <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>
+            <h2 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{title}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>
                   timer
                 </span>
                 {duration}
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>
                   grid_view
                 </span>
                 {shotCount}
@@ -256,19 +335,27 @@ function InlineResultTitleCard({
             </div>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 8 }}>
           <button
             type="button"
             onClick={onCopy}
             data-testid="result-copy-btn"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all ikb-focusring"
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 10,
+              padding: '6px 12px',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
               border: `1px solid ${C.line}`,
               color: C.ikb,
-              background: C.paper,
+              background: 'rgba(255,255,255,0.08)',
+              outline: 'none',
             }}
           >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>
               content_copy
             </span>
             {AI_VIDEO_COPY_ALL_TEXT}
@@ -277,10 +364,22 @@ function InlineResultTitleCard({
             type="button"
             onClick={onExport}
             data-testid="result-export-btn"
-            className="ikb-gradbtn flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 ikb-focusring"
-            style={{ background: C.grad }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 10,
+              padding: '6px 12px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              border: 'none',
+              color: '#fff',
+              background: C.grad,
+              outline: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>
               download
             </span>
             {AI_VIDEO_EXPORT_CSV_TEXT}
@@ -302,14 +401,25 @@ const OPACITY_MAP: Record<string, number> = {
 
 function InlineTimelineBar({ segments }: { segments: ReadonlyArray<string> }) {
   return (
-    <div className="flex gap-1" data-testid="ai-video-timeline">
+    <div style={{ display: 'flex', gap: 4 }} data-testid="ai-video-timeline">
       {segments.map((seg, idx) => {
         const opacity = OPACITY_MAP[seg] ?? 0.7;
         return (
           <div
             key={idx}
-            className="flex h-12 flex-1 items-center justify-center rounded-lg text-[11px] font-bold text-white"
-            style={{ background: C.ikb, opacity }}
+            style={{
+              display: 'flex',
+              height: 48,
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              fontSize: 11,
+              fontWeight: 700,
+              color: '#fff',
+              background: `rgba(168,197,224,${opacity})`,
+              textShadow: C.textShadow,
+            }}
             data-testid={`timeline-seg-${idx + 1}`}
           >
             {seg}
@@ -326,8 +436,7 @@ const ADVICE_ICONS: Record<string, string> = {
   editing: 'cut',
   music: 'music_note',
 };
-// 轮转三主色
-const ADVICE_ACCENT: [string, string, string] = [C.ikb, C.burgundy, C.accent3];
+const ADVICE_ACCENT: [string, string, string] = [C.ikb, 'rgba(255,255,255,0.85)', C.accent3];
 
 function InlineAdviceCard({
   advice,
@@ -338,28 +447,38 @@ function InlineAdviceCard({
 }) {
   const accent = ADVICE_ACCENT[index % 3] ?? C.ikb;
   return (
-    <div
-      className="flex items-start gap-4 rounded-xl p-4 ikb-hovercard"
-      style={{ border: `1px solid ${C.line}`, background: C.paper }}
+    <motion.div
+      className="lg-glass"
+      whileHover={{ y: -3 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+      style={{ display: 'flex', alignItems: 'flex-start', gap: 16, borderRadius: 14, padding: 16 }}
       data-testid={`advice-card-${advice.id}`}
     >
       <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-        style={{ background: `${accent}18` }}
+        style={{
+          display: 'flex',
+          height: 36,
+          width: 36,
+          flexShrink: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          background: 'rgba(168,197,224,0.2)',
+        }}
       >
         <span
-          className="material-symbols-outlined text-[20px]"
-          style={{ color: accent }}
+          className="material-symbols-outlined"
+          style={{ fontSize: 20, color: accent }}
           aria-hidden={true}
         >
           {ADVICE_ICONS[advice.id] ?? 'lightbulb'}
         </span>
       </span>
-      <p className="text-[14px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>
-        <span className="font-bold" style={{ color: C.ink }}>{advice.label}</span>
+      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>
+        <span style={{ fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{advice.label}</span>
         {advice.content}
       </p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -372,57 +491,96 @@ function InlineShotCard({
   isLast: boolean;
 }) {
   return (
-    <div className="relative flex gap-4" data-testid={`shot-card-${shot.num}`}>
+    <div style={{ position: 'relative', display: 'flex', gap: 16 }} data-testid={`shot-card-${shot.num}`}>
       {/* 时间轴竖线 */}
-      <div className="flex flex-col items-center">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold shadow-sm"
-          style={{ border: `2px solid ${C.ikb}`, background: C.paper, color: C.ikb }}
+          style={{
+            display: 'flex',
+            height: 36,
+            width: 36,
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            fontSize: 13,
+            fontWeight: 800,
+            color: C.ikb,
+            border: `2px solid ${C.ikb}`,
+            background: 'rgba(168,197,224,0.12)',
+            textShadow: C.textShadow,
+            fontFamily: F.mono,
+          }}
         >
           {parseInt(shot.num, 10)}
         </div>
         {!isLast && (
           <div
-            className="w-0.5 flex-1"
             style={{
-              background: `linear-gradient(to bottom, ${C.ikb}50, ${C.burgundy}30)`,
-              minHeight: '20px',
+              width: 2,
+              flex: 1,
+              minHeight: 20,
+              background: 'linear-gradient(to bottom, rgba(168,197,224,0.5), rgba(255,255,255,0.1))',
             }}
           />
         )}
       </div>
       {/* カード */}
       <div
-        className="mb-4 flex-1 p-5 ikb-hovercard"
-        style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
+        className="lg-glass"
+        style={{ marginBottom: 16, flex: 1, padding: 20, borderRadius: 14 }}
       >
         {/* ヘッダー: SHOT# + 秒 + 景别 chip */}
-        <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div style={{ marginBottom: 12, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
           <span
-            className="rounded-md px-2.5 py-0.5 text-[11px] font-bold text-white"
-            style={{ background: C.ikb }}
+            style={{
+              borderRadius: 6,
+              padding: '2px 10px',
+              fontSize: 11,
+              fontWeight: 700,
+              color: '#fff',
+              background: C.ikb,
+              textShadow: C.textShadow,
+            }}
           >
             SHOT {shot.num}
           </span>
           <span
-            className="flex items-center gap-1 rounded-md px-2.5 py-0.5 text-[11px] font-medium"
-            style={{ border: `1px solid ${C.line}`, background: C.base, color: '#444653' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              borderRadius: 6,
+              padding: '2px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              border: `1px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.7)',
+            }}
           >
-            <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden={true}>
               timer
             </span>
             {shot.duration}
           </span>
           <span
-            className="rounded-md px-2.5 py-0.5 text-[11px] font-medium"
-            style={{ border: `1px solid ${C.ikb}40`, background: `${C.ikb}12`, color: C.ikb }}
+            style={{
+              borderRadius: 6,
+              padding: '2px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              border: `1px solid rgba(168,197,224,0.4)`,
+              background: 'rgba(168,197,224,0.15)',
+              color: C.ikb,
+            }}
           >
             {shot.framing}
           </span>
         </div>
 
         {/* 4 cell grid: 角度/运镜/情绪/转场 */}
-        <div className="mb-3 grid grid-cols-2 gap-2">
+        <div style={{ marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
             { label: SHOT_LABEL_ANGLE, value: shot.angle },
             { label: SHOT_LABEL_MOVEMENT, value: shot.movement },
@@ -431,45 +589,53 @@ function InlineShotCard({
           ].map(({ label, value }) => (
             <div
               key={label}
-              className="rounded-lg p-2.5"
-              style={{ border: `1px solid ${C.line}`, background: C.base }}
+              style={{
+                borderRadius: 8,
+                padding: 10,
+                border: `1px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.06)',
+              }}
             >
-              <p className="mb-1 text-[11px] font-bold" style={{ color: '#6b7280' }}>{label}</p>
-              <p className="text-[12px] leading-snug" style={{ color: '#444653' }}>{value}</p>
+              <p style={{ marginBottom: 4, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', margin: '0 0 4px' }}>{label}</p>
+              <p style={{ fontSize: 12, lineHeight: 1.4, color: 'rgba(255,255,255,0.75)', margin: 0 }}>{value}</p>
             </div>
           ))}
         </div>
 
         {/* 场景 + 台词/旁白 */}
-        <div className="mb-3 grid grid-cols-2 gap-4">
+        <div style={{ marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
             <p
-              className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold before:h-3 before:w-0.5 before:rounded-full before:content-['']"
-              style={{ color: C.ink }}
+              style={{ marginBottom: 6, fontSize: 12, fontWeight: 800, color: C.ink, margin: '0 0 6px', fontFamily: F.cn, textShadow: C.textShadow }}
             >
               <span
-                className="before:h-3 before:w-0.5 before:rounded-full"
                 style={{ borderLeft: `3px solid ${C.ikb}`, paddingLeft: 6 }}
               >
                 {SHOT_LABEL_SCENE}
               </span>
             </p>
-            <p className="text-[13px] leading-relaxed" style={{ color: '#444653' }}>{shot.scene}</p>
+            <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>{shot.scene}</p>
           </div>
           <div>
             <p
-              className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold"
-              style={{ color: C.ink }}
+              style={{ marginBottom: 6, fontSize: 12, fontWeight: 800, color: C.ink, margin: '0 0 6px', fontFamily: F.cn, textShadow: C.textShadow }}
             >
               <span
-                style={{ borderLeft: `3px solid ${C.burgundy}`, paddingLeft: 6 }}
+                style={{ borderLeft: `3px solid rgba(255,255,255,0.6)`, paddingLeft: 6 }}
               >
                 {SHOT_LABEL_DIALOGUE}
               </span>
             </p>
             <div
-              className="rounded-lg px-3 py-2 text-[13px] leading-relaxed"
-              style={{ border: `1px solid ${C.line}`, background: C.base, color: '#444653' }}
+              style={{
+                borderRadius: 8,
+                padding: '8px 12px',
+                fontSize: 13,
+                lineHeight: 1.6,
+                border: `1px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.06)',
+                color: 'rgba(255,255,255,0.75)',
+              }}
             >
               {shot.dialogue}
             </div>
@@ -477,10 +643,9 @@ function InlineShotCard({
         </div>
 
         {/* 动作指导 */}
-        <div className="mb-3">
+        <div style={{ marginBottom: 12 }}>
           <p
-            className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold"
-            style={{ color: C.ink }}
+            style={{ marginBottom: 6, fontSize: 12, fontWeight: 800, color: C.ink, margin: '0 0 6px', fontFamily: F.cn, textShadow: C.textShadow }}
           >
             <span
               style={{ borderLeft: `3px solid ${C.accent3}`, paddingLeft: 6 }}
@@ -488,42 +653,63 @@ function InlineShotCard({
               {SHOT_LABEL_ACTION}
             </span>
           </p>
-          <p className="text-[13px] leading-relaxed" style={{ color: '#444653' }}>{shot.action}</p>
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>{shot.action}</p>
         </div>
 
         {/* 字幕/音乐/提示 chip */}
-        <div className="flex flex-col gap-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div
-            className="flex items-start gap-1.5 rounded-lg px-3 py-2"
-            style={{ border: `1px solid ${C.line}`, background: C.base }}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 6,
+              borderRadius: 8,
+              padding: '8px 12px',
+              border: `1px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.06)',
+            }}
             data-testid={`shot-chip-subtitle-${shot.num}`}
           >
-            <span className="material-symbols-outlined mt-0.5 text-[14px]" aria-hidden={true} style={{ color: C.ikb }}>
+            <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 14, color: C.ikb, flexShrink: 0 }} aria-hidden={true}>
               subtitles
             </span>
-            <span className="text-[12px]" style={{ color: '#444653' }}>{shot.subtitle}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{shot.subtitle}</span>
           </div>
-          {/* 音乐 chip — 用 accent3 紫点缀 */}
+          {/* 音乐 chip — 冷蓝点缀 */}
           <div
-            className="flex items-start gap-1.5 rounded-lg px-3 py-2"
-            style={{ border: `1px solid ${C.accent3}40`, background: `${C.accent3}0a` }}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 6,
+              borderRadius: 8,
+              padding: '8px 12px',
+              border: `1px solid rgba(168,197,224,0.35)`,
+              background: 'rgba(168,197,224,0.08)',
+            }}
             data-testid={`shot-chip-music-${shot.num}`}
           >
-            <span className="material-symbols-outlined mt-0.5 text-[14px]" aria-hidden={true} style={{ color: C.accent3 }}>
+            <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 14, color: C.accent3, flexShrink: 0 }} aria-hidden={true}>
               music_note
             </span>
-            <span className="text-[12px]" style={{ color: '#444653' }}>{shot.music}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{shot.music}</span>
           </div>
-          {/* 拍摄提示 chip — 用 burgundy 暖点缀 */}
+          {/* 拍摄提示 chip — 白点缀 */}
           <div
-            className="flex items-start gap-1.5 rounded-lg px-3 py-2"
-            style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}08` }}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 6,
+              borderRadius: 8,
+              padding: '8px 12px',
+              border: `1px solid rgba(255,255,255,0.15)`,
+              background: 'rgba(255,255,255,0.06)',
+            }}
             data-testid={`shot-chip-tip-${shot.num}`}
           >
-            <span className="material-symbols-outlined mt-0.5 text-[14px]" aria-hidden={true} style={{ color: C.burgundy }}>
+            <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 14, color: 'rgba(255,255,255,0.75)', flexShrink: 0 }} aria-hidden={true}>
               lightbulb
             </span>
-            <span className="text-[12px]" style={{ color: '#444653' }}>{shot.tip}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{shot.tip}</span>
           </div>
         </div>
       </div>
@@ -548,43 +734,109 @@ export default function AiVideo() {
     VIDEO_TYPES.find((vt) => vt.key === videoType)?.label ?? videoType;
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
+      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ flexShrink: 0 }}>
+          <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
-              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               智能引擎
             </span>
             <span
-              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ border: `1px solid ${C.ikb}40`, background: `${C.ikb}18`, color: C.ikb, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                background: 'rgba(168,197,224,0.18)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               AI 视频
             </span>
-          </div>
+          </Reveal>
+          {/* 主标题 — 冷蓝渐变字 */}
           <h1
-            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
-            style={{ fontFamily: F.display }}
+            data-testid="ai-video-title"
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: 48,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
           >
             {AI_VIDEO_CHIP_TITLE}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>
+          <p
+            style={{
+              marginTop: 10,
+              maxWidth: 820,
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: 'rgba(255,255,255,0.75)',
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
+          >
             {AI_VIDEO_CHIP_SUBTITLE}
           </p>
         </div>
-        <div className="flex shrink-0 flex-nowrap gap-3">
+        <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
           <button
             type="button"
             aria-label="复制全部分镜"
             onClick={() => toast.success('已复制全部分镜')}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors ikb-focusring"
-            style={{ border: `1px solid ${C.line}`, background: C.paper, color: C.ink, fontFamily: F.mono }}
+            style={{
+              display: 'flex',
+              flexShrink: 0,
+              alignItems: 'center',
+              gap: 8,
+              whiteSpace: 'nowrap',
+              borderRadius: 10,
+              padding: '10px 16px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              border: `1px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.08)',
+              color: C.ink,
+              fontFamily: F.mono,
+              textShadow: C.textShadow,
+              outline: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
               content_copy
             </span>
             复制全部
@@ -593,10 +845,24 @@ export default function AiVideo() {
             type="button"
             aria-label="导出 CSV"
             onClick={() => toast.info('CSV 导出 · 即将上线')}
-            className="ikb-gradbtn flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md ikb-focusring"
-            style={{ background: C.grad }}
+            style={{
+              display: 'flex',
+              flexShrink: 0,
+              alignItems: 'center',
+              gap: 8,
+              whiteSpace: 'nowrap',
+              borderRadius: 10,
+              padding: '10px 16px',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              border: 'none',
+              color: '#fff',
+              background: C.grad,
+              outline: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
               download
             </span>
             导出方案
@@ -605,379 +871,580 @@ export default function AiVideo() {
       </header>
 
       {/* ── 输入卡 ─────────────────────────────────────────── */}
-      <section
-        className="relative mb-12 overflow-hidden p-6"
-        style={{
-          borderRadius: 12,
-          border: `1px solid ${C.line}`,
-          background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-        }}
-        data-testid="storyboard-chip"
-      >
-        <div
-          className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
-          style={{ background: `${C.ikb}0d` }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
-          style={{ background: `${C.burgundy}0a` }}
-        />
-
-        {/* Section header */}
-        <div
-          className="relative mb-6 flex items-center justify-between pb-5"
-          style={{ borderBottom: `1px solid ${C.line}` }}
+      <Reveal>
+        <section
+          className="lg-glass"
+          style={{
+            position: 'relative',
+            marginBottom: 40,
+            overflow: 'hidden',
+            padding: 24,
+            borderRadius: 20,
+          }}
+          data-testid="storyboard-chip"
         >
-          <div className="flex items-center gap-3">
-            <span
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
-              style={{ background: C.grad }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true}>
-                movie
-              </span>
-            </span>
-            <div>
-              <h2 className="text-[18px] font-bold" style={{ color: C.ink }}>STORYBOARD</h2>
-              <p className="text-[12px]" style={{ color: '#6b7280' }}>专业分镜表生成器 · 文案一键转拍摄方案</p>
-            </div>
-          </div>
-          {/* 待生成状态 badge — 用 IKB 蓝替代绿 */}
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: `${C.ikb}14`, color: C.ikb }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
-            待生成
-          </span>
-        </div>
+          <div
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              right: -64,
+              top: -64,
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              filter: 'blur(32px)',
+              background: 'rgba(168,197,224,0.15)',
+            }}
+          />
+          <div
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              bottom: -80,
+              left: '33%',
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              filter: 'blur(32px)',
+              background: 'rgba(255,255,255,0.06)',
+            }}
+          />
 
-        <div className="relative space-y-7">
-          {/* 文案内容 */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <label
-                htmlFor="ai-video-text"
-                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
+          {/* Section header */}
+          <div
+            style={{
+              position: 'relative',
+              marginBottom: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingBottom: 20,
+              borderBottom: `1px solid ${C.line}`,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 44,
+                  width: 44,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 14,
+                  color: '#fff',
+                  background: C.grad,
+                }}
               >
-                <span
-                  className="h-3.5 w-1 rounded-full"
-                  style={{ background: C.grad, display: 'inline-block', flexShrink: 0 }}
-                />
-                {AI_VIDEO_LABEL_TEXT}
-              </label>
-              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280' }}>
-                <span className="material-symbols-outlined text-[14px]" aria-hidden={true} style={{ color: C.burgundy }}>
-                  auto_awesome
+                <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>
+                  movie
                 </span>
-                AI 据此生成分镜+拍摄方案
               </span>
-            </div>
-            <div
-              className="overflow-hidden rounded-xl transition-all focus-within:ring-2"
-              style={{
-                border: `1px solid ${C.line}`,
-                background: C.base,
-              }}
-            >
-              <textarea
-                id="ai-video-text"
-                value={text}
-                onChange={(e) => setText(e.target.value.slice(0, 5000))}
-                maxLength={5000}
-                rows={10}
-                placeholder="输入你的短视频文案，包含标题、话题、正反方观点、结论等结构"
-                className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
-                style={{ fontFamily: F.cn, color: C.ink }}
-                data-testid="ai-video-textarea"
-              />
-              <div
-                className="flex items-center justify-between gap-3 px-4 py-2.5"
-                style={{ borderTop: `1px solid ${C.line}`, background: 'rgba(255,255,255,0.6)' }}
-              >
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px]" style={{ color: '#6b7280' }}>建议包含</span>
-                  {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
-                      style={{ background: C.base, color: '#6b7280', border: `1px solid ${C.line}` }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <span
-                  className="shrink-0 text-[11px] tabular-nums"
-                  style={{ color: '#6b7280' }}
-                  data-testid="ai-video-char-count"
-                >
-                  {text.length}/5000
-                </span>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>STORYBOARD</h2>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>专业分镜表生成器 · 文案一键转拍摄方案</p>
               </div>
             </div>
-          </div>
-
-          {/* 发布平台 */}
-          <div>
+            {/* 待生成状态 badge */}
             <span
-              id="aiv-platform-label"
-              className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-              style={{ color: C.ink, fontFamily: F.cn }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 9999,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.ikb,
+              }}
             >
-              <span
-                className="h-3.5 w-1 rounded-full"
-                style={{ background: C.grad, display: 'inline-block', flexShrink: 0 }}
-              />
-              {AI_VIDEO_LABEL_PLATFORM}
+              <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
+              待生成
             </span>
-            <div role="group" aria-labelledby="aiv-platform-label" className="grid grid-cols-5 gap-3" data-testid="platform-grid">
-              {AI_VIDEO_PLATFORMS.map((p) => (
-                <InlinePlatformCard
-                  key={p.key}
-                  platform={p}
-                  selected={p.key === platform}
-                  onClick={() => setPlatform(p.key)}
-                />
-              ))}
-            </div>
           </div>
 
-          {/* 视频类型 */}
-          <div>
-            <span
-              id="aiv-type-label"
-              className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-              style={{ color: C.ink, fontFamily: F.cn }}
-            >
-              <span
-                className="h-3.5 w-1 rounded-full"
-                style={{ background: C.grad, display: 'inline-block', flexShrink: 0 }}
-              />
-              {AI_VIDEO_LABEL_TYPE}
-            </span>
-            <div role="group" aria-labelledby="aiv-type-label" className="grid grid-cols-3 gap-3" data-testid="video-type-grid">
-              {VIDEO_TYPES.map((vt) => (
-                <InlineVideoTypeCard
-                  key={vt.key}
-                  type={vt}
-                  selected={vt.key === videoType}
-                  onClick={() => setVideoType(vt.key)}
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 28 }}>
+            {/* 文案内容 */}
+            <div>
+              <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <label
+                  htmlFor="ai-video-text"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    fontWeight: 800,
+                    letterSpacing: '0.04em',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  <span
+                    style={{
+                      height: 14,
+                      width: 4,
+                      borderRadius: 2,
+                      background: C.grad,
+                      display: 'inline-block',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {AI_VIDEO_LABEL_TEXT}
+                </label>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>
+                    auto_awesome
+                  </span>
+                  AI 据此生成分镜+拍摄方案
+                </span>
+              </div>
+              <div
+                className="lg-glass"
+                style={{
+                  overflow: 'hidden',
+                  borderRadius: 14,
+                }}
+              >
+                <textarea
+                  id="ai-video-text"
+                  value={text}
+                  onChange={(e) => setText(e.target.value.slice(0, 5000))}
+                  maxLength={5000}
+                  rows={10}
+                  placeholder="输入你的短视频文案，包含标题、话题、正反方观点、结论等结构"
+                  style={{
+                    width: '100%',
+                    resize: 'none',
+                    border: 0,
+                    background: 'transparent',
+                    padding: 16,
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    fontFamily: F.cn,
+                    color: C.ink,
+                    outline: 'none',
+                  }}
+                  data-testid="ai-video-textarea"
                 />
-              ))}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    padding: '10px 16px',
+                    borderTop: `1px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.06)',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>建议包含</span>
+                    {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
+                      <span
+                        key={t}
+                        style={{
+                          borderRadius: 9999,
+                          padding: '2px 10px',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          background: 'rgba(255,255,255,0.08)',
+                          color: 'rgba(255,255,255,0.6)',
+                          border: `1px solid ${C.line}`,
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span
+                    style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.5)', fontVariantNumeric: 'tabular-nums' }}
+                    data-testid="ai-video-char-count"
+                  >
+                    {text.length}/5000
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* 主 CTA */}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleGenerate}
-              data-testid="ai-video-cta"
-              className="ikb-gradbtn flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all hover:-translate-y-0.5 active:translate-x-px active:translate-y-px active:shadow-sm ikb-focusring"
-              style={{ background: C.grad, fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
-                auto_awesome
+            {/* 发布平台 */}
+            <div>
+              <span
+                id="aiv-platform-label"
+                style={{
+                  marginBottom: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 14,
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  color: C.ink,
+                  fontFamily: F.cn,
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span
+                  style={{ height: 14, width: 4, borderRadius: 2, background: C.grad, display: 'inline-block', flexShrink: 0 }}
+                />
+                {AI_VIDEO_LABEL_PLATFORM}
               </span>
-              {AI_VIDEO_CTA_TEXT}
-            </button>
+              <div role="group" aria-labelledby="aiv-platform-label" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }} data-testid="platform-grid">
+                {AI_VIDEO_PLATFORMS.map((p) => (
+                  <InlinePlatformCard
+                    key={p.key}
+                    platform={p}
+                    selected={p.key === platform}
+                    onClick={() => setPlatform(p.key)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 视频类型 */}
+            <div>
+              <span
+                id="aiv-type-label"
+                style={{
+                  marginBottom: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 14,
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  color: C.ink,
+                  fontFamily: F.cn,
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span
+                  style={{ height: 14, width: 4, borderRadius: 2, background: C.grad, display: 'inline-block', flexShrink: 0 }}
+                />
+                {AI_VIDEO_LABEL_TYPE}
+              </span>
+              <div role="group" aria-labelledby="aiv-type-label" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} data-testid="video-type-grid">
+                {VIDEO_TYPES.map((vt) => (
+                  <InlineVideoTypeCard
+                    key={vt.key}
+                    type={vt}
+                    selected={vt.key === videoType}
+                    onClick={() => setVideoType(vt.key)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 主 CTA */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                data-testid="ai-video-cta"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 14,
+                  padding: '12px 32px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  border: 'none',
+                  color: '#fff',
+                  background: C.grad,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                  outline: 'none',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
+                  auto_awesome
+                </span>
+                {AI_VIDEO_CTA_TEXT}
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
         {/* 分镜数 · 环形进度 */}
-        <div
-          className="p-5 ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.ikb}30`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}18`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
-                movie
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 18, padding: 20 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
+                  movie
+                </span>
               </span>
-            </span>
-            {/* 完整 badge — 用 IKB 蓝 */}
-            <span
-              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}14`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>
-                trending_up
+              {/* 完整 badge */}
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden={true}>
+                  trending_up
+                </span>
+                完整
               </span>
-              完整
-            </span>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink }}>
-                {AI_VIDEO_MOCK_SHOTS.length}
-                <span className="text-[15px]" style={{ color: '#6b7280' }}> 个</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280' }}>分镜数</p>
             </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="none"
-                  stroke={C.ikb}
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeDasharray={`${Math.min(100, AI_VIDEO_MOCK_SHOTS.length * 10)} 100`}
-                />
-              </svg>
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
+                  {AI_VIDEO_MOCK_SHOTS.length}
+                  <span style={{ marginLeft: 4, fontSize: 15, fontWeight: 400, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 个</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>分镜数</p>
+              </div>
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.915"
+                    fill="none"
+                    stroke={C.ikb}
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeDasharray={`${Math.min(100, AI_VIDEO_MOCK_SHOTS.length * 10)} 100`}
+                  />
+                </svg>
+              </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </Item>
 
         {/* 总时长 · 迷你柱 */}
-        <div
-          className="p-5 ikb-hovercard"
-          style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.burgundy}18`, color: C.burgundy }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
-                timer
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 18, padding: 20 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(255,255,255,0.12)',
+                  color: 'rgba(255,255,255,0.85)',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
+                  timer
+                </span>
               </span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.burgundy}14`, color: C.burgundy }}
-            >
-              已测算
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[22px] font-bold leading-none" style={{ color: C.ink }}>
-              {AI_VIDEO_RESULT_TOTAL_DURATION}
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280' }}>总时长</p>
-          </div>
-          <div className="mt-3 flex h-6 items-end gap-1">
-            {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t"
-                style={{ height: `${h}%`, background: `${C.burgundy}b0` }}
-              />
-            ))}
-          </div>
-        </div>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(255,255,255,0.12)',
+                  color: 'rgba(255,255,255,0.8)',
+                }}
+              >
+                已测算
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
+                {AI_VIDEO_RESULT_TOTAL_DURATION}
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>总时长</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
+              {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
+                <div
+                  key={i}
+                  style={{ flex: 1, borderRadius: '2px 2px 0 0', height: `${h}%`, background: 'rgba(255,255,255,0.4)' }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </Item>
 
         {/* 目标平台 · 进度条 */}
-        <div
-          className="p-5 ikb-hovercard"
-          style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.accent3}18`, color: C.accent3 }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
-                hub
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 18, padding: 20 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.accent3,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
+                  hub
+                </span>
               </span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.accent3}18`, color: C.purpleText }}
-            >
-              已选
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[20px] font-bold leading-none" style={{ color: C.ink }}>
-              {selectedPlatformLabel}
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280' }}>目标平台</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}20` }}>
-            <div
-              className="h-2 w-full rounded-full"
-              style={{ background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
-            />
-          </div>
-        </div>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: 'rgba(255,255,255,0.8)',
+                }}
+              >
+                已选
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
+                {selectedPlatformLabel}
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>目标平台</p>
+            </div>
+            <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(255,255,255,0.12)' }}>
+              <div
+                style={{ height: 8, width: '100%', borderRadius: 9999, background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
+              />
+            </div>
+          </motion.div>
+        </Item>
 
         {/* 视频类型 · 关键词 chip */}
-        <div
-          className="p-5 ikb-hovercard"
-          style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}18`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
-                video_library
-              </span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}14`, color: C.ikb }}
-            >
-              {VIDEO_TYPES.length} 种
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[20px] font-bold leading-none" style={{ color: C.ink }}>
-              {selectedTypeLabel}
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280' }}>视频类型</p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {['口播', '剧情', 'Vlog'].map((k) => (
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 18, padding: 20 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
-                key={k}
-                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
-                style={{ background: `${C.ikb}14`, color: C.ikb }}
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
               >
-                {k}
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
+                  video_library
+                </span>
               </span>
-            ))}
-          </div>
-        </div>
-      </div>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.ikb,
+                }}
+              >
+                {VIDEO_TYPES.length} 种
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
+                {selectedTypeLabel}
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>视频类型</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {['口播', '剧情', 'Vlog'].map((k) => (
+                <span
+                  key={k}
+                  style={{
+                    borderRadius: 4,
+                    padding: '2px 6px',
+                    fontSize: 10,
+                    fontWeight: 500,
+                    background: 'rgba(168,197,224,0.18)',
+                    color: C.ikb,
+                  }}
+                >
+                  {k}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </Item>
+      </RevealGroup>
 
       {/* ── Empty 态 · isResultShown=false ─────────────────── */}
       {!isResultShown && <InlineEmptyPlaceholderCard />}
 
       {/* ── Result 态 · isResultShown=true ─────────────────── */}
       {isResultShown && (
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* 清空按钮 */}
-          <div className="flex justify-center">
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <button
               type="button"
               onClick={handleRestart}
               data-testid="ai-video-restart"
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors ikb-focusring"
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 10,
+                padding: '8px 16px',
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: 'pointer',
                 border: `1px solid ${C.line}`,
-                color: '#6b7280',
-                background: C.paper,
+                color: 'rgba(255,255,255,0.6)',
+                background: 'rgba(255,255,255,0.08)',
+                outline: 'none',
               }}
             >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
                 delete
               </span>
               {AI_VIDEO_RESTART_TEXT}
@@ -997,106 +1464,151 @@ export default function AiVideo() {
           <InlineTimelineBar segments={AI_VIDEO_TIMELINE_SEGMENTS} />
 
           {/* 3 段建议 */}
-          <div className="flex flex-col gap-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {AI_VIDEO_ADVICE.map((a, i) => (
               <InlineAdviceCard key={a.id} advice={a} index={i} />
             ))}
           </div>
 
           {/* 10 SHOT 分镜时间线 */}
-          <div
-            className="p-6 ikb-hovercard"
-            style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            }}
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
-                  style={{ background: C.grad }}
-                >
-                  <span className="material-symbols-outlined" aria-hidden={true}>
-                    movie
-                  </span>
-                </span>
-                <div>
+          <Reveal>
+            <div
+              className="lg-glass"
+              style={{
+                padding: 24,
+                borderRadius: 20,
+              }}
+            >
+              <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span
-                    className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
-                    style={{ background: `${C.ikb}18`, color: C.ikb }}
+                    style={{
+                      display: 'flex',
+                      height: 44,
+                      width: 44,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 14,
+                      color: '#fff',
+                      background: C.grad,
+                    }}
                   >
-                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
-                    Storyboard
+                    <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>
+                      movie
+                    </span>
                   </span>
-                  <h3 className="text-[20px] font-bold" style={{ color: C.ink }}>分镜脚本</h3>
+                  <div>
+                    <span
+                      style={{
+                        marginBottom: 4,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        borderRadius: 9999,
+                        padding: '2px 10px',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        background: 'rgba(168,197,224,0.2)',
+                        color: C.ikb,
+                      }}
+                    >
+                      <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
+                      Storyboard
+                    </span>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>分镜脚本</h3>
+                  </div>
                 </div>
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    padding: '4px 12px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    background: 'rgba(168,197,224,0.18)',
+                    color: C.ikb,
+                  }}
+                >
+                  {AI_VIDEO_MOCK_SHOTS.length} 镜头
+                </span>
               </div>
-              <span
-                className="rounded-full px-3 py-1 text-[12px] font-bold"
-                style={{ background: `${C.ikb}14`, color: C.ikb }}
-              >
-                {AI_VIDEO_MOCK_SHOTS.length} 镜头
-              </span>
+              <div>
+                {AI_VIDEO_MOCK_SHOTS.map((shot, idx) => (
+                  <InlineShotCard
+                    key={shot.num}
+                    shot={shot}
+                    isLast={idx === AI_VIDEO_MOCK_SHOTS.length - 1}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="space-y-0">
-              {AI_VIDEO_MOCK_SHOTS.map((shot, idx) => (
-                <InlineShotCard
-                  key={shot.num}
-                  shot={shot}
-                  isLast={idx === AI_VIDEO_MOCK_SHOTS.length - 1}
-                />
-              ))}
-            </div>
-          </div>
+          </Reveal>
         </div>
       )}
 
       {/* ── 数据洞察(雷达 + 情绪曲线)─────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>
-          insights
-        </span>
-        <h2 className="text-[16px] font-bold" style={{ color: C.ink }}>数据洞察</h2>
-        <span className="text-[12px]" style={{ color: '#6b7280' }}>· AI 综合评估 · 实时测算</span>
-        {/* 模型就绪 badge — 用 IKB 蓝替代亮绿 */}
-        <span
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-          style={{ background: `${C.ikb}14`, color: C.ikb }}
-        >
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
-          模型已就绪
-        </span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
+      <Reveal style={{ marginTop: 40 }}>
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>
+            insights
+          </span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          {/* 模型就绪 badge */}
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 9999,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              background: 'rgba(168,197,224,0.18)',
+              color: C.ikb,
+            }}
+          >
+            <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block', animation: 'pulse 2s infinite' }} />
+            模型已就绪
+          </span>
+        </div>
+      </Reveal>
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 视频制作力雷达 */}
-        <div
-          className="col-span-5 p-6 ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-          }}
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ padding: 24, borderRadius: 18 }}
         >
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+          <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.ikb}18`, color: C.ikb }}
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
               >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
                   radar
                 </span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>视频制作力雷达</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280' }}>六维模型评估</p>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>视频制作力雷达</h3>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb }}>86</p>
-              <p className="text-[10px]" style={{ color: '#6b7280' }}>综合分</p>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, margin: 0, textShadow: C.textShadow }}>86</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', margin: 0 }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -1116,11 +1628,11 @@ export default function AiVideo() {
                 .join(','),
             ).join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full">
+              <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
                 <defs>
                   <linearGradient id="aiv-radarFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.1)" stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -1128,14 +1640,14 @@ export default function AiVideo() {
                     key={f}
                     points={poly(R * f)}
                     fill="none"
-                    stroke="#e8ebf2"
+                    stroke="rgba(255,255,255,0.15)"
                     strokeWidth="1"
                   />
                 ))}
                 {RADAR_DIMS.map((_, i) => {
                   const [x, y] = pt(i, R);
                   return (
-                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />
+                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
                   );
                 })}
                 <polygon
@@ -1148,7 +1660,7 @@ export default function AiVideo() {
                 {RADAR_DIMS.map((d, i) => {
                   const [x, y] = pt(i, R * (d.value / 100));
                   return (
-                    <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />
+                    <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />
                   );
                 })}
                 {RADAR_DIMS.map((d, i) => {
@@ -1160,7 +1672,7 @@ export default function AiVideo() {
                       y={y}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill="#6b7280"
+                      fill="rgba(255,255,255,0.65)"
                       fontSize="10.5"
                       fontWeight="600"
                     >
@@ -1171,50 +1683,55 @@ export default function AiVideo() {
               </svg>
             );
           })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
+          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {RADAR_DIMS.map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px]" style={{ color: '#6b7280' }}>{d.label}</span>
-                <span className="text-[11px] font-bold" style={{ color: C.ink }}>{d.value}</span>
+              <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{d.value}</span>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* 分镜情绪/节奏曲线 */}
-        <div
-          className="col-span-7 p-6 ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-          }}
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ padding: 24, borderRadius: 18 }}
         >
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
+          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.burgundy}18`, color: C.burgundy }}
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(255,255,255,0.12)',
+                  color: 'rgba(255,255,255,0.85)',
+                }}
               >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>
                   show_chart
                 </span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>分镜情绪/节奏曲线</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280' }}>沿 10 个镜头情绪强度推演</p>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>分镜情绪/节奏曲线</h3>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>沿 10 个镜头情绪强度推演</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {['强度', '节奏', '峰值'].map((t, i) => (
                 <span
                   key={t}
-                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
                   style={
                     i === 0
-                      ? { background: C.ikb, color: '#fff' }
-                      : { background: C.base, color: '#6b7280' }
+                      ? { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: C.ikb, color: '#fff' }
+                      : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }
                   }
                 >
                   {t}
@@ -1222,19 +1739,29 @@ export default function AiVideo() {
               ))}
             </div>
           </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink }}>88</p>
-            {/* 峰值 badge — 用 IKB 蓝替代亮绿 */}
+          <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+            <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>88</p>
+            {/* 峰值 badge */}
             <span
-              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-              style={{ background: `${C.ikb}14`, color: C.ikb }}
+              style={{
+                marginBottom: 4,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                padding: '2px 8px',
+                fontSize: 12,
+                fontWeight: 700,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.ikb,
+              }}
             >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>
                 trending_up
               </span>
               峰值
             </span>
-            <span className="mb-1 text-[12px]" style={{ color: '#6b7280' }}>第9镜情绪最高点</span>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>第9镜情绪最高点</span>
           </div>
           {(() => {
             const data = EMOTION_CURVE;
@@ -1255,15 +1782,15 @@ export default function AiVideo() {
               .join(' ');
             const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
             return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+              <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
                 <defs>
                   <linearGradient id="aiv-trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.28" />
                     <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                   </linearGradient>
                   <linearGradient id="aiv-trendLine" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor={C.ikb} />
-                    <stop offset="100%" stopColor={C.burgundy} />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -1273,7 +1800,7 @@ export default function AiVideo() {
                     x2={W - padR}
                     y1={(padT + innerH * f).toFixed(1)}
                     y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
+                    stroke="rgba(255,255,255,0.1)"
                     strokeWidth="1"
                   />
                 ))}
@@ -1293,7 +1820,7 @@ export default function AiVideo() {
                       cx={x(i)}
                       cy={y(v)}
                       r="3.4"
-                      fill="#fff"
+                      fill="rgba(255,255,255,0.9)"
                       stroke={C.ikb}
                       strokeWidth="2"
                     />
@@ -1302,13 +1829,13 @@ export default function AiVideo() {
               </svg>
             );
           })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280' }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
             {Array.from({ length: 10 }, (_, i) => `镜头${i + 1}`).map((m) => (
               <span key={m}>{m}</span>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
