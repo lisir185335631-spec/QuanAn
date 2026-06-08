@@ -1,10 +1,10 @@
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Reveal } from '@/components/home-next/ikb/system';
 import { type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
 import { type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
 import { type IntroCopyEntry } from '@/components/step3/IntroCopySection';
@@ -16,7 +16,6 @@ import { type OverallStrategyContent } from '@/components/step3/OverallStrategyS
 import { type VideoReferenceCase } from '@/components/step3/VideoReferenceCaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { IKBLayout } from '@/layouts/IKBLayout';
 import { breakSentences } from '@/lib/text';
 import { trpc } from '@/lib/trpc';
 
@@ -582,23 +581,25 @@ export default function Step3() {
   ];
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       <div className="pb-28">
         {/* ── Header ─────────────────────────────────────────── */}
         <header className="mb-12 flex flex-row items-center justify-between gap-8">
           <div className="shrink-0">
-            <div className="mb-3 flex items-center gap-3">
+            <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span
                 style={{
                   fontFamily: F.mono,
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
-                  borderRadius: 8,
-                  border: `1px solid ${C.line}`,
-                  background: C.base,
+                  borderRadius: 9999,
+                  border: `0.5px solid ${C.line}`,
+                  background: 'rgba(255,255,255,0.10)',
+                  backdropFilter: 'blur(12px)',
                   color: C.ink,
-                  padding: '4px 10px',
+                  padding: '4px 14px',
+                  textShadow: C.textShadow,
                 }}
               >
                 战略节点
@@ -609,16 +610,18 @@ export default function Step3() {
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
-                  borderRadius: 8,
-                  border: `1px solid ${C.accent3}55`,
-                  background: `${C.accent3}18`,
-                  color: C.purpleText,
-                  padding: '4px 10px',
+                  borderRadius: 9999,
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.18)',
+                  backdropFilter: 'blur(12px)',
+                  color: C.ikb,
+                  padding: '4px 14px',
+                  textShadow: C.textShadow,
                 }}
               >
                 账号矩阵
               </span>
-            </div>
+            </Reveal>
             <h1
               style={{
                 fontFamily: F.display,
@@ -633,24 +636,27 @@ export default function Step3() {
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 color: 'transparent',
+                textShadow: 'none',
               }}
             >
               STEP 03 · 账号包装方案
             </h1>
             <p
               className="mt-2 max-w-[820px]"
-              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
+              style={{ fontSize: 16, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}
             >
               为「{industry}」生成高度定制的自媒体账号基础包装 · 构建专业、权威的数字形象基石。
             </p>
           </div>
           <div className="flex shrink-0 flex-nowrap gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={handleOptimize}
               disabled={!canBulkActions}
               aria-label="智能优化"
-              className="ikb-focusring"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass"
               style={{
                 display: 'flex',
                 flexShrink: 0,
@@ -658,8 +664,6 @@ export default function Step3() {
                 gap: 8,
                 whiteSpace: 'nowrap',
                 borderRadius: 10,
-                border: `1px solid ${C.line}`,
-                background: C.paper,
                 padding: '10px 16px',
                 fontFamily: F.mono,
                 fontSize: 12,
@@ -667,20 +671,23 @@ export default function Step3() {
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: C.ink,
+                border: 'none',
                 cursor: canBulkActions ? 'pointer' : 'not-allowed',
                 opacity: canBulkActions ? 1 : 0.4,
-                transition: 'background 0.2s',
+                textShadow: C.textShadow,
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_fix_high</span>
               智能优化
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={handleRegenerateAll}
               disabled={isLoading || !personalInfo.trim() || !platform}
               aria-label="重新生成"
-              className="ikb-focusring"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass"
               style={{
                 display: 'flex',
                 flexShrink: 0,
@@ -688,8 +695,6 @@ export default function Step3() {
                 gap: 8,
                 whiteSpace: 'nowrap',
                 borderRadius: 10,
-                border: `1px solid ${C.line}`,
-                background: C.paper,
                 padding: '10px 16px',
                 fontFamily: F.mono,
                 fontSize: 12,
@@ -697,19 +702,21 @@ export default function Step3() {
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: C.ink,
+                border: 'none',
                 cursor: (!isLoading && personalInfo.trim() && platform) ? 'pointer' : 'not-allowed',
                 opacity: (!isLoading && personalInfo.trim() && platform) ? 1 : 0.4,
-                transition: 'background 0.2s',
+                textShadow: C.textShadow,
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">refresh</span>
               重新生成
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={handleCopyAll}
               aria-label="复制全部"
-              className="ikb-gradbtn"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
               style={{
                 display: 'flex',
                 flexShrink: 0,
@@ -721,58 +728,31 @@ export default function Step3() {
                 fontFamily: F.cn,
                 fontSize: 13,
                 fontWeight: 700,
-                color: '#fff',
+                color: C.ink,
+                background: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
                 border: 'none',
                 cursor: 'pointer',
+                textShadow: C.textShadow,
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">content_copy</span>
               复制全部
-            </button>
+            </motion.button>
           </div>
         </header>
 
         {/* ── 输入节点参数 ───────────────────────────────────── */}
+        <Reveal>
         <section
+          className="lg-glass"
           style={{
             position: 'relative',
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+            borderRadius: 20,
             padding: 24,
             marginBottom: 48,
             overflow: 'hidden',
           }}
         >
-          {/* 装饰光晕 */}
-          <div
-            aria-hidden="true"
-            style={{
-              pointerEvents: 'none',
-              position: 'absolute',
-              right: -64,
-              top: -64,
-              height: 176,
-              width: 176,
-              borderRadius: '50%',
-              background: `${C.ikb}08`,
-              filter: 'blur(32px)',
-            }}
-          />
-          <div
-            aria-hidden="true"
-            style={{
-              pointerEvents: 'none',
-              position: 'absolute',
-              bottom: -80,
-              left: '33%',
-              height: 176,
-              width: 176,
-              borderRadius: '50%',
-              background: `${C.burgundy}06`,
-              filter: 'blur(32px)',
-            }}
-          />
 
           {/* 段落标题 */}
           <div
@@ -795,15 +775,15 @@ export default function Step3() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 10,
-                  background: C.grad,
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
+                  color: C.ikb,
                 }}
               >
                 <span className="material-symbols-outlined" aria-hidden="true">tune</span>
               </span>
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>输入节点参数</h2>
-                <p style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成全套账号包装矩阵</p>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>输入节点参数</h2>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成全套账号包装矩阵</p>
               </div>
             </div>
             <span
@@ -812,7 +792,7 @@ export default function Step3() {
                 alignItems: 'center',
                 gap: 6,
                 borderRadius: 999,
-                background: `${C.ikb}15`,
+                background: 'rgba(168,197,224,0.18)',
                 padding: '4px 12px',
                 fontSize: 12,
                 fontWeight: 600,
@@ -821,13 +801,14 @@ export default function Step3() {
                 letterSpacing: '0.04em',
               }}
             >
-              <span
+              <motion.span
+                animate={{ opacity: [1, 0.35, 1], scale: [1, 0.6, 1] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
                 style={{
                   height: 6,
                   width: 6,
                   borderRadius: '50%',
                   background: C.ikb,
-                  animation: 'ikb-pulse 1.6s ease-in-out infinite',
                   display: 'inline-block',
                 }}
               />
@@ -869,26 +850,27 @@ export default function Step3() {
                   {PLATFORMS.map((p) => {
                     const active = platform === p.key;
                     return (
-                      <button
+                      <motion.button
                         type="button"
                         key={p.key}
                         onClick={() => setPlatform(p.key)}
                         aria-pressed={active}
-                        className="ikb-hovercard ikb-focusring"
+                        whileHover={{ y: -3 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        className="lg-glass"
                         style={{
                           position: 'relative',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 12,
                           overflow: 'hidden',
-                          borderRadius: 12,
-                          border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
-                          background: active ? `${C.ikb}08` : C.paper,
+                          borderRadius: 14,
+                          outline: active ? `2px solid ${C.ikb}` : 'none',
+                          outlineOffset: '-1px',
                           padding: '14px',
                           textAlign: 'left',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
+                          transition: 'outline 0.2s',
                         }}
                       >
                         <span
@@ -907,8 +889,8 @@ export default function Step3() {
                           <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden="true">{p.icon}</span>
                         </span>
                         <span style={{ minWidth: 0 }}>
-                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{p.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: '#6b7280', fontFamily: F.mono }}>{p.desc}</span>
+                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>{p.desc}</span>
                         </span>
                         <span
                           style={{
@@ -921,15 +903,15 @@ export default function Step3() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderRadius: '50%',
-                            background: active ? C.ikb : C.paper,
+                            background: active ? C.ikb : 'rgba(255,255,255,0.12)',
                             border: active ? 'none' : `1px solid ${C.line}`,
-                            color: active ? '#fff' : 'transparent',
+                            color: active ? '#08142e' : 'transparent',
                             transition: 'all 0.2s',
                           }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden="true">check</span>
                         </span>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -956,23 +938,23 @@ export default function Step3() {
                     目标受众
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">groups</span>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} aria-hidden="true">groups</span>
                     <input
                       id="s3-audience"
                       type="text"
                       value={audience}
                       onChange={(e) => setAudience(e.target.value)}
                       placeholder="例如：企业老板和创业者"
-                      className="ikb-input"
                       style={{
                         width: '100%',
                         borderRadius: 10,
                         border: `1px solid ${C.line}`,
-                        background: C.paper,
+                        background: 'rgba(255,255,255,0.08)',
                         padding: '12px 12px 12px 40px',
                         fontSize: 14,
                         fontFamily: F.cn,
                         color: C.ink,
+                        outline: 'none',
                         transition: 'border-color 0.2s',
                       }}
                     />
@@ -997,23 +979,24 @@ export default function Step3() {
                     账号状态
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">verified_user</span>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} aria-hidden="true">verified_user</span>
                     <input
                       id="s3-account-status"
                       type="text"
                       value={accountStatus}
                       onChange={(e) => setAccountStatus(e.target.value)}
                       placeholder="例如：新账号 / 已有粉丝"
-                      className="ikb-input"
+                      className=""
                       style={{
                         width: '100%',
                         borderRadius: 10,
                         border: `1px solid ${C.line}`,
-                        background: C.paper,
+                        background: 'rgba(255,255,255,0.08)',
                         padding: '12px 12px 12px 40px',
                         fontSize: 14,
                         fontFamily: F.cn,
                         color: C.ink,
+                        outline: 'none',
                         transition: 'border-color 0.2s',
                       }}
                     />
@@ -1040,26 +1023,23 @@ export default function Step3() {
                     <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
                     个人背景与核心优势提取
                   </label>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden="true">auto_awesome</span>
                     AI 据此提取人设关键词
                   </span>
                 </div>
                 <div
+                  className="lg-glass"
                   style={{
                     overflow: 'hidden',
-                    borderRadius: 10,
-                    border: `1px solid ${C.line}`,
-                    background: C.paper,
-                    transition: 'border-color 0.2s',
+                    borderRadius: 12,
+                    transition: 'box-shadow 0.2s',
                   }}
                   onFocusCapture={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
-                    (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px rgba(168,197,224,0.6)`;
                   }}
                   onBlurCapture={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
-                    (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '';
                   }}
                 >
                   <textarea
@@ -1068,7 +1048,6 @@ export default function Step3() {
                     onChange={(e) => setPersonalInfo(e.target.value)}
                     rows={6}
                     placeholder="输入过去的经历、成就、特殊技能，以及希望传达的核心人设"
-                    className="ikb-input"
                     style={{
                       width: '100%',
                       resize: 'none',
@@ -1079,6 +1058,7 @@ export default function Step3() {
                       lineHeight: 1.6,
                       fontFamily: F.cn,
                       color: C.ink,
+                      outline: 'none',
                     }}
                   />
                   <div
@@ -1088,22 +1068,22 @@ export default function Step3() {
                       justifyContent: 'space-between',
                       gap: 12,
                       borderTop: `1px solid ${C.line}`,
-                      background: `${C.paper}99`,
+                      background: 'rgba(255,255,255,0.06)',
                       padding: '10px 16px',
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>可包含</span>
                       {['经历', '成就', '技能', '人设', '价值观'].map((t) => (
                         <span
                           key={t}
                           style={{
                             borderRadius: 999,
-                            background: `${C.ikb}10`,
+                            background: 'rgba(168,197,224,0.18)',
                             padding: '2px 10px',
                             fontSize: 11,
                             fontWeight: 500,
-                            color: C.purpleText,
+                            color: C.ikb,
                             fontFamily: F.mono,
                           }}
                         >
@@ -1111,14 +1091,15 @@ export default function Step3() {
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.6)' }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  <button
+                  <motion.button
                     type="submit"
                     disabled={!personalInfo.trim() || !platform || isLoading}
-                    className="ikb-gradbtn"
+                    whileHover={(!personalInfo.trim() || !platform || isLoading) ? {} : { y: -3 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -1130,7 +1111,8 @@ export default function Step3() {
                       fontWeight: 700,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: '#fff',
+                      color: '#08142e',
+                      background: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
                       border: 'none',
                       cursor: (!personalInfo.trim() || !platform || isLoading) ? 'not-allowed' : 'pointer',
                       opacity: (!personalInfo.trim() || !platform || isLoading) ? 0.4 : 1,
@@ -1138,21 +1120,20 @@ export default function Step3() {
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
                     {isLoading ? '生成中…' : '生成包装矩阵'}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </form>
           </div>
         </section>
+        </Reveal>
 
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 人设竞争力雷达 */}
           <div
-            className="col-span-5 ikb-hovercard"
+            className="col-span-5 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              borderRadius: 20,
               padding: 24,
             }}
           >
@@ -1173,18 +1154,28 @@ export default function Step3() {
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
                 </span>
                 <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>人设竞争力雷达</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p
-                  className="ikb-gradtext"
-                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    margin: 0,
+                    fontFamily: F.display,
+                    background: C.grad,
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                  }}
                 >
                   82
                 </p>
-                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -1205,11 +1196,11 @@ export default function Step3() {
                     </linearGradient>
                   </defs>
                   {[0.25, 0.5, 0.75, 1].map((f) => (
-                    <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
                   ))}
                   {dims.map((_, i) => {
                     const [x, y] = pt(i, R);
-                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.10)" strokeWidth="1" />;
                   })}
                   <polygon points={dataPoly} fill="url(#radarFillS3)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                   {dims.map((d, i) => {
@@ -1219,7 +1210,7 @@ export default function Step3() {
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R + 16);
                     return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
                         {d.label}
                       </text>
                     );
@@ -1231,7 +1222,7 @@ export default function Step3() {
               {radarDims.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
                   <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1240,11 +1231,9 @@ export default function Step3() {
 
           {/* 90 天曝光 / 涨粉预估 */}
           <div
-            className="col-span-7 ikb-hovercard"
+            className="col-span-7 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              borderRadius: 20,
               padding: 24,
             }}
           >
@@ -1258,15 +1247,15 @@ export default function Step3() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 8,
-                    background: `${C.burgundy}18`,
+                    background: 'rgba(168,197,224,0.18)',
                     color: C.burgundyText,
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
                 </span>
                 <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>90 天曝光预估</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>90 天曝光预估</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1279,8 +1268,8 @@ export default function Step3() {
                       fontSize: 11,
                       fontWeight: 600,
                       fontFamily: F.mono,
-                      background: i === 0 ? C.ikb : '#f1f3f9',
-                      color: i === 0 ? '#fff' : '#6b7280',
+                      background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
+                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.6)',
                     }}
                   >
                     {t}
@@ -1289,7 +1278,7 @@ export default function Step3() {
               </div>
             </div>
             <div className="mb-3 flex items-end gap-3">
-              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>1.24M</p>
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>1.24M</p>
               <span
                 style={{
                   marginBottom: 4,
@@ -1307,7 +1296,7 @@ export default function Step3() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
             </div>
             {(() => {
               const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
@@ -1343,7 +1332,7 @@ export default function Step3() {
                       x2={W - padR}
                       y1={(padT + innerH * f).toFixed(1)}
                       y2={(padT + innerH * f).toFixed(1)}
-                      stroke="#f1f3f9"
+                      stroke="rgba(255,255,255,0.12)"
                       strokeWidth="1"
                     />
                   ))}
@@ -1355,7 +1344,7 @@ export default function Step3() {
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
               {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -1367,11 +1356,9 @@ export default function Step3() {
         <div className="mb-8 grid grid-cols-4 gap-6">
           {/* 人设完整度 · 环形进度 */}
           <div
-            className="ikb-hovercard"
+            className="lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 16,
               padding: 20,
             }}
           >
@@ -1400,13 +1387,13 @@ export default function Step3() {
             <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                  92<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}>%</span>
+                  92<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}>%</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>人设完整度</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>人设完整度</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3.5" />
                   <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
                 </svg>
               </div>
@@ -1415,16 +1402,14 @@ export default function Step3() {
 
           {/* 推荐昵称 · 数量 + 迷你柱 */}
           <div
-            className="ikb-hovercard"
+            className="lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 16,
               padding: 20,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.burgundyText }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
               </span>
               <span
@@ -1435,7 +1420,7 @@ export default function Step3() {
                   fontWeight: 700,
                   fontFamily: F.mono,
                   letterSpacing: '0.06em',
-                  background: `${C.burgundy}18`,
+                  background: 'rgba(168,197,224,0.18)',
                   color: C.burgundyText,
                 }}
               >
@@ -1444,24 +1429,22 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {generated.nicknames.length}<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 个</span>
+                {generated.nicknames.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>推荐昵称</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>推荐昵称</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[58, 84, 70, 96, 78].map((h, i) => (
-                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: `${C.burgundy}99`, height: `${h}%` }} />
+                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: 'rgba(168,197,224,0.6)', height: `${h}%` }} />
               ))}
             </div>
           </div>
 
           {/* 平台覆盖 · 进度条 */}
           <div
-            className="ikb-hovercard"
+            className="lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 16,
               padding: 20,
             }}
           >
@@ -1486,9 +1469,9 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                5<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 平台</span>
+                5<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 平台</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>平台覆盖</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>平台覆盖</p>
             </div>
             <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.accent3}22` }}>
               <div style={{ height: 8, borderRadius: 999, background: C.grad, width: '100%', transition: 'width 0.4s' }} />
@@ -1497,11 +1480,9 @@ export default function Step3() {
 
           {/* 简介方案 · 数量 + 关键词 */}
           <div
-            className="ikb-hovercard"
+            className="lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 16,
               padding: 20,
             }}
           >
@@ -1526,9 +1507,9 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {generated.bioEntries.length}<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 套</span>
+                {generated.bioEntries.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 套</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>简介文案方案</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>简介文案方案</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {(generated.bioCoreKeywords ?? []).slice(0, 3).map((k) => (
@@ -1555,16 +1536,14 @@ export default function Step3() {
         <div className="grid grid-cols-12 gap-6">
           {/* 核心定位策略 (col-12) */}
           <div
-            className="relative col-span-12 overflow-hidden"
+            className="relative col-span-12 overflow-hidden lg-glass"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              borderRadius: 20,
               padding: 24,
             }}
           >
             <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', right: -48, top: -48, height: 176, width: 176, borderRadius: '50%', background: `${C.ikb}08`, filter: 'blur(32px)' }} />
-            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -64, right: 160, height: 160, width: 160, borderRadius: '50%', background: `${C.burgundy}07`, filter: 'blur(32px)' }} />
+            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -64, right: 160, height: 160, width: 160, borderRadius: '50%', background: 'rgba(168,197,224,0.04)', filter: 'blur(32px)' }} />
             <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
               <div
                 style={{
@@ -1575,8 +1554,8 @@ export default function Step3() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 10,
-                  background: C.grad,
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
+                  color: C.ikb,
                 }}
               >
                 <span className="material-symbols-outlined icon-fill" aria-hidden="true">psychology</span>
@@ -1602,8 +1581,8 @@ export default function Step3() {
                   <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
                   Core Strategy
                 </span>
-                <h3 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>核心定位策略</h3>
-                <p style={{ fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
+                <h3 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>核心定位策略</h3>
+                <p style={{ fontSize: 16, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>
                   {generated.overallStrategy.视觉统一性}
                 </p>
               </div>
@@ -1612,17 +1591,15 @@ export default function Step3() {
 
           {/* 矩阵命名 (col-4 · Module 01) */}
           <div
-            className="col-span-4 ikb-hovercard"
+            className="col-span-4 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 20,
               padding: 24,
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
                 </span>
                 矩阵命名
@@ -1636,7 +1613,7 @@ export default function Step3() {
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   fontFamily: F.mono,
-                  background: `${C.burgundy}18`,
+                  background: 'rgba(168,197,224,0.18)',
                   color: C.burgundyText,
                 }}
               >
@@ -1660,28 +1637,26 @@ export default function Step3() {
                     aria-label={`复制 ${n.name}`}
                     onClick={() => copyText(n.name)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') copyText(n.name); }}
-                    className="group ikb-focusring ikb-hovercard"
+                    className="group lg-glass"
                     style={{
                       cursor: 'pointer',
-                      borderRadius: 10,
-                      border: `1px solid ${C.line}`,
-                      background: C.base,
+                      borderRadius: 12,
                       padding: 12,
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{n.name}</div>
-                      <span className="material-symbols-outlined" style={{ flexShrink: 0, color: '#6b7280', fontSize: 18 }} aria-hidden="true">
+                      <span className="material-symbols-outlined" style={{ flexShrink: 0, color: 'rgba(255,255,255,0.6)', fontSize: 18 }} aria-hidden="true">
                         content_copy
                       </span>
                     </div>
-                    <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: '#6b7280', fontFamily: F.cn }}>{n.description}</div>
+                    <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{n.description}</div>
                     <div style={{ marginTop: 10 }}>
                       <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11 }}>
-                        <span style={{ color: '#6b7280', fontFamily: F.mono }}>搜索度</span>
+                        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>搜索度</span>
                         <span style={{ fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>{score}%</span>
                       </div>
-                      <div style={{ height: 6, width: '100%', borderRadius: 999, background: '#eef2ff' }}>
+                      <div style={{ height: 6, width: '100%', borderRadius: 999, background: 'rgba(255,255,255,0.12)' }}>
                         <div
                           style={{
                             height: 6,
@@ -1700,17 +1675,15 @@ export default function Step3() {
 
           {/* 头像生成流 (col-4 · Module 02) */}
           <div
-            className="col-span-4 ikb-hovercard"
+            className="col-span-4 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 20,
               padding: 24,
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">face</span>
                 </span>
                 头像生成流
@@ -1724,18 +1697,20 @@ export default function Step3() {
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   fontFamily: F.mono,
-                  background: `${C.burgundy}18`,
+                  background: 'rgba(168,197,224,0.18)',
                   color: C.burgundyText,
                 }}
               >
                 Module 02
               </span>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={handleImageGenStub}
               aria-label="点击生成头像"
-              className="ikb-focusring"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass"
               style={{
                 marginBottom: 16,
                 display: 'flex',
@@ -1744,34 +1719,30 @@ export default function Step3() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: 10,
-                border: `1px solid ${C.line}`,
-                background: C.base,
+                borderRadius: 14,
                 padding: 16,
                 textAlign: 'center',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s',
+                border: 'none',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
             >
-              <span className="material-symbols-outlined" style={{ marginBottom: 8, fontSize: 36, color: '#757685' }} aria-hidden="true">image</span>
-              <p style={{ fontSize: 14, color: '#5A6173', fontFamily: F.cn }}>点击生成头像</p>
-            </button>
-            <div style={{ borderRadius: 10, border: `1px solid ${C.line}`, background: C.base, padding: 12 }}>
+              <span className="material-symbols-outlined" style={{ marginBottom: 8, fontSize: 36, color: C.ikb }} aria-hidden="true">image</span>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>点击生成头像</p>
+            </motion.button>
+            <div className="lg-glass" style={{ borderRadius: 12, padding: 12 }}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', fontFamily: F.mono, color: C.burgundyText }}>
                 AI Prompt
                 <button
                   type="button"
                   aria-label="复制"
                   onClick={() => copyText(generated.avatar.aiPrompt ?? '')}
-                  className="ikb-focusring"
+                  className=""
                   style={{ cursor: 'pointer', fontSize: 16, color: C.burgundyText, background: 'none', border: 'none', padding: 0 }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden="true">content_copy</span>
                 </button>
               </div>
-              <p style={{ wordBreak: 'break-word', fontFamily: F.mono, fontSize: 13, lineHeight: 1.6, color: '#5A6173' }}>
+              <p style={{ wordBreak: 'break-word', fontFamily: F.mono, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)' }}>
                 {generated.avatar.aiPrompt}
               </p>
             </div>
@@ -1779,17 +1750,15 @@ export default function Step3() {
 
           {/* 背景墙视觉 (col-4 · Module 03) */}
           <div
-            className="col-span-4 ikb-hovercard"
+            className="col-span-4 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 20,
               padding: 24,
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">wallpaper</span>
                 </span>
                 背景墙视觉
@@ -1803,7 +1772,7 @@ export default function Step3() {
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   fontFamily: F.mono,
-                  background: `${C.burgundy}18`,
+                  background: 'rgba(168,197,224,0.18)',
                   color: C.burgundyText,
                 }}
               >
@@ -1833,21 +1802,19 @@ export default function Step3() {
                 </div>
               </div>
             </div>
-            <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>{generated.background.风格理念}</p>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{generated.background.风格理念}</p>
           </div>
 
           {/* 简介文案公式 (col-8 · Module 04) */}
           <div
-            className="col-span-8 ikb-hovercard"
+            className="col-span-8 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: C.paper,
+              borderRadius: 20,
               padding: 24,
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
                 <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}18`, color: C.purpleText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_document</span>
                 </span>
@@ -1895,7 +1862,7 @@ export default function Step3() {
             )}
             <div className="grid grid-cols-2 gap-4">
               {generated.bioEntries.slice(0, 2).map((b) => (
-                <div key={b.platformKey} style={{ borderRadius: 10, border: `1px solid ${C.line}`, background: C.base, padding: 16 }}>
+                <div key={b.platformKey} className="lg-glass" style={{ borderRadius: 14, padding: 16 }}>
                   <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span
                       style={{
@@ -1920,8 +1887,8 @@ export default function Step3() {
                       type="button"
                       aria-label={`复制 ${b.platformLabel} 简介`}
                       onClick={() => copyText(b.copy)}
-                      className="ikb-focusring"
-                      style={{ cursor: 'pointer', fontSize: 16, color: '#6b7280', background: 'none', border: 'none', padding: 0, transition: 'color 0.2s' }}
+                      className=""
+                      style={{ cursor: 'pointer', fontSize: 16, color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', padding: 0, transition: 'color 0.2s' }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
                     >
@@ -1936,23 +1903,22 @@ export default function Step3() {
             </div>
           </div>
 
-          {/* 下一步执行 (col-4 · Module 05 · 红蓝紫渐变底) */}
+          {/* 下一步执行 (col-4 · Module 05 · 液态玻璃高亮) */}
           <div
-            className="relative col-span-4 overflow-hidden"
+            className="relative col-span-4 overflow-hidden lg-glass"
             style={{
-              borderRadius: 12,
-              background: C.grad,
+              borderRadius: 20,
               padding: 24,
-              color: '#fff',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              border: `1px solid rgba(168,197,224,0.4)`,
             }}
           >
             <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', right: -48, top: -48, height: 160, width: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', filter: 'blur(32px)' }} />
             <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -40, left: -40, height: 128, width: 128, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', filter: 'blur(32px)' }} />
             <div style={{ position: 'relative' }}>
-              <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: '#fff', fontFamily: F.cn }}>
+              <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
                 <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(255,255,255,0.18)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">rocket_launch</span>
                 </span>
@@ -1973,39 +1939,38 @@ export default function Step3() {
                 </li>
               </ul>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={() => navigate('/step/4')}
-              className="ikb-focusring"
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass"
               style={{
                 marginTop: 32,
                 width: '100%',
-                borderRadius: 10,
-                border: `1px solid rgba(255,255,255,0.6)`,
-                background: 'rgba(255,255,255,0.15)',
+                borderRadius: 12,
                 padding: '12px 0',
                 fontSize: 12,
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: '#fff',
+                color: C.ink,
+                border: 'none',
                 cursor: 'pointer',
-                transition: 'background 0.2s',
                 fontFamily: F.mono,
+                textShadow: C.textShadow,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.25)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.15)'; }}
             >
               进入内容系统 →
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
         <div className="mb-3 flex items-center gap-2">
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -2013,7 +1978,7 @@ export default function Step3() {
               alignItems: 'center',
               gap: 6,
               borderRadius: 999,
-              background: `${C.ikb}15`,
+              background: 'rgba(168,197,224,0.18)',
               padding: '4px 12px',
               fontSize: 12,
               fontWeight: 600,
@@ -2022,13 +1987,14 @@ export default function Step3() {
               letterSpacing: '0.04em',
             }}
           >
-            <span
+            <motion.span
+              animate={{ opacity: [1, 0.35, 1], scale: [1, 0.6, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
               style={{
                 height: 6,
                 width: 6,
                 borderRadius: '50%',
                 background: C.ikb,
-                animation: 'ikb-pulse 1.6s ease-in-out infinite',
                 display: 'inline-block',
               }}
             />
@@ -2039,11 +2005,9 @@ export default function Step3() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 人设竞争力雷达 */}
           <div
-            className="col-span-5 ikb-hovercard"
+            className="col-span-5 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              borderRadius: 20,
               padding: 24,
             }}
           >
@@ -2064,18 +2028,28 @@ export default function Step3() {
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
                 </span>
                 <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>人设竞争力雷达</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p
-                  className="ikb-gradtext"
-                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    margin: 0,
+                    fontFamily: F.display,
+                    background: C.grad,
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                  }}
                 >
                   82
                 </p>
-                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -2096,11 +2070,11 @@ export default function Step3() {
                     </linearGradient>
                   </defs>
                   {[0.25, 0.5, 0.75, 1].map((f) => (
-                    <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
                   ))}
                   {dims.map((_, i) => {
                     const [x, y] = pt(i, R);
-                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.10)" strokeWidth="1" />;
                   })}
                   <polygon points={dataPoly} fill="url(#radarFillS3)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                   {dims.map((d, i) => {
@@ -2110,7 +2084,7 @@ export default function Step3() {
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R + 16);
                     return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
                         {d.label}
                       </text>
                     );
@@ -2122,7 +2096,7 @@ export default function Step3() {
               {radarDims.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
                   <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -2131,11 +2105,9 @@ export default function Step3() {
 
           {/* 90 天曝光 / 涨粉预估 */}
           <div
-            className="col-span-7 ikb-hovercard"
+            className="col-span-7 lg-glass lg-spec"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              borderRadius: 20,
               padding: 24,
             }}
           >
@@ -2149,15 +2121,15 @@ export default function Step3() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 8,
-                    background: `${C.burgundy}18`,
+                    background: 'rgba(168,197,224,0.18)',
                     color: C.burgundyText,
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
                 </span>
                 <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>90 天曝光预估</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>90 天曝光预估</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -2170,8 +2142,8 @@ export default function Step3() {
                       fontSize: 11,
                       fontWeight: 600,
                       fontFamily: F.mono,
-                      background: i === 0 ? C.ikb : '#f1f3f9',
-                      color: i === 0 ? '#fff' : '#6b7280',
+                      background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
+                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.6)',
                     }}
                   >
                     {t}
@@ -2180,7 +2152,7 @@ export default function Step3() {
               </div>
             </div>
             <div className="mb-3 flex items-end gap-3">
-              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>1.24M</p>
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>1.24M</p>
               <span
                 style={{
                   marginBottom: 4,
@@ -2198,7 +2170,7 @@ export default function Step3() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
             </div>
             {(() => {
               const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
@@ -2234,7 +2206,7 @@ export default function Step3() {
                       x2={W - padR}
                       y1={(padT + innerH * f).toFixed(1)}
                       y2={(padT + innerH * f).toFixed(1)}
-                      stroke="#f1f3f9"
+                      stroke="rgba(255,255,255,0.12)"
                       strokeWidth="1"
                     />
                   ))}
@@ -2246,7 +2218,7 @@ export default function Step3() {
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
               {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -2254,6 +2226,6 @@ export default function Step3() {
           </div>
         </div>
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
