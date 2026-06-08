@@ -1,16 +1,15 @@
 /**
- * /daily-tasks · 今日行动清单 · 红蓝紫渐变 IKB 体系
+ * /daily-tasks · 今日行动清单 · 液态玻璃 IKB 体系
  * 阶段2: 接真 trpc.dailyTasks.* · 三态(loading/error/null空态) · 乐观完成
- * IKBLayout · inline style + token · testid 全保留
+ * LiquidShell · inline style + token · testid 全保留
  */
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   DAILY_TASKS_FOOTER_BTN_1,
   DAILY_TASKS_FOOTER_BTN_1_HREF,
@@ -92,7 +91,7 @@ function toDateKey(d: Date | string): string {
 }
 
 // ── Icon metadata · order locked: streak / total-days / total-tasks ──────────
-// IKB 三色轮转: streak=暖黄accent3, total-days=蓝ikb, total-tasks=蓝ikb
+// 液态玻璃三色: streak=purpleText, total-days=ikb, total-tasks=ikb
 const STAT_ICON_META: Array<{
   icon: string;
   iconBg: string;
@@ -102,55 +101,55 @@ const STAT_ICON_META: Array<{
   badgeText: string;
   barColor: string;
 }> = [
-  // streak · accent3 紫
+  // streak · purpleText
   {
     icon: 'local_fire_department',
-    iconBg: `${C.accent3}1a`,
+    iconBg: 'rgba(168,197,224,0.18)',
     iconColor: C.purpleText,
     valueColor: C.purpleText,
-    badge: `${C.accent3}1a`,
+    badge: 'rgba(168,197,224,0.18)',
     badgeText: C.purpleText,
     barColor: C.accent3,
   },
   // total-days · ikb 蓝
   {
     icon: 'emoji_events',
-    iconBg: `${C.ikb}1a`,
+    iconBg: 'rgba(168,197,224,0.18)',
     iconColor: C.ikb,
     valueColor: C.ikb,
-    badge: `${C.ikb}1a`,
+    badge: 'rgba(168,197,224,0.18)',
     badgeText: C.ikb,
     barColor: C.ikb,
   },
   // total-tasks · ikb 蓝(完成/正向)
   {
     icon: 'task_alt',
-    iconBg: `${C.ikb}1a`,
+    iconBg: 'rgba(168,197,224,0.18)',
     iconColor: C.ikb,
     valueColor: C.ikb,
-    badge: `${C.ikb}1a`,
+    badge: 'rgba(168,197,224,0.18)',
     badgeText: C.ikb,
     barColor: C.ikb,
   },
 ];
 
-// ── Priority styles · IKB 三主色 ─────────────────────────────────────────────
+// ── Priority styles · 液态玻璃体系 ───────────────────────────────────────────
 const PRIORITY_STYLE: Record<TaskPriority, { bg: string; border: string; text: string; dot: string }> = {
   high: {
-    bg: `${C.burgundy}12`,
-    border: `${C.burgundy}30`,
+    bg: 'rgba(255,255,255,0.12)',
+    border: 'rgba(255,255,255,0.25)',
     text: C.burgundyText,
-    dot: C.burgundy,
+    dot: 'rgba(255,160,160,0.85)',
   },
   medium: {
-    bg: `${C.ikb}12`,
-    border: `${C.ikb}30`,
+    bg: 'rgba(168,197,224,0.18)',
+    border: 'rgba(168,197,224,0.45)',
     text: C.ikb,
     dot: C.ikb,
   },
   low: {
-    bg: `${C.accent3}0d`,
-    border: `${C.accent3}28`,
+    bg: 'rgba(168,197,224,0.12)',
+    border: 'rgba(168,197,224,0.28)',
     text: C.purpleText,
     dot: C.accent3,
   },
@@ -163,23 +162,24 @@ const CATEGORY_ICON: Record<TaskCategory, string> = {
   账号优化: 'manage_accounts',
 };
 
-// IKB 三主色轮转
+// 液态玻璃三主色轮转
 const CATEGORY_STYLE: Record<TaskCategory, { bg: string; border: string; text: string }> = {
-  学习研究: { bg: `${C.ikb}0d`, border: `${C.ikb}28`, text: C.ikb },
-  内容创作: { bg: `${C.burgundy}0d`, border: `${C.burgundy}28`, text: C.burgundyText },
-  账号优化: { bg: `${C.accent3}0d`, border: `${C.accent3}28`, text: C.purpleText },
+  学习研究: { bg: 'rgba(168,197,224,0.15)', border: 'rgba(168,197,224,0.4)', text: C.ikb },
+  内容创作: { bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.22)', text: C.burgundyText },
+  账号优化: { bg: 'rgba(168,197,224,0.12)', border: 'rgba(168,197,224,0.28)', text: C.purpleText },
 };
 
 // ── ChipHeader ────────────────────────────────────────────────────────────────
 
 function ChipHeader() {
   return (
-    <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+    <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
       <span
         style={{
-          borderRadius: 8,
-          border: `1px solid ${C.line}`,
-          background: C.base,
+          borderRadius: 9999,
+          border: `0.5px solid ${C.line}`,
+          background: 'rgba(255,255,255,0.10)',
+          backdropFilter: 'blur(12px)',
           padding: '3px 12px',
           fontSize: 11,
           fontWeight: 700,
@@ -187,6 +187,7 @@ function ChipHeader() {
           textTransform: 'uppercase',
           color: C.ink,
           fontFamily: F.mono,
+          textShadow: C.textShadow,
         }}
       >
         智能引擎
@@ -194,9 +195,10 @@ function ChipHeader() {
       <span
         data-testid="daily-tasks-chip"
         style={{
-          borderRadius: 8,
-          border: `1px solid ${C.ikb}40`,
-          background: `${C.ikb}14`,
+          borderRadius: 9999,
+          border: '0.5px solid rgba(168,197,224,0.55)',
+          background: 'rgba(168,197,224,0.18)',
+          backdropFilter: 'blur(12px)',
           padding: '3px 12px',
           fontSize: 11,
           fontWeight: 700,
@@ -204,11 +206,12 @@ function ChipHeader() {
           textTransform: 'uppercase',
           color: C.ikb,
           fontFamily: F.mono,
+          textShadow: C.textShadow,
         }}
       >
         每日任务
       </span>
-    </div>
+    </Reveal>
   );
 }
 
@@ -223,7 +226,7 @@ function ProgressRing({ pct }: { pct: number }) {
       role="img"
       aria-label={`今日完成率 ${pct}%`}
     >
-      <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
+      <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.22)" strokeWidth="3.5" />
       <circle
         cx="18"
         cy="18"
@@ -250,16 +253,12 @@ function TodayProgressSection({
   // P5: clamp to 100 to prevent SVG overflow on inconsistent data
   const pct = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
   return (
-    <div
+    <motion.div
       data-testid="today-progress-card"
-      className="ikb-hovercard"
-      style={{
-        borderRadius: 12,
-        border: `1px solid ${C.ikb}28`,
-        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-        padding: 24,
-        boxShadow: `0 2px 12px ${C.ikb}0a`,
-      }}
+      className="lg-glass lg-spec"
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+      style={{ borderRadius: 18, padding: 24 }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -271,19 +270,19 @@ function TodayProgressSection({
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 12,
-              background: `${C.ikb}14`,
+              background: 'rgba(168,197,224,0.22)',
               color: C.ikb,
             }}
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>today</span>
           </span>
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日进度</h3>
-            <p style={{ fontSize: 12, color: '#6b7280', margin: 0 }}>完成 {completed} / {total} 项任务</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>今日进度</h3>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0 }}>完成 {completed} / {total} 项任务</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: C.ikb, fontFamily: F.display }}>{pct}%</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: C.ikb, fontFamily: F.display, textShadow: C.textShadow }}>{pct}%</span>
           <ProgressRing pct={pct} />
         </div>
       </div>
@@ -294,7 +293,7 @@ function TodayProgressSection({
           width: '100%',
           overflow: 'hidden',
           borderRadius: 9999,
-          background: `${C.ikb}14`,
+          background: 'rgba(168,197,224,0.18)',
         }}
       >
         <div
@@ -307,7 +306,7 @@ function TodayProgressSection({
           }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -330,13 +329,13 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
   const isMarking = markingIds.has(task.id);
 
   return (
-    <div
+    <motion.div
       data-testid={`task-card-${task.id}`}
-      className="ikb-hovercard"
+      className="lg-glass lg-spec"
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
       style={{
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        borderRadius: 18,
         padding: 24,
         opacity: isCompleted ? 0.72 : 1,
       }}
@@ -346,7 +345,6 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
           type="button"
           disabled={isCompleted || isMarking}
           onClick={() => { if (!isCompleted && !isMarking) onComplete(task.id); }}
-          className="ikb-focusring"
           style={{
             marginTop: 2,
             display: 'flex',
@@ -357,11 +355,14 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
             justifyContent: 'center',
             borderRadius: 8,
             border: 'none',
-            background: `${C.ikb}14`,
+            background: 'rgba(168,197,224,0.22)',
             color: C.ikb,
             cursor: isCompleted || isMarking ? 'not-allowed' : 'pointer',
             opacity: isCompleted || isMarking ? 0.6 : 1,
+            outline: 'none',
           }}
+          onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '2px'; }}
+          onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
           aria-label={isCompleted ? `已完成` : `标记完成`}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
@@ -376,9 +377,10 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
                 fontWeight: 700,
                 lineHeight: 1.3,
                 fontFamily: F.display,
-                color: isCompleted ? '#6b7280' : C.ink,
+                color: isCompleted ? 'rgba(255,255,255,0.45)' : C.ink,
                 margin: 0,
                 textDecoration: isCompleted ? 'line-through' : 'none',
+                textShadow: C.textShadow,
               }}
             >
               {task.title}
@@ -432,10 +434,10 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
                   gap: 4,
                   borderRadius: 9999,
                   border: `1px solid ${C.line}`,
-                  background: C.base,
+                  background: 'rgba(255,255,255,0.08)',
                   padding: '2px 8px',
                   fontSize: 11,
-                  color: '#6b7280',
+                  color: 'rgba(255,255,255,0.6)',
                   fontFamily: F.cn,
                 }}
               >
@@ -445,14 +447,13 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
             )}
           </div>
           {task.description && (
-            <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', margin: 0, fontFamily: F.cn }}>{task.description}</p>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>{task.description}</p>
           )}
           {task.ctaUrl && !isCompleted && (
             <a
               href={task.ctaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="ikb-focusring"
               style={{
                 marginTop: 8,
                 display: 'inline-flex',
@@ -462,9 +463,12 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
                 fontWeight: 600,
                 color: C.ikb,
                 textDecoration: 'none',
+                outline: 'none',
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none'; }}
+              onFocus={(e) => { (e.currentTarget as HTMLAnchorElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLAnchorElement).style.outlineOffset = '2px'; }}
+              onBlur={(e) => { (e.currentTarget as HTMLAnchorElement).style.outline = 'none'; }}
             >
               {task.ctaText ?? '去完成'}
               <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>open_in_new</span>
@@ -472,7 +476,7 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -482,15 +486,12 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
   const cat = CATEGORY_STYLE[task.category];
   const catIcon = CATEGORY_ICON[task.category];
   return (
-    <div
+    <motion.div
       data-testid={`task-card-${task.id}`}
-      className="ikb-hovercard"
-      style={{
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-        padding: 24,
-      }}
+      className="lg-glass lg-spec"
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+      style={{ borderRadius: 18, padding: 24 }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
         <span
@@ -503,7 +504,7 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 8,
-            background: `${C.ikb}14`,
+            background: 'rgba(168,197,224,0.22)',
             color: C.ikb,
           }}
           aria-hidden={true}
@@ -512,7 +513,7 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
         </span>
         <div style={{ flex: 1 }}>
           <div style={{ marginBottom: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3, fontFamily: F.display, color: C.ink, margin: 0 }}>{task.title}</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3, fontFamily: F.display, color: C.ink, margin: 0, textShadow: C.textShadow }}>{task.title}</h3>
             {/* Priority chip */}
             <span
               data-testid="task-priority-tag"
@@ -554,10 +555,10 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
               {task.category}
             </span>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', margin: 0, fontFamily: F.cn }}>{task.desc}</p>
+          <p style={{ fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>{task.desc}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -577,32 +578,33 @@ function FooterButtons({
         type="button"
         onClick={onIPDiagnosis}
         data-testid="footer-btn-diagnosis"
-        className="ikb-focusring"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
           borderRadius: 12,
           border: `1px solid ${C.line}`,
-          background: C.paper,
+          background: 'rgba(255,255,255,0.08)',
           padding: '12px 24px',
           fontSize: 13,
           fontWeight: 700,
           color: C.ink,
           fontFamily: F.cn,
           cursor: 'pointer',
-          transition: 'border-color 0.15s, color 0.15s, background 0.15s',
+          transition: 'border-color 0.15s, background 0.15s',
+          outline: 'none',
+          backdropFilter: 'blur(8px)',
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
-          (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}0a`;
-          (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.18)';
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-          (e.currentTarget as HTMLButtonElement).style.background = C.paper;
-          (e.currentTarget as HTMLButtonElement).style.color = C.ink;
+          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)';
         }}
+        onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '2px'; }}
+        onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
       >
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>stethoscope</span>
         {DAILY_TASKS_FOOTER_BTN_1}
@@ -611,7 +613,7 @@ function FooterButtons({
         type="button"
         onClick={onContinue}
         data-testid="footer-btn-continue"
-        className="ikb-gradbtn ikb-focusring"
+        className="lg-gradbtn"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -637,11 +639,10 @@ function FooterButtons({
 function SkeletonCard() {
   return (
     <div
+      className="lg-glass"
       style={{
         height: 96,
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: C.base,
+        borderRadius: 18,
         animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       }}
     />
@@ -813,16 +814,28 @@ export default function DailyTasks() {
   // ── Loading skeleton ──────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <IKBLayout>
+      <LiquidShell>
         <header style={{ marginBottom: 48 }}>
           <ChipHeader />
           <h1
             data-testid="daily-tasks-loading"
-            style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
           >
             {DAILY_TASKS_H1}
           </h1>
-          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
+          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
             {DAILY_TASKS_SUBTITLE}
           </p>
         </header>
@@ -831,315 +844,355 @@ export default function DailyTasks() {
           <SkeletonCard />
           <SkeletonCard />
         </div>
-      </IKBLayout>
+      </LiquidShell>
     );
   }
 
   // ── Error state ───────────────────────────────────────────────────────────
   if (isError) {
     return (
-      <IKBLayout>
+      <LiquidShell>
         <header style={{ marginBottom: 48 }}>
           <ChipHeader />
-          <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}>
+          <h1
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
+          >
             {DAILY_TASKS_H1}
           </h1>
         </header>
-        <div
-          data-testid="daily-tasks-error"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-            borderRadius: 12,
-            border: `1px solid ${C.burgundy}30`,
-            background: `${C.burgundy}08`,
-            padding: '48px 32px',
-            textAlign: 'center',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.burgundyText }}>error_outline</span>
-          <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn }}>加载今日任务失败</p>
-          <button
-            type="button"
-            data-testid="daily-tasks-retry"
-            onClick={() => void refetch()}
-            className="ikb-gradbtn ikb-focusring"
+        <Reveal>
+          <div
+            data-testid="daily-tasks-error"
+            className="lg-glass"
             style={{
-              display: 'inline-flex',
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
-              borderRadius: 12,
-              border: 'none',
-              padding: '10px 24px',
-              fontSize: 13,
-              fontWeight: 700,
-              color: '#fff',
-              fontFamily: F.cn,
-              cursor: 'pointer',
+              gap: 16,
+              borderRadius: 18,
+              padding: '48px 32px',
+              textAlign: 'center',
             }}
           >
-            重试
-          </button>
-        </div>
-      </IKBLayout>
+            <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.burgundyText }}>error_outline</span>
+            <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>加载今日任务失败</p>
+            <button
+              type="button"
+              data-testid="daily-tasks-retry"
+              onClick={() => void refetch()}
+              className="lg-gradbtn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 12,
+                border: 'none',
+                padding: '10px 24px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                fontFamily: F.cn,
+                cursor: 'pointer',
+              }}
+            >
+              重试
+            </button>
+          </div>
+        </Reveal>
+      </LiquidShell>
     );
   }
 
   // ── Empty state (getToday null) ───────────────────────────────────────────
   if (!todayRecord) {
     return (
-      <IKBLayout>
+      <LiquidShell>
         <header style={{ marginBottom: 48 }}>
           <ChipHeader />
-          <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}>
+          <h1
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
+          >
             {DAILY_TASKS_H1}
           </h1>
-          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
+          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
             {DAILY_TASKS_SUBTITLE}
           </p>
         </header>
-        <div
-          data-testid="daily-tasks-empty"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-            borderRadius: 12,
-            border: `1px solid ${C.ikb}28`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: '64px 32px',
-            textAlign: 'center',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ikb }}>inbox</span>
-          <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.display }}>今日暂无任务</p>
-          <p style={{ fontSize: 14, color: '#6b7280', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
-          <button
-            type="button"
-            data-testid="daily-tasks-regenerate"
-            disabled={regenerateToday.isPending}
-            onClick={() => regenerateToday.mutate()}
-            className="ikb-gradbtn ikb-focusring"
+        <Reveal>
+          <div
+            data-testid="daily-tasks-empty"
+            className="lg-glass"
             style={{
-              display: 'inline-flex',
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
-              borderRadius: 12,
-              border: 'none',
-              padding: '12px 28px',
-              fontSize: 14,
-              fontWeight: 700,
-              color: '#fff',
-              fontFamily: F.cn,
-              cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
-              opacity: regenerateToday.isPending ? 0.6 : 1,
+              gap: 16,
+              borderRadius: 18,
+              padding: '64px 32px',
+              textAlign: 'center',
             }}
           >
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
-            {regenerateToday.isPending ? '生成中…' : '重新生成'}
-          </button>
-        </div>
+            <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ikb }}>inbox</span>
+            <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>今日暂无任务</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
+            <button
+              type="button"
+              data-testid="daily-tasks-regenerate"
+              disabled={regenerateToday.isPending}
+              onClick={() => regenerateToday.mutate()}
+              className="lg-gradbtn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 12,
+                border: 'none',
+                padding: '12px 28px',
+                fontSize: 14,
+                fontWeight: 700,
+                color: '#fff',
+                fontFamily: F.cn,
+                cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
+                opacity: regenerateToday.isPending ? 0.6 : 1,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
+              {regenerateToday.isPending ? '生成中…' : '重新生成'}
+            </button>
+          </div>
+        </Reveal>
         <FooterButtons
           onIPDiagnosis={() => navigate(DAILY_TASKS_FOOTER_BTN_1_HREF)}
           onContinue={() => navigate(DAILY_TASKS_FOOTER_BTN_2_HREF)}
         />
-      </IKBLayout>
+      </LiquidShell>
     );
   }
 
   // ── Normal render (todayRecord present) ──────────────────────────────────
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <header style={{ marginBottom: 48 }}>
         <ChipHeader />
         <h1
-          className="ikb-gradtext"
-          style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', fontFamily: F.display, margin: 0 }}
+          style={{
+            fontSize: 40,
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            fontFamily: F.display,
+            margin: 0,
+            background: C.grad,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            textShadow: 'none',
+          }}
         >
           {DAILY_TASKS_H1}
         </h1>
-        <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
+        <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
           {DAILY_TASKS_SUBTITLE}
         </p>
         {/* isFallback warning */}
         {todayRecord.isFallback && (
-          <div
-            style={{
-              marginTop: 12,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              borderRadius: 8,
-              border: `1px solid ${C.accent3}30`,
-              background: `${C.accent3}08`,
-              padding: '8px 16px',
-              fontSize: 13,
-              color: C.purpleText,
-              fontFamily: F.cn,
-            }}
-          >
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>warning</span>
-            当前为降级数据，AI 任务生成中，稍后刷新查看最新内容
-          </div>
+          <Reveal>
+            <div
+              style={{
+                marginTop: 12,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 8,
+                border: `1px solid rgba(168,197,224,0.35)`,
+                background: 'rgba(168,197,224,0.12)',
+                padding: '8px 16px',
+                fontSize: 13,
+                color: C.purpleText,
+                fontFamily: F.cn,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>warning</span>
+              当前为降级数据，AI 任务生成中，稍后刷新查看最新内容
+            </div>
+          </Reveal>
         )}
       </header>
 
       {/* ── KPI 卡一排 (3 stats + 今日完成率) ──────────────────────────────── */}
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
         {liveStats.map((stat, i) => {
           const meta = STAT_ICON_META[i] ?? STAT_ICON_META[0]!;
           return (
-            <div
-              key={stat.id}
-              data-testid="stat-card"
-              className="ikb-hovercard"
-              style={{
-                borderRadius: 12,
-                border: `1px solid ${C.line}`,
-                background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 8,
-                    background: meta.iconBg,
-                    color: meta.iconColor,
-                  }}
-                >
-                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>
-                    {meta.icon}
-                  </span>
-                </span>
-                <span
-                  style={{
-                    borderRadius: 9999,
-                    background: meta.badge,
-                    padding: '2px 8px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: meta.badgeText,
-                    fontFamily: F.mono,
-                  }}
-                >
-                  {stat.label}
-                </span>
-              </div>
-              <div style={{ marginTop: 16 }}>
-                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0 }}>{stat.value}</p>
-                {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
-                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', margin: '6px 0 0', fontFamily: F.cn }}>
-                  {isHistoryError
-                    ? <span style={{ color: C.burgundyText }}>数据加载失败</span>
-                    : stat.label}
-                </p>
-                {/* P3: 30-day window disclaimer on the two cumulative stats */}
-                {(stat.id === 'total-days' || stat.id === 'total-tasks') && !isHistoryError && (
-                  <p style={{ marginTop: 2, fontSize: 10, color: '#b0b8c8', fontFamily: F.cn }}>近 30 天</p>
-                )}
-              </div>
-              {/* P12: mini bar chart is purely decorative */}
-              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
-                {[40, 60, 50, 80, 70, 90, typeof stat.value === 'number' && stat.value > 0 ? 100 : 20].map((h, j) => (
-                  <div
-                    key={j}
+            <Item key={stat.id}>
+              <motion.div
+                data-testid="stat-card"
+                className="lg-glass lg-spec"
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 20, padding: 20 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span
                     style={{
-                      flex: 1,
-                      borderRadius: '2px 2px 0 0',
-                      opacity: 0.7,
-                      height: `${h}%`,
-                      background: meta.barColor,
+                      display: 'flex',
+                      height: 36,
+                      width: 36,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: meta.iconBg,
+                      color: meta.iconColor,
                     }}
-                  />
-                ))}
-              </div>
-            </div>
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>
+                      {meta.icon}
+                    </span>
+                  </span>
+                  <span
+                    style={{
+                      borderRadius: 9999,
+                      background: meta.badge,
+                      padding: '2px 8px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: meta.badgeText,
+                      fontFamily: F.mono,
+                    }}
+                  >
+                    {stat.label}
+                  </span>
+                </div>
+                <div style={{ marginTop: 16 }}>
+                  <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{stat.value}</p>
+                  {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>
+                    {isHistoryError
+                      ? <span style={{ color: C.burgundyText }}>数据加载失败</span>
+                      : stat.label}
+                  </p>
+                  {/* P3: 30-day window disclaimer on the two cumulative stats */}
+                  {(stat.id === 'total-days' || stat.id === 'total-tasks') && !isHistoryError && (
+                    <p style={{ marginTop: 2, fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: F.cn }}>近 30 天</p>
+                  )}
+                </div>
+                {/* P12: mini bar chart is purely decorative */}
+                <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
+                  {[40, 60, 50, 80, 70, 90, typeof stat.value === 'number' && stat.value > 0 ? 100 : 20].map((h, j) => (
+                    <div
+                      key={j}
+                      style={{
+                        flex: 1,
+                        borderRadius: '2px 2px 0 0',
+                        opacity: 0.55,
+                        height: `${h}%`,
+                        background: meta.barColor,
+                      }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </Item>
           );
         })}
 
         {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
-        <div
-          className="ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.ikb}28`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: 20,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                display: 'flex',
-                height: 36,
-                width: 36,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 8,
-                background: `${C.ikb}14`,
-                color: C.ikb,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>donut_large</span>
-            </span>
-            {/* 今日 badge — ikb 蓝(正向) */}
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 2,
-                borderRadius: 9999,
-                background: `${C.ikb}14`,
-                border: `1px solid ${C.ikb}28`,
-                padding: '2px 8px',
-                fontSize: 11,
-                fontWeight: 700,
-                color: C.ikb,
-                fontFamily: F.mono,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>
-              今日
-            </span>
-          </div>
-          <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>
-                {todayPct}
-                <span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
-              </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 20 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>donut_large</span>
+              </span>
+              {/* 今日 badge — ikb 蓝(正向) */}
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 9999,
+                  background: 'rgba(168,197,224,0.18)',
+                  border: '1px solid rgba(168,197,224,0.45)',
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>
+                今日
+              </span>
             </div>
-            <ProgressRing pct={todayPct} />
-          </div>
-        </div>
-      </div>
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  {todayPct}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>%</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
+              </div>
+              <ProgressRing pct={todayPct} />
+            </div>
+          </motion.div>
+        </Item>
+      </RevealGroup>
 
       {/* ── 今日进度卡 ──────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 32 }}>
+      <Reveal style={{ marginBottom: 32 }}>
         <TodayProgressSection completed={completedCount} total={totalCount} />
-      </div>
+      </Reveal>
 
       {/* ── 任务清单 ─────────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>checklist</span>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日任务清单</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>今日任务清单</h2>
         <span
           style={{
             marginLeft: 8,
             borderRadius: 9999,
-            background: `${C.ikb}14`,
-            border: `1px solid ${C.ikb}28`,
+            background: 'rgba(168,197,224,0.18)',
+            border: '1px solid rgba(168,197,224,0.4)',
             padding: '2px 10px',
             fontSize: 12,
             fontWeight: 700,
@@ -1155,7 +1208,6 @@ export default function DailyTasks() {
           data-testid="daily-tasks-regenerate"
           disabled={regenerateToday.isPending}
           onClick={() => regenerateToday.mutate()}
-          className="ikb-focusring"
           style={{
             marginLeft: 'auto',
             display: 'inline-flex',
@@ -1163,15 +1215,17 @@ export default function DailyTasks() {
             gap: 4,
             borderRadius: 8,
             border: `1px solid ${C.line}`,
-            background: C.paper,
+            background: 'rgba(255,255,255,0.08)',
             padding: '6px 12px',
             fontSize: 12,
             fontWeight: 600,
-            color: '#6b7280',
+            color: 'rgba(255,255,255,0.6)',
             fontFamily: F.cn,
             cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
             opacity: regenerateToday.isPending ? 0.5 : 1,
             transition: 'border-color 0.15s, color 0.15s',
+            outline: 'none',
+            backdropFilter: 'blur(8px)',
           }}
           onMouseEnter={(e) => {
             if (!regenerateToday.isPending) {
@@ -1181,292 +1235,297 @@ export default function DailyTasks() {
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-            (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
           }}
+          onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '2px'; }}
+          onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 15 }}>refresh</span>
           {regenerateToday.isPending ? '生成中…' : '重新生成'}
         </button>
-      </div>
-      <div style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      </Reveal>
+      <RevealGroup style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {tasks.length > 0
           ? tasks.map((task) => (
-              <TaskRow
-                key={task.id}
-                task={task}
-                onComplete={handleComplete}
-                markingIds={markingIds}
-              />
+              <Item key={task.id}>
+                <TaskRow
+                  task={task}
+                  onComplete={handleComplete}
+                  markingIds={markingIds}
+                />
+              </Item>
             ))
           : DAILY_TASKS_MOCK.map((task) => (
-              <MockTaskRow key={task.id} task={task} />
+              <Item key={task.id}>
+                <MockTaskRow task={task} />
+              </Item>
             ))}
-      </div>
+      </RevealGroup>
 
       {/* ── 数据洞察 band ────────────────────────────────────────────────────── */}
       {/* P1: removed "历史数据综合评估" wording → "参考基准 · 示例"; deleted "模型已就绪" badge */}
-      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>执行力数据洞察</h2>
-        <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· 参考基准 · 示例</span>
-      </div>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>执行力数据洞察</h2>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 参考基准 · 示例</span>
+      </Reveal>
       <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 执行力雷达 · 六维 · 装饰 · P1: label改参考基准示例 · P12: aria-hidden */}
-        <div
-          className="ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: 24,
-          }}
-        >
-          <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span
-                style={{
-                  display: 'flex',
-                  height: 36,
-                  width: 36,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 8,
-                  background: `${C.ikb}14`,
-                  color: C.ikb,
-                }}
-              >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
-              </span>
-              <div>
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>执行力雷达</h3>
-                {/* P1: clarified as reference/example, not real personalised data */}
-                <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>六维参考示例</p>
+        <Reveal>
+          <div
+            className="lg-glass"
+            style={{
+              borderRadius: 20,
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    background: 'rgba(168,197,224,0.22)',
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>执行力雷达</h3>
+                  {/* P1: clarified as reference/example, not real personalised data */}
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>六维参考示例</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                {/* P1: clarified as reference score */}
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>78</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.cn }}>参考示例分</p>
               </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              {/* P1: clarified as reference score */}
-              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>78</p>
-              <p style={{ fontSize: 10, color: '#6b7280', margin: 0, fontFamily: F.cn }}>参考示例分</p>
+            {(() => {
+              const dims = [
+                { label: '坚持度', value: 80, color: C.ikb },
+                { label: '完成率', value: 75, color: 'rgba(255,160,160,0.85)' },
+                { label: '效率', value: 82, color: C.accent3 },
+                { label: '专注', value: 70, color: C.ikb },
+                { label: '连续性', value: 68, color: 'rgba(255,160,160,0.85)' },
+                { label: '任务量', value: 90, color: C.ikb },
+              ];
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [
+                cx + r * Math.cos(ang(i)),
+                cy + r * Math.sin(ang(i)),
+              ];
+              const poly = (r: number) =>
+                dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = dims
+                .map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(','))
+                .join(' ');
+              return (
+                // P12: radar is purely decorative
+                <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
+                  <defs>
+                    <linearGradient id="dt-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor="rgba(255,160,160,0.85)" stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                  ))}
+                  {dims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return (
+                      <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(168,197,224,0.18)" strokeWidth="1" />
+                    );
+                  })}
+                  <polygon
+                    points={dataPoly}
+                    fill="url(#dt-radarFill)"
+                    stroke={C.ikb}
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return (
+                      <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />
+                    );
+                  })}
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text
+                        key={i}
+                        x={x}
+                        y={y}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill="rgba(255,255,255,0.65)"
+                        fontSize="10.5"
+                        fontWeight="600"
+                      >
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
+              {[
+                { label: '坚持度', value: 80, color: C.ikb },
+                { label: '完成率', value: 75, color: 'rgba(255,160,160,0.85)' },
+                { label: '效率', value: 82, color: C.accent3 },
+                { label: '专注', value: 70, color: C.ikb },
+                { label: '连续性', value: 68, color: 'rgba(255,160,160,0.85)' },
+                { label: '任务量', value: 90, color: C.ikb },
+              ].map((d) => (
+                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
             </div>
           </div>
-          {(() => {
-            const dims = [
-              { label: '坚持度', value: 80, color: C.ikb },
-              { label: '完成率', value: 75, color: C.burgundy },
-              { label: '效率', value: 82, color: C.accent3 },
-              { label: '专注', value: 70, color: C.ikb },
-              { label: '连续性', value: 68, color: C.burgundy },
-              { label: '任务量', value: 90, color: C.ikb },
-            ];
-            const cx = 130;
-            const cy = 122;
-            const R = 88;
-            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-            const pt = (i: number, r: number): [number, number] => [
-              cx + r * Math.cos(ang(i)),
-              cy + r * Math.sin(ang(i)),
-            ];
-            const poly = (r: number) =>
-              dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-            const dataPoly = dims
-              .map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(','))
-              .join(' ');
-            return (
-              // P12: radar is purely decorative
-              <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
-                <defs>
-                  <linearGradient id="dt-radarFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke={`${C.line}`} strokeWidth="1" />
-                ))}
-                {dims.map((_, i) => {
-                  const [x, y] = pt(i, R);
-                  return (
-                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={`${C.ikb}1a`} strokeWidth="1" />
-                  );
-                })}
-                <polygon
-                  points={dataPoly}
-                  fill="url(#dt-radarFill)"
-                  stroke={C.ikb}
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R * (d.value / 100));
-                  return (
-                    <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />
-                  );
-                })}
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R + 16);
-                  return (
-                    <text
-                      key={i}
-                      x={x}
-                      y={y}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="#6b7280"
-                      fontSize="10.5"
-                      fontWeight="600"
-                    >
-                      {d.label}
-                    </text>
-                  );
-                })}
-              </svg>
-            );
-          })()}
-          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
-            {[
-              { label: '坚持度', value: 80, color: C.ikb },
-              { label: '完成率', value: 75, color: C.burgundy },
-              { label: '效率', value: 82, color: C.accent3 },
-              { label: '专注', value: 70, color: C.ikb },
-              { label: '连续性', value: 68, color: C.burgundy },
-              { label: '任务量', value: 90, color: C.ikb },
-            ].map((d) => (
-              <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, display: 'inline-block' }} />
-                <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        </Reveal>
 
         {/* 近 7 日任务完成趋势 · 真数据驱动(若有 history) */}
-        <div
-          className="ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: 24,
-          }}
-        >
-          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Reveal>
+          <div
+            className="lg-glass"
+            style={{
+              borderRadius: 20,
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    background: 'rgba(168,197,224,0.18)',
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>近 7 日任务完成</h3>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                    {hasHistoryData ? '按每日实际完成数量统计' : '暂无历史数据 · 完成任务后自动更新'}
+                  </p>
+                </div>
+              </div>
+              {/* 持续进步 badge — ikb 蓝(正向/增长) */}
               <span
                 style={{
-                  display: 'flex',
-                  height: 36,
-                  width: 36,
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 8,
-                  background: `${C.burgundy}14`,
-                  color: C.burgundyText,
+                  gap: 2,
+                  borderRadius: 9999,
+                  background: 'rgba(168,197,224,0.18)',
+                  border: '1px solid rgba(168,197,224,0.4)',
+                  padding: '4px 10px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
                 }}
               >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>
+                持续进步
               </span>
-              <div>
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>近 7 日任务完成</h3>
-                <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>
-                  {hasHistoryData ? '按每日实际完成数量统计' : '暂无历史数据 · 完成任务后自动更新'}
-                </p>
-              </div>
             </div>
-            {/* 持续进步 badge — ikb 蓝(正向/增长) */}
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 2,
-                borderRadius: 9999,
-                background: `${C.ikb}14`,
-                border: `1px solid ${C.ikb}28`,
-                padding: '4px 10px',
-                fontSize: 12,
-                fontWeight: 700,
-                color: C.ikb,
-                fontFamily: F.mono,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>
-              持续进步
-            </span>
-          </div>
-          <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
-            <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-              {totalCount}
-            </p>
-            <span style={{ marginBottom: 4, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>今日任务总数</span>
-          </div>
-          {(() => {
-            const data = trendData;
-            const W = 500;
-            const H = 160;
-            const padL = 6;
-            const padR = 6;
-            const padT = 12;
-            const padB = 8;
-            const innerW = W - padL - padR;
-            const innerH = H - padT - padB;
-            const max = Math.max(5, ...data);
-            const x = (i: number) => padL + (innerW * i) / Math.max(1, data.length - 1);
-            const y = (v: number) => padT + innerH * (1 - v / max);
-            const line = data
-              .map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`)
-              .join(' ');
-            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-            return (
-              // P12: trend chart carries real data → role=img + label
-              <svg
-                viewBox={`0 0 ${W} ${H}`}
-                style={{ width: '100%' }}
-                role="img"
-                aria-label="近 7 日每日完成任务数量趋势图"
-              >
-                <defs>
-                  <linearGradient id="dt-trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.22" />
-                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="dt-trendLine" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor={C.ikb} />
-                    <stop offset="100%" stopColor={C.burgundy} />
-                  </linearGradient>
-                </defs>
-                {[0, 0.33, 0.66, 1].map((f) => (
-                  <line
-                    key={f}
-                    x1={padL}
-                    x2={W - padR}
-                    y1={(padT + innerH * f).toFixed(1)}
-                    y2={(padT + innerH * f).toFixed(1)}
-                    stroke={`${C.line}`}
-                    strokeWidth="1"
+            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                {totalCount}
+              </p>
+              <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>今日任务总数</span>
+            </div>
+            {(() => {
+              const data = trendData;
+              const W = 500;
+              const H = 160;
+              const padL = 6;
+              const padR = 6;
+              const padT = 12;
+              const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = Math.max(5, ...data);
+              const x = (i: number) => padL + (innerW * i) / Math.max(1, data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data
+                .map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`)
+                .join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                // P12: trend chart carries real data → role=img + label
+                <svg
+                  viewBox={`0 0 ${W} ${H}`}
+                  style={{ width: '100%' }}
+                  role="img"
+                  aria-label="近 7 日每日完成任务数量趋势图"
+                >
+                  <defs>
+                    <linearGradient id="dt-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.22" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="dt-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor="rgba(255,160,160,0.85)" />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL}
+                      x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke={C.line}
+                      strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#dt-trendFill)" />
+                  <path
+                    d={line}
+                    fill="none"
+                    stroke="url(#dt-trendLine)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
-                ))}
-                <path d={area} fill="url(#dt-trendFill)" />
-                <path
-                  d={line}
-                  fill="none"
-                  stroke="url(#dt-trendLine)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {data.map((v, i) => (
-                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
-                ))}
-              </svg>
-            );
-          })()}
-          {/* P11: x-axis labels match actual trendData length */}
-          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: '#6b7280', fontFamily: F.cn }}>
-            {xAxisLabels.map((d) => (
-              <span key={d}>{d}</span>
-            ))}
+                  {data.map((v, i) => (
+                    <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" />
+                  ))}
+                </svg>
+              );
+            })()}
+            {/* P11: x-axis labels match actual trendData length */}
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+              {xAxisLabels.map((d) => (
+                <span key={d}>{d}</span>
+              ))}
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
@@ -1474,6 +1533,6 @@ export default function DailyTasks() {
         onIPDiagnosis={() => navigate(DAILY_TASKS_FOOTER_BTN_1_HREF)}
         onContinue={() => navigate(DAILY_TASKS_FOOTER_BTN_2_HREF)}
       />
-    </IKBLayout>
+    </LiquidShell>
   );
 }
