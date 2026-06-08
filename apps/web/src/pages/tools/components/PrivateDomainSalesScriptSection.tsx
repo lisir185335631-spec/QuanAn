@@ -1,7 +1,8 @@
-// PRD-29.13 · 私域成交流程 · 成交话术 4 sub-list · 橙边
+// PRD-29.13 · 私域成交流程 · 成交话术 4 sub-list · 液态玻璃皮
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
-import { cn } from '@/lib/utils';
+import { C, F } from '@/components/home-next/ikb/system';
 
 interface SalesScripts {
   firstConsult: string[];
@@ -23,10 +24,20 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="shrink-0 text-muted-foreground hover:text-on-surface transition-colors text-base"
+      style={{
+        flexShrink: 0,
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 4,
+        color: 'rgba(255,255,255,0.35)',
+        transition: 'color 0.15s',
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.35)'; }}
       aria-label="复制"
     >
-      📋
+      <span className="material-symbols-outlined" style={{ fontSize: 16 }}>content_copy</span>
     </button>
   );
 }
@@ -34,18 +45,46 @@ function CopyButton({ text }: { text: string }) {
 interface ScriptListProps {
   label: string;
   items: string[];
+  accent?: string;
 }
 
-function ScriptList({ label, items }: ScriptListProps) {
+function ScriptList({ label, items, accent = C.ikb }: ScriptListProps) {
   return (
-    <div className="space-y-2">
-      <p className="text-sm font-semibold text-primary">{label}</p>
-      <div className="space-y-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <p
+        style={{
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 12,
+          fontWeight: 700,
+          color: accent,
+          fontFamily: F.cn,
+          textShadow: C.textShadow,
+        }}
+      >
+        <span style={{ display: 'inline-block', height: 10, width: 3, borderRadius: 9999, background: accent }} aria-hidden={true} />
+        {label}
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {items.map((line, i) => (
-          <div key={i} className="flex items-start gap-2">
-            <p className="flex-1 text-sm text-on-surface/85 leading-relaxed">{line}</p>
+          <motion.div
+            key={i}
+            className="lg-glass"
+            whileHover={{ y: -2 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
+              borderRadius: 10,
+              padding: '8px 12px',
+            }}
+          >
+            <p style={{ flex: 1, margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn }}>{line}</p>
             <CopyButton text={line} />
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -58,43 +97,98 @@ export function PrivateDomainSalesScriptSection({
 }: PrivateDomainSalesScriptSectionProps) {
   return (
     <div
-      className={cn(
-        'border border-primary/30 bg-primary/5 rounded-lg p-5 space-y-6',
-        className,
-      )}
+      className={`lg-glass${className ? ` ${className}` : ''}`}
+      style={{ borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 20 }}
     >
-      <h3 className="text-base font-semibold text-primary flex items-center gap-2">
-        🎁 成交话术
+      <h3
+        style={{
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 15,
+          fontWeight: 700,
+          color: C.ikb,
+          fontFamily: F.cn,
+          textShadow: C.textShadow,
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }}>record_voice_over</span>
+        成交话术
       </h3>
 
       {/* 首次咨询话术 */}
-      <ScriptList label="首次咨询话术" items={scripts.firstConsult} />
+      <ScriptList label="首次咨询话术" items={scripts.firstConsult} accent={C.ikb} />
 
-      {/* 异议处理话术 · 红 chip */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold text-primary">异议处理话术</p>
-        <div className="space-y-3">
+      {/* 异议处理话术 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <p
+          style={{
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 12,
+            fontWeight: 700,
+            color: C.yellow,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
+        >
+          <span style={{ display: 'inline-block', height: 10, width: 3, borderRadius: 9999, background: C.yellow }} aria-hidden={true} />
+          异议处理话术
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {scripts.objectionHandling.map((item, i) => (
-            <div key={i} className="space-y-2">
-              <div className="flex items-start gap-2">
-                <span className="inline-flex items-center rounded border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-xs text-rose-400 font-semibold shrink-0">
+            <motion.div
+              key={i}
+              className="lg-glass"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 12, overflow: 'hidden' }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 6,
+                  padding: '8px 12px',
+                  borderBottom: `0.5px solid ${C.line}`,
+                  background: 'rgba(228,238,255,0.07)',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    borderRadius: 6,
+                    border: `0.5px solid rgba(228,238,255,0.4)`,
+                    background: 'rgba(228,238,255,0.12)',
+                    padding: '2px 8px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: C.yellow,
+                    fontFamily: F.cn,
+                    flexShrink: 0,
+                  }}
+                >
                   {item.objection}
                 </span>
               </div>
-              <div className="flex items-start gap-2">
-                <p className="flex-1 text-sm text-on-surface/85 leading-relaxed">{item.response}</p>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 12px' }}>
+                <p style={{ flex: 1, margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn }}>{item.response}</p>
                 <CopyButton text={`${item.objection}\n${item.response}`} />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
       {/* 逼单话术 */}
-      <ScriptList label="逼单话术" items={scripts.pushOrder} />
+      <ScriptList label="逼单话术" items={scripts.pushOrder} accent={C.accent3} />
 
       {/* 售后跟进话术 */}
-      <ScriptList label="售后跟进话术" items={scripts.afterSales} />
+      <ScriptList label="售后跟进话术" items={scripts.afterSales} accent={C.ikb} />
     </div>
   );
 }

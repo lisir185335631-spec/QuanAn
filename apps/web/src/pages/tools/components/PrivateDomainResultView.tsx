@@ -1,12 +1,12 @@
 /**
  * PrivateDomainResultView — ui/_7 设计稿 · 生成结果 · PRD-15 US-005
- * AC-4: 渲染 6 阶段完整 SOP · 每阶段 {goal,tactics[],scripts[],metrics[]} · 阶段间连线动画
+ * 液态玻璃皮 · 业务逻辑/testid 零改动
  */
 
-import { ArrowDown, CheckCircle2, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { C, F } from '@/components/home-next/ikb/system';
 
 import { PhaseCard } from './PhaseCard';
 
@@ -28,51 +28,85 @@ export function PrivateDomainResultView({
   onViewHistory,
 }: PrivateDomainResultViewProps) {
   return (
-    <div className="space-y-4" data-testid="private-domain-result-view">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="private-domain-result-view">
       {/* Status bar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {isStreaming ? (
-            <span className="text-label-sm text-primary animate-pulse">AI 生成中…</span>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: C.ikb,
+                fontFamily: F.cn,
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}
+            >
+              AI 生成中…
+            </span>
           ) : (
             <>
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-label-sm text-green-600">6 阶段 SOP 已生成</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'rgba(120,220,160,0.85)' }}>check_circle</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(120,220,160,0.85)', fontFamily: F.cn }}>6 阶段 SOP 已生成</span>
             </>
           )}
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
+        <div style={{ display: 'flex', gap: 8 }}>
+          <motion.button
+            type="button"
             onClick={onViewHistory}
+            whileHover={{ y: -3 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            className="lg-glass"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              borderRadius: 10, padding: '7px 14px',
+              fontSize: 12, fontWeight: 600,
+              color: 'rgba(255,255,255,0.7)',
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontFamily: F.cn,
+            }}
             data-testid="view-history-btn"
           >
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>history</span>
             历史记录
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
+          </motion.button>
+          <motion.button
+            type="button"
             onClick={onRetry}
+            whileHover={{ y: -3 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            className="lg-glass"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              borderRadius: 10, padding: '7px 14px',
+              fontSize: 12, fontWeight: 600,
+              color: 'rgba(255,255,255,0.7)',
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontFamily: F.cn,
+            }}
             data-testid="retry-btn"
           >
-            <RotateCcw className="h-3.5 w-3.5 mr-1" />
+            <RotateCcw style={{ height: 13, width: 13 }} />
             重新生成
-          </Button>
+          </motion.button>
         </div>
       </div>
 
       {/* Summary */}
       {summary && (
-        <Card className="border-outline-variant bg-surface-variant/10">
-          <CardContent className="pt-3 pb-3">
-            <p className="text-body-sm text-on-surface-variant">{summary}</p>
-          </CardContent>
-        </Card>
+        <div
+          className="lg-glass"
+          style={{ borderRadius: 14, padding: '12px 16px' }}
+        >
+          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
+            {summary}
+          </p>
+        </div>
       )}
 
       {/* 6-phase result with connectors */}
-      <div className="space-y-1" data-testid="result-phases-list">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }} data-testid="result-phases-list">
         {phases.map((phase, idx) => (
           <div key={phase.key} data-testid={`result-phase-row-${idx}`}>
             <PhaseCard
@@ -83,11 +117,16 @@ export function PrivateDomainResultView({
             />
             {idx < phases.length - 1 && (
               <div
-                className="flex justify-center py-0.5"
+                style={{ display: 'flex', justifyContent: 'center', padding: '2px 0' }}
                 aria-hidden="true"
                 data-testid="phase-arrow"
               >
-                <ArrowDown className="h-4 w-4 text-primary/40 animate-bounce" />
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18, color: 'rgba(168,197,224,0.45)' }}
+                >
+                  arrow_downward
+                </span>
               </div>
             )}
           </div>
