@@ -1,9 +1,8 @@
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   GUIDE_CHIP_SUBTITLE,
   GUIDE_CHIP_TITLE,
@@ -37,8 +36,8 @@ const SECTION_ICON_MAP: Record<string, string> = {
   acquisition_video: 'target',
 };
 
-// ── 三色轮转 ──────────────────────────────────────────────────────────────────
-const ACCENT_CYCLE = [C.ikb, C.burgundy, C.accent3] as const;
+// ── 三色轮转(液态玻璃冷蓝体系)────────────────────────────────────────────
+const ACCENT_CYCLE = [C.ikb, C.yellow, C.accent3] as const;
 
 // ── KPI 概览数据 ──────────────────────────────────────────────────────────────
 const KPI_ITEMS = [
@@ -48,15 +47,15 @@ const KPI_ITEMS = [
     unit: '个',
     icon: 'grid_view',
     color: C.ikb,
-    bg: `${C.ikb}1a`,
+    bg: 'rgba(168,197,224,0.18)',
   },
   {
     label: '推荐流程步骤',
     value: String(GUIDE_FLOW.length),
     unit: '步',
     icon: 'route',
-    color: C.burgundy,
-    bg: `${C.burgundy}1a`,
+    color: C.yellow,
+    bg: 'rgba(228,238,255,0.18)',
   },
   {
     label: 'FAQ 问题',
@@ -64,7 +63,7 @@ const KPI_ITEMS = [
     unit: '条',
     icon: 'quiz',
     color: C.accent3,
-    bg: `${C.accent3}1a`,
+    bg: 'rgba(168,197,224,0.18)',
   },
   {
     label: '最佳实践技巧',
@@ -72,62 +71,88 @@ const KPI_ITEMS = [
     unit: '条',
     icon: 'lightbulb',
     color: C.ikb,
-    bg: `${C.ikb}1a`,
+    bg: 'rgba(168,197,224,0.18)',
   },
 ];
 
-// ── GuideChip · IKB Header ────────────────────────────────────────────────────
+// ── GuideChip · 液态玻璃 Header ──────────────────────────────────────────────
 function GuideChip() {
   return (
     <header
       data-testid="guide-chip"
-      style={{ marginBottom: 32, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}
+      style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}
     >
       <div style={{ flexShrink: 0 }}>
-        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* chip 标签行 */}
+        <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
             style={{
-              borderRadius: 8,
-              border: `1px solid ${C.line}`,
-              background: C.base,
-              padding: '4px 12px',
+              borderRadius: 9999,
+              border: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.10)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
               fontSize: 12,
               fontWeight: 700,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color: C.ink,
               fontFamily: F.mono,
+              textShadow: C.textShadow,
             }}
           >
             更多
           </span>
           <span
             style={{
-              borderRadius: 8,
-              border: `1px solid ${C.ikb}50`,
-              background: `${C.ikb}12`,
-              padding: '4px 12px',
+              borderRadius: 9999,
+              border: `0.5px solid rgba(168,197,224,0.55)`,
+              background: 'rgba(168,197,224,0.18)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
               fontSize: 12,
               fontWeight: 700,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
-              color: C.purpleText,
+              color: C.ikb,
               fontFamily: F.mono,
+              textShadow: C.textShadow,
             }}
           >
             使用说明
           </span>
-        </div>
+        </Reveal>
+        {/* 主标题 — 冷蓝渐变字 */}
         <h1
           data-testid="guide-chip-title"
-          className="ikb-gradtext"
-          style={{ whiteSpace: 'nowrap', fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display, margin: 0 }}
+          style={{
+            whiteSpace: 'nowrap',
+            fontSize: 52,
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            fontFamily: F.display,
+            margin: 0,
+            background: C.grad,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            textShadow: 'none',
+          }}
         >
           {GUIDE_CHIP_TITLE}
         </h1>
         <p
           data-testid="guide-chip-subtitle"
-          style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}
+          style={{
+            marginTop: 10,
+            maxWidth: 820,
+            fontSize: 16,
+            lineHeight: 1.6,
+            color: C.burgundyText,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
         >
           {GUIDE_CHIP_SUBTITLE}
         </p>
@@ -136,51 +161,49 @@ function GuideChip() {
   );
 }
 
-// ── KPI 概览 ──────────────────────────────────────────────────────────────────
+// ── KPI 概览(液态玻璃卡)─────────────────────────────────────────────────────
 function KpiOverview() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+    <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 36 }}>
       {KPI_ITEMS.map((k) => (
-        <div
-          key={k.label}
-          className="ikb-hovercard"
-          style={{
-            borderRadius: 12,
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-            padding: 20,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                display: 'flex',
-                height: 36,
-                width: 36,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 8,
-                background: k.bg,
-                color: k.color,
-              }}
-            >
-              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                {k.icon}
+        <Item key={k.label}>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: k.bg,
+                  color: k.color,
+                }}
+              >
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                  {k.icon}
+                </span>
               </span>
-            </span>
-          </div>
-          <p style={{ marginTop: 12, fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: '12px 0 0' }}>
-            {k.value}
-            <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: '#6b7280', fontFamily: F.cn }}>{k.unit}</span>
-          </p>
-          <p style={{ marginTop: 4, fontSize: 12, fontWeight: 500, color: '#6b7280', fontFamily: F.cn }}>{k.label}</p>
-        </div>
+            </div>
+            <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
+              {k.value}
+              <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.unit}</span>
+            </p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+          </motion.div>
+        </Item>
       ))}
-    </div>
+    </RevealGroup>
   );
 }
 
-// ── FlowSection · IKB 时间线 ──────────────────────────────────────────────────
+// ── FlowSection · 液态玻璃时间线 ──────────────────────────────────────────────
 const FLOW_ICON_MAP: Record<string, string> = {
   深度学习: 'school',
   设计变现: 'payments',
@@ -192,18 +215,18 @@ const FLOW_ICON_MAP: Record<string, string> = {
 function FlowCard({ step, index }: { step: FlowStep; index: number }) {
   const color = ACCENT_CYCLE[index % ACCENT_CYCLE.length];
   return (
-    <div
+    <motion.div
       data-testid={`flow-card-${index}`}
-      className="ikb-hovercard"
+      className="lg-glass lg-spec"
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
       style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: 8,
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: C.paper,
+        borderRadius: 16,
         padding: 16,
         textAlign: 'center',
       }}
@@ -216,74 +239,75 @@ function FlowCard({ step, index }: { step: FlowStep; index: number }) {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '50%',
-          background: color,
-          color: '#fff',
+          background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
+          color,
         }}
       >
         <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 22 }}>
           {FLOW_ICON_MAP[step.name] ?? 'chevron_right'}
         </span>
       </span>
-      <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{step.name}</span>
-      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{step.sub}</span>
-    </div>
+      <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{step.name}</span>
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{step.sub}</span>
+    </motion.div>
   );
 }
 
 function FlowSection() {
   return (
-    <section
-      data-testid="flow-section"
-      style={{
-        marginBottom: 32,
-        overflow: 'hidden',
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
-        padding: 24,
-      }}
-    >
-      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span
-          style={{
-            display: 'flex',
-            height: 36,
-            width: 36,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 8,
-            background: `${C.ikb}12`,
-            color: C.ikb,
-          }}
-        >
-          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
-            rocket_launch
+    <Reveal>
+      <section
+        data-testid="flow-section"
+        className="lg-glass"
+        style={{
+          marginBottom: 36,
+          overflow: 'hidden',
+          borderRadius: 20,
+          padding: 28,
+        }}
+      >
+        <div style={{ marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 38,
+              width: 38,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              background: 'rgba(168,197,224,0.22)',
+              color: C.ikb,
+            }}
+          >
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+              rocket_launch
+            </span>
           </span>
-        </span>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{GUIDE_FLOW_TITLE}</h2>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 12 }}>
-        {GUIDE_FLOW.map((step, i) => (
-          <div key={step.name} style={{ display: 'flex', flex: 1, alignItems: 'center', gap: 12 }}>
-            <FlowCard step={step} index={i} />
-            {i < GUIDE_FLOW.length - 1 && (
-              <span
-                data-testid={`flow-arrow-${i}`}
-                aria-hidden={true}
-                className="material-symbols-outlined"
-                style={{ flexShrink: 0, fontSize: 20, color: C.ikb }}
-              >
-                chevron_right
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{GUIDE_FLOW_TITLE}</h2>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 12 }}>
+          {GUIDE_FLOW.map((step, i) => (
+            <div key={step.name} style={{ display: 'flex', flex: 1, alignItems: 'center', gap: 12 }}>
+              <FlowCard step={step} index={i} />
+              {i < GUIDE_FLOW.length - 1 && (
+                <span
+                  data-testid={`flow-arrow-${i}`}
+                  aria-hidden={true}
+                  className="material-symbols-outlined"
+                  style={{ flexShrink: 0, fontSize: 20, color: C.ikb }}
+                >
+                  chevron_right
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    </Reveal>
   );
 }
 
-// ── SectionAccordion · IKB 折叠卡 ────────────────────────────────────────────
+// ── SectionAccordion · 液态玻璃折叠卡 ────────────────────────────────────────
 function SectionAccordion({ section }: { section: GuideSection }) {
   const [isOpen, setIsOpen] = useState(true);
   const sectionIdx = GUIDE_SECTIONS_14.findIndex((s) => s.id === section.id);
@@ -292,11 +316,10 @@ function SectionAccordion({ section }: { section: GuideSection }) {
   return (
     <div
       data-testid={`section-accordion-${section.id}`}
+      className="lg-glass"
       style={{
         overflow: 'hidden',
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: C.paper,
+        borderRadius: 18,
       }}
     >
       {/* 标题行 */}
@@ -306,7 +329,6 @@ function SectionAccordion({ section }: { section: GuideSection }) {
         aria-expanded={isOpen}
         aria-label={`${isOpen ? '收起' : '展开'} ${section.name}`}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="ikb-focusring"
         style={{
           display: 'flex',
           width: '100%',
@@ -317,10 +339,13 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           textAlign: 'left',
           background: 'transparent',
           border: 'none',
-          transition: 'background 0.15s',
+          transition: 'background 0.2s',
+          outline: 'none',
         }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.base; }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+        onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '-2px'; }}
+        onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
@@ -331,9 +356,9 @@ function SectionAccordion({ section }: { section: GuideSection }) {
               flexShrink: 0,
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: 10,
-              background: accentColor,
-              color: '#fff',
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, rgba(168,197,224,0.4), rgba(120,160,220,0.25))',
+              color: accentColor,
             }}
           >
             <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 22 }}>
@@ -341,8 +366,8 @@ function SectionAccordion({ section }: { section: GuideSection }) {
             </span>
           </span>
           <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{section.name}</p>
-            <p style={{ fontSize: 12, color: '#6b7280', margin: 0, fontFamily: F.cn }}>{section.sub}</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{section.name}</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>{section.sub}</p>
           </div>
         </div>
         <span
@@ -351,7 +376,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           style={{
             flexShrink: 0,
             fontSize: 22,
-            color: '#6b7280',
+            color: 'rgba(255,255,255,0.55)',
             transition: 'transform 0.2s',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -364,10 +389,16 @@ function SectionAccordion({ section }: { section: GuideSection }) {
       {isOpen && (
         <div
           data-testid={`section-body-${section.id}`}
-          style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '0 20px 20px' }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 20,
+            padding: '0 20px 20px',
+            borderTop: `0.5px solid ${C.line}`,
+          }}
         >
           {/* 步骤列表 */}
-          <ol data-testid="section-steps-list" style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: 0, padding: 0, listStyle: 'none' }}>
+          <ol data-testid="section-steps-list" style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: '16px 0 0', padding: 0, listStyle: 'none' }}>
             {section.steps.map((step, i) => (
               <li key={step.title} style={{ display: 'flex', gap: 12 }}>
                 <span
@@ -382,15 +413,16 @@ function SectionAccordion({ section }: { section: GuideSection }) {
                     fontSize: 13,
                     fontWeight: 800,
                     color: '#fff',
-                    background: accentColor,
+                    background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
                     fontFamily: F.mono,
+                    textShadow: C.textShadow,
                   }}
                 >
                   {i + 1}
                 </span>
                 <div style={{ flex: 1, paddingTop: 2 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{step.title}</p>
-                  <p style={{ marginTop: 4, whiteSpace: 'pre-line', fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{step.title}</p>
+                  <p style={{ marginTop: 4, whiteSpace: 'pre-line', fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>
                     {step.desc}
                   </p>
                 </div>
@@ -402,10 +434,9 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           {section.tips.length > 0 && (
             <div
               data-testid="tips-box"
+              className="lg-glass"
               style={{
-                borderRadius: 8,
-                border: `1px solid ${C.line}`,
-                background: C.base,
+                borderRadius: 12,
                 padding: 16,
               }}
             >
@@ -420,6 +451,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
                   color: C.ink,
                   margin: '0 0 12px',
                   fontFamily: F.cn,
+                  textShadow: C.textShadow,
                 }}
               >
                 <span
@@ -437,11 +469,11 @@ function SectionAccordion({ section }: { section: GuideSection }) {
                     <span
                       aria-hidden={true}
                       className="material-symbols-outlined"
-                      style={{ marginTop: 2, flexShrink: 0, fontSize: 16, color: '#166534' }}
+                      style={{ marginTop: 2, flexShrink: 0, fontSize: 16, color: C.ikb }}
                     >
                       check_circle
                     </span>
-                    <span style={{ fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>{tip}</span>
+                    <span style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{tip}</span>
                   </li>
                 ))}
               </ul>
@@ -453,62 +485,64 @@ function SectionAccordion({ section }: { section: GuideSection }) {
   );
 }
 
-// ── FAQSection · IKB Q&A 折叠卡 ──────────────────────────────────────────────
+// ── FAQSection · 液态玻璃 Q&A 折叠卡 ──────────────────────────────────────────
 function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
   const color = ACCENT_CYCLE[index % ACCENT_CYCLE.length];
   return (
-    <div
-      data-testid={`faq-card-${index}`}
-      className="ikb-hovercard"
-      style={{
-        borderRadius: 12,
-        border: `1px solid ${C.line}`,
-        background: C.paper,
-        padding: 20,
-      }}
-    >
-      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-        <span
-          aria-hidden={true}
-          className="material-symbols-outlined"
-          style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color }}
-        >
-          quiz
-        </span>
-        <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{faq.q}</p>
-      </div>
-      <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>{faq.a}</p>
-    </div>
+    <Item>
+      <motion.div
+        data-testid={`faq-card-${index}`}
+        className="lg-glass lg-spec"
+        whileHover={{ y: -4 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+        style={{
+          borderRadius: 18,
+          padding: 22,
+        }}
+      >
+        <div style={{ marginBottom: 10, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <span
+            aria-hidden={true}
+            className="material-symbols-outlined"
+            style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color }}
+          >
+            quiz
+          </span>
+          <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{faq.q}</p>
+        </div>
+        <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{faq.a}</p>
+      </motion.div>
+    </Item>
   );
 }
 
 function FAQSection() {
   return (
     <section data-testid="faq-section">
-      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <Reveal style={{ marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
           style={{
             display: 'flex',
-            height: 36,
-            width: 36,
+            height: 38,
+            width: 38,
             alignItems: 'center',
             justifyContent: 'center',
-            borderRadius: 8,
-            background: `${C.burgundy}12`,
-            color: C.burgundy,
+            borderRadius: 10,
+            background: 'rgba(168,197,224,0.22)',
+            color: C.ikb,
           }}
         >
           <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
             help
           </span>
         </span>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{GUIDE_FAQ_TITLE}</h2>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{GUIDE_FAQ_TITLE}</h2>
+      </Reveal>
+      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {GUIDE_FAQS_5.map((faq, i) => (
           <FaqCard key={faq.q} faq={faq} index={i} />
         ))}
-      </div>
+      </RevealGroup>
     </section>
   );
 }
@@ -524,7 +558,7 @@ export default function Guide() {
     : GUIDE_SECTIONS_14;
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── 页面 Header ──────────────────────────────────────────── */}
       <GuideChip />
 
@@ -534,34 +568,31 @@ export default function Guide() {
       {/* ── 推荐使用流程(仅无搜索时显示)────────────────────────── */}
       {!searchQuery && <FlowSection />}
 
-      {/* ── 搜索框 ────────────────────────────────────────────────── */}
+      {/* ── 搜索框(液态玻璃)──────────────────────────────────────── */}
       <div
+        className="lg-glass"
         style={{
           marginBottom: 24,
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          borderRadius: 12,
-          border: `1px solid ${C.line}`,
-          background: C.paper,
-          padding: '12px 16px',
-          transition: 'border-color 0.15s, box-shadow 0.15s',
+          borderRadius: 16,
+          padding: '12px 18px',
+          transition: 'box-shadow 0.2s',
         }}
         onFocus={(e) => {
           const el = e.currentTarget as HTMLDivElement;
-          el.style.borderColor = C.ikb;
-          el.style.boxShadow = `0 0 0 1px ${C.ikb}`;
+          el.style.boxShadow = `0 0 0 2px rgba(168,197,224,0.6), 0 26px 52px -14px rgba(8,20,48,0.55)`;
         }}
         onBlur={(e) => {
           const el = e.currentTarget as HTMLDivElement;
-          el.style.borderColor = C.line;
           el.style.boxShadow = '';
         }}
       >
         <span
           aria-hidden={true}
           className="material-symbols-outlined"
-          style={{ flexShrink: 0, fontSize: 22, color: '#6b7280' }}
+          style={{ flexShrink: 0, fontSize: 22, color: C.ikb }}
         >
           search
         </span>
@@ -575,18 +606,32 @@ export default function Guide() {
           placeholder={GUIDE_SEARCH_PLACEHOLDER}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="ikb-input"
-          style={{ flex: 1, background: 'transparent', fontSize: 14, color: C.ink, fontFamily: F.cn }}
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            fontSize: 14,
+            color: C.ink,
+            fontFamily: F.cn,
+          }}
         />
         {searchQuery && (
           <button
             type="button"
             aria-label="清除搜索"
             onClick={() => setSearchQuery('')}
-            className="ikb-focusring"
-            style={{ flexShrink: 0, color: '#6b7280', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'color 0.15s', padding: 0 }}
+            style={{
+              flexShrink: 0,
+              color: 'rgba(255,255,255,0.55)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'color 0.15s',
+              padding: 0,
+            }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; }}
           >
             <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -594,16 +639,18 @@ export default function Guide() {
       </div>
 
       {/* ── 14 Section 折叠卡 ────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {filtered.map((section) => (
-          <SectionAccordion key={section.id} section={section} />
+          <Item key={section.id}>
+            <SectionAccordion section={section} />
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
-      <div style={{ marginTop: 32 }}>
+      <div style={{ marginTop: 40 }}>
         <FAQSection />
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
