@@ -12,7 +12,8 @@
  * 视觉皮换成液态玻璃:深色玻璃导航条 · 白字 · 玻璃下拉面板 · 玻璃页脚
  */
 import { ChevronDown, LogIn, LogOut, Settings } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import ReactDOM from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 
 import {
@@ -390,6 +391,31 @@ function BrandMark({ size = 42 }: { size?: number }) {
   );
 }
 
+// ── 流体背景层 — fixed 全屏 portal · 脱离 zoom · 各页共用 ──────────────────────
+function FluidPortal() {
+  const [mounted, setMounted] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = document.createElement('div');
+    el.className = 'lg-root';
+    el.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;';
+    document.body.appendChild(el);
+    ref.current = el;
+    setMounted(true);
+    return () => {
+      document.body.removeChild(el);
+    };
+  }, []);
+  if (!mounted || !ref.current) return null;
+  return ReactDOM.createPortal(
+    <>
+      <div className="lg-fluid" />
+      <div className="lg-grain" />
+    </>,
+    ref.current,
+  );
+}
+
 // ── LiquidShell (主导出) ──────────────────────────────────────────────────────
 export function LiquidShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
@@ -415,6 +441,9 @@ export function LiquidShell({ children }: { children: ReactNode }) {
         fontFamily: F.cn,
       }}
     >
+      {/* 流体背景 — 内置,各页共用 */}
+      <FluidPortal />
+
       {/* 顶栏 — 液态玻璃深色导航条 */}
       <header
         style={{
