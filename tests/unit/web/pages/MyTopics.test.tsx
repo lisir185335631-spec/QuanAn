@@ -27,8 +27,8 @@ describe('Page structure (先锋白设计)', () => {
     expect(lines).toBeGreaterThan(200);
   });
 
-  it('renders IKBLayout wrapper', () => {
-    expect(src(MY_TOPICS_PAGE)).toContain('IKBLayout');
+  it('renders LiquidShell wrapper', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('LiquidShell');
   });
 
   it('data-testid="my-topics-page" root wrapper', () => {
