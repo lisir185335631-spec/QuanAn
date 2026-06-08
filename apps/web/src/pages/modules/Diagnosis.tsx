@@ -3,8 +3,7 @@
 // AC-7 · onError → toast.error + retry button
 // 阶段2: 真后端驱动 — onSuccess(report) → 存 report state + setIsReportView(true)
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -20,9 +19,9 @@ import { PriorityPlanSection } from '@/components/diagnosis/PriorityPlanSection'
 import { ReportFooterActions } from '@/components/diagnosis/ReportFooterActions';
 import { WeeklyTasksSection } from '@/components/diagnosis/WeeklyTasksSection';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { C, F } from '@/components/home/ikb/system';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   DIAGNOSIS_H1,
   DIAGNOSIS_DIMENSIONS_8,
@@ -424,7 +423,7 @@ export default function Diagnosis() {
   // AC-4: loading state — show spinner while mutation is pending
   if (generateMutation.isPending) {
     return (
-      <IKBLayout>
+      <LiquidShell>
         <div
           style={{
             display: 'flex',
@@ -447,19 +446,19 @@ export default function Diagnosis() {
               >
                 progress_activity
               </span>
-              <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>AI 分析中...</p>
-              <p style={{ fontSize: 14, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 分析中...</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
             </div>
           </FadeInWrapper>
         </div>
-      </IKBLayout>
+      </LiquidShell>
     );
   }
 
   // AC-7: error state — show retry button
   if (generateMutation.isError) {
     return (
-      <IKBLayout>
+      <LiquidShell>
         <div
           style={{ padding: '32px 0', maxWidth: 768 }}
           data-testid="diagnosis-error"
@@ -469,48 +468,62 @@ export default function Diagnosis() {
             <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span
                 style={{
-                  borderRadius: 6,
-                  border: `1px solid ${C.line}`,
-                  background: C.base,
-                  padding: '4px 12px',
+                  borderRadius: 9999,
+                  border: `0.5px solid ${C.line}`,
+                  background: 'rgba(255,255,255,0.10)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
                   fontSize: 12,
                   fontWeight: 700,
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   color: C.ink,
                   fontFamily: F.mono,
+                  textShadow: C.textShadow,
                 }}
               >
                 智能引擎
               </span>
               <span
                 style={{
-                  borderRadius: 6,
-                  border: `1px solid ${C.ikb}40`,
-                  background: `${C.ikb}0d`,
-                  padding: '4px 12px',
+                  borderRadius: 9999,
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.18)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
                   fontSize: 12,
                   fontWeight: 700,
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   color: C.ikb,
                   fontFamily: F.mono,
+                  textShadow: C.textShadow,
                 }}
               >
                 IP 诊断
               </span>
             </div>
             <h1
-              className="ikb-gradtext"
-              style={{ fontFamily: F.display, fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 32 }}
+              style={{
+                fontFamily: F.display,
+                fontSize: 40,
+                fontWeight: 800,
+                letterSpacing: '-0.02em',
+                marginBottom: 32,
+                background: C.grad,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+                textShadow: 'none',
+              }}
             >
               {DIAGNOSIS_H1}
             </h1>
             <div
+              className="lg-glass"
               style={{
-                borderRadius: 12,
-                border: `1px solid ${C.burgundy}30`,
-                background: `${C.burgundy}08`,
+                borderRadius: 16,
                 padding: 24,
                 display: 'flex',
                 flexDirection: 'column',
@@ -521,25 +534,25 @@ export default function Diagnosis() {
                 <span
                   className="material-symbols-outlined"
                   aria-hidden={true}
-                  style={{ fontSize: 20, color: C.burgundy }}
+                  style={{ fontSize: 20, color: 'rgba(255,100,100,0.9)' }}
                 >
                   error
                 </span>
-                <p style={{ fontSize: 16, fontWeight: 600, color: C.burgundy, fontFamily: F.cn, margin: 0 }}>生成报告失败 · 请稍后再试</p>
+                <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,180,180,0.95)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>生成报告失败 · 请稍后再试</p>
               </div>
               <button
                 type="button"
                 onClick={handleRetry}
                 data-testid="retry-button"
                 aria-label="重试"
-                className="ikb-gradbtn ikb-focusring"
+                className="lg-gradbtn"
                 style={{
                   alignSelf: 'flex-start',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  borderRadius: 8,
-                  padding: '10px 20px',
+                  borderRadius: 9999,
+                  padding: '10px 24px',
                   fontSize: 14,
                   fontWeight: 700,
                   color: '#ffffff',
@@ -560,7 +573,7 @@ export default function Diagnosis() {
             </div>
           </FadeInWrapper>
         </div>
-      </IKBLayout>
+      </LiquidShell>
     );
   }
 
@@ -580,42 +593,44 @@ export default function Diagnosis() {
       : '记住，IP孵化变现不是玩虚的，每一步都要实打实地干。从现在开始，按照这个路子走，坚持执行，变现只是时间问题。';
 
     return (
-      <IKBLayout>
+      <LiquidShell>
         <div
           style={{ padding: '8px 0' }}
           data-testid="diagnosis-report"
         >
-          <FadeInWrapper from="up">
+          <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             {/* isFallback 降级提示 */}
             {report.isFallback && (
-              <div
-                style={{
-                  marginBottom: 16,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 8,
-                  border: `1px solid ${C.accent3}40`,
-                  background: `${C.accent3}0a`,
-                  padding: '10px 16px',
-                }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  aria-hidden={true}
-                  style={{ fontSize: 16, color: C.accent3 }}
+              <Item>
+                <div
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 12,
+                    padding: '10px 16px',
+                  }}
                 >
-                  warning
-                </span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: C.purpleText, fontFamily: F.cn }}>AI 繁忙·降级结果 — 本次报告由备用模型生成，仅供参考</span>
-              </div>
+                  <span
+                    className="material-symbols-outlined"
+                    aria-hidden={true}
+                    style={{ fontSize: 16, color: C.ikb }}
+                  >
+                    warning
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, textShadow: C.textShadow }}>AI 繁忙·降级结果 — 本次报告由备用模型生成，仅供参考</span>
+                </div>
+              </Item>
             )}
 
             {/* Shared header: report uses step 7 (0-indexed, 8/8 all lit) */}
-            <DiagnosisHeader currentStep={7} totalSteps={TOTAL_STEPS} />
+            <Item>
+              <DiagnosisHeader currentStep={7} totalSteps={TOTAL_STEPS} />
+            </Item>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-              {/* Section A: 总分 + 雷达图 */}
+            {/* Section A: 总分 + 雷达图 */}
+            <Item>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                 <IPHealthScoreCard
                   scores={dimensionScores}
@@ -623,11 +638,15 @@ export default function Diagnosis() {
                 />
                 <IPRadarChart scores={dimensionScores} />
               </div>
+            </Item>
 
-              {/* Section B: 核心问题 */}
+            {/* Section B: 核心问题 */}
+            <Item>
               <CoreIssuesCard issues={coreIssues} />
+            </Item>
 
-              {/* Section C: 详细诊断报告 */}
+            {/* Section C: 详细诊断报告 */}
+            <Item>
               <DetailedReportSection
                 intro={verdict.intro}
                 reportH2={verdict.reportH2}
@@ -635,49 +654,117 @@ export default function Diagnosis() {
                 verdictBody={verdict.body}
                 details={details}
               />
+            </Item>
 
-              {/* Section D: 优先级排序及行动计划 */}
+            {/* Section D: 优先级排序及行动计划 */}
+            <Item>
               <PriorityPlanSection
                 intro={`根据你的诊断结果（总分 ${report.overallScore}/100），以下是优先级最高的行动步骤：`}
                 steps={prioritySteps}
               />
+            </Item>
 
-              {/* Section E: 本周立即行动任务清单 */}
+            {/* Section E: 本周立即行动任务清单 */}
+            <Item>
               <WeeklyTasksSection
                 tasks={weeklyTasks}
                 closing={closingNote}
               />
+            </Item>
 
-              {/* Section F: 行动计划 cards */}
+            {/* Section F: 行动计划 cards */}
+            <Item>
               <ActionPlanCardsSection plans={actionPlans} />
+            </Item>
 
-              {/* Section G: 底部 3 button */}
+            {/* Section G: 底部 3 button */}
+            <Item>
               <ReportFooterActions
                 onRestart={handleRestartDiagnosis}
                 onHistory={handleHistory}
                 onTodayTasks={handleTodayTasks}
               />
-            </div>
-          </FadeInWrapper>
+            </Item>
+          </RevealGroup>
         </div>
-      </IKBLayout>
+      </LiquidShell>
     );
   }
 
   // Wizard view (form)
   return (
-    <IKBLayout>
+    <LiquidShell>
       <div style={{ padding: '8px 0', maxWidth: 768 }}>
-        <FadeInWrapper from="up">
+        <Reveal>
+          {/* Page header chips */}
+          <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
+            >
+              智能引擎
+            </span>
+            <span
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                background: 'rgba(168,197,224,0.18)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
+            >
+              IP 诊断
+            </span>
+          </div>
+
+          {/* Main title — 冷蓝渐变字 */}
+          <h1
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              marginBottom: 32,
+              fontFamily: F.display,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
+          >
+            {DIAGNOSIS_H1}
+          </h1>
+
           {/* Shared header */}
           <DiagnosisHeader currentStep={progress.currentStep} totalSteps={TOTAL_STEPS} />
 
-          {/* Wizard card — IKB 白纸面 + 墨线边 */}
-          <div
+          {/* Wizard card — 液态玻璃面板 */}
+          <motion.div
+            className="lg-glass"
+            whileHover={{ y: -3 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
             style={{
-              borderRadius: 12,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              borderRadius: 20,
               padding: 32,
             }}
           >
@@ -700,9 +787,9 @@ export default function Diagnosis() {
               stage={progress.stage}
               onStageChange={(v) => setProgress((prev) => ({ ...prev, stage: v }))}
             />
-          </div>
-        </FadeInWrapper>
+          </motion.div>
+        </Reveal>
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
