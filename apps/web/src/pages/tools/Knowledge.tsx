@@ -1,17 +1,16 @@
 /**
  * /knowledge 页面 — AIP文案方法论
- * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳
+ * 液态玻璃皮 · LiquidShell 外壳
  * 4 tab(20类脚本 / 20大爆款 / 开头公式 / 核心公式) + 起承转合 footer
  * 逻辑零改动 · testid 全保留 · 禁断点 · 禁 line-clamp
  */
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { CORE_FORMULAS } from '@/lib/constants/coreFormulas';
 import { ELEMENT_DETAILS } from '@/lib/constants/elementDetails';
 import { ALL_ELEMENTS, HOT_ELEMENT_GROUPS } from '@/lib/constants/elements';
@@ -51,20 +50,20 @@ for (const group of HOT_ELEMENT_GROUPS) {
   }
 }
 
-// KPI data — IKB 三主色轮转: 蓝/玫红/紫/蓝
+// KPI data — 液态玻璃冷蓝体系轮转
 const KPI_CARDS = [
-  { label: '脚本类型', value: `${SCRIPT_TYPES.length}`, unit: '类', icon: 'chat',      color: C.ikb,      bg: `${C.ikb}10`,      borderColor: `${C.ikb}28`      },
-  { label: '爆款元素', value: '20',                       unit: '个', icon: 'bolt',      color: C.burgundy, bg: `${C.burgundy}10`, borderColor: `${C.burgundy}28` },
-  { label: '开头公式', value: `${OPENING_FORMULAS.length}`, unit: '个', icon: 'menu_book', color: C.accent3,  bg: `${C.accent3}10`,  borderColor: `${C.accent3}28`  },
-  { label: '核心公式', value: `${CORE_FORMULAS.length}`,  unit: '个', icon: 'lightbulb', color: C.ikb,      bg: `${C.ikb}10`,      borderColor: `${C.ikb}28`      },
+  { label: '脚本类型', value: `${SCRIPT_TYPES.length}`, unit: '类', icon: 'chat',      color: C.ikb,    bg: 'rgba(168,197,224,0.18)' },
+  { label: '爆款元素', value: '20',                       unit: '个', icon: 'bolt',      color: C.yellow, bg: 'rgba(228,238,255,0.18)' },
+  { label: '开头公式', value: `${OPENING_FORMULAS.length}`, unit: '个', icon: 'menu_book', color: C.accent3, bg: 'rgba(168,197,224,0.18)' },
+  { label: '核心公式', value: `${CORE_FORMULAS.length}`,  unit: '个', icon: 'lightbulb', color: C.ikb,    bg: 'rgba(168,197,224,0.18)' },
 ];
 
-// Story stage accent colors (IKB 三主色轮转: 起→玫红 承→紫 转→蓝 合→蓝)
+// Story stage accent colors — 液态玻璃冷蓝体系
 const STAGE_ACCENT: Record<string, { color: string; bg: string; border: string }> = {
-  qi:    { color: C.burgundy, bg: `${C.burgundy}10`, border: `${C.burgundy}28` },
-  cheng: { color: C.accent3,  bg: `${C.accent3}10`,  border: `${C.accent3}28`  },
-  zhuan: { color: C.ikb,      bg: `${C.ikb}10`,      border: `${C.ikb}28`      },
-  he:    { color: C.ikb,      bg: `${C.ikb}08`,      border: `${C.ikb}20`      },
+  qi:    { color: C.yellow,  bg: 'rgba(228,238,255,0.14)', border: 'rgba(228,238,255,0.30)' },
+  cheng: { color: C.accent3, bg: 'rgba(168,197,224,0.14)', border: 'rgba(168,197,224,0.30)' },
+  zhuan: { color: C.ikb,     bg: 'rgba(168,197,224,0.14)', border: 'rgba(168,197,224,0.30)' },
+  he:    { color: C.ikb,     bg: 'rgba(168,197,224,0.10)', border: 'rgba(168,197,224,0.22)' },
 };
 
 // ── Sub-components (inline) ────────────────────────────────────────────────────
@@ -83,13 +82,23 @@ function ScriptTab() {
     : SCRIPT_TYPES;
 
   return (
-    <div className="space-y-4" data-testid="script-tab">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="script-tab">
       {/* search row */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div
+          className="lg-glass"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            borderRadius: 12,
+            padding: '8px 14px',
+            width: 320,
+          }}
+        >
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-            style={{ color: '#6b7280' }}
+            className="material-symbols-outlined"
+            style={{ fontSize: 18, color: C.ikb, flexShrink: 0 }}
             aria-hidden={true}
           >
             search
@@ -99,48 +108,80 @@ function ScriptTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.scripts}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 14,
+              color: C.ink,
+              fontFamily: F.cn,
+            }}
             data-testid="script-search"
           />
         </div>
-        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="script-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="script-count">
           {KNOWLEDGE_PAGE.countText.scripts(SCRIPT_TYPES.length, filtered.length)}
         </span>
       </div>
 
       {/* grid — fixed 4 cols */}
-      <div className="grid grid-cols-4 gap-4">
-        {filtered.map((s) => {
-          return (
-            <div
-              key={s.key}
-              className="rounded-xl border p-4 space-y-3 ikb-hovercard"
-              style={{ borderColor: C.line, background: C.paper }}
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        {filtered.map((s) => (
+          <Item key={s.key}>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
               data-testid={`script-card-${s.key}`}
             >
               {/* header */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
                   <span
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-[13px] font-bold shrink-0"
-                    style={{ background: `${C.ikb}12`, color: C.ikb }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: 'rgba(168,197,224,0.22)',
+                      color: C.ikb,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
                     data-testid={`script-chip-${s.key}`}
                   >
                     {s.emoji}
                   </span>
-                  <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{s.label}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.3, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{s.label}</span>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <button
                     type="button"
                     aria-label="收藏"
                     data-testid={`script-bookmark-${s.key}`}
                     onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
-                    style={{ borderColor: C.line, color: '#6b7280' }}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
                   </button>
                   <button
                     type="button"
@@ -150,35 +191,59 @@ function ScriptTab() {
                       void navigator.clipboard.writeText(s.label);
                       toast.success(KNOWLEDGE_PAGE.toasts.copied);
                     }}
-                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
-                    style={{ borderColor: C.line, color: '#6b7280' }}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
                   </button>
                 </div>
               </div>
 
               {/* desc */}
-              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{s.desc}</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>{s.desc}</p>
 
               {/* methodology */}
-              <p className="text-[11px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{s.methodology}</p>
+              <p style={{ fontSize: 11, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{s.methodology}</p>
 
               {/* expand cases — disabled (no data yet) */}
               <button
                 type="button"
                 data-testid={`script-cases-${s.key}`}
                 disabled
-                className="flex items-center gap-1 text-[11px] cursor-not-allowed opacity-40"
-                style={{ color: '#6b7280', fontFamily: F.cn }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 11,
+                  cursor: 'not-allowed',
+                  opacity: 0.4,
+                  color: 'rgba(255,255,255,0.6)',
+                  fontFamily: F.cn,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                }}
               >
                 <span>实战案例</span>
-                <span className="text-[11px]" style={{ color: '#9ca3af', fontFamily: F.cn }}>· 敬请期待</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)', fontFamily: F.cn }}>· 敬请期待</span>
               </button>
-            </div>
-          );
-        })}
-      </div>
+            </motion.div>
+          </Item>
+        ))}
+      </RevealGroup>
     </div>
   );
 }
@@ -193,10 +258,10 @@ function ElementsTab() {
       : ALL_ELEMENTS.filter((item) => ELEMENT_GROUP_KEY[item.key] === activeFilter);
 
   return (
-    <div className="space-y-4" data-testid="elements-tab">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="elements-tab">
       {/* filter chips */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2" role="radiogroup" aria-label="爆款元素分类筛选">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} role="radiogroup" aria-label="爆款元素分类筛选">
           {FILTER_CHIPS.map((chip) => {
             const active = activeFilter === chip.key;
             return (
@@ -207,98 +272,155 @@ function ElementsTab() {
                 aria-checked={active}
                 data-testid={`elements-filter-${chip.key}`}
                 onClick={() => setActiveFilter(chip.key)}
-                className="ikb-focusring rounded-full px-3 py-1.5 text-[12px] font-semibold border transition-all"
-                style={active
-                  ? { borderColor: C.ikb, background: C.ikb, color: '#fff', fontFamily: F.cn }
-                  : { borderColor: C.line, color: '#6b7280', background: 'transparent', fontFamily: F.cn }
-                }
+                style={{
+                  borderRadius: 9999,
+                  padding: '6px 14px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  border: `0.5px solid ${active ? C.ikb : C.line}`,
+                  background: active ? 'rgba(168,197,224,0.28)' : 'transparent',
+                  color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
               >
                 {chip.label}
               </button>
             );
           })}
         </div>
-        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="elements-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="elements-count">
           {KNOWLEDGE_PAGE.countText.elements(ALL_ELEMENTS.length, filtered.length)}
         </span>
       </div>
 
       {/* grid — fixed 4 cols */}
-      <div className="grid grid-cols-4 gap-4">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
         {filtered.map((item) => {
           const detail = ELEMENT_DETAILS[item.key];
           if (!detail) return null;
           const groupLabel = ELEMENT_GROUP_LABEL[item.key] ?? '';
           return (
-            <div
-              key={item.key}
-              className="rounded-xl border p-4 space-y-3 ikb-hovercard"
-              style={{ borderColor: C.line, background: C.paper }}
-              data-testid={`element-card-${item.key}`}
-            >
-              {/* header */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="text-[22px] shrink-0">{item.emoji}</span>
-                  <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{item.label}</span>
+            <Item key={item.key}>
+              <motion.div
+                className="lg-glass lg-spec"
+                whileHover={{ y: -4 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
+                data-testid={`element-card-${item.key}`}
+              >
+                {/* header */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 22, flexShrink: 0 }}>{item.emoji}</span>
+                    <span style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.3, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{item.label}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                    <span
+                      style={{
+                        borderRadius: 9999,
+                        padding: '2px 8px',
+                        fontSize: 10,
+                        fontWeight: 500,
+                        background: 'rgba(168,197,224,0.15)',
+                        color: 'rgba(255,255,255,0.6)',
+                        border: `0.5px solid ${C.line}`,
+                        fontFamily: F.cn,
+                      }}
+                    >
+                      {groupLabel}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="收藏"
+                      data-testid={`element-bookmark-${item.key}`}
+                      onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
+                      style={{
+                        display: 'flex',
+                        height: 28,
+                        width: 28,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 8,
+                        background: 'transparent',
+                        border: `0.5px solid ${C.line}`,
+                        color: 'rgba(255,255,255,0.55)',
+                        cursor: 'pointer',
+                        transition: 'color 0.15s, border-color 0.15s',
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="复制"
+                      data-testid={`element-copy-${item.key}`}
+                      onClick={() => {
+                        void navigator.clipboard.writeText(item.label);
+                        toast.success(KNOWLEDGE_PAGE.toasts.copied);
+                      }}
+                      style={{
+                        display: 'flex',
+                        height: 28,
+                        width: 28,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 8,
+                        background: 'transparent',
+                        border: `0.5px solid ${C.line}`,
+                        color: 'rgba(255,255,255,0.55)',
+                        cursor: 'pointer',
+                        transition: 'color 0.15s, border-color 0.15s',
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                    style={{ background: C.base, color: '#6b7280', border: `1px solid ${C.line}`, fontFamily: F.cn }}
-                  >
-                    {groupLabel}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="收藏"
-                    data-testid={`element-bookmark-${item.key}`}
-                    onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
-                    style={{ borderColor: C.line, color: '#6b7280' }}
-                  >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="复制"
-                    data-testid={`element-copy-${item.key}`}
-                    onClick={() => {
-                      void navigator.clipboard.writeText(item.label);
-                      toast.success(KNOWLEDGE_PAGE.toasts.copied);
-                    }}
-                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
-                    style={{ borderColor: C.line, color: '#6b7280' }}
-                  >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
-                  </button>
+
+                {/* desc */}
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>{detail.desc}</p>
+
+                {/* techniques */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>使用技巧</p>
+                  <ol style={{ display: 'flex', flexDirection: 'column', gap: 4, margin: 0, padding: 0, listStyle: 'none' }}>
+                    {detail.techniques.map((t, i) => (
+                      <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 11, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: 16,
+                            height: 16,
+                            borderRadius: '50%',
+                            fontSize: 10,
+                            fontWeight: 700,
+                            flexShrink: 0,
+                            marginTop: 2,
+                            background: 'rgba(168,197,224,0.22)',
+                            color: C.ikb,
+                            fontFamily: F.mono,
+                          }}
+                        >
+                          {i + 1}
+                        </span>
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-              </div>
-
-              {/* desc */}
-              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{detail.desc}</p>
-
-              {/* techniques */}
-              <div className="space-y-1.5">
-                <p className="text-[11px] font-semibold" style={{ color: C.ink, fontFamily: F.cn }}>使用技巧</p>
-                <ol className="space-y-1">
-                  {detail.techniques.map((t, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-                      <span
-                        className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold shrink-0 mt-0.5"
-                        style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-                      >
-                        {i + 1}
-                      </span>
-                      <span>{t}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
+              </motion.div>
+            </Item>
           );
         })}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
@@ -317,13 +439,23 @@ function OpeningTab() {
     : OPENING_FORMULAS;
 
   return (
-    <div className="space-y-4" data-testid="opening-tab">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="opening-tab">
       {/* search row */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div
+          className="lg-glass"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            borderRadius: 12,
+            padding: '8px 14px',
+            width: 320,
+          }}
+        >
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-            style={{ color: '#6b7280' }}
+            className="material-symbols-outlined"
+            style={{ fontSize: 18, color: C.ikb, flexShrink: 0 }}
             aria-hidden={true}
           >
             search
@@ -333,82 +465,140 @@ function OpeningTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.opening}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 14,
+              color: C.ink,
+              fontFamily: F.cn,
+            }}
             data-testid="opening-search"
           />
         </div>
-        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="opening-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="opening-count">
           {KNOWLEDGE_PAGE.countText.opening(OPENING_FORMULAS.length, filtered.length)}
         </span>
       </div>
 
       {/* grid — fixed 4 cols */}
-      <div className="grid grid-cols-4 gap-4">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
         {filtered.map((f) => (
-          <div
-            key={f.num}
-            className="rounded-xl border p-4 space-y-3"
-            style={{ borderColor: C.line, background: C.paper }}
-            data-testid={`opening-card-${f.num}`}
-          >
-            {/* header */}
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[11px] font-bold shrink-0"
-                  style={{ background: C.ikb, fontFamily: F.mono }}
-                >
-                  {f.num}
-                </span>
-                <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{f.name}</span>
+          <Item key={f.num}>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
+              data-testid={`opening-card-${f.num}`}
+            >
+              {/* header */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      color: '#fff',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
+                      fontFamily: F.mono,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    {f.num}
+                  </span>
+                  <span style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.3, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{f.name}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    aria-label="收藏"
+                    data-testid={`opening-bookmark-${f.num}`}
+                    onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="复制"
+                    data-testid={`opening-copy-${f.num}`}
+                    onClick={() => {
+                      void navigator.clipboard.writeText(f.formula);
+                      toast.success(KNOWLEDGE_PAGE.toasts.copied);
+                    }}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  type="button"
-                  aria-label="收藏"
-                  data-testid={`opening-bookmark-${f.num}`}
-                  onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
-                  style={{ borderColor: C.line, color: '#6b7280' }}
-                >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="复制"
-                  data-testid={`opening-copy-${f.num}`}
-                  onClick={() => {
-                    void navigator.clipboard.writeText(f.formula);
-                    toast.success(KNOWLEDGE_PAGE.toasts.copied);
+
+              {/* formula */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>公式</p>
+                <p style={{ fontSize: 12, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{f.formula}</p>
+              </div>
+
+              {/* example */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>示例</p>
+                <blockquote
+                  style={{
+                    fontSize: 12,
+                    fontStyle: 'italic',
+                    borderRadius: 10,
+                    padding: '8px 12px',
+                    color: 'rgba(255,255,255,0.65)',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: `0.5px solid ${C.line}`,
+                    fontFamily: F.cn,
+                    margin: 0,
                   }}
-                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
-                  style={{ borderColor: C.line, color: '#6b7280' }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
-                </button>
+                  {f.example}
+                </blockquote>
               </div>
-            </div>
-
-            {/* formula */}
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>公式</p>
-              <p className="text-[12px]" style={{ color: C.ink, fontFamily: F.cn }}>{f.formula}</p>
-            </div>
-
-            {/* example */}
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>示例</p>
-              <blockquote
-                className="text-[12px] italic rounded-lg px-3 py-2"
-                style={{ color: '#6b7280', background: C.base, border: `1px solid ${C.line}`, fontFamily: F.cn }}
-              >
-                {f.example}
-              </blockquote>
-            </div>
-          </div>
+            </motion.div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
@@ -423,13 +613,23 @@ function CoreTab() {
     : CORE_FORMULAS;
 
   return (
-    <div className="space-y-4" data-testid="core-tab">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="core-tab">
       {/* search row */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div
+          className="lg-glass"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            borderRadius: 12,
+            padding: '8px 14px',
+            width: 320,
+          }}
+        >
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-            style={{ color: '#6b7280' }}
+            className="material-symbols-outlined"
+            style={{ fontSize: 18, color: C.ikb, flexShrink: 0 }}
             aria-hidden={true}
           >
             search
@@ -439,110 +639,181 @@ function CoreTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.core}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 14,
+              color: C.ink,
+              fontFamily: F.cn,
+            }}
             data-testid="core-search"
           />
         </div>
-        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="core-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="core-count">
           {KNOWLEDGE_PAGE.countText.core(CORE_FORMULAS.length, filtered.length)}
         </span>
       </div>
 
       {/* grid — fixed 4 cols */}
-      <div className="grid grid-cols-4 gap-4">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
         {filtered.map((f, i) => (
-          <div
-            key={f.name}
-            className="rounded-xl border p-4 space-y-3"
-            style={{ borderColor: C.line, background: C.paper }}
-            data-testid={`core-card-${i}`}
-          >
-            {/* header */}
-            <div className="flex items-start justify-between gap-2">
-              <span className="font-bold text-[13px] leading-snug flex-1 min-w-0" style={{ color: C.ink, fontFamily: F.cn }}>
-                {f.name}
-              </span>
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  type="button"
-                  aria-label="收藏"
-                  data-testid={`core-bookmark-${i}`}
-                  onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
-                  style={{ borderColor: C.line, color: '#6b7280' }}
-                >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="复制"
-                  data-testid={`core-copy-${i}`}
-                  onClick={() => {
-                    void navigator.clipboard.writeText(f.name);
-                    toast.success(KNOWLEDGE_PAGE.toasts.copied);
-                  }}
-                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
-                  style={{ borderColor: C.line, color: '#6b7280' }}
-                >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
-                </button>
-              </div>
-            </div>
-
-            {/* flow chips — IKB 三主色轮转 */}
-            <div className="flex items-center gap-1 flex-wrap">
-              {f.flow.map((step, si) => {
-                // 轮转 [C.ikb, C.burgundy, C.accent3]
-                const chipColors = [
-                  { border: `${C.ikb}40`,      bg: `${C.ikb}0c`,      text: C.ikb      },
-                  { border: `${C.burgundy}40`, bg: `${C.burgundy}0c`, text: C.burgundy },
-                  { border: `${C.accent3}40`,  bg: `${C.accent3}0c`,  text: C.accent3  },
-                ] as const;
-                const cp = chipColors[si % chipColors.length]!;
-                return (
-                  <div key={si} className="flex items-center gap-1">
-                    <span
-                      className="rounded-md px-2 py-0.5 text-[11px] font-medium"
-                      style={{ border: `1px solid ${cp.border}`, background: cp.bg, color: cp.text, fontFamily: F.mono }}
-                    >
-                      {step}
-                    </span>
-                    {si < f.flow.length - 1 && (
-                      <span className="material-symbols-outlined text-[13px] shrink-0" style={{ color: C.ikb }} aria-hidden={true}>
-                        arrow_forward
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* example quote */}
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>实战案例</p>
-              <blockquote
-                className="text-[12px] italic rounded-lg px-3 py-2"
-                style={{ color: '#6b7280', background: C.base, border: `1px solid ${C.line}`, fontFamily: F.cn }}
-              >
-                {f.example}
-              </blockquote>
-            </div>
-
-            {/* generate btn */}
-            <button
-              type="button"
-              data-testid={`core-generate-${i}`}
-              onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.generate)}
-              className="ikb-gradbtn ikb-focusring flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-white text-[12px] font-semibold transition-all active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ fontFamily: F.cn }}
+          <Item key={f.name}>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
+              data-testid={`core-card-${i}`}
             >
-              <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>auto_awesome</span>
-              用这个公式生成文案
-            </button>
-          </div>
+              {/* header */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                <span style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.3, flex: 1, minWidth: 0, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                  {f.name}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    aria-label="收藏"
+                    data-testid={`core-bookmark-${i}`}
+                    onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="复制"
+                    data-testid={`core-copy-${i}`}
+                    onClick={() => {
+                      void navigator.clipboard.writeText(f.name);
+                      toast.success(KNOWLEDGE_PAGE.toasts.copied);
+                    }}
+                    style={{
+                      display: 'flex',
+                      height: 28,
+                      width: 28,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: 'transparent',
+                      border: `0.5px solid ${C.line}`,
+                      color: 'rgba(255,255,255,0.55)',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* flow chips — 液态玻璃冷蓝三色轮转 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+                {f.flow.map((step, si) => {
+                  // 轮转 [ikb/冷蓝, yellow/冰蓝, accent3/冷蓝]
+                  const chipColors = [
+                    { border: 'rgba(168,197,224,0.5)', bg: 'rgba(168,197,224,0.12)', text: C.ikb      },
+                    { border: 'rgba(228,238,255,0.5)', bg: 'rgba(228,238,255,0.12)', text: C.yellow   },
+                    { border: 'rgba(168,197,224,0.5)', bg: 'rgba(168,197,224,0.12)', text: C.accent3  },
+                  ] as const;
+                  const cp = chipColors[si % chipColors.length]!;
+                  return (
+                    <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span
+                        style={{
+                          borderRadius: 6,
+                          padding: '2px 8px',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          border: `0.5px solid ${cp.border}`,
+                          background: cp.bg,
+                          color: cp.text,
+                          fontFamily: F.mono,
+                        }}
+                      >
+                        {step}
+                      </span>
+                      {si < f.flow.length - 1 && (
+                        <span className="material-symbols-outlined" style={{ fontSize: 13, flexShrink: 0, color: C.ikb }} aria-hidden={true}>
+                          arrow_forward
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* example quote */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>实战案例</p>
+                <blockquote
+                  style={{
+                    fontSize: 12,
+                    fontStyle: 'italic',
+                    borderRadius: 10,
+                    padding: '8px 12px',
+                    color: 'rgba(255,255,255,0.65)',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: `0.5px solid ${C.line}`,
+                    fontFamily: F.cn,
+                    margin: 0,
+                  }}
+                >
+                  {f.example}
+                </blockquote>
+              </div>
+
+              {/* generate btn */}
+              <button
+                type="button"
+                data-testid={`core-generate-${i}`}
+                onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.generate)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  width: '100%',
+                  padding: '8px 0',
+                  borderRadius: 10,
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  fontFamily: F.cn,
+                  background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
+                  border: `0.5px solid rgba(168,197,224,0.4)`,
+                  cursor: 'pointer',
+                  transition: 'opacity 0.15s',
+                  textShadow: C.textShadow,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.82'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>auto_awesome</span>
+                用这个公式生成文案
+              </button>
+            </motion.div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
@@ -552,35 +823,80 @@ export default function Knowledge() {
   const [activeTab, setActiveTab] = useState<TabKey>('scripts');
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
+      <header style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ flexShrink: 0 }}>
+          {/* chip 标签行 */}
+          <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
-              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               更多
             </span>
             <span
-              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ borderColor: `${C.accent3}50`, background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                background: 'rgba(168,197,224,0.18)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               方法论
             </span>
-          </div>
+          </Reveal>
+          {/* 主标题 — 冷蓝渐变字 */}
           <h1
-            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
-            style={{ fontFamily: F.display }}
             data-testid="knowledge-h1"
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: 52,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
           >
             {KNOWLEDGE_PAGE.h1}
           </h1>
           <p
-            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
-            style={{ color: '#5A6173', fontFamily: F.cn }}
             data-testid="knowledge-subtitle"
+            style={{
+              marginTop: 10,
+              maxWidth: 820,
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: 'rgba(255,255,255,0.75)',
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             {KNOWLEDGE_PAGE.subtitle}
           </p>
@@ -588,40 +904,56 @@ export default function Knowledge() {
       </header>
 
       {/* ── KPI 概览 ─────────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {KPI_CARDS.map((kpi) => (
-          <div
-            key={kpi.label}
-            className="rounded-xl border p-5 ikb-hovercard"
-            style={{ backgroundColor: C.paper, borderColor: kpi.borderColor }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ backgroundColor: kpi.bg, color: kpi.color }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>{kpi.icon}</span>
-              </span>
-            </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+          <Item key={kpi.label}>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 38,
+                    width: 38,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 10,
+                    background: kpi.bg,
+                    color: kpi.color,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>{kpi.icon}</span>
+                </span>
+              </div>
+              <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {kpi.value}
-                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> {kpi.unit}</span>
+                <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> {kpi.unit}</span>
               </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{kpi.label}</p>
-            </div>
-          </div>
+              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+            </motion.div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
 
       {/* ── Tab 导航 ──────────────────────────────────────────── */}
       <div
-        className="mb-6"
         data-testid="knowledge-tabs"
         role="tablist"
         aria-label="方法论分类"
+        style={{ marginBottom: 24 }}
       >
-        <div className="flex items-center gap-2 pb-0" style={{ borderBottom: `1px solid ${C.line}` }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            borderBottom: `0.5px solid ${C.line}`,
+          }}
+        >
           {TABS.map((tab) => {
             const active = activeTab === tab.key;
             return (
@@ -634,13 +966,25 @@ export default function Knowledge() {
                 aria-controls={`tab-panel-${tab.key}`}
                 data-testid={tab.testid}
                 onClick={() => setActiveTab(tab.key)}
-                className="ikb-focusring flex items-center gap-2 px-5 py-3 text-[13px] font-semibold transition-all border-b-2 -mb-px"
-                style={active
-                  ? { borderBottomColor: C.ikb, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }
-                  : { borderBottomColor: 'transparent', color: '#6b7280', fontFamily: F.cn }
-                }
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '12px 20px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: F.cn,
+                  background: active ? 'rgba(168,197,224,0.12)' : 'transparent',
+                  color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                  border: 'none',
+                  borderBottom: active ? `2px solid ${C.ikb}` : '2px solid transparent',
+                  marginBottom: -1,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  textShadow: active ? C.textShadow : 'none',
+                }}
               >
-                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>{tab.icon}</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>{tab.icon}</span>
                 {tab.label}
               </button>
             );
@@ -649,7 +993,7 @@ export default function Knowledge() {
       </div>
 
       {/* ── Tab 内容 ──────────────────────────────────────────── */}
-      <div className="mb-12">
+      <div style={{ marginBottom: 48 }}>
         {activeTab === 'scripts' && (
           <div
             role="tabpanel"
@@ -697,43 +1041,55 @@ export default function Knowledge() {
       </div>
 
       {/* ── 起承转合 Footer ────────────────────────────────────── */}
-      <section className="space-y-4" data-testid="story-footer">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>
-            auto_stories
+      <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="story-footer">
+        <Reveal style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 38,
+              width: 38,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              background: 'rgba(168,197,224,0.22)',
+              color: C.ikb,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>auto_stories</span>
           </span>
           <h2
-            className="text-[18px] font-bold"
-            style={{ color: C.ink, fontFamily: F.cn }}
+            style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}
             data-testid="story-footer-title"
           >
             {STORY_FOOTER_TITLE}
           </h2>
-          <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 短视频文案四步法</span>
-        </div>
-        <div className="grid grid-cols-4 gap-4">
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· 短视频文案四步法</span>
+        </Reveal>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {STORY_STAGES.map((stage) => {
-            const accent = STAGE_ACCENT[stage.key] ?? { color: C.ikb, bg: `${C.ikb}10`, border: `${C.ikb}28` };
+            const accent = STAGE_ACCENT[stage.key] ?? { color: C.ikb, bg: 'rgba(168,197,224,0.14)', border: 'rgba(168,197,224,0.30)' };
             return (
-              <div
-                key={stage.key}
-                className="rounded-xl border p-5 space-y-2 ikb-hovercard"
-                style={{ borderColor: accent.border, backgroundColor: accent.bg }}
-                data-testid={`story-stage-${stage.key}`}
-              >
-                <p
-                  className="font-bold text-[13px]"
-                  style={{ color: accent.color, fontFamily: F.cn }}
-                  data-testid={`story-stage-label-${stage.key}`}
+              <Item key={stage.key}>
+                <motion.div
+                  className="lg-glass lg-spec"
+                  whileHover={{ y: -4 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  style={{ borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 8 }}
+                  data-testid={`story-stage-${stage.key}`}
                 >
-                  {stage.label}
-                </p>
-                <p className="text-[12px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{stage.desc}</p>
-              </div>
+                  <p
+                    style={{ fontWeight: 700, fontSize: 13, color: accent.color, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
+                    data-testid={`story-stage-label-${stage.key}`}
+                  >
+                    {stage.label}
+                  </p>
+                  <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn, margin: 0 }}>{stage.desc}</p>
+                </motion.div>
+              </Item>
             );
           })}
-        </div>
+        </RevealGroup>
       </section>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
