@@ -1,16 +1,15 @@
 /**
- * BoomGenerate.tsx — /boom-generate 爆款元素自动生成 · IKB 红蓝紫渐变体系重构
- * 逻辑零改动 · testid 全保留 · 只换皮
+ * BoomGenerate.tsx — /boom-generate 爆款元素自动生成 · 液态玻璃换皮
+ * 业务逻辑/状态/mutation/校验/testid 一字不改 · 只换视觉皮
  * H1 字面锁: "爆款元素自动生成"
  */
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   BOOM_ANALYSIS_BODY,
   BOOM_ANALYSIS_TAG,
@@ -49,21 +48,22 @@ import {
 } from '@/lib/constants/boomGenerate';
 import { HOT_ELEMENT_GROUPS } from '@/lib/constants/elements';
 
-// ── Category colors — IKB token 轮转 ─────────────────────────────────────────
-const CATEGORY_COLORS: Record<string, { dot: string; text: string }> = {
-  classic:    { dot: C.ikb,      text: C.ikb },
-  emotion:    { dot: C.burgundy, text: C.burgundyText },
-  content:    { dot: C.accent3,  text: C.purpleText },
-  conversion: { dot: C.ikb,     text: C.ikb },
+// ── Category accent 三色轮转(冷蓝体系) ──────────────────────────────────────
+const ACCENT_CYCLE = [C.ikb, C.yellow, C.accent3] as const;
+const CATEGORY_ACCENT: Record<string, string> = {
+  classic:    C.ikb,
+  emotion:    C.yellow,
+  content:    C.accent3,
+  conversion: C.ikb,
 };
 
 // ── Radar data (爆款力雷达 · 六维) ────────────────────────────────────────────
 const RADAR_DIMS_BM = [
   { label: '钩子强度', value: 88, color: C.ikb },
-  { label: '情绪张力', value: 82, color: C.burgundy },
+  { label: '情绪张力', value: 82, color: C.yellow },
   { label: '价值密度', value: 91, color: C.accent3 },
   { label: '转化引导', value: 79, color: C.ikb },
-  { label: '记忆点',   value: 85, color: C.burgundy },
+  { label: '记忆点',   value: 85, color: C.yellow },
   { label: '传播性',   value: 93, color: C.accent3 },
 ];
 
@@ -74,33 +74,76 @@ const TREND_LABELS_BM = ['贪念', '恐惧', '猎奇', '反差', '借势', '共�
 // ── inline BoomHero ────────────────────────────────────────────────────────────
 function BoomHero() {
   return (
-    <div className="shrink-0">
-      <div className="mb-3 flex items-center gap-3">
+    <div style={{ flexShrink: 0 }}>
+      <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
-          className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-          style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+          style={{
+            borderRadius: 9999,
+            border: `0.5px solid ${C.line}`,
+            background: 'rgba(255,255,255,0.10)',
+            backdropFilter: 'blur(12px)',
+            padding: '4px 14px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            color: C.ink,
+            fontFamily: F.mono,
+            textShadow: C.textShadow,
+          }}
         >
           {BOOM_BREADCRUMB}
         </span>
         <span
-          className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-          style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+          style={{
+            borderRadius: 9999,
+            border: `0.5px solid rgba(168,197,224,0.55)`,
+            background: 'rgba(168,197,224,0.18)',
+            backdropFilter: 'blur(12px)',
+            padding: '4px 14px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            color: C.ikb,
+            fontFamily: F.mono,
+            textShadow: C.textShadow,
+          }}
         >
           {BOOM_BREADCRUMB_LABEL}
         </span>
-      </div>
+      </Reveal>
       <h1
-        className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
-        style={{ fontFamily: F.display }}
+        style={{
+          whiteSpace: 'nowrap',
+          fontSize: 52,
+          fontWeight: 800,
+          letterSpacing: '-0.02em',
+          fontFamily: F.display,
+          margin: 0,
+          background: C.grad,
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          color: 'transparent',
+          textShadow: 'none',
+        }}
       >
         爆款引擎 · {BOOM_H1}
       </h1>
       <p
-        className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
-        style={{ color: '#5A6173', fontFamily: F.cn }}
+        style={{
+          marginTop: 10,
+          maxWidth: 820,
+          fontSize: 16,
+          lineHeight: 1.6,
+          color: C.burgundyText,
+          fontFamily: F.cn,
+          textShadow: C.textShadow,
+        }}
       >
         {BOOM_SUBTITLE_PART1}
-        <span className="font-bold" style={{ color: C.ikb }}>{BOOM_SUBTITLE_HIGHLIGHT}</span>
+        <span style={{ fontWeight: 700, color: C.ikb, textShadow: C.textShadow }}>{BOOM_SUBTITLE_HIGHLIGHT}</span>
         {BOOM_SUBTITLE_PART2}
       </p>
     </div>
@@ -127,32 +170,37 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
     .map((item) => item.label);
 
   return (
-    <div
-      className="rounded-xl border p-6"
-      style={{ borderColor: C.line, background: C.paper }}
-    >
-      <div className="mb-5 flex items-center gap-3">
+    <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
-          className="flex h-9 w-9 items-center justify-center rounded-lg"
-          style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+          style={{
+            display: 'flex',
+            height: 38,
+            width: 38,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 10,
+            background: 'rgba(228,238,255,0.18)',
+            color: C.yellow,
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>local_fire_department</span>
         </span>
         <div>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{BOOM_PICKER_TITLE}</h2>
-          <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>多选 · 当前 {selectedKeys.length} 个</p>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_PICKER_TITLE}</h2>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>多选 · 当前 {selectedKeys.length} 个</p>
         </div>
       </div>
-      <div className="space-y-5">
-        {HOT_ELEMENT_GROUPS.map((group) => {
-          const cc = CATEGORY_COLORS[group.key] ?? CATEGORY_COLORS['classic']!;
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {HOT_ELEMENT_GROUPS.map((group, gi) => {
+          const accent = CATEGORY_ACCENT[group.key] ?? ACCENT_CYCLE[gi % ACCENT_CYCLE.length];
           return (
             <div key={group.key}>
-              <div className="mb-2 flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide" style={{ color: cc.text }}>
-                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: cc.dot }} />
+              <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: accent, fontFamily: F.mono, textShadow: C.textShadow }}>
+                <span style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: accent, flexShrink: 0, display: 'inline-block' }} />
                 {group.label}
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {group.items.map((item) => {
                   const selected = selectedKeys.includes(item.key);
                   return (
@@ -162,10 +210,26 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
                       aria-pressed={selected}
                       data-state={selected ? 'active' : 'inactive'}
                       onClick={() => toggleKey(item.key)}
-                      className={`ikb-hovercard ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all ${selected ? '' : 'border-[#e5e7eb] bg-[#f9f9f9] text-[#6b7280]'}`}
-                      style={selected ? { borderColor: C.ikb, background: `${C.ikb}06`, color: C.ikb } : undefined}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        borderRadius: 10,
+                        border: selected ? `1px solid rgba(216,232,255,0.55)` : `0.5px solid ${C.line}`,
+                        background: selected ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.07)',
+                        color: selected ? C.ikb : 'rgba(255,255,255,0.6)',
+                        padding: '6px 10px',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        fontFamily: F.cn,
+                        cursor: 'pointer',
+                        transition: 'all 0.18s',
+                        backdropFilter: 'blur(8px)',
+                        textShadow: selected ? C.textShadow : 'none',
+                        outline: 'none',
+                      }}
                     >
-                      <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>
                         {item.key === 'greed' ? 'monetization_on' :
                          item.key === 'fear' ? 'warning' :
                          item.key === 'curiosity' ? 'search' :
@@ -202,13 +266,20 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
       </div>
       {selectedKeys.length > 0 && (
         <div
-          className="mt-5 rounded-xl border px-4 py-3 text-[12px]"
-          style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}
+          style={{
+            marginTop: 20,
+            borderRadius: 12,
+            border: `0.5px solid rgba(168,197,224,0.4)`,
+            background: 'rgba(168,197,224,0.12)',
+            padding: '10px 16px',
+            fontSize: 12,
+            backdropFilter: 'blur(8px)',
+          }}
         >
-          <span className="font-bold" style={{ color: C.ikb }}>
+          <span style={{ fontWeight: 700, color: C.ikb, textShadow: C.textShadow }}>
             {BOOM_SELECTED_PREFIX} {selectedKeys.length} {BOOM_SELECTED_SUFFIX}
           </span>
-          <span style={{ color: '#444653' }}>{selectedLabels.join('、')}</span>
+          <span style={{ color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{selectedLabels.join('、')}</span>
         </div>
       )}
     </div>
@@ -225,40 +296,62 @@ interface BoomSettingsProps {
 
 function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: BoomSettingsProps) {
   return (
-    <div
-      className="rounded-xl border p-6"
-      style={{ borderColor: C.line, background: C.paper }}
-    >
-      <div className="mb-5 flex items-center gap-3">
+    <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
-          className="flex h-9 w-9 items-center justify-center rounded-lg"
-          style={{ background: `${C.ikb}12`, color: C.ikb }}
+          style={{
+            display: 'flex',
+            height: 38,
+            width: 38,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 10,
+            background: 'rgba(168,197,224,0.22)',
+            color: C.ikb,
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>tune</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>tune</span>
         </span>
         <div>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{BOOM_SETTINGS_TITLE}</h2>
-          <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>行业 + 主题，精准定向生成</p>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_SETTINGS_TITLE}</h2>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>行业 + 主题，精准定向生成</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div>
           <label
             htmlFor="boom-industry"
-            className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-            style={{ color: C.ink, fontFamily: F.cn }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginBottom: 8,
+              fontSize: 14,
+              fontWeight: 800,
+              letterSpacing: '0.03em',
+              color: C.ink,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             <span
-              className="mr-1 inline-block h-3.5 w-1 rounded-full"
-              style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+              style={{
+                display: 'inline-block',
+                marginRight: 4,
+                height: 14,
+                width: 4,
+                borderRadius: 9999,
+                background: `linear-gradient(to bottom, ${C.ikb}, ${C.yellow})`,
+                flexShrink: 0,
+              }}
               aria-hidden={true}
             />
             {BOOM_FIELD_INDUSTRY_LABEL}
           </label>
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <span
-              className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-              style={{ color: '#6b7280' }}
+              className="material-symbols-outlined"
+              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }}
               aria-hidden={true}
             >storefront</span>
             <input
@@ -267,8 +360,22 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
               value={industry}
               onChange={(e) => onIndustryChange(e.target.value)}
               placeholder={BOOM_FIELD_INDUSTRY_PLACEHOLDER}
-              className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus:ring-1 focus:ring-[#2B53E6]"
-              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
+              className="lg-glass"
+              style={{
+                width: '100%',
+                borderRadius: 12,
+                padding: '12px 12px 12px 40px',
+                fontSize: 14,
+                color: C.ink,
+                fontFamily: F.cn,
+                background: 'rgba(255,255,255,0.07)',
+                border: `0.5px solid ${C.line}`,
+                outline: 'none',
+                transition: 'box-shadow 0.18s',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = `0 0 0 2px rgba(168,197,224,0.55)`; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               data-testid="boom-industry-input"
             />
           </div>
@@ -276,20 +383,37 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
         <div>
           <label
             htmlFor="boom-topic"
-            className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-            style={{ color: C.ink, fontFamily: F.cn }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginBottom: 8,
+              fontSize: 14,
+              fontWeight: 800,
+              letterSpacing: '0.03em',
+              color: C.ink,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             <span
-              className="mr-1 inline-block h-3.5 w-1 rounded-full"
-              style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+              style={{
+                display: 'inline-block',
+                marginRight: 4,
+                height: 14,
+                width: 4,
+                borderRadius: 9999,
+                background: `linear-gradient(to bottom, ${C.ikb}, ${C.yellow})`,
+                flexShrink: 0,
+              }}
               aria-hidden={true}
             />
             {BOOM_FIELD_TOPIC_LABEL}
           </label>
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <span
-              className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-              style={{ color: '#6b7280' }}
+              className="material-symbols-outlined"
+              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }}
               aria-hidden={true}
             >topic</span>
             <input
@@ -298,8 +422,22 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
               value={topic}
               onChange={(e) => onTopicChange(e.target.value)}
               placeholder={BOOM_FIELD_TOPIC_PLACEHOLDER}
-              className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus:ring-1 focus:ring-[#2B53E6]"
-              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
+              className="lg-glass"
+              style={{
+                width: '100%',
+                borderRadius: 12,
+                padding: '12px 12px 12px 40px',
+                fontSize: 14,
+                color: C.ink,
+                fontFamily: F.cn,
+                background: 'rgba(255,255,255,0.07)',
+                border: `0.5px solid ${C.line}`,
+                outline: 'none',
+                transition: 'box-shadow 0.18s',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = `0 0 0 2px rgba(168,197,224,0.55)`; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               data-testid="boom-topic-input"
             />
           </div>
@@ -316,16 +454,34 @@ interface BoomCTAProps {
 
 function BoomCTA({ onClick }: BoomCTAProps) {
   return (
-    <div className="flex justify-end">
-      <button
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <motion.button
         type="button"
         onClick={onClick}
-        className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px active:shadow-sm"
-        style={{ fontFamily: F.mono }}
+        className="lg-gradbtn"
+        whileHover={{ y: -3 }}
+        whileTap={{ y: 1 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 9999,
+          padding: '12px 32px',
+          fontSize: 12,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.15em',
+          color: '#fff',
+          fontFamily: F.mono,
+          border: 'none',
+          cursor: 'pointer',
+          outline: 'none',
+        }}
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
         {BOOM_CTA}
-      </button>
+      </motion.button>
     </div>
   );
 }
@@ -333,45 +489,74 @@ function BoomCTA({ onClick }: BoomCTAProps) {
 // ── inline BoomAnalysis ────────────────────────────────────────────────────────
 function BoomAnalysis() {
   return (
-    <div
-      className="overflow-hidden rounded-xl border"
-      style={{ borderColor: C.line, background: C.paper }}
-    >
+    <div className="lg-glass" style={{ overflow: 'hidden', borderRadius: 20 }}>
       <div
-        className="flex items-center justify-between border-b px-6 py-4"
-        style={{ borderColor: C.line }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: `0.5px solid ${C.line}`,
+          padding: '16px 24px',
+        }}
       >
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-lg"
-            style={{ background: C.grad }}
+            style={{
+              display: 'flex',
+              height: 38,
+              width: 38,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
+              color: C.ikb,
+            }}
           >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>analytics</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>analytics</span>
           </span>
           <div>
-            <h3 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{BOOM_ANALYSIS_TITLE}</h3>
-            <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>AI 策略解析 · 实时生效</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_ANALYSIS_TITLE}</h3>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>AI 策略解析 · 实时生效</p>
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold"
-          style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 9999,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            background: 'rgba(228,238,255,0.18)',
+            color: C.yellow,
+            fontFamily: F.mono,
+            textShadow: C.textShadow,
+          }}
         >
           {BOOM_ANALYSIS_TAG}
         </span>
       </div>
-      <div className="p-6">
-        <p className="text-[14px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{BOOM_ANALYSIS_BODY}</p>
-        <p className="mt-4 text-[14px] leading-relaxed">
-          <span className="font-bold" style={{ color: C.ikb, fontFamily: F.cn }}>{BOOM_BEST_PRACTICE_LABEL}</span>
-          <span style={{ color: '#444653', fontFamily: F.cn }}>{BOOM_BEST_PRACTICE}</span>
+      <div style={{ padding: 24 }}>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{BOOM_ANALYSIS_BODY}</p>
+        <p style={{ marginTop: 16, fontSize: 14, lineHeight: 1.6 }}>
+          <span style={{ fontWeight: 700, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{BOOM_BEST_PRACTICE_LABEL}</span>
+          <span style={{ color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{BOOM_BEST_PRACTICE}</span>
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {BOOM_AVOID_LIST.map((text) => (
             <span
               key={text}
-              className="rounded-lg border px-3 py-1.5 text-[12px]"
-              style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}06`, color: C.burgundyText, fontFamily: F.cn }}
+              style={{
+                borderRadius: 10,
+                border: `0.5px solid rgba(228,238,255,0.35)`,
+                background: 'rgba(228,238,255,0.10)',
+                padding: '6px 12px',
+                fontSize: 12,
+                color: C.yellow,
+                fontFamily: F.cn,
+                textShadow: C.textShadow,
+              }}
             >
               {text}
             </span>
@@ -393,37 +578,65 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
     );
   }
 
-  // IKB 三色轮转 for section left-border
+  // 液态玻璃三色轮转 for section left-border
   const sections = [
-    { label: BOOM_SECTION_OPENING,     body: entry.opening,     borderColor: C.accent3,  labelColor: C.purpleText },
-    { label: BOOM_SECTION_DEVELOPMENT, body: entry.development, borderColor: C.accent3,  labelColor: C.purpleText },
-    { label: BOOM_SECTION_CLIMAX,      body: entry.climax,      borderColor: C.burgundy, labelColor: C.burgundyText },
+    { label: BOOM_SECTION_OPENING,     body: entry.opening,     borderColor: C.accent3,  labelColor: C.accent3 },
+    { label: BOOM_SECTION_DEVELOPMENT, body: entry.development, borderColor: C.accent3,  labelColor: C.accent3 },
+    { label: BOOM_SECTION_CLIMAX,      body: entry.climax,      borderColor: C.yellow,   labelColor: C.yellow },
     { label: BOOM_SECTION_ENDING,      body: entry.ending,      borderColor: C.ikb,      labelColor: C.ikb },
   ];
 
   return (
-    <div
-      className="overflow-hidden rounded-xl border"
-      style={{ borderColor: C.line, background: C.paper }}
+    <motion.div
+      className="lg-glass lg-spec"
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+      style={{ overflow: 'hidden', borderRadius: 20 }}
     >
       <div
-        className="border-b px-6 py-4"
-        style={{ borderColor: C.line }}
+        style={{
+          borderBottom: `0.5px solid ${C.line}`,
+          padding: '16px 24px',
+        }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flex: 1, minWidth: 0 }}>
             <span
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
-              style={{ background: C.ikb, fontFamily: F.mono }}
+              style={{
+                display: 'flex',
+                height: 32,
+                width: 32,
+                flexShrink: 0,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               {entry.index}
             </span>
-            <span className="text-[15px] font-bold flex-1" style={{ color: C.ink, fontFamily: F.cn }}>{entry.title}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, flex: 1, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{entry.title}</span>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <span
-              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                padding: '3px 8px',
+                fontSize: 11,
+                fontWeight: 700,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.accent3,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               {BOOM_INDEX_PREFIX}{entry.indexScore}
             </span>
@@ -431,99 +644,187 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
               type="button"
               aria-label="复制"
               onClick={handleCopy}
-              className="ikb-focusring flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors"
-              style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 8,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.6)',
+                padding: '6px 10px',
+                fontSize: 11,
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.18s',
+                outline: 'none',
+                backdropFilter: 'blur(6px)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.ink; e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
             >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>content_copy</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>content_copy</span>
               复制
             </button>
           </div>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {/* type chip — accent3/紫 */}
+        <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {/* type chip — accent3 */}
           <span
-            className="rounded-lg border px-3 py-1 text-[11px] font-medium"
-            style={{ borderColor: `${C.accent3}40`, background: `${C.accent3}0c`, color: C.purpleText, fontFamily: F.cn }}
+            style={{
+              borderRadius: 8,
+              border: `0.5px solid rgba(168,197,224,0.35)`,
+              background: 'rgba(168,197,224,0.12)',
+              padding: '4px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              color: C.accent3,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             {entry.type}
           </span>
-          {/* format chip — ikb/蓝 */}
+          {/* format chip — ikb */}
           <span
-            className="rounded-lg border px-3 py-1 text-[11px] font-medium"
-            style={{ borderColor: `${C.ikb}40`, background: `${C.ikb}10`, color: C.ikb, fontFamily: F.cn }}
+            style={{
+              borderRadius: 8,
+              border: `0.5px solid rgba(216,232,255,0.4)`,
+              background: 'rgba(216,232,255,0.12)',
+              padding: '4px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              color: C.ikb,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             {entry.format}
           </span>
-          {/* element chip — ikb/蓝浅 */}
+          {/* element chip — yellow */}
           <span
-            className="rounded-lg border px-3 py-1 text-[11px] font-medium"
-            style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }}
+            style={{
+              borderRadius: 8,
+              border: `0.5px solid rgba(228,238,255,0.35)`,
+              background: 'rgba(228,238,255,0.10)',
+              padding: '4px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              color: C.yellow,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
           >
             {entry.element}
           </span>
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="space-y-4">
+      <div style={{ padding: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {sections.map((sec) => (
-            <div key={sec.label} className="border-l-2 pl-4" style={{ borderColor: sec.borderColor }}>
-              <p className="text-[11px] font-bold mb-1" style={{ color: sec.labelColor, fontFamily: F.mono }}>{sec.label}</p>
-              <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{sec.body}</p>
+            <div key={sec.label} style={{ borderLeft: `2px solid ${sec.borderColor}`, paddingLeft: 16 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, marginBottom: 4, color: sec.labelColor, fontFamily: F.mono, textShadow: C.textShadow }}>{sec.label}</p>
+              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{sec.body}</p>
             </div>
           ))}
         </div>
 
         <div
-          className="mt-6 rounded-xl border p-4"
-          style={{ borderColor: C.line, background: C.base }}
+          className="lg-glass"
+          style={{
+            marginTop: 24,
+            borderRadius: 14,
+            padding: 16,
+          }}
         >
-          <p className="text-[11px] font-bold mb-2" style={{ color: C.ikb, fontFamily: F.mono }}>{BOOM_SECTION_FULL}</p>
-          <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: C.ink, fontFamily: F.cn }}>{fullText}</p>
+          <p style={{ fontSize: 11, fontWeight: 700, marginBottom: 8, color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>{BOOM_SECTION_FULL}</p>
+          <p style={{ fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{fullText}</p>
           <div
-            className="mt-4 flex items-center gap-3 border-t pt-3"
-            style={{ borderColor: C.line }}
+            style={{
+              marginTop: 16,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              borderTop: `0.5px solid ${C.line}`,
+              paddingTop: 12,
+            }}
           >
-            <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{BOOM_FEEDBACK_PROMPT}</p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{BOOM_FEEDBACK_PROMPT}</p>
             <button
               type="button"
               aria-label="有帮助"
-              className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-md border transition-colors"
-              style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+              style={{
+                display: 'flex',
+                height: 28,
+                width: 28,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.6)',
+                cursor: 'pointer',
+                transition: 'all 0.18s',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.ikb; e.currentTarget.style.background = 'rgba(168,197,224,0.18)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
             >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>thumb_up</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>thumb_up</span>
             </button>
             <button
               type="button"
               aria-label="无帮助"
-              className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-md border transition-colors"
-              style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
+              style={{
+                display: 'flex',
+                height: 28,
+                width: 28,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.6)',
+                cursor: 'pointer',
+                transition: 'all 0.18s',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.yellow; e.currentTarget.style.background = 'rgba(228,238,255,0.15)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
             >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>thumb_down</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>thumb_down</span>
             </button>
           </div>
         </div>
 
         <div
-          className="mt-4 rounded-lg border-l-2 p-3"
-          style={{ borderColor: C.burgundy, background: `${C.burgundy}06` }}
+          style={{
+            marginTop: 16,
+            borderLeft: `2px solid ${C.yellow}`,
+            borderRadius: 4,
+            background: 'rgba(228,238,255,0.08)',
+            padding: 12,
+          }}
         >
-          <span className="text-[11px] font-bold" style={{ color: C.burgundyText, fontFamily: F.mono }}>{BOOM_REASON_PREFIX}</span>
-          <span className="text-[11px]" style={{ color: '#444653', fontFamily: F.cn }}>{entry.reason}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.yellow, fontFamily: F.mono, textShadow: C.textShadow }}>{BOOM_REASON_PREFIX}</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{entry.reason}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 // ── inline BoomResultList ─────────────────────────────────────────────────────
 function BoomResultList({ entries }: { entries: ReadonlyArray<BoomEntry> }) {
   return (
-    <div className="space-y-6">
+    <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {entries.map((entry) => (
-        <BoomResultEntry key={entry.index} entry={entry} />
+        <Item key={entry.index}>
+          <BoomResultEntry entry={entry} />
+        </Item>
       ))}
-    </div>
+    </RevealGroup>
   );
 }
 
@@ -541,22 +842,44 @@ export default function BoomGenerate() {
   }
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+      <header style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
         <BoomHero />
-        <div className="flex shrink-0 flex-nowrap gap-3">
+        <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
           <button
             type="button"
             aria-label="智能优化"
             onClick={handleGenerate}
-            className="ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors"
-            style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            className="lg-glass"
+            style={{
+              display: 'inline-flex',
+              flexShrink: 0,
+              alignItems: 'center',
+              gap: 8,
+              whiteSpace: 'nowrap',
+              borderRadius: 9999,
+              border: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.08)',
+              color: C.ink,
+              padding: '10px 18px',
+              fontSize: 12,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              fontFamily: F.mono,
+              cursor: 'pointer',
+              transition: 'all 0.18s',
+              outline: 'none',
+              textShadow: C.textShadow,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_fix_high</span>
             智能优化
           </button>
-          <button
+          <motion.button
             type="button"
             aria-label="导出方案"
             onClick={() => {
@@ -566,222 +889,375 @@ export default function BoomGenerate() {
                 () => toast.error('复制失败'),
               );
             }}
-            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-semibold text-white transition-all active:translate-x-px active:translate-y-px"
-            style={{ fontFamily: F.mono }}
+            className="lg-gradbtn"
+            whileHover={{ y: -3 }}
+            whileTap={{ y: 1 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{
+              display: 'inline-flex',
+              flexShrink: 0,
+              alignItems: 'center',
+              gap: 8,
+              whiteSpace: 'nowrap',
+              borderRadius: 9999,
+              padding: '10px 18px',
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#fff',
+              fontFamily: F.mono,
+              border: 'none',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>download</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>download</span>
             导出方案
-          </button>
+          </motion.button>
         </div>
       </header>
 
       {/* ── KPI 概览一排 (4 卡) ────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
-        {/* 爆款元素 · 蓝 · 环形 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}12`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
-            </span>
-            <span
-              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>全库
-            </span>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                {totalElements}
-                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
-            </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label="爆款元素覆盖率">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="100 100" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* 选中元素 · 玫红 · 进度条 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
-            >选中</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              {selectedKeys.length}
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选中元素</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.burgundy}18` }}>
-            <div
-              className="h-2 rounded-full"
-              style={{
-                width: `${Math.min(100, Math.round((selectedKeys.length / totalElements) * 100))}%`,
-                background: `linear-gradient(to right, ${C.burgundy}, ${C.accent3})`,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* 生成结果 · 紫 · 迷你柱 */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.accent3}12`, color: C.accent3 }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
-            >结果库</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              {BOOM_ENTRIES.length}
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 篇</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>生成结果</p>
-          </div>
-          <div className="mt-3 flex h-6 items-end gap-1" aria-hidden={true}>
-            {[64, 88, 72, 96, 82].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.accent3}70` }} />
-            ))}
-          </div>
-        </div>
-
-        {/* 命中率 · 蓝 · chip */}
-        <div
-          className="rounded-xl border p-5 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ background: `${C.ikb}12`, color: C.ikb }}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>gps_fixed</span>
-            </span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
-            >
-              命中率
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-              87
-              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> %</span>
-            </p>
-            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>命中率</p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1" aria-hidden={true}>
-            {['共鸣', '转化', '爆款'].map((k) => (
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+        {/* 爆款元素 · 冷蓝 · 环形 */}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
-                key={k}
-                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
               >
-                {k}
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>local_fire_department</span>
               </span>
-            ))}
-          </div>
-        </div>
-      </div>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden={true}>trending_up</span>全库
+              </span>
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
+                  {totalElements}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
+              </div>
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label="爆款元素覆盖率">
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.2)" strokeWidth="3.5" />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="100 100" />
+                </svg>
+              </div>
+            </div>
+          </motion.div>
+        </Item>
+
+        {/* 选中元素 · yellow · 进度条 */}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(228,238,255,0.18)',
+                  color: C.yellow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>check_circle</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(228,238,255,0.18)',
+                  color: C.yellow,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >选中</span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
+                {selectedKeys.length}
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>选中元素</p>
+            </div>
+            <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 9999, background: 'rgba(228,238,255,0.15)' }}>
+              <div
+                style={{
+                  height: 6,
+                  borderRadius: 9999,
+                  width: `${Math.min(100, Math.round((selectedKeys.length / totalElements) * 100))}%`,
+                  background: `linear-gradient(to right, ${C.yellow}, ${C.accent3})`,
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </div>
+          </motion.div>
+        </Item>
+
+        {/* 生成结果 · accent3 · 迷你柱 */}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.accent3,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>article</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.accent3,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >结果库</span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
+                {BOOM_ENTRIES.length}
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>篇</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>生成结果</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
+              {[64, 88, 72, 96, 82].map((h, i) => (
+                <div key={i} style={{ flex: 1, borderRadius: '4px 4px 0 0', height: `${h}%`, background: 'rgba(168,197,224,0.45)' }} />
+              ))}
+            </div>
+          </motion.div>
+        </Item>
+
+        {/* 命中率 · 冷蓝 · chips */}
+        <Item>
+          <motion.div
+            className="lg-glass lg-spec"
+            whileHover={{ y: -5 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ borderRadius: 20, padding: 22 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>gps_fixed</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  background: 'rgba(168,197,224,0.18)',
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >命中率</span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
+                87
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>%</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>命中率</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }} aria-hidden={true}>
+              {['共鸣', '转化', '爆款'].map((k) => (
+                <span
+                  key={k}
+                  style={{
+                    borderRadius: 6,
+                    padding: '2px 6px',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    background: 'rgba(168,197,224,0.18)',
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  {k}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </Item>
+      </RevealGroup>
 
       {/* ── 元素多选 ────────────────────────────────────────── */}
-      <div className="mb-6">
+      <Reveal style={{ marginBottom: 24 }}>
         <BoomElementsPicker selectedKeys={selectedKeys} onChange={setSelectedKeys} />
-      </div>
+      </Reveal>
 
       {/* ── 设置 ────────────────────────────────────────────── */}
-      <div className="mb-6">
+      <Reveal style={{ marginBottom: 24 }}>
         <BoomSettings
           industry={industry}
           topic={topic}
           onIndustryChange={setIndustry}
           onTopicChange={setTopic}
         />
-      </div>
+      </Reveal>
 
       {/* ── CTA ─────────────────────────────────────────────── */}
-      <div className="mb-8">
+      <div style={{ marginBottom: 32 }}>
         <BoomCTA onClick={handleGenerate} />
       </div>
 
       {/* ── 元素组合分析 ────────────────────────────────────── */}
-      <div className="mb-8">
+      <Reveal style={{ marginBottom: 32 }}>
         <BoomAnalysis />
-      </div>
+      </Reveal>
 
       {/* ── 结果列表 ─────────────────────────────────────────── */}
       <BoomResultList entries={BOOM_ENTRIES} />
 
       {/* ── 数据洞察(雷达 + 趋势) ─────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
-        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
-        <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+      <Reveal style={{ marginTop: 40, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-          style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 9999,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 600,
+            background: 'rgba(168,197,224,0.18)',
+            color: C.ikb,
+            fontFamily: F.mono,
+            textShadow: C.textShadow,
+          }}
         >
-          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
+          <span
+            style={{
+              height: 6,
+              width: 6,
+              borderRadius: '50%',
+              backgroundColor: C.ikb,
+              display: 'inline-block',
+              animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
+            }}
+          />
           模型已就绪
         </span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
-        {/* 爆款力雷达 · col-span-5 */}
-        <div
-          className="col-span-5 rounded-xl border p-6 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+      </Reveal>
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+        {/* 爆款力雷达 */}
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ borderRadius: 20, padding: 24 }}
         >
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+          <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.ikb}12`, color: C.ikb }}
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
               >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>爆款力雷达</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>爆款力雷达</h3>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>86</p>
-              <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
+            <div style={{ textAlign: 'right' }}>
+              <p
+                style={{
+                  fontSize: 28,
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  background: C.grad,
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent',
+                  fontFamily: F.display,
+                  margin: 0,
+                }}
+              >86</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -794,29 +1270,29 @@ export default function BoomGenerate() {
             const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
             const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="爆款力雷达图">
+              <svg viewBox="0 0 260 244" style={{ width: '100%' }} role="img" aria-label="爆款力雷达图">
                 <defs>
                   <linearGradient id="boom-radarFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    <stop offset="100%" stopColor={C.yellow} stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
                 ))}
                 {dims.map((_, i) => {
                   const [x, y] = pt(i, R);
-                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.10)" strokeWidth="1" />;
                 })}
                 <polygon points={dataPoly} fill="url(#boom-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                 {dims.map((d, i) => {
                   const [x, y] = pt(i, R * (d.value / 100));
-                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(8,20,48,0.6)" stroke={d.color} strokeWidth="2" />;
                 })}
                 {dims.map((d, i) => {
                   const [x, y] = pt(i, R + 16);
                   return (
-                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.65)" fontSize="10.5" fontWeight="600">
                       {d.label}
                     </text>
                   );
@@ -824,56 +1300,87 @@ export default function BoomGenerate() {
               </svg>
             );
           })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
+          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {RADAR_DIMS_BM.map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+              <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* 元素权重/热度曲线 · col-span-7 */}
-        <div
-          className="col-span-7 rounded-xl border p-6 ikb-hovercard"
-          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        {/* 元素权重/热度曲线 */}
+        <motion.div
+          className="lg-glass lg-spec"
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{ borderRadius: 20, padding: 24 }}
         >
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
+          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+                style={{
+                  display: 'flex',
+                  height: 38,
+                  width: 38,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(228,238,255,0.18)',
+                  color: C.yellow,
+                }}
               >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>元素权重 / 热度曲线</h3>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>按当前选中元素测算</p>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>元素权重 / 热度曲线</h3>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前选中元素测算</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {['权重', '热度', '转化'].map((t, i) => (
                 <span
                   key={t}
-                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                  style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
+                  style={{
+                    borderRadius: 8,
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    fontFamily: F.mono,
+                    background: i === 0 ? 'rgba(168,197,224,0.5)' : 'rgba(255,255,255,0.07)',
+                    color: i === 0 ? '#fff' : 'rgba(255,255,255,0.55)',
+                    textShadow: i === 0 ? C.textShadow : 'none',
+                    border: i === 0 ? 'none' : `0.5px solid ${C.line}`,
+                  }}
                 >
                   {t}
                 </span>
               ))}
             </div>
           </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>97</p>
+          <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+            <p style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>97</p>
             <span
-              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+              style={{
+                marginBottom: 4,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                padding: '3px 8px',
+                fontSize: 12,
+                fontWeight: 700,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
-              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+248%
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>+248%
             </span>
-            <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>较基准值</span>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较基准值</span>
           </div>
           {(() => {
             const data = TREND_DATA_BM;
@@ -891,16 +1398,16 @@ export default function BoomGenerate() {
             const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
             const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
             return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="元素热度曲线图">
+              <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} role="img" aria-label="元素热度曲线图">
                 <defs>
                   <linearGradient id="boom-trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.28" />
                     <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                   </linearGradient>
                   <linearGradient id="boom-trendLine" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor={C.ikb} />
                     <stop offset="55%" stopColor={C.accent3} />
-                    <stop offset="100%" stopColor={C.burgundy} />
+                    <stop offset="100%" stopColor={C.yellow} />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -910,25 +1417,25 @@ export default function BoomGenerate() {
                     x2={W - padR}
                     y1={(padT + innerH * f).toFixed(1)}
                     y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
+                    stroke="rgba(255,255,255,0.08)"
                     strokeWidth="1"
                   />
                 ))}
                 <path d={area} fill="url(#boom-trendFill)" />
                 <path d={line} fill="none" stroke="url(#boom-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 {data.map((v, i) => (
-                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
+                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(8,20,48,0.6)" stroke={C.ikb} strokeWidth="2" />
                 ))}
               </svg>
             );
           })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
             {TREND_LABELS_BM.map((m) => (
               <span key={m}>{m}</span>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
