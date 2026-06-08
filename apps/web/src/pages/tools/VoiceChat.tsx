@@ -1,15 +1,16 @@
 /**
- * VoiceChat.tsx — 红蓝紫渐变 IKB 体系 · 语音对话 / AI 助手
- * IKBLayout 外壳 · inline IKB 气泡 · 逻辑/testid 零改动
- * 2026-06-04
+ * VoiceChat.tsx — iOS26 液态玻璃皮 · 语音对话 / AI 助手
+ * LiquidShell 外壳 · home-next/ikb/system C/F/Reveal/RevealGroup/Item
+ * 业务逻辑/状态/mutation/subscription/testid 零改动
+ * 2026-06-08
  */
-import '@/styles/ikb-hero.css';
 
+import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   VOICE_CHAT_CHIP_SUBTITLE,
   VOICE_CHAT_CHIP_TITLE,
@@ -61,11 +62,19 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
     return (
       <div className="flex justify-end" data-testid="message-bubble-user">
         <div
-          className="max-w-2xl rounded-2xl rounded-tr-sm px-5 py-3.5 shadow-sm"
-          style={{ background: C.grad }}
+          className="max-w-2xl rounded-2xl rounded-tr-sm px-5 py-3.5"
+          style={{
+            background: C.grad,
+            boxShadow: '0 4px 16px rgba(168,197,224,0.22)',
+          }}
         >
-          <p className="text-[14px] leading-relaxed text-white">{message.content}</p>
-          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.65)' }}>
+          <p
+            className="text-[14px] leading-relaxed"
+            style={{ color: C.ink, textShadow: C.textShadow }}
+          >
+            {message.content}
+          </p>
+          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
             {message.timestamp}
           </p>
         </div>
@@ -81,17 +90,23 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
         {/* AI avatar icon chip */}
         <span
           className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: `${C.ikb}12`, color: C.ikb }}
+          style={{
+            background: 'rgba(168,197,224,0.22)',
+            color: C.ikb,
+          }}
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
             smart_toy
           </span>
         </span>
         <div
-          className="max-w-3xl rounded-2xl rounded-tl-sm px-5 py-3.5 shadow-sm"
-          style={{ border: `1px solid ${C.line}`, background: C.base }}
+          className="lg-glass max-w-3xl rounded-2xl rounded-tl-sm px-5 py-3.5"
+          style={{ borderRadius: 18 }}
         >
-          <p className="whitespace-pre-wrap text-[14px] leading-relaxed" style={{ color: C.ink }}>
+          <p
+            className="whitespace-pre-wrap text-[14px] leading-relaxed"
+            style={{ color: C.ink, textShadow: C.textShadow }}
+          >
             {message.content}
             {isStreaming && (
               <span
@@ -107,20 +122,22 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
       {/* bottom row: timestamp + play + copy */}
       {!isStreaming && (
         <div className="flex items-center gap-3 pl-12">
-          <span className="text-[11px]" style={{ color: '#6b7280' }}>{message.timestamp}</span>
+          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            {message.timestamp}
+          </span>
 
           <button
             type="button"
             onClick={() => toast.info(VOICE_CHAT_TOAST_AUDIO)}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors ikb-focusring"
-            style={{ color: '#6b7280' }}
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors"
+            style={{ color: 'rgba(255,255,255,0.6)', background: 'transparent', border: 'none' }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}10`;
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.18)';
               (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
             }}
             data-testid="message-play-btn"
             aria-label={VOICE_CHAT_LABEL_PLAY}
@@ -137,15 +154,15 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
               void navigator.clipboard.writeText(message.content).catch(() => {});
               toast.info(VOICE_CHAT_TOAST_COPIED);
             }}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors ikb-focusring"
-            style={{ color: '#6b7280' }}
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors"
+            style={{ color: 'rgba(255,255,255,0.6)', background: 'transparent', border: 'none' }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}10`;
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.18)';
               (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
             }}
             data-testid="message-copy-btn"
             aria-label={VOICE_CHAT_LABEL_COPY}
@@ -181,24 +198,40 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
 
   return (
     <div
-      className="flex items-center gap-3 rounded-2xl px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-[#2B53E6]"
-      style={{ border: `1px solid ${C.line}`, background: C.paper }}
+      className="lg-glass flex items-center gap-3 px-4 py-3"
+      style={{ borderRadius: 18 }}
+      onFocus={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.boxShadow = `0 0 0 2px rgba(168,197,224,0.55), 0 26px 52px -14px rgba(8,20,48,0.55)`;
+      }}
+      onBlur={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.boxShadow = '';
+      }}
       data-testid="voice-chat-input-row"
     >
       {/* left mic button */}
-      <button
+      <motion.button
         type="button"
         onClick={onMicClick}
         disabled={disabled}
-        className="ikb-gradbtn flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-all active:scale-95 disabled:opacity-60 ikb-focusring"
-        style={{ background: C.grad }}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white disabled:opacity-60"
+        style={{
+          background: C.grad,
+          boxShadow: '0 4px 14px rgba(168,197,224,0.3)',
+          border: 'none',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+        }}
         data-testid="voice-chat-mic-btn"
         aria-label="语音输入"
       >
         <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
           mic
         </span>
-      </button>
+      </motion.button>
 
       {/* text input */}
       <input
@@ -210,24 +243,37 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
         data-testid="voice-chat-input"
         aria-label="输入消息"
         disabled={disabled}
-        className="ikb-input flex-1 bg-transparent text-[14px] disabled:opacity-60"
-        style={{ color: C.ink }}
+        className="flex-1 bg-transparent text-[14px] disabled:opacity-60"
+        style={{
+          color: C.ink,
+          border: 'none',
+          outline: 'none',
+          fontFamily: F.cn,
+        }}
       />
 
       {/* right send button */}
-      <button
+      <motion.button
         type="button"
         onClick={onSend}
         disabled={disabled}
-        className="ikb-gradbtn flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-all active:scale-95 disabled:opacity-60 ikb-focusring"
-        style={{ background: C.grad }}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white disabled:opacity-60"
+        style={{
+          background: C.grad,
+          boxShadow: '0 4px 14px rgba(168,197,224,0.3)',
+          border: 'none',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+        }}
         data-testid="voice-chat-send-btn"
         aria-label="发送"
       >
         <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
           send
         </span>
-      </button>
+      </motion.button>
     </div>
   );
 }
@@ -242,8 +288,8 @@ const WELCOME_MESSAGE: ChatMessage = {
   timestamp: VOICE_CHAT_MOCK_MESSAGES[1]?.timestamp ?? '00:00',
 };
 
-// 轮转三主色 (IKB 蓝 / 玫红 / 紫)
-const KPI_ACCENT: [string, string, string] = [C.ikb, C.burgundy, C.accent3];
+// 轮转三主色 (冷蓝 / 冰蓝 / 同)
+const KPI_ACCENT: [string, string, string] = [C.ikb, C.yellow, C.accent3];
 
 export default function VoiceChat() {
   const [input, setInput] = useState('');
@@ -408,12 +454,14 @@ export default function VoiceChat() {
       value: <span data-testid="kpi-turns">{completedTurns}</span>,
       label: '对话轮次',
       accent: KPI_ACCENT[0],
+      bg: 'rgba(168,197,224,0.18)',
     },
     {
       icon: 'speed',
       value: <span>— s</span>,
       label: '平均响应（示例）',
       accent: KPI_ACCENT[1],
+      bg: 'rgba(228,238,255,0.18)',
     },
     {
       icon: 'smart_toy',
@@ -428,254 +476,345 @@ export default function VoiceChat() {
       ),
       label: '助手模型',
       accent: KPI_ACCENT[2],
+      bg: 'rgba(168,197,224,0.18)',
     },
     {
       icon: 'thumb_up',
       value: <span>—</span>,
       label: '满意度（示例）',
       accent: KPI_ACCENT[0],
+      bg: 'rgba(168,197,224,0.18)',
     },
   ];
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-10 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
+      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ flexShrink: 0 }}>
           {/* 双徽标 */}
-          <div className="mb-3 flex items-center gap-3">
+          <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
-              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid ${C.line}`,
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               智能引擎
             </span>
             <span
-              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-              style={{ border: `1px solid ${C.ikb}40`, background: `${C.ikb}18`, color: C.ikb, fontFamily: F.mono }}
+              style={{
+                borderRadius: 9999,
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                background: 'rgba(168,197,224,0.18)',
+                backdropFilter: 'blur(12px)',
+                padding: '4px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ikb,
+                fontFamily: F.mono,
+                textShadow: C.textShadow,
+              }}
             >
               AI 助手
             </span>
-          </div>
+          </Reveal>
+
+          {/* 主标题 — 冷蓝渐变字 */}
           <h1
-            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
-            style={{ fontFamily: F.display }}
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: 52,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              fontFamily: F.display,
+              margin: 0,
+              background: C.grad,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+              textShadow: 'none',
+            }}
           >
             {VOICE_CHAT_CHIP_TITLE} · 语音对话
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>
+          <p
+            style={{
+              marginTop: 10,
+              maxWidth: 820,
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: C.burgundyText,
+              fontFamily: F.cn,
+              textShadow: C.textShadow,
+            }}
+          >
             {VOICE_CHAT_CHIP_SUBTITLE} · 实时 AI 对话 · 多模态交互 · 随时随地获取专业建议
           </p>
         </div>
 
         {/* 右侧控制按钮 + 在线状态 */}
-        <div className="flex shrink-0 items-center gap-3">
+        <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 12 }}>
           {/* 连接状态 — 按实际订阅状态显示 */}
           {isStreaming ? (
             <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold"
-              style={{ background: `${C.ikb}14`, color: C.ikb }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 9999,
+                padding: '6px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.ikb,
+                textShadow: C.textShadow,
+              }}
             >
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
+              <span
+                className="animate-pulse"
+                style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }}
+              />
               回复中…
             </span>
           ) : (
             <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold"
-              style={{ background: `${C.ikb}14`, color: C.ikb }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 9999,
+                padding: '6px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                background: 'rgba(168,197,224,0.18)',
+                color: C.ikb,
+                textShadow: C.textShadow,
+              }}
             >
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
+              <span
+                className="animate-pulse"
+                style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }}
+              />
               在线
             </span>
           )}
 
           {/* audio btn */}
-          <button
+          <motion.button
             type="button"
             onClick={() => toast.info(VOICE_CHAT_TOAST_AUDIO)}
-            className="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all ikb-focusring"
-            style={{ border: `1px solid ${C.line}`, background: C.paper, color: '#444653' }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
-              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-              (e.currentTarget as HTMLButtonElement).style.color = '#444653';
-            }}
+            className="lg-glass flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ borderRadius: '50%', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)' }}
+            whileHover={{ y: -2, color: C.ikb }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
             data-testid="voice-chat-audio-btn"
             aria-label="音频"
           >
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               volume_up
             </span>
-          </button>
+          </motion.button>
 
           {/* clear btn */}
-          <button
+          <motion.button
             type="button"
             onClick={() => clearSessionMutation.mutate()}
             disabled={clearSessionMutation.isPending || isStreaming}
-            className="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all disabled:opacity-50 ikb-focusring"
-            style={{ border: `1px solid ${C.line}`, background: C.paper, color: '#444653' }}
-            onMouseEnter={(e) => {
-              if (!(e.currentTarget as HTMLButtonElement).disabled) {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = C.burgundy;
-                (e.currentTarget as HTMLButtonElement).style.color = C.burgundy;
-              }
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-              (e.currentTarget as HTMLButtonElement).style.color = '#444653';
-            }}
+            className="lg-glass flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-50"
+            style={{ borderRadius: '50%', border: 'none', cursor: clearSessionMutation.isPending || isStreaming ? 'not-allowed' : 'pointer', color: 'rgba(255,255,255,0.7)' }}
+            whileHover={{ y: -2 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
             data-testid="voice-chat-clear-btn"
             aria-label="清空"
           >
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               delete_sweep
             </span>
-          </button>
+          </motion.button>
         </div>
       </header>
 
       {/* ── 轻量概览 KPI chips ──────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-5">
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 36 }}>
         {kpiCards.map((kpi, idx) => (
+          <Item key={idx}>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 38,
+                    width: 38,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 10,
+                    background: kpi.bg,
+                    color: kpi.accent,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>
+                    {kpi.icon}
+                  </span>
+                </span>
+              </div>
+              <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: kpi.accent, fontFamily: F.display, textShadow: C.textShadow }}>
+                {kpi.value}
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+            </motion.div>
+          </Item>
+        ))}
+      </RevealGroup>
+
+      {/* ── 聊天主体卡 ─────────────────────────────────────── */}
+      <Reveal>
+        <section
+          className="lg-glass overflow-hidden"
+          style={{ borderRadius: 20 }}
+        >
+          {/* chip header bar */}
           <div
-            key={idx}
-            className="flex items-center gap-3 p-4 ikb-hovercard"
             style={{
-              borderRadius: 12,
-              border: `1px solid ${kpi.accent}30`,
-              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '16px 24px',
+              borderBottom: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.06)',
             }}
           >
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-              style={{ background: `${kpi.accent}12`, color: kpi.accent }}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white"
+              style={{
+                background: C.grad,
+                boxShadow: '0 4px 12px rgba(168,197,224,0.25)',
+              }}
             >
-              <span className="material-symbols-outlined text-[22px]" aria-hidden={true}>
-                {kpi.icon}
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
+                mic
               </span>
             </span>
-            <div className="min-w-0">
-              <p className="text-[22px] font-bold leading-none" style={{ color: kpi.accent }}>
-                {kpi.value}
-              </p>
-              <p className="mt-0.5 truncate text-[11px]" style={{ color: '#6b7280' }}>
-                {kpi.label}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── 聊天主体卡 ─────────────────────────────────────── */}
-      <section
-        className="overflow-hidden"
-        style={{
-          borderRadius: 12,
-          border: `1px solid ${C.line}`,
-          background: C.base,
-        }}
-      >
-        {/* chip header bar */}
-        <div
-          className="flex items-center gap-3 px-6 py-4"
-          style={{ borderBottom: `1px solid ${C.line}`, background: C.paper }}
-        >
-          <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
-            style={{ background: C.grad }}
-          >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
-              mic
-            </span>
-          </span>
-          <div>
-            <p
-              className="text-[18px] font-extrabold uppercase tracking-widest ikb-gradtext"
-              style={{ fontFamily: F.mono }}
-              data-testid="voice-chat-chip-title"
-            >
-              {VOICE_CHAT_CHIP_TITLE}
-            </p>
-            <p className="text-[12px]" style={{ color: '#6b7280' }} data-testid="voice-chat-chip-subtitle">
-              {VOICE_CHAT_CHIP_SUBTITLE}
-            </p>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            {isStreaming ? (
-              <>
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
-                <span
-                  className="text-[12px] font-semibold"
-                  style={{ color: C.ikb }}
-                  data-testid="status-streaming"
-                >
-                  回复中…
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
-                <span
-                  className="text-[12px] font-semibold"
-                  style={{ color: C.ikb }}
-                  data-testid="status-online"
-                >
-                  在线
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* messages area — role=log lets screen readers announce streaming replies */}
-        <div
-          role="log"
-          aria-live="polite"
-          aria-atomic="false"
-          aria-label="对话消息列表"
-          className="min-h-[400px] max-h-[480px] space-y-6 overflow-y-auto px-6 py-6"
-          data-testid="messages-area"
-        >
-          {messages.length === 0 ? (
-            <div
-              className="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 text-center"
-              data-testid="empty-state"
-            >
-              <span
-                className="flex h-16 w-16 items-center justify-center rounded-2xl"
-                style={{ background: `${C.ikb}12`, color: C.ikb }}
+            <div>
+              <p
+                className="text-[18px] font-extrabold uppercase tracking-widest"
+                style={{
+                  fontFamily: F.mono,
+                  background: C.grad,
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent',
+                  margin: 0,
+                }}
+                data-testid="voice-chat-chip-title"
               >
-                <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>
-                  chat_bubble_outline
-                </span>
-              </span>
-              <p className="text-[16px] font-semibold" style={{ color: C.ink }}>开始你的对话</p>
-              <p className="text-[14px]" style={{ color: '#6b7280' }}>在下方输入问题，AI 助手将实时回复</p>
+                {VOICE_CHAT_CHIP_TITLE}
+              </p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }} data-testid="voice-chat-chip-subtitle">
+                {VOICE_CHAT_CHIP_SUBTITLE}
+              </p>
             </div>
-          ) : (
-            messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+              {isStreaming ? (
+                <>
+                  <span className="animate-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
+                  <span
+                    style={{ fontSize: 12, fontWeight: 600, color: C.ikb, textShadow: C.textShadow }}
+                    data-testid="status-streaming"
+                  >
+                    回复中…
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="animate-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
+                  <span
+                    style={{ fontSize: 12, fontWeight: 600, color: C.ikb, textShadow: C.textShadow }}
+                    data-testid="status-online"
+                  >
+                    在线
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
 
-        {/* input row */}
-        <div
-          className="px-6 py-4"
-          style={{ borderTop: `1px solid ${C.line}`, background: C.paper }}
-        >
-          <VoiceChatInput
-            value={input}
-            onChange={setInput}
-            onMicClick={() => toast.info(VOICE_CHAT_TOAST_VOICE)}
-            onSend={handleSend}
-            disabled={isStreaming}
-          />
-        </div>
-      </section>
-    </IKBLayout>
+          {/* messages area — role=log lets screen readers announce streaming replies */}
+          <div
+            role="log"
+            aria-live="polite"
+            aria-atomic="false"
+            aria-label="对话消息列表"
+            className="min-h-[400px] max-h-[480px] space-y-6 overflow-y-auto px-6 py-6"
+            data-testid="messages-area"
+          >
+            {messages.length === 0 ? (
+              <div
+                className="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 text-center"
+                data-testid="empty-state"
+              >
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 64,
+                    width: 64,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 18,
+                    background: 'rgba(168,197,224,0.22)',
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>
+                    chat_bubble_outline
+                  </span>
+                </span>
+                <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>开始你的对话</p>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>在下方输入问题，AI 助手将实时回复</p>
+              </div>
+            ) : (
+              messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* input row */}
+          <div
+            style={{
+              padding: '16px 24px',
+              borderTop: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.04)',
+            }}
+          >
+            <VoiceChatInput
+              value={input}
+              onChange={setInput}
+              onMicClick={() => toast.info(VOICE_CHAT_TOAST_VOICE)}
+              onSend={handleSend}
+              disabled={isStreaming}
+            />
+          </div>
+        </section>
+      </Reveal>
+    </LiquidShell>
   );
 }
