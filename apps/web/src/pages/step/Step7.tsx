@@ -1,15 +1,15 @@
-// PRD-29.6 Step3 · Step7 文案生成 — IKB 红蓝紫渐变重构
+// PRD-29.6 Step3 · Step7 文案生成 — iOS26 液态玻璃换皮
 // 阶段2 接真后端: trpc.stepData.save/get · CopywritingAgent step7 mode
 // URL 预填: ?topic=... 来自 TrendingDetailDrawer/TrendingTable
-import '@/styles/ikb-hero.css';
 
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { IKBLayout } from '@/layouts/IKBLayout';
 import { trpc, type RouterOutputs } from '@/lib/trpc';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -149,12 +149,12 @@ const RADAR_DIMS_S7 = [
 const TREND_DATA_S7 = [72, 65, 88, 70, 82, 76, 90, 85, 79, 93, 88, 96];
 const TREND_LABELS_S7 = ['贪念', '恐惧', '猎奇', '反差', '借势', '共鸣', '共情', '情绪', '热点', '争议', '稀缺', '权威'];
 
-// ── Category colors (IKB palette)
-const CATEGORY_COLORS: Record<string, { border: string; bg: string; text: string; iconBg: string; dot: string }> = {
-  classic:    { border: `border-[#2B53E6]/20`, bg: `bg-[#2B53E6]/[0.04]`, text: `text-[#2B53E6]`,  iconBg: `bg-[#2B53E6]/10`,  dot: C.ikb },
-  emotion:    { border: `border-[#EF3E6B]/20`, bg: `bg-[#EF3E6B]/[0.04]`, text: `text-[#D11E52]`,  iconBg: `bg-[#EF3E6B]/10`,  dot: C.burgundy },
-  content:    { border: `border-[#7A3BE0]/20`, bg: `bg-[#7A3BE0]/[0.04]`, text: `text-[#3A1A6E]`,  iconBg: `bg-[#7A3BE0]/12`,  dot: C.accent3 },
-  conversion: { border: `border-[#2B53E6]/20`, bg: `bg-[#2B53E6]/[0.04]`, text: `text-[#2B53E6]`,  iconBg: `bg-[#2B53E6]/10`,  dot: C.ikb },
+// ── Category accent colors (liquid glass 冷蓝体系)
+const CATEGORY_ACCENTS: Record<string, string> = {
+  classic:    C.ikb,
+  emotion:    C.burgundy,
+  content:    C.accent3,
+  conversion: C.ikb,
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -262,68 +262,168 @@ export default function Step7() {
   // 计算爆款元素总数
   const totalElements = ELEMENT_CATEGORIES.reduce((sum, cat) => sum + cat.elements.length, 0);
 
-  const btnSecondary =
-    'ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors hover:bg-[#f0f2ff] disabled:cursor-not-allowed disabled:opacity-40';
-
   return (
-    <IKBLayout>
+    <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest" style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}>
-              创作引擎
-            </span>
-            <span className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest" style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}>
-              文案工厂
-            </span>
+      <Reveal>
+        <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+          <div style={{ flexShrink: 0 }}>
+            {/* chip 标签行 */}
+            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  border: `0.5px solid ${C.line}`,
+                  background: 'rgba(255,255,255,0.10)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: C.ink,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >
+                创作引擎
+              </span>
+              <span
+                style={{
+                  borderRadius: 9999,
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.18)',
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                  textShadow: C.textShadow,
+                }}
+              >
+                文案工厂
+              </span>
+            </div>
+            {/* 主标题 — 冷蓝渐变字 */}
+            <h1
+              style={{
+                whiteSpace: 'nowrap',
+                fontSize: 52,
+                fontWeight: 800,
+                letterSpacing: '-0.02em',
+                fontFamily: F.display,
+                margin: 0,
+                background: C.grad,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+                textShadow: 'none',
+              }}
+            >
+              STEP 07 · 文案生成
+            </h1>
+            <p
+              style={{
+                marginTop: 10,
+                maxWidth: 820,
+                fontSize: 16,
+                lineHeight: 1.6,
+                color: 'rgba(255,255,255,0.75)',
+                fontFamily: F.cn,
+                textShadow: C.textShadow,
+              }}
+            >
+              选择脚本类型和爆款元素，输入主题，AI 将基于方法论生成深度爆款文案，支持 AI 智能修改优化。
+            </p>
           </div>
-          <h1 className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight" style={{ fontFamily: F.display }}>
-            STEP 07 · 文案生成
-          </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#5A6173', fontFamily: F.cn }}>
-            选择脚本类型和爆款元素，输入主题，AI 将基于方法论生成深度爆款文案，支持 AI 智能修改优化。
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-nowrap gap-3">
-          <button
-            type="button"
-            onClick={handleOptimize}
-            disabled={!hasResult}
-            aria-label="智能优化"
-            className={btnSecondary}
-            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
-          >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
-            智能优化
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyResult}
-            disabled={!hasResult}
-            aria-label="复制文案"
-            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-            style={{ fontFamily: F.mono }}
-          >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
-            复制文案
-          </button>
-        </div>
-      </header>
+          {/* Header 操作按钮 */}
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+            <motion.button
+              type="button"
+              onClick={handleOptimize}
+              disabled={!hasResult}
+              aria-label="智能优化"
+              whileHover={hasResult ? { y: -3 } : undefined}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-glass"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                borderRadius: 12,
+                padding: '10px 18px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: !hasResult ? 'rgba(255,255,255,0.35)' : C.ink,
+                fontFamily: F.cn,
+                background: 'transparent',
+                border: 'none',
+                cursor: !hasResult ? 'not-allowed' : 'pointer',
+                opacity: !hasResult ? 0.5 : 1,
+                textShadow: C.textShadow,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: C.ikb }}>auto_fix_high</span>
+              智能优化
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={handleCopyResult}
+              disabled={!hasResult}
+              aria-label="复制文案"
+              whileHover={hasResult ? { y: -3 } : undefined}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              className="lg-gradbtn"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                borderRadius: 12,
+                padding: '10px 20px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                fontFamily: F.mono,
+                border: 'none',
+                cursor: !hasResult ? 'not-allowed' : 'pointer',
+                opacity: !hasResult ? 0.4 : 1,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
+              复制文案
+            </motion.button>
+          </div>
+        </header>
+      </Reveal>
 
       {/* ── loading 状态 ────────────────────────────────────── */}
       {generateMutation.isPending && (
         <div
           data-testid="step7-loading"
-          className="mb-8 overflow-hidden rounded-xl border p-4"
-          style={{ borderColor: `${C.ikb}25`, background: `${C.ikb}08` }}
+          className="lg-glass"
+          style={{
+            marginBottom: 32,
+            overflow: 'hidden',
+            borderRadius: 16,
+            padding: 18,
+          }}
         >
-          <div className="mb-2 flex items-center gap-3 text-[14px] font-medium" style={{ color: C.ikb, fontFamily: F.cn }}>
-            <span className="material-symbols-outlined animate-spin text-[20px]" aria-hidden={true}>progress_activity</span>
+          <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, fontWeight: 600, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>
+            <span className="material-symbols-outlined animate-spin" aria-hidden={true} style={{ fontSize: 20 }}>progress_activity</span>
             AI 正在生成爆款文案，请稍候…
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: `${C.ikb}20` }}>
-            <div className="h-full w-2/3 animate-pulse rounded-full" style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
+          <div style={{ height: 6, width: '100%', overflow: 'hidden', borderRadius: 9999, background: 'rgba(168,197,224,0.2)' }}>
+            <div className="animate-pulse" style={{ height: '100%', width: '66%', borderRadius: 9999, background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
           </div>
         </div>
       )}
@@ -332,18 +432,29 @@ export default function Step7() {
       {generateMutation.isError && (
         <div
           data-testid="step7-error"
-          className="mb-8 flex items-center justify-between gap-3 rounded-xl border p-4 text-[14px] font-medium"
-          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
+          className="lg-glass"
+          style={{
+            marginBottom: 32,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            borderRadius: 16,
+            padding: 18,
+            fontSize: 14,
+            fontWeight: 600,
+            color: C.burgundyText,
+          }}
         >
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.burgundy }}>error</span>
             {generateMutation.error?.message ?? '生成失败，请重试'}
           </div>
           <button
             type="button"
             onClick={handleGenerate}
-            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
-            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
+            className="lg-glass"
+            style={{ flexShrink: 0, borderRadius: 10, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: C.ink, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow }}
           >
             重试
           </button>
@@ -354,10 +465,22 @@ export default function Step7() {
       {dbQuery.isLoading && (
         <div
           data-testid="step7-db-loading"
-          className="mb-6 flex items-center gap-3 rounded-xl border p-4 text-[13px] font-medium"
-          style={{ borderColor: `${C.ikb}20`, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }}
+          className="lg-glass"
+          style={{
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            borderRadius: 16,
+            padding: 18,
+            fontSize: 13,
+            fontWeight: 600,
+            color: C.ikb,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
         >
-          <span className="material-symbols-outlined animate-spin text-[18px]" aria-hidden={true}>progress_activity</span>
+          <span className="material-symbols-outlined animate-spin" aria-hidden={true} style={{ fontSize: 18 }}>progress_activity</span>
           正在加载历史记录…
         </div>
       )}
@@ -366,18 +489,29 @@ export default function Step7() {
       {dbQuery.isError && !hasResult && (
         <div
           data-testid="step7-db-error"
-          className="mb-6 flex items-center justify-between gap-3 rounded-xl border p-4 text-[13px] font-medium"
-          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
+          className="lg-glass"
+          style={{
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            borderRadius: 16,
+            padding: 18,
+            fontSize: 13,
+            fontWeight: 600,
+            color: C.burgundyText,
+          }}
         >
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>error</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: C.burgundy }}>error</span>
             历史记录加载失败，请重试
           </div>
           <button
             type="button"
             onClick={() => void dbQuery.refetch()}
-            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
-            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
+            className="lg-glass"
+            style={{ flexShrink: 0, borderRadius: 10, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: C.ink, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow }}
           >
             重试
           </button>
@@ -388,609 +522,858 @@ export default function Step7() {
       {hasResult && isFallbackFlag && (
         <div
           data-testid="step7-fallback-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border p-4 text-[13px] font-medium"
-          style={{ borderColor: `${C.accent3}40`, background: `${C.accent3}08`, color: C.purpleText, fontFamily: F.cn }}
+          className="lg-glass"
+          style={{
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            borderRadius: 16,
+            padding: 18,
+            fontSize: 13,
+            fontWeight: 600,
+            color: C.purpleText,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>warning</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.accent3 }}>warning</span>
           AI 模型降级处理，结果为备用方案，建议重新生成以获取最优质方案。
         </div>
       )}
 
       {/* ── KPI 卡一排(仅有真实结果时显示)────────────────────── */}
       {hasResult && (
-        <>
-          {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-          <div className="mb-8 grid grid-cols-4 gap-6">
-            {/* 脚本类型 · 环形 · 蓝 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>description</span>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+          {/* 脚本类型 · 环形 · 冷蓝 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>description</span>
                 </span>
-                <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                  <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>全覆盖
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '3px 10px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, textShadow: C.textShadow }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>全覆盖
                 </span>
               </div>
-              <div className="mt-4 flex items-end justify-between">
+              <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
-                  <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+                  <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     {SCRIPT_TYPES.length}
-                    <span className="text-[15px]" style={{ color: '#6b7280' }}> 种</span>
+                    <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>种</span>
                   </p>
-                  <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>脚本类型</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>脚本类型</p>
                 </div>
-                <div className="h-12 w-12 shrink-0">
-                  <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label={`脚本类型覆盖 ${Math.round((SCRIPT_TYPES.length / 10) * 100)}%`}>
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
+                <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                  <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`脚本类型覆盖 ${Math.round((SCRIPT_TYPES.length / 10) * 100)}%`}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.2)" strokeWidth="3.5" />
                     <circle
-                      cx="18"
-                      cy="18"
-                      r="15.915"
-                      fill="none"
-                      stroke={C.ikb}
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
+                      cx="18" cy="18" r="15.915" fill="none"
+                      stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round"
                       strokeDasharray={`${Math.round((SCRIPT_TYPES.length / 10) * 100)} 100`}
                     />
                   </svg>
                 </div>
               </div>
-            </div>
+            </motion.div>
+          </Item>
 
-            {/* 爆款元素 · 迷你柱 · 玫红 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
+          {/* 爆款元素 · 迷你柱 · 白/冷 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundy }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>local_fire_department</span>
                 </span>
-                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.burgundy}12`, color: C.burgundyText }}>元素库</span>
+                <span style={{ borderRadius: 9999, padding: '3px 10px', fontSize: 11, fontWeight: 700, background: 'rgba(255,255,255,0.12)', color: C.burgundyText, textShadow: C.textShadow }}>元素库</span>
               </div>
-              <div className="mt-4">
-                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {totalElements}
-                  <span className="text-[15px]" style={{ color: '#6b7280' }}> 个</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>个</span>
                 </p>
-                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
               </div>
-              <div className="mt-3 flex h-6 items-end gap-1">
+              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                 {[58, 84, 70, 96, 78].map((h, i) => (
-                  <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.burgundy}70` }} />
+                  <div key={i} style={{ flex: 1, borderRadius: '3px 3px 0 0', height: `${h}%`, background: 'rgba(255,255,255,0.45)' }} />
                 ))}
               </div>
-            </div>
+            </motion.div>
+          </Item>
 
-            {/* 已选元素 · 进度条 · 紫 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
+          {/* 已选元素 · 进度条 · 冷蓝 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.accent3 }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>check_circle</span>
                 </span>
-                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.accent3}12`, color: C.purpleText }}>已选</span>
+                <span style={{ borderRadius: 9999, padding: '3px 10px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.purpleText, textShadow: C.textShadow }}>已选</span>
               </div>
-              <div className="mt-4">
-                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {selectedElementIds.length}
-                  <span className="text-[15px]" style={{ color: '#6b7280' }}> 个</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>个</span>
                 </p>
-                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>已选元素</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>已选元素</p>
               </div>
-              <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}18` }}>
+              <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.18)' }}>
                 <div
-                  className="h-2 rounded-full"
                   style={{
+                    height: 8,
+                    borderRadius: 9999,
                     width: `${Math.min(100, Math.round((selectedElementIds.length / totalElements) * 100))}%`,
                     background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})`,
                   }}
                 />
               </div>
-            </div>
+            </motion.div>
+          </Item>
 
-            {/* 文案字数 · chip · 蓝 */}
-            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
+          {/* 文案字数 · chip · 冷蓝 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 22 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>article</span>
                 </span>
-                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                <span style={{ borderRadius: 9999, padding: '3px 10px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, textShadow: C.textShadow }}>
                   {result.markdown.length} 字
                 </span>
               </div>
-              <div className="mt-4">
-                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {result.markdown.length}
-                  <span className="text-[15px]" style={{ color: '#6b7280' }}> 字</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>字</span>
                 </p>
-                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>文案字数</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>文案字数</p>
               </div>
-              <div className="mt-3 flex flex-wrap gap-1">
+              <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {result.hooks.slice(0, 3).map((hook, i) => (
                   <span
                     key={i}
-                    className="rounded px-1.5 py-0.5 text-[10px] font-medium"
-                    style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+                    style={{ borderRadius: 6, padding: '2px 6px', fontSize: 10, fontWeight: 600, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}
                   >
                     {hook.slice(0, 6)}…
                   </span>
                 ))}
               </div>
-            </div>
-          </div>
-        </>
+            </motion.div>
+          </Item>
+        </RevealGroup>
       )}
 
       {/* ── 2 列配置区 ─────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-2 gap-6">
-        {/* 左:脚本类型(7 · IKB 可视化选择卡) */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
-          <div className="mb-5 flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>description</span>
-            </span>
-            <div>
-              <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>脚本类型</h2>
-              <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选择适合的内容框架</p>
-            </div>
-          </div>
-          <div role="radiogroup" aria-label="脚本类型选择" className="space-y-2">
-            {SCRIPT_TYPES.map((type) => {
-              const active = selectedScriptTypeId === type.id;
-              return (
-                <button
-                  type="button"
-                  key={type.id}
-                  onClick={() => setSelectedScriptTypeId(type.id)}
-                  aria-pressed={active}
-                  className={`ikb-hovercard ikb-focusring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#2B53E6]' : ''}`}
-                  style={active ? { borderColor: C.ikb, background: `${C.ikb}06` } : { borderColor: C.line, background: C.base }}
-                >
-                  <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm"
-                    style={active ? { background: C.grad, color: '#fff' } : { background: C.base, color: '#6b7280' }}
-                  >
-                    <span className="material-symbols-outlined text-[22px]" aria-hidden={true}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{type.name}</span>
-                    <span className="block text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{type.desc}</span>
-                  </span>
-                  <span
-                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-all"
-                    style={active ? { background: C.ikb, color: '#fff' } : { border: `1px solid ${C.line}`, background: '#fff', color: 'transparent' }}
-                  >
-                    <span className="material-symbols-outlined text-[12px]" aria-hidden={true}>check</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 右:爆款元素多选 + 文案主题 + CTA */}
-        <div className="space-y-5">
-          {/* 爆款元素多选 */}
-          <div className="rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+        {/* 左:脚本类型(7 · 可视化选择卡) */}
+        <Reveal>
+          <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>description</span>
               </span>
               <div>
-                <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>爆款元素</h2>
-                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>多选 · 已选 {selectedElementIds.length} 个</p>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>脚本类型</h2>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>选择适合的内容框架</p>
               </div>
             </div>
-            <div className="space-y-4">
-              {ELEMENT_CATEGORIES.map((cat) => {
-                const cc = CATEGORY_COLORS[cat.id] ?? CATEGORY_COLORS['classic']!;
+            <div role="radiogroup" aria-label="脚本类型选择" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {SCRIPT_TYPES.map((type) => {
+                const active = selectedScriptTypeId === type.id;
                 return (
-                  <div key={cat.id}>
-                    <div className={`mb-2 flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide ${cc.text}`}>
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: cc.dot }} />
-                      {cat.name}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {cat.elements.map((el) => {
-                        const selected = selectedElementIds.includes(el.id);
-                        return (
-                          <button
-                            type="button"
-                            key={el.id}
-                            onClick={() => handleToggleElement(el.id)}
-                            aria-pressed={selected}
-                            className="ikb-hovercard ikb-focusring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all"
-                            style={
-                              selected
-                                ? { borderColor: C.ikb, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }
-                                : { borderColor: C.line, background: C.base, color: '#6b7280', fontFamily: F.cn }
-                            }
-                          >
-                            <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>{el.icon}</span>
-                            {el.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <motion.button
+                    type="button"
+                    key={type.id}
+                    onClick={() => setSelectedScriptTypeId(type.id)}
+                    aria-pressed={active}
+                    whileHover={{ y: -2 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-glass"
+                    style={{
+                      display: 'flex',
+                      width: '100%',
+                      alignItems: 'center',
+                      gap: 12,
+                      overflow: 'hidden',
+                      borderRadius: 14,
+                      padding: 14,
+                      textAlign: 'left',
+                      background: active ? 'rgba(168,197,224,0.22)' : 'transparent',
+                      border: active ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s, border-color 0.2s',
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'flex',
+                        height: 40,
+                        width: 40,
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 10,
+                        background: active
+                          ? 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))'
+                          : 'rgba(255,255,255,0.08)',
+                        color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+                      }}
+                    >
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
+                    </span>
+                    <span style={{ minWidth: 0, flex: 1 }}>
+                      <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.name}</span>
+                      <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{type.desc}</span>
+                    </span>
+                    <span
+                      style={{
+                        display: 'flex',
+                        height: 16,
+                        width: 16,
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        background: active ? C.ikb : 'transparent',
+                        border: active ? 'none' : `1px solid rgba(255,255,255,0.3)`,
+                        color: active ? '#fff' : 'transparent',
+                        transition: 'background 0.2s',
+                      }}
+                    >
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>check</span>
+                    </span>
+                  </motion.button>
                 );
               })}
             </div>
           </div>
+        </Reveal>
 
-          {/* 文案主题 + 当前脚本提示 + 生成 CTA */}
-          <div className="rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
-            <div className="mb-2 flex items-center justify-between">
-              <label htmlFor="s7-topic" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink, fontFamily: F.cn }}>
-                <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
-                文案主题
-              </label>
-              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-                <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>auto_awesome</span>
-                AI 据此生成爆款文案
-              </span>
-            </div>
-            <div className="ikb-input overflow-hidden rounded-xl border transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]" style={{ borderColor: C.line, background: C.base }}>
-              <textarea
-                id="s7-topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                rows={3}
-                placeholder="输入文案主题，例如：为什么有的人赚钱那么轻松"
-                className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-                style={{ fontFamily: F.cn, color: C.ink }}
-              />
-              <div className="flex items-center justify-between gap-3 border-t bg-white/60 px-4 py-2.5" style={{ borderColor: C.line }}>
-                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
-                <span className="shrink-0 text-[11px] tabular-nums" style={{ color: '#6b7280', fontFamily: F.mono }}>{topic.length} 字</span>
-              </div>
-            </div>
-            {currentScript && (
-              <div className="mt-3 flex items-center gap-2 rounded-lg border px-3 py-2.5" style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}>
-                <span className="material-symbols-outlined text-[16px]" style={{ color: C.ikb }} aria-hidden={true}>{SCRIPT_TYPE_ICONS[currentScript.id] ?? 'article'}</span>
+        {/* 右:爆款元素多选 + 文案主题 + CTA */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* 爆款元素多选 */}
+          <Reveal>
+            <div className="lg-glass" style={{ borderRadius: 20, padding: 20 }}>
+              <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundy }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>local_fire_department</span>
+                </span>
                 <div>
-                  <span className="text-[12px] font-bold" style={{ color: C.ikb, fontFamily: F.cn }}>{currentScript.name}</span>
-                  <span className="ml-1.5 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{currentScript.desc}</span>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>爆款元素</h2>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>多选 · 已选 {selectedElementIds.length} 个</p>
                 </div>
               </div>
-            )}
-            <div className="mt-4 flex justify-end">
-              <button
-                type="button"
-                onClick={handleGenerate}
-                disabled={!topic.trim() || isLoading}
-                className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ fontFamily: F.mono }}
-              >
-                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
-                {isLoading ? '生成中…' : (topic.trim() ? '生成爆款文案' : '请输入主题')}
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {ELEMENT_CATEGORIES.map((cat) => {
+                  const accentColor = CATEGORY_ACCENTS[cat.id] ?? C.ikb;
+                  return (
+                    <div key={cat.id}>
+                      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: accentColor, textShadow: C.textShadow }}>
+                        <span style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: accentColor, flexShrink: 0 }} />
+                        {cat.name}
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {cat.elements.map((el) => {
+                          const selected = selectedElementIds.includes(el.id);
+                          return (
+                            <motion.button
+                              type="button"
+                              key={el.id}
+                              onClick={() => handleToggleElement(el.id)}
+                              aria-pressed={selected}
+                              whileHover={{ y: -2 }}
+                              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                              className="lg-glass"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                borderRadius: 10,
+                                padding: '6px 12px',
+                                fontSize: 12,
+                                fontWeight: 600,
+                                fontFamily: F.cn,
+                                background: selected ? 'rgba(168,197,224,0.25)' : 'transparent',
+                                border: selected ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
+                                color: selected ? C.ikb : 'rgba(255,255,255,0.65)',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s, border-color 0.2s, color 0.2s',
+                                textShadow: C.textShadow,
+                              }}
+                            >
+                              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>{el.icon}</span>
+                              {el.label}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </Reveal>
+
+          {/* 文案主题 + 当前脚本提示 + 生成 CTA */}
+          <Reveal>
+            <div className="lg-glass" style={{ borderRadius: 20, padding: 20 }}>
+              <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <label htmlFor="s7-topic" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, cursor: 'pointer' }}>
+                  <span style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} />
+                  文案主题
+                </label>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.burgundy }}>auto_awesome</span>
+                  AI 据此生成爆款文案
+                </span>
+              </div>
+              {/* textarea 容器 */}
+              <div
+                className="lg-glass"
+                style={{
+                  overflow: 'hidden',
+                  borderRadius: 14,
+                  border: `1px solid rgba(255,255,255,0.12)`,
+                  transition: 'border-color 0.2s',
+                }}
+                onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = `rgba(168,197,224,0.6)`; }}
+                onBlurCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = `rgba(255,255,255,0.12)`; }}
+              >
+                <textarea
+                  id="s7-topic"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  rows={3}
+                  placeholder="输入文案主题，例如：为什么有的人赚钱那么轻松"
+                  style={{
+                    width: '100%',
+                    resize: 'none',
+                    border: 0,
+                    background: 'transparent',
+                    padding: 16,
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    outline: 'none',
+                    fontFamily: F.cn,
+                    color: C.ink,
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    borderTop: `1px solid rgba(255,255,255,0.10)`,
+                    padding: '10px 16px',
+                    background: 'rgba(255,255,255,0.05)',
+                  }}
+                >
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>{topic.length} 字</span>
+                </div>
+              </div>
+              {currentScript && (
+                <div
+                  className="lg-glass"
+                  style={{
+                    marginTop: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 12,
+                    padding: '10px 14px',
+                    border: `1px solid rgba(168,197,224,0.3)`,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16, color: C.ikb }}>{SCRIPT_TYPE_ICONS[currentScript.id] ?? 'article'}</span>
+                  <div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{currentScript.name}</span>
+                    <span style={{ marginLeft: 6, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{currentScript.desc}</span>
+                  </div>
+                </div>
+              )}
+              <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
+                <motion.button
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={!topic.trim() || isLoading}
+                  whileHover={topic.trim() && !isLoading ? { y: -3 } : undefined}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 14,
+                    padding: '12px 32px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: '#fff',
+                    fontFamily: F.mono,
+                    border: 'none',
+                    cursor: !topic.trim() || isLoading ? 'not-allowed' : 'pointer',
+                    opacity: !topic.trim() || isLoading ? 0.4 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+                  {isLoading ? '生成中…' : (topic.trim() ? '生成爆款文案' : '请输入主题')}
+                </motion.button>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </div>
 
       {/* ── 空态 (无真实结果 · 非加载中) ───────────────────── */}
       {!hasResult && !generateMutation.isPending && !dbQuery.isLoading && (
-        <div
-          data-testid="step7-empty-state"
-          className="mb-8 flex flex-col items-center gap-4 rounded-xl border border-dashed py-16 text-center"
-          style={{ borderColor: C.line, background: C.base }}
-        >
-          <span className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: `${C.ikb}10`, color: C.ikb }}>
-            <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>article</span>
-          </span>
-          <div>
-            <p className="text-[16px] font-semibold" style={{ color: C.ink, fontFamily: F.cn }}>尚未生成文案</p>
-            <p className="mt-2 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>选择脚本类型和爆款元素，输入主题，点击「生成爆款文案」开始</p>
+        <Reveal>
+          <div
+            data-testid="step7-empty-state"
+            className="lg-glass"
+            style={{
+              marginBottom: 32,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 16,
+              borderRadius: 20,
+              padding: '64px 32px',
+              textAlign: 'center',
+              border: `1px dashed rgba(255,255,255,0.18)`,
+            }}
+          >
+            <span style={{ display: 'flex', height: 64, width: 64, alignItems: 'center', justifyContent: 'center', borderRadius: 18, background: 'rgba(168,197,224,0.18)', color: C.ikb }}>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>article</span>
+            </span>
+            <div>
+              <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>尚未生成文案</p>
+              <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '8px 0 0' }}>选择脚本类型和爆款元素，输入主题，点击「生成爆款文案」开始</p>
+            </div>
           </div>
-        </div>
+        </Reveal>
       )}
 
       {/* ── 生成结果(全宽) · hasResult 门控 ───────────────── */}
       {hasResult && (
         <>
-          <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
-            <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: C.line }}>
-              <div className="flex items-center gap-3">
-                <span className="ikb-gradbtn flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-lg">
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
-                </span>
-                <div>
-                  <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>生成文案</h2>
-                  <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>基于「{currentScript?.name ?? '脚本类型'}」框架 · AI 深度生成</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                aria-label="复制文案"
-                onClick={handleCopyResult}
-                className="ikb-focusring flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[12px] font-semibold transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
-                style={{ borderColor: C.line, color: '#6b7280', fontFamily: F.cn }}
+          <Reveal>
+            <div className="lg-glass" style={{ marginBottom: 24, overflow: 'hidden', borderRadius: 20 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: `1px solid ${C.line}`,
+                  padding: '16px 24px',
+                }}
               >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>content_copy</span>
-                复制
-              </button>
-            </div>
-            <div className="p-6">
-              <pre
-                data-testid="step7-result-markdown"
-                className="whitespace-pre-wrap font-sans text-[14px] leading-relaxed"
-                style={{ color: C.ink, fontFamily: F.cn }}
-              >
-                {result.markdown}
-              </pre>
-              {result.structure && (
-                <div className="mt-4 rounded-lg border px-4 py-3" style={{ borderColor: C.line, background: C.base }}>
-                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.ikb, fontFamily: F.mono }}>内容结构 · </span>
-                  <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{result.structure}</span>
-                </div>
-              )}
-              {result.cta && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg border px-4 py-3" style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}>
-                  <span className="material-symbols-outlined mt-0.5 text-[16px]" style={{ color: C.ikb }} aria-hidden={true}>campaign</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span className="lg-gradbtn" style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 12, color: '#fff', flexShrink: 0 }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>article</span>
+                  </span>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.ikb, fontFamily: F.mono }}>行动号召 · </span>
-                    <span className="text-[12px]" style={{ color: '#444653', fontFamily: F.cn }}>{result.cta}</span>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>生成文案</h2>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>基于「{currentScript?.name ?? '脚本类型'}」框架 · AI 深度生成</p>
                   </div>
                 </div>
-              )}
+                <motion.button
+                  type="button"
+                  aria-label="复制文案"
+                  onClick={handleCopyResult}
+                  whileHover={{ y: -2 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    borderRadius: 10,
+                    padding: '8px 14px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.75)',
+                    fontFamily: F.cn,
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textShadow: C.textShadow,
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.75)'; }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>content_copy</span>
+                  复制
+                </motion.button>
+              </div>
+              <div style={{ padding: 24 }}>
+                <pre
+                  data-testid="step7-result-markdown"
+                  style={{ whiteSpace: 'pre-wrap', fontFamily: F.cn, fontSize: 14, lineHeight: 1.7, color: C.ink, margin: 0, textShadow: C.textShadow }}
+                >
+                  {result.markdown}
+                </pre>
+                {result.structure && (
+                  <div className="lg-glass" style={{ marginTop: 16, borderRadius: 12, padding: '12px 16px', border: `1px solid ${C.line}` }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>内容结构 · </span>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{result.structure}</span>
+                  </div>
+                )}
+                {result.cta && (
+                  <div className="lg-glass" style={{ marginTop: 12, display: 'flex', alignItems: 'flex-start', gap: 8, borderRadius: 12, padding: '12px 16px', border: `1px solid rgba(168,197,224,0.3)` }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ marginTop: 2, fontSize: 16, color: C.ikb }}>campaign</span>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>行动号召 · </span>
+                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>{result.cta}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* ── AI 优化区 ────────────────────────────────────────── */}
-          <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
-            <div className="flex items-center gap-3 border-b px-6 py-4" style={{ borderColor: C.line }}>
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>auto_fix_high</span>
-              </span>
-              <div>
-                <h3 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 智能优化</h3>
-                <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>输入优化目标 · AI 一键深度改写文案</p>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="mb-4">
-                <label htmlFor="s7-optimize-goal" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink, fontFamily: F.cn }}>
-                  <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
-                  优化目标
-                </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" style={{ color: '#6b7280' }} aria-hidden={true}>edit</span>
-                  <input
-                    id="s7-optimize-goal"
-                    type="text"
-                    value={optimizeGoal}
-                    onChange={(e) => setOptimizeGoal(e.target.value)}
-                    placeholder="例如：加强转化钩子 / 提升情绪张力 / 更接地气"
-                    className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
-                    style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
-                  />
+          <Reveal>
+            <div className="lg-glass" style={{ marginBottom: 24, overflow: 'hidden', borderRadius: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderBottom: `1px solid ${C.line}`, padding: '16px 24px' }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>auto_fix_high</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>AI 智能优化</h3>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>输入优化目标 · AI 一键深度改写文案</p>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleOptimize}
-                  aria-label="AI 优化"
-                  className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-6 py-3 text-[13px] font-bold text-white transition-all hover:-translate-y-0.5"
-                  style={{ fontFamily: F.mono }}
-                >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
-                  AI 优化
-                </button>
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={isLoading}
-                  className={btnSecondary}
-                  style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
-                >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>refresh</span>
-                  重新生成
-                </button>
+              <div style={{ padding: 24 }}>
+                <div style={{ marginBottom: 16 }}>
+                  <label htmlFor="s7-optimize-goal" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, cursor: 'pointer' }}>
+                    <span style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} />
+                    优化目标
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)' }}>edit</span>
+                    <input
+                      id="s7-optimize-goal"
+                      type="text"
+                      value={optimizeGoal}
+                      onChange={(e) => setOptimizeGoal(e.target.value)}
+                      placeholder="例如：加强转化钩子 / 提升情绪张力 / 更接地气"
+                      className="lg-glass"
+                      style={{
+                        width: '100%',
+                        borderRadius: 12,
+                        padding: '12px 12px 12px 40px',
+                        fontSize: 14,
+                        border: `1px solid rgba(255,255,255,0.12)`,
+                        background: 'transparent',
+                        color: C.ink,
+                        fontFamily: F.cn,
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                        transition: 'border-color 0.2s',
+                      }}
+                      onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = `rgba(168,197,224,0.6)`; }}
+                      onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = `rgba(255,255,255,0.12)`; }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <motion.button
+                    type="button"
+                    onClick={handleOptimize}
+                    aria-label="AI 优化"
+                    whileHover={{ y: -3 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-gradbtn"
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 14, padding: '12px 24px', fontSize: 13, fontWeight: 700, color: '#fff', fontFamily: F.mono, border: 'none', cursor: 'pointer' }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+                    AI 优化
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={isLoading}
+                    whileHover={!isLoading ? { y: -3 } : undefined}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-glass"
+                    style={{
+                      display: 'flex',
+                      flexShrink: 0,
+                      alignItems: 'center',
+                      gap: 8,
+                      whiteSpace: 'nowrap',
+                      borderRadius: 14,
+                      border: `1px solid rgba(255,255,255,0.18)`,
+                      padding: '12px 20px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: isLoading ? 'rgba(255,255,255,0.35)' : C.ink,
+                      fontFamily: F.cn,
+                      background: 'transparent',
+                      cursor: isLoading ? 'not-allowed' : 'pointer',
+                      opacity: isLoading ? 0.5 : 1,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
+                    重新生成
+                  </motion.button>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* ── 数据洞察(雷达 + 趋势)─────────────────────────── */}
-          <div className="mb-3 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
-            <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
-            <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
-            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
-              <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
-              模型已就绪
-            </span>
-          </div>
-          <div className="mb-8 grid grid-cols-12 gap-6">
-            {/* 文案爆款力雷达 */}
-            <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-                  </span>
-                  <div>
-                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>文案爆款力雷达</h3>
-                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估 · 参考值</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>84</p>
-                  <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分 · 参考值</p>
-                </div>
-              </div>
-              {(() => {
-                const dims = RADAR_DIMS_S7;
-                const cx = 130;
-                const cy = 122;
-                const R = 88;
-                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-                const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-                const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-                const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-                return (
-                  <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="文案爆款力雷达图">
-                    <defs>
-                      <linearGradient id="s7-radarFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                        <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                      </linearGradient>
-                    </defs>
-                    {[0.25, 0.5, 0.75, 1].map((f) => (
-                      <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
-                    ))}
-                    {dims.map((_, i) => {
-                      const [x, y] = pt(i, R);
-                      return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
-                    })}
-                    <polygon points={dataPoly} fill="url(#s7-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                    {dims.map((d, i) => {
-                      const [x, y] = pt(i, R * (d.value / 100));
-                      return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                    })}
-                    {dims.map((d, i) => {
-                      const [x, y] = pt(i, R + 16);
-                      return (
-                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                          {d.label}
-                        </text>
-                      );
-                    })}
-                  </svg>
-                );
-              })()}
-              <div className="mt-2 grid grid-cols-3 gap-y-2">
-                {RADAR_DIMS_S7.map((d) => (
-                  <div key={d.label} className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                    <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                  </div>
-                ))}
-              </div>
+          <Reveal style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+              <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, padding: '4px 12px', fontSize: 12, fontWeight: 600, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>
+                <span className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: C.ikb }} />
+                模型已就绪
+              </span>
             </div>
-
-            {/* 爆款元素权重分布 / 文案结构曲线 */}
-            <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
-                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-                  </span>
-                  <div>
-                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>爆款元素权重分布 / 文案结构曲线</h3>
-                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>按当前选中元素测算 · 参考值</p>
+          </Reveal>
+          <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+            {/* 文案爆款力雷达 */}
+            <Item>
+              <motion.div
+                className="lg-glass lg-spec"
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 20, padding: 24 }}
+              >
+                <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
+                    </span>
+                    <div>
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>文案爆款力雷达</h3>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估 · 参考值</p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', fontFamily: F.display }}>84</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.mono }}>综合分 · 参考值</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {['权重', '强度', '转化'].map((t, i) => (
-                    <span
-                      key={t}
-                      className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                      style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
-                    >
-                      {t}
-                    </span>
+                {(() => {
+                  const dims = RADAR_DIMS_S7;
+                  const cx = 130;
+                  const cy = 122;
+                  const R = 88;
+                  const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+                  const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+                  const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+                  const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+                  return (
+                    <svg viewBox="0 0 260 244" style={{ width: '100%' }} role="img" aria-label="文案爆款力雷达图">
+                      <defs>
+                        <linearGradient id="s7-radarFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                          <stop offset="100%" stopColor="rgba(255,255,255,0.5)" stopOpacity="0.12" />
+                        </linearGradient>
+                      </defs>
+                      {[0.25, 0.5, 0.75, 1].map((f) => (
+                        <polygon key={f} points={poly(R * f)} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                      ))}
+                      {dims.map((_, i) => {
+                        const [x, y] = pt(i, R);
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />;
+                      })}
+                      <polygon points={dataPoly} fill="url(#s7-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                      {dims.map((d, i) => {
+                        const [x, y] = pt(i, R * (d.value / 100));
+                        return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
+                      })}
+                      {dims.map((d, i) => {
+                        const [x, y] = pt(i, R + 16);
+                        return (
+                          <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.65)" fontSize="10.5" fontWeight="600">
+                            {d.label}
+                          </text>
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
+                <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
+                  {RADAR_DIMS_S7.map((d) => (
+                    <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
-              <div className="mb-3 flex items-end gap-3">
-                <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>96</p>
-                <span className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
-                  <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+230%
-                </span>
-                <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>较基准值 · 参考值</span>
-              </div>
-              {(() => {
-                const data = TREND_DATA_S7;
-                const W = 560;
-                const H = 168;
-                const padL = 6;
-                const padR = 6;
-                const padT = 12;
-                const padB = 8;
-                const innerW = W - padL - padR;
-                const innerH = H - padT - padB;
-                const max = 110;
-                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-                const y = (v: number) => padT + innerH * (1 - v / max);
-                const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-                return (
-                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="爆款元素权重分布曲线图">
-                    <defs>
-                      <linearGradient id="s7-trendFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="s7-trendLine" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor={C.ikb} />
-                        <stop offset="55%" stopColor={C.accent3} />
-                        <stop offset="100%" stopColor={C.burgundy} />
-                      </linearGradient>
-                    </defs>
-                    {[0, 0.33, 0.66, 1].map((f) => (
-                      <line
-                        key={f}
-                        x1={padL}
-                        x2={W - padR}
-                        y1={(padT + innerH * f).toFixed(1)}
-                        y2={(padT + innerH * f).toFixed(1)}
-                        stroke="#f1f3f9"
-                        strokeWidth="1"
-                      />
+              </motion.div>
+            </Item>
+
+            {/* 爆款元素权重分布 / 文案结构曲线 */}
+            <Item>
+              <motion.div
+                className="lg-glass lg-spec"
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ borderRadius: 20, padding: 24 }}
+              >
+                <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundy }}>
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                    </span>
+                    <div>
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>爆款元素权重分布 / 文案结构曲线</h3>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>按当前选中元素测算 · 参考值</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {['权重', '强度', '转化'].map((t, i) => (
+                      <span
+                        key={t}
+                        style={i === 0
+                          ? { background: C.ikb, color: 'rgba(6,14,38,0.85)', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 700, fontFamily: F.mono }
+                          : { background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, fontFamily: F.mono }}
+                      >
+                        {t}
+                      </span>
                     ))}
-                    <path d={area} fill="url(#s7-trendFill)" />
-                    <path d={line} fill="none" stroke="url(#s7-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    {data.map((v, i) => (
-                      <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
-                    ))}
-                  </svg>
-                );
-              })()}
-              <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
-                {TREND_LABELS_S7.map((m) => (
-                  <span key={m}>{m}</span>
-                ))}
-              </div>
-            </div>
-          </div>
+                  </div>
+                </div>
+                <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                  <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, margin: 0, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>96</p>
+                  <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '3px 10px', fontSize: 12, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, textShadow: C.textShadow }}>
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+230%
+                  </span>
+                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较基准值 · 参考值</span>
+                </div>
+                {(() => {
+                  const data = TREND_DATA_S7;
+                  const W = 560;
+                  const H = 168;
+                  const padL = 6;
+                  const padR = 6;
+                  const padT = 12;
+                  const padB = 8;
+                  const innerW = W - padL - padR;
+                  const innerH = H - padT - padB;
+                  const max = 110;
+                  const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+                  const y = (v: number) => padT + innerH * (1 - v / max);
+                  const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+                  const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+                  return (
+                    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} role="img" aria-label="爆款元素权重分布曲线图">
+                      <defs>
+                        <linearGradient id="s7-trendFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={C.ikb} stopOpacity="0.28" />
+                          <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                        </linearGradient>
+                        <linearGradient id="s7-trendLine" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor={C.ikb} />
+                          <stop offset="55%" stopColor={C.accent3} />
+                          <stop offset="100%" stopColor="rgba(255,255,255,0.8)" />
+                        </linearGradient>
+                      </defs>
+                      {[0, 0.33, 0.66, 1].map((f) => (
+                        <line
+                          key={f}
+                          x1={padL} x2={W - padR}
+                          y1={(padT + innerH * f).toFixed(1)}
+                          y2={(padT + innerH * f).toFixed(1)}
+                          stroke="rgba(255,255,255,0.08)" strokeWidth="1"
+                        />
+                      ))}
+                      <path d={area} fill="url(#s7-trendFill)" />
+                      <path d={line} fill="none" stroke="url(#s7-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      {data.map((v, i) => (
+                        <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" />
+                      ))}
+                    </svg>
+                  );
+                })()}
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+                  {TREND_LABELS_S7.map((m) => (
+                    <span key={m}>{m}</span>
+                  ))}
+                </div>
+              </motion.div>
+            </Item>
+          </RevealGroup>
         </>
       )}
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-4 border-t pt-6" style={{ borderColor: C.line }}>
-        <button
-          type="button"
-          className="ikb-focusring flex items-center gap-1.5 text-[13px] transition-colors hover:text-[#2B53E6]"
-          style={{ color: '#6b7280', fontFamily: F.cn }}
-          onClick={handleChangeTopic}
-        >
-          <span className="material-symbols-outlined text-[16px]" style={{ color: C.burgundy }} aria-hidden={true}>favorite</span>
-          想换个选题继续生成文案？
-        </button>
-        <div className="flex items-center gap-4">
-          <button
+      <Reveal>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, borderTop: `1px solid ${C.line}`, paddingTop: 24 }}>
+          <motion.button
             type="button"
-            aria-label="我的选题库"
-            className="ikb-focusring flex items-center gap-1.5 text-[13px] transition-colors hover:text-[#1a3db8]"
-            style={{ color: C.ikb, fontFamily: F.cn }}
-            onClick={handleMyTopics}
+            whileHover={{ y: -2 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow, transition: 'color 0.15s' }}
+            onClick={handleChangeTopic}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)'; }}
           >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>bookmarks</span>
-            我的选题库
-          </button>
-          <button
-            type="button"
-            aria-label="爆款选题"
-            className="ikb-focusring flex items-center gap-1.5 text-[13px] transition-colors hover:text-[#1a3db8]"
-            style={{ color: C.ikb, fontFamily: F.cn }}
-            onClick={handleHotTopics}
-          >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>local_fire_department</span>
-            爆款选题
-          </button>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16, color: C.burgundy }}>favorite</span>
+            想换个选题继续生成文案？
+          </motion.button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <motion.button
+              type="button"
+              aria-label="我的选题库"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: C.ikb, fontFamily: F.cn, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow }}
+              onClick={handleMyTopics}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>bookmarks</span>
+              我的选题库
+            </motion.button>
+            <motion.button
+              type="button"
+              aria-label="爆款选题"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: C.ikb, fontFamily: F.cn, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow }}
+              onClick={handleHotTopics}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>local_fire_department</span>
+              爆款选题
+            </motion.button>
+          </div>
         </div>
-      </div>
-    </IKBLayout>
+      </Reveal>
+    </LiquidShell>
   );
 }
