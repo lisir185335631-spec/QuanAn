@@ -1,16 +1,15 @@
 /**
  * Integration test — PRD-8 US-010 AC-8
- * OpenAITtsWorker: 真 OpenAI 调用(env OPENAI_API_KEY 存在时)
+ * OpenAITtsWorker: 真 OpenAI 调用
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
  * Runs 1 short Chinese text · expect publicUrl + asset + cost_log written
- *
- * Skip when OPENAI_API_KEY not set (CI default).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { prisma } from '@/lib/prisma';
 import { OpenAITtsWorker } from '@/workers/tts/openai-tts';
 
-const HAS_OPENAI_KEY = !!process.env.OPENAI_API_KEY;
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -50,19 +49,19 @@ async function cleanupFixtures(): Promise<void> {
 }
 
 beforeAll(async () => {
-  if (!HAS_OPENAI_KEY) return;
+  if (skipRealLlm) return;
   await createFixtures();
 });
 
 afterAll(async () => {
-  if (!HAS_OPENAI_KEY) return;
+  if (skipRealLlm) return;
   await cleanupFixtures();
 });
 
 // ── Integration test ──────────────────────────────────────────────────────────
 
 describe('US-010 AC-8: TTS OpenAI integration — real TTS-1 call', () => {
-  it.skipIf(!HAS_OPENAI_KEY)(
+  it.skipIf(skipRealLlm)(
     'short Chinese text → real TTS-1 → mp3 buffer + asset + cost_log written to DB',
     async () => {
       const text = '大家好，这是一段测试文本，用于验证 TTS 接口是否正常工作。';

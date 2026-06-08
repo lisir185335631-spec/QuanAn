@@ -1,6 +1,7 @@
 /**
  * Integration test — PRD-6 US-005 AC-8
  * acquisitionVideo.generate: nock Anthropic SDK + real DB history write + cost_log write
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
  *
  * Strategy:
  * - vi.mock '@/workers/llm-gateway/rate-limiter' → skip rate limit check
@@ -136,9 +137,11 @@ beforeEach(() => {
   testTraceId = `tr_acq_video_int_${Date.now()}`;
 });
 
-// ── Integration test ──────────────────────────────────────────────────────────
+// ── Integration test (skipped unless RUN_REAL_LLM=1) ─────────────────────────
 
-describe('US-005 AC-8: acquisitionVideo.generate integration — nock Anthropic SDK + real DB', () => {
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
+
+describe.skipIf(skipRealLlm)('US-005 AC-8: acquisitionVideo.generate integration — nock Anthropic SDK + real DB', () => {
   it('generate: nock intercepts Anthropic call, writes history + cost_log to real DB, ctaScript contains CTA keyword, < 5s', async () => {
     mockAnthropicAcquisitionResponse();
 

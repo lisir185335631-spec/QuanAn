@@ -73,12 +73,12 @@ describe('AdminLayout', () => {
     expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders Sidebar with 18 navigation links', () => {
+  it('renders Sidebar with 24 navigation links', () => {
     renderLayout();
-    // sidebar nav has 18 domain links (PRD-28 US-006 adds /admin/evaluation)
+    // sidebar nav has 24 domain links (PRD-29 adds diagnosis/step-data/history/topics/daily-tasks/llm-config)
     const nav = screen.getByRole('navigation', { name: '管理导航' });
     const links = nav.querySelectorAll('a');
-    expect(links.length).toBe(18);
+    expect(links.length).toBe(24);
   });
 
   it('clicking 🔔 opens AuditDrawer', async () => {

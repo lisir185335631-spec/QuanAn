@@ -2,16 +2,20 @@
  * Integration + E2E tests for OAuth/session flow — US-006
  * AC-2,3,4,5,8,11,12: mock login, auth.me, CSRF, session expiry, second login
  * Requires dev server on localhost:3000 + live PostgreSQL.
- * Skipped automatically when no server is reachable (ECONNREFUSED).
+ * 默认 skip · 设 RUN_SERVER_E2E=1 且 :3000 有服务才真跑 —— 服务器必须连
+ * 与本测试相同的数据库(DATABASE_URL_TEST),否则 DB 断言会脑裂:
+ * 平时跑着的 dev server(连 dev 库)会让本文件误跑并假失败。
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
-// Skip entire file when dev server is not running (avoids ECONNREFUSED hard failures)
-const serverAvailable = await fetch('http://localhost:3000/health', { signal: AbortSignal.timeout(1000) })
-  .then((r) => r.ok)
-  .catch(() => false);
+// 显式开关 + 服务探测都满足才跑(RUN_SERVER_E2E 哲学同 RUN_REAL_LLM)
+const serverAvailable =
+  process.env.RUN_SERVER_E2E === '1' &&
+  (await fetch('http://localhost:3000/health', { signal: AbortSignal.timeout(1000) })
+    .then((r) => r.ok)
+    .catch(() => false));
 
 // DEV_OAUTH_MOCK=true: expired-session test is not applicable because
 // the server falls back to the mock user for any invalid/expired session.

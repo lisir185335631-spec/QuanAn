@@ -1,6 +1,7 @@
 /**
  * Integration test — PRD-4 US-003
  * AC-10: 真调 LLMGateway nock SDK · cost_log 真写 DB · 查 SQL 返回数据
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
  *
  * Uses nock to intercept Anthropic HTTP (tool_use json_schema mode).
  * Does NOT mock prisma — cost_log is written to the real test DB.
@@ -160,9 +161,11 @@ beforeEach(() => {
   nock.cleanAll();
 });
 
-// ── Integration test ──────────────────────────────────────────────────────────
+// ── Integration test (skipped unless RUN_REAL_LLM=1) ─────────────────────────
 
-describe('US-003 AC-10: specialist integration — nock LLM + real DB cost_log', () => {
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
+
+describe.skipIf(skipRealLlm)('US-003 AC-10: specialist integration — nock LLM + real DB cost_log', () => {
   it('execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB', async () => {
     const traceId = `tr_specialist_int_${Date.now()}`;
     mockAnthropicToolResponse('宠物博主·专注猫粮科普');

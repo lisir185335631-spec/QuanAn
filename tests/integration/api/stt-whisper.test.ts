@@ -1,16 +1,15 @@
 /**
  * Integration test — PRD-8 US-009 AC-8
- * WhisperSttWorker: 真 OpenAI 调用(env OPENAI_API_KEY 存在时)
+ * WhisperSttWorker: 真 OpenAI 调用
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
  * Runs 1 short Chinese audio · expect transcript is string · cost_log written
- *
- * Skip when OPENAI_API_KEY not set (CI default).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { prisma } from '@/lib/prisma';
 import { WhisperSttWorker } from '@/workers/stt/whisper';
 
-const HAS_OPENAI_KEY = !!process.env.OPENAI_API_KEY;
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
 
 // ── Build a 5-second 440Hz sine WAV for testing ───────────────────────────────
 
@@ -85,19 +84,19 @@ async function cleanupFixtures(): Promise<void> {
 }
 
 beforeAll(async () => {
-  if (!HAS_OPENAI_KEY) return;
+  if (skipRealLlm) return;
   await createFixtures();
 });
 
 afterAll(async () => {
-  if (!HAS_OPENAI_KEY) return;
+  if (skipRealLlm) return;
   await cleanupFixtures();
 });
 
 // ── Integration test ──────────────────────────────────────────────────────────
 
 describe('US-009 AC-8: STT Whisper integration — real OpenAI call', () => {
-  it.skipIf(!HAS_OPENAI_KEY)(
+  it.skipIf(skipRealLlm)(
     '5s WAV audio → real Whisper-1 → transcript is string + cost_log written to DB',
     async () => {
       const audioBuffer = buildTestWav(5);

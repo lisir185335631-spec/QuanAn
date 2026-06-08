@@ -163,14 +163,15 @@ describe('VideoAgent', () => {
 
   // ── edge: sourceCopy > 5000 chars (AC-6) ─────────────────────────────────
 
-  it('edge: sourceCopy exceeding 5000 chars → ZodError before LLM call (AC-6)', async () => {
+  it('edge: sourceCopy exceeding 5000 chars → ZodError → fallback response (AC-6, US-015)', async () => {
+    // BaseSpecialist now catches ZodError from inputSchema.parse and falls back gracefully
     const gateway = makeGateway([VALID_SHOOTING_CONTENT]);
     const agent = new VideoAgent(gateway);
     const longCopy = 'x'.repeat(5001);
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: { sourceCopy: longCopy } }),
-    ).rejects.toThrow();
-    // LLM gateway should NOT have been called
+    const res = await agent.execute({ ...BASE_REQ, userInput: { sourceCopy: longCopy } });
+    expect(res.isFallback).toBe(true);
+    expect(ShootingOutputSchema.safeParse(res.result).success).toBe(true);
+    // LLM gateway should NOT have been called (fallback triggered before LLM)
     expect((gateway.complete as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
   });
 

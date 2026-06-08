@@ -1,6 +1,7 @@
 /**
  * Integration test — PRD-6 US-002 AC-10
  * VideoAgent invokeLLM: nock SDK 拦截 Anthropic API · real DB cost_log · < 3s
+ * 默认 skip · 设 RUN_REAL_LLM=1 且有有效 LLM key 才真跑 (CI safe · cost controlled)
  *
  * Pattern: specialist-llm.test.ts (不 mock llmGateway · nock 拦截真实 HTTP)
  * - vi.mock rate-limiter + contextAssembler only
@@ -174,9 +175,11 @@ beforeEach(() => {
   testTraceId = `tr_video_agent_int_${Date.now()}`;
 });
 
-// ── Integration test ──────────────────────────────────────────────────────────
+// ── Integration test (skipped unless RUN_REAL_LLM=1) ─────────────────────────
 
-describe('US-002 AC-10: VideoAgent invokeLLM integration — nock Anthropic SDK + real DB cost_log', () => {
+const skipRealLlm = process.env.RUN_REAL_LLM !== '1';
+
+describe.skipIf(skipRealLlm)('US-002 AC-10: VideoAgent invokeLLM integration — nock Anthropic SDK + real DB cost_log', () => {
   it('execute(mode=production): nock intercepts Anthropic call, returns valid ProductionOutput, writes cost_log to DB within 3s', async () => {
     mockAnthropicProductionResponse();
 
