@@ -1,12 +1,11 @@
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   STEP3B_AUDIENCE,
   STEP3B_CTA_LABEL,
@@ -119,6 +118,27 @@ const DEFAULT_FORM: Step3bFormData = {
   audience: '需要定制智能体降本增效的老板和opc创业者',
 };
 
+// ── roadmap accent → 液态玻璃三色 ──────────────────────────────────────────
+const ACCENT: Record<string, string> = {
+  green: C.ikb,
+  yellow: C.yellow,
+  purple: C.accent3,
+};
+// 内容矩阵柱状图颜色轮转
+const BAR_COLORS = [C.ikb, 'rgba(255,255,255,0.7)', C.accent3, C.ikb];
+
+// 数据洞察雷达维度
+const RADAR_DIMS = [
+  { label: '实战性', value: 92, color: C.ikb },
+  { label: '韧性', value: 88, color: 'rgba(255,255,255,0.7)' },
+  { label: '真诚度', value: 90, color: C.accent3 },
+  { label: '专业度', value: 84, color: C.ikb },
+  { label: '记忆点', value: 86, color: 'rgba(255,255,255,0.7)' },
+  { label: '影响力', value: 78, color: C.accent3 },
+];
+// 趋势图数据
+const TREND_DATA = [20, 32, 40, 55, 72, 100];
+const TREND_LABELS = ['第1月', '第2月', '第3月', '第4月', '第5月', '第6月'];
 
 export default function Step3b() {
   const { account } = useActiveAccount();
@@ -210,284 +230,250 @@ export default function Step3b() {
   }
 
   const PLATFORMS = [
-    { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
-    { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
-    { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+    { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: C.ikb, desc: '种草 · 图文' },
+    { key: 'douyin', label: '抖音', icon: 'music_note', color: C.ikb, desc: '短视频 · 流量' },
+    { key: 'wechat', label: '视频号', icon: 'smart_display', color: C.accent3, desc: '私域 · 转化' },
   ];
-
-  // roadmap accent → IKB 三主色轮转
-  const ACCENT: Record<string, string> = {
-    green: C.ikb,
-    yellow: C.accent3,
-    purple: C.burgundy,
-  };
-  // 内容矩阵柱状图颜色轮转
-  const BAR_COLORS = [C.ikb, C.burgundy, C.accent3, C.ikb];
-
-  // 数据洞察雷达维度 — IKB 三主色轮转
-  const RADAR_DIMS = [
-    { label: '实战性', value: 92, color: C.ikb },
-    { label: '韧性', value: 88, color: C.burgundy },
-    { label: '真诚度', value: 90, color: C.accent3 },
-    { label: '专业度', value: 84, color: C.ikb },
-    { label: '记忆点', value: 86, color: C.burgundy },
-    { label: '影响力', value: 78, color: C.accent3 },
-  ];
-  // 趋势图数据
-  const TREND_DATA = [20, 32, 40, 55, 72, 100];
-  const TREND_LABELS = ['第1月', '第2月', '第3月', '第4月', '第5月', '第6月'];
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       <div className="pb-28">
         {/* ── Header ─────────────────────────────────────────── */}
-        <header className="mb-12 flex flex-row items-center justify-between gap-8">
-          <div className="shrink-0">
-            <div className="mb-3 flex items-center gap-3">
-              <span
+        <Reveal>
+          <header className="mb-12 flex flex-row items-center justify-between gap-8">
+            <div className="shrink-0">
+              <div className="mb-3 flex items-center gap-3">
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    border: `0.5px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.10)',
+                    backdropFilter: 'blur(12px)',
+                    fontFamily: F.mono,
+                    fontSize: 11,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: C.ink,
+                    padding: '4px 14px',
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  战略节点
+                </span>
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    border: `0.5px solid rgba(168,197,224,0.55)`,
+                    background: 'rgba(168,197,224,0.18)',
+                    backdropFilter: 'blur(12px)',
+                    fontFamily: F.mono,
+                    fontSize: 11,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: C.ikb,
+                    padding: '4px 14px',
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  核心引擎
+                </span>
+              </div>
+              <h1
                 style={{
-                  fontFamily: F.mono,
-                  fontSize: 11,
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  border: `1px solid ${C.line}`,
-                  background: C.base,
-                  color: C.ink,
-                  padding: '4px 10px',
+                  fontFamily: F.display,
+                  fontWeight: 400,
+                  fontSize: 40,
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.01em',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  background: C.grad,
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent',
+                  textShadow: 'none',
                 }}
               >
-                战略节点
-              </span>
-              <span
-                style={{
-                  fontFamily: F.mono,
-                  fontSize: 11,
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  border: `1px solid ${C.accent3}55`,
-                  background: `${C.accent3}18`,
-                  color: C.purpleText,
-                  padding: '4px 10px',
-                }}
+                STEP 03b · 深度人设分析
+              </h1>
+              <p
+                className="mt-2 max-w-[820px]"
+                style={{ fontSize: 16, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}
               >
-                核心引擎
-              </span>
+                {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
+              </p>
             </div>
-            <h1
-              style={{
-                fontFamily: F.display,
-                fontWeight: 400,
-                fontSize: 40,
-                lineHeight: 1.05,
-                letterSpacing: '-0.01em',
-                margin: 0,
-                whiteSpace: 'nowrap',
-                background: C.grad,
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                color: 'transparent',
-              }}
-            >
-              STEP 03b · 深度人设分析
-            </h1>
-            <p
-              className="mt-2 max-w-[820px]"
-              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
-            >
-              {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-nowrap gap-3">
-            <button
-              type="button"
-              onClick={handleOptimize}
-              disabled={!canBulkActions}
-              aria-label="智能优化"
-              className="ikb-focusring"
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                border: `1px solid ${C.line}`,
-                background: C.paper,
-                padding: '10px 16px',
-                fontFamily: F.mono,
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: C.ink,
-                cursor: canBulkActions ? 'pointer' : 'not-allowed',
-                opacity: canBulkActions ? 1 : 0.4,
-                transition: 'background 0.2s',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_fix_high</span>
-              智能优化
-            </button>
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              disabled={!hasRealResult}
-              aria-label="复制全部"
-              className="ikb-focusring"
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                border: `1px solid ${C.line}`,
-                background: C.paper,
-                padding: '10px 16px',
-                fontFamily: F.mono,
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: C.ink,
-                cursor: hasRealResult ? 'pointer' : 'not-allowed',
-                opacity: hasRealResult ? 1 : 0.4,
-                transition: 'background 0.2s',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">content_copy</span>
-              复制全部
-            </button>
-            <button
-              type="button"
-              onClick={handleExport}
-              disabled={!hasRealResult}
-              aria-label="导出人设方案"
-              className="ikb-gradbtn"
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                padding: '10px 18px',
-                fontFamily: F.cn,
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#fff',
-                border: 'none',
-                cursor: hasRealResult ? 'pointer' : 'not-allowed',
-                opacity: hasRealResult ? 1 : 0.4,
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">download</span>
-              导出人设方案
-            </button>
-          </div>
-        </header>
-
-        {/* ── 输入人设参数 ───────────────────────────────────── */}
-        <section
-          style={{
-            position: 'relative',
-            border: `1px solid ${C.line}`,
-            background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-            padding: 24,
-            marginBottom: 48,
-            overflow: 'hidden',
-          }}
-        >
-          {/* 装饰光晕 */}
-          <div
-            aria-hidden="true"
-            style={{
-              pointerEvents: 'none',
-              position: 'absolute',
-              right: -64,
-              top: -64,
-              height: 176,
-              width: 176,
-              borderRadius: '50%',
-              background: `${C.ikb}08`,
-              filter: 'blur(32px)',
-            }}
-          />
-          <div
-            aria-hidden="true"
-            style={{
-              pointerEvents: 'none',
-              position: 'absolute',
-              bottom: -80,
-              left: '33%',
-              height: 176,
-              width: 176,
-              borderRadius: '50%',
-              background: `${C.burgundy}06`,
-              filter: 'blur(32px)',
-            }}
-          />
-
-          {/* 段落标题 */}
-          <div
-            style={{
-              position: 'relative',
-              marginBottom: 24,
-              paddingBottom: 20,
-              borderBottom: `1px solid ${C.line}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span
+            <div className="flex shrink-0 flex-nowrap gap-3">
+              <motion.button
+                type="button"
+                onClick={handleOptimize}
+                disabled={!canBulkActions}
+                aria-label="智能优化"
+                whileHover={canBulkActions ? { y: -3 } : {}}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-glass lg-spec"
                 style={{
                   display: 'flex',
-                  height: 44,
-                  width: 44,
+                  flexShrink: 0,
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  background: C.grad,
-                  color: '#fff',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 12,
+                  padding: '10px 16px',
+                  fontFamily: F.mono,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: C.ink,
+                  border: 'none',
+                  cursor: canBulkActions ? 'pointer' : 'not-allowed',
+                  opacity: canBulkActions ? 1 : 0.4,
+                  textShadow: C.textShadow,
                 }}
               >
-                <span className="material-symbols-outlined" aria-hidden="true">tune</span>
-              </span>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>输入人设参数</h2>
-                <p style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成深度人设分析报告</p>
-              </div>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_fix_high</span>
+                智能优化
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={handleCopyAll}
+                disabled={!hasRealResult}
+                aria-label="复制全部"
+                whileHover={hasRealResult ? { y: -3 } : {}}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-glass lg-spec"
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 12,
+                  padding: '10px 16px',
+                  fontFamily: F.mono,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: C.ink,
+                  border: 'none',
+                  cursor: hasRealResult ? 'pointer' : 'not-allowed',
+                  opacity: hasRealResult ? 1 : 0.4,
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">content_copy</span>
+                复制全部
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={handleExport}
+                disabled={!hasRealResult}
+                aria-label="导出人设方案"
+                whileHover={hasRealResult ? { y: -3 } : {}}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 12,
+                  padding: '10px 18px',
+                  fontFamily: F.cn,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#fff',
+                  background: 'linear-gradient(135deg,rgba(168,197,224,0.55),rgba(120,160,220,0.4))',
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  cursor: hasRealResult ? 'pointer' : 'not-allowed',
+                  opacity: hasRealResult ? 1 : 0.4,
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">download</span>
+                导出人设方案
+              </motion.button>
             </div>
-            <span
+          </header>
+        </Reveal>
+
+        {/* ── 输入人设参数 ───────────────────────────────────── */}
+        <Reveal>
+          <section
+            className="lg-glass"
+            style={{
+              borderRadius: 20,
+              padding: 24,
+              marginBottom: 48,
+              overflow: 'hidden',
+            }}
+          >
+            {/* 段落标题 */}
+            <div
               style={{
-                display: 'inline-flex',
+                position: 'relative',
+                marginBottom: 24,
+                paddingBottom: 20,
+                borderBottom: `0.5px solid ${C.line}`,
+                display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                borderRadius: 999,
-                background: `${C.ikb}15`,
-                padding: '4px 12px',
-                fontSize: 12,
-                fontWeight: 600,
-                color: C.ikb,
-                fontFamily: F.mono,
-                letterSpacing: '0.04em',
+                justifyContent: 'space-between',
               }}
             >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 44,
+                    width: 44,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 12,
+                    background: 'linear-gradient(135deg,rgba(168,197,224,0.5),rgba(120,160,220,0.3))',
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">tune</span>
+                </span>
+                <div>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>输入人设参数</h2>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成深度人设分析报告</p>
+                </div>
+              </div>
               <span
                 style={{
-                  height: 6,
-                  width: 6,
-                  borderRadius: '50%',
-                  background: C.ikb,
-                  animation: 'ikb-pulse 1.6s ease-in-out infinite',
-                  display: 'inline-block',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  borderRadius: 999,
+                  background: 'rgba(168,197,224,0.22)',
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                  letterSpacing: '0.04em',
+                  textShadow: C.textShadow,
                 }}
-              />
-              参数就绪
-            </span>
-          </div>
+              >
+                <span
+                  style={{
+                    height: 6,
+                    width: 6,
+                    borderRadius: '50%',
+                    background: C.ikb,
+                    animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                    display: 'inline-block',
+                  }}
+                />
+                参数就绪
+              </span>
+            </div>
 
-          {/* 表单 */}
-          <div style={{ position: 'relative' }}>
+            {/* 表单 */}
             <form onSubmit={handleSubmit} className="space-y-7">
               {/* 目标平台 · 可视化平台卡 */}
               <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
@@ -502,6 +488,7 @@ export default function Step3b() {
                     letterSpacing: '0.04em',
                     color: C.ink,
                     fontFamily: F.cn,
+                    textShadow: C.textShadow,
                   }}
                 >
                   <span
@@ -510,6 +497,7 @@ export default function Step3b() {
                       height: 14,
                       width: 3,
                       background: C.grad,
+                      borderRadius: 2,
                       flexShrink: 0,
                     }}
                     aria-hidden="true"
@@ -520,26 +508,29 @@ export default function Step3b() {
                   {PLATFORMS.map((p) => {
                     const active = platform === p.key;
                     return (
-                      <button
+                      <motion.button
                         type="button"
                         key={p.key}
                         role="radio"
                         aria-checked={active}
                         onClick={() => setPlatform(p.key)}
-                        className="ikb-hovercard ikb-focusring"
+                        whileHover={{ y: -3 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        className="lg-glass"
                         style={{
                           position: 'relative',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 12,
                           overflow: 'hidden',
-                          border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
-                          background: active ? `${C.ikb}08` : C.paper,
+                          borderRadius: 14,
+                          border: active ? `1.5px solid rgba(168,197,224,0.8)` : `0.5px solid ${C.line}`,
+                          background: active ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.08)',
                           padding: '14px',
                           textAlign: 'left',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
-                          boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
+                          boxShadow: active ? '0 2px 20px rgba(168,197,224,0.3)' : 'none',
                         }}
                       >
                         <span
@@ -550,15 +541,16 @@ export default function Step3b() {
                             flexShrink: 0,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#fff',
-                            backgroundColor: p.color,
+                            borderRadius: 10,
+                            background: 'linear-gradient(135deg,rgba(168,197,224,0.5),rgba(120,160,220,0.3))',
+                            color: p.color,
                           }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden="true">{p.icon}</span>
                         </span>
                         <span style={{ minWidth: 0 }}>
-                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{p.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: '#6b7280', fontFamily: F.mono }}>{p.desc}</span>
+                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>{p.desc}</span>
                         </span>
                         <span
                           style={{
@@ -571,15 +563,15 @@ export default function Step3b() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderRadius: '50%',
-                            background: active ? C.ikb : C.paper,
-                            border: active ? 'none' : `1px solid ${C.line}`,
+                            background: active ? 'rgba(168,197,224,0.7)' : 'rgba(255,255,255,0.12)',
+                            border: active ? 'none' : `0.5px solid ${C.line}`,
                             color: active ? '#fff' : 'transparent',
                             transition: 'all 0.2s',
                           }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden="true">check</span>
                         </span>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -599,29 +591,39 @@ export default function Step3b() {
                     letterSpacing: '0.04em',
                     color: C.ink,
                     fontFamily: F.cn,
+                    textShadow: C.textShadow,
                   }}
                 >
-                  <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                  <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
                   目标受众
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">groups</span>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }} aria-hidden="true">groups</span>
                   <input
                     id="s3b-audience"
                     type="text"
                     value={audience}
                     onChange={(e) => setAudience(e.target.value)}
                     placeholder={STEP3B_AUDIENCE.placeholder}
-                    className="ikb-input"
                     style={{
                       width: '100%',
-                      border: `1px solid ${C.line}`,
-                      background: C.paper,
+                      borderRadius: 12,
+                      border: `0.5px solid ${C.line}`,
+                      background: 'rgba(255,255,255,0.08)',
                       padding: '12px 12px 12px 40px',
                       fontSize: 14,
                       fontFamily: F.cn,
                       color: C.ink,
-                      transition: 'border-color 0.2s',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                    }}
+                    onFocus={(e) => {
+                      (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                      (e.currentTarget as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
+                    }}
+                    onBlur={(e) => {
+                      (e.currentTarget as HTMLInputElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
                     }}
                   />
                 </div>
@@ -641,31 +643,33 @@ export default function Step3b() {
                       letterSpacing: '0.04em',
                       color: C.ink,
                       fontFamily: F.cn,
+                      textShadow: C.textShadow,
                     }}
                   >
-                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
                     你的个人信息{' '}
-                    <span style={{ marginLeft: 4, color: C.burgundyText }}>*</span>
+                    <span style={{ marginLeft: 4, color: 'rgba(255,255,255,0.6)' }}>*</span>
                   </label>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden="true">auto_awesome</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden="true">auto_awesome</span>
                     AI 据此提取人设关键词
                   </span>
                 </div>
                 <div
                   style={{
                     overflow: 'hidden',
-                    border: `1px solid ${C.line}`,
-                    background: C.paper,
-                    transition: 'border-color 0.2s',
+                    borderRadius: 12,
+                    border: `0.5px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.08)',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
                   }}
                   onFocusCapture={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
-                    (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                    (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
                   }}
                   onBlurCapture={(e) => {
                     (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
-                    (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
                   }}
                 >
                   <textarea
@@ -675,7 +679,6 @@ export default function Step3b() {
                     onChange={(e) => setPersonalInfo(e.target.value)}
                     rows={6}
                     placeholder="详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。"
-                    className="ikb-input"
                     style={{
                       width: '100%',
                       resize: 'none',
@@ -686,6 +689,7 @@ export default function Step3b() {
                       lineHeight: 1.6,
                       fontFamily: F.cn,
                       color: C.ink,
+                      outline: 'none',
                     }}
                   />
                   <div
@@ -694,31 +698,32 @@ export default function Step3b() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: 12,
-                      borderTop: `1px solid ${C.line}`,
-                      background: `${C.paper}99`,
+                      borderTop: `0.5px solid ${C.line}`,
+                      background: 'rgba(255,255,255,0.05)',
                       padding: '10px 16px',
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>可包含</span>
                       {['背景', '经历', '技能', '转型', '成就'].map((t) => (
                         <span
                           key={t}
                           style={{
                             borderRadius: 999,
-                            background: `${C.ikb}10`,
+                            background: 'rgba(168,197,224,0.18)',
                             padding: '2px 10px',
                             fontSize: 11,
                             fontWeight: 500,
-                            color: C.purpleText,
+                            color: C.ikb,
                             fontFamily: F.mono,
+                            textShadow: C.textShadow,
                           }}
                         >
                           {t}
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.5)' }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
               </div>
@@ -738,25 +743,27 @@ export default function Step3b() {
                       letterSpacing: '0.04em',
                       color: C.ink,
                       fontFamily: F.cn,
+                      textShadow: C.textShadow,
                     }}
                   >
-                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
                     个人优势/特长
                   </label>
                   <div
                     style={{
                       overflow: 'hidden',
-                      border: `1px solid ${C.line}`,
-                      background: C.paper,
-                      transition: 'border-color 0.2s',
+                      borderRadius: 12,
+                      border: `0.5px solid ${C.line}`,
+                      background: 'rgba(255,255,255,0.08)',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
                     }}
                     onFocusCapture={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
-                      (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                      (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
                     }}
                     onBlurCapture={(e) => {
                       (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
-                      (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
                     }}
                   >
                     <textarea
@@ -765,7 +772,6 @@ export default function Step3b() {
                       onChange={(e) => setPersonalAdvantage(e.target.value)}
                       rows={4}
                       placeholder="你有什么独特的优势？比如：独特的经历、专业证书、成功案例、个人特质..."
-                      className="ikb-input"
                       style={{
                         width: '100%',
                         resize: 'none',
@@ -776,10 +782,11 @@ export default function Step3b() {
                         lineHeight: 1.6,
                         fontFamily: F.cn,
                         color: C.ink,
+                        outline: 'none',
                       }}
                     />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `1px solid ${C.line}`, background: `${C.paper}99`, padding: '8px 16px' }}>
-                      <span style={{ fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalAdvantage.length} 字</span>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.05)', padding: '8px 16px' }}>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.5)' }}>{personalAdvantage.length} 字</span>
                     </div>
                   </div>
                 </div>
@@ -796,25 +803,27 @@ export default function Step3b() {
                       letterSpacing: '0.04em',
                       color: C.ink,
                       fontFamily: F.cn,
+                      textShadow: C.textShadow,
                     }}
                   >
-                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
                     个人故事/经历
                   </label>
                   <div
                     style={{
                       overflow: 'hidden',
-                      border: `1px solid ${C.line}`,
-                      background: C.paper,
-                      transition: 'border-color 0.2s',
+                      borderRadius: 12,
+                      border: `0.5px solid ${C.line}`,
+                      background: 'rgba(255,255,255,0.08)',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
                     }}
                     onFocusCapture={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
-                      (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                      (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
                     }}
                     onBlurCapture={(e) => {
                       (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
-                      (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
                     }}
                   >
                     <textarea
@@ -823,7 +832,6 @@ export default function Step3b() {
                       onChange={(e) => setPersonalStory(e.target.value)}
                       rows={4}
                       placeholder="分享你的个人故事：为什么做这个行业？有什么转折点？什么经历让你与众不同？"
-                      className="ikb-input"
                       style={{
                         width: '100%',
                         resize: 'none',
@@ -834,25 +842,28 @@ export default function Step3b() {
                         lineHeight: 1.6,
                         fontFamily: F.cn,
                         color: C.ink,
+                        outline: 'none',
                       }}
                     />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `1px solid ${C.line}`, background: `${C.paper}99`, padding: '8px 16px' }}>
-                      <span style={{ fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalStory.length} 字</span>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.05)', padding: '8px 16px' }}>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.5)' }}>{personalStory.length} 字</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
+                <motion.button
                   type="submit"
                   disabled={!personalInfo.trim() || isLoading}
                   aria-label={isLoading ? '生成中…生成专属人设方案' : '生成专属人设方案'}
-                  className="ikb-gradbtn"
+                  whileHover={(!personalInfo.trim() || isLoading) ? {} : { y: -3 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
+                    borderRadius: 12,
                     padding: '12px 32px',
                     fontFamily: F.cn,
                     fontSize: 12,
@@ -860,88 +871,97 @@ export default function Step3b() {
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     color: '#fff',
-                    border: 'none',
+                    background: 'linear-gradient(135deg,rgba(168,197,224,0.55),rgba(120,160,220,0.4))',
+                    border: `0.5px solid rgba(168,197,224,0.55)`,
                     cursor: (!personalInfo.trim() || isLoading) ? 'not-allowed' : 'pointer',
                     opacity: (!personalInfo.trim() || isLoading) ? 0.4 : 1,
+                    textShadow: C.textShadow,
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
                   {isLoading ? '生成中…' : STEP3B_CTA_LABEL}
-                </button>
+                </motion.button>
               </div>
             </form>
-          </div>
-        </section>
+          </section>
+        </Reveal>
 
         {generateMutation.isPending && (
-          <div
-            data-testid="step3b-loading"
-            style={{
-              marginBottom: 32,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              border: `1px solid ${C.ikb}30`,
-              background: `${C.ikb}08`,
-              padding: 16,
-              fontSize: 14,
-              fontWeight: 500,
-              color: C.purpleText,
-              fontFamily: F.cn,
-            }}
-          >
-            <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">progress_activity</span>
-            {STEP3B_LOADING_TEXT}
-          </div>
+          <Reveal>
+            <div
+              data-testid="step3b-loading"
+              className="lg-glass"
+              style={{
+                marginBottom: 32,
+                borderRadius: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: 16,
+                fontSize: 14,
+                fontWeight: 500,
+                color: C.ikb,
+                fontFamily: F.cn,
+                textShadow: C.textShadow,
+              }}
+            >
+              <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">progress_activity</span>
+              {STEP3B_LOADING_TEXT}
+            </div>
+          </Reveal>
         )}
 
         {generateMutation.isError && (
-          <div
-            data-testid="step3b-error"
-            style={{
-              marginBottom: 32,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 12,
-              border: `1px solid ${C.burgundy}30`,
-              background: `${C.burgundy}08`,
-              padding: 16,
-              fontSize: 14,
-              fontWeight: 500,
-              color: C.burgundyText,
-              fontFamily: F.cn,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">error</span>
-              {generateMutation.error?.message ?? '生成失败，请重试'}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                generateMutation.mutate({
-                  stepKey: 'step3b',
-                  inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
-                })
-              }
-              aria-label="重试重新生成"
-              className="ikb-focusring"
+          <Reveal>
+            <div
+              data-testid="step3b-error"
+              className="lg-glass"
               style={{
-                flexShrink: 0,
-                border: `1px solid ${C.burgundy}30`,
-                background: '#fff',
-                padding: '6px 16px',
-                fontSize: 12,
-                fontWeight: 700,
+                marginBottom: 32,
+                borderRadius: 14,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                padding: 16,
+                fontSize: 14,
+                fontWeight: 500,
                 color: C.burgundyText,
-                cursor: 'pointer',
-                fontFamily: F.mono,
+                fontFamily: F.cn,
+                border: `0.5px solid rgba(255,255,255,0.25)`,
               }}
             >
-              重试
-            </button>
-          </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">error</span>
+                {generateMutation.error?.message ?? '生成失败，请重试'}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  generateMutation.mutate({
+                    stepKey: 'step3b',
+                    inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+                  })
+                }
+                aria-label="重试重新生成"
+                className="lg-glass"
+                style={{
+                  flexShrink: 0,
+                  borderRadius: 8,
+                  padding: '6px 16px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ink,
+                  cursor: 'pointer',
+                  fontFamily: F.mono,
+                  border: 'none',
+                  textShadow: C.textShadow,
+                }}
+              >
+                重试
+              </button>
+            </div>
+          </Reveal>
         )}
 
         {dbQuery.isLoading && (
@@ -952,13 +972,12 @@ export default function Step3b() {
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              border: `1px solid ${C.ikb}20`,
-              background: `${C.base}`,
               padding: 16,
               fontSize: 13,
               fontWeight: 500,
-              color: C.purpleText,
+              color: C.ikb,
               fontFamily: F.cn,
+              textShadow: C.textShadow,
             }}
           >
             <span className="material-symbols-outlined animate-spin" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">progress_activity</span>
@@ -969,19 +988,20 @@ export default function Step3b() {
         {dbQuery.isError && !hasRealResult && (
           <div
             data-testid="step3b-db-error"
+            className="lg-glass"
             style={{
               marginBottom: 24,
+              borderRadius: 14,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 12,
-              border: `1px solid ${C.burgundy}30`,
-              background: `${C.burgundy}08`,
               padding: 16,
               fontSize: 13,
               fontWeight: 500,
               color: C.burgundyText,
               fontFamily: F.cn,
+              border: `0.5px solid rgba(255,255,255,0.25)`,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -992,17 +1012,18 @@ export default function Step3b() {
               type="button"
               onClick={() => void dbQuery.refetch()}
               aria-label="重试重新加载历史记录"
-              className="ikb-focusring"
+              className="lg-glass"
               style={{
                 flexShrink: 0,
-                border: `1px solid ${C.burgundy}30`,
-                background: '#fff',
+                borderRadius: 8,
                 padding: '6px 16px',
                 fontSize: 12,
                 fontWeight: 700,
-                color: C.burgundyText,
+                color: C.ink,
                 cursor: 'pointer',
                 fontFamily: F.mono,
+                border: 'none',
+                textShadow: C.textShadow,
               }}
             >
               重试
@@ -1013,18 +1034,20 @@ export default function Step3b() {
         {hasRealResult && isFallbackFlag && (
           <div
             data-testid="step3b-fallback-notice"
+            className="lg-glass"
             style={{
               marginBottom: 24,
+              borderRadius: 14,
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              border: `1px solid ${C.accent3}40`,
-              background: `${C.accent3}08`,
               padding: 16,
               fontSize: 13,
               fontWeight: 500,
               color: C.purpleText,
               fontFamily: F.cn,
+              border: `0.5px solid rgba(168,197,224,0.4)`,
+              textShadow: C.textShadow,
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.accent3 }} aria-hidden="true">warning</span>
@@ -1033,935 +1056,939 @@ export default function Step3b() {
         )}
 
         {!hasRealResult && !generateMutation.isPending && !dbQuery.isLoading && (
-          <div
-            data-testid="step3b-empty-state"
-            style={{
-              marginBottom: 32,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: `1px dashed ${C.line}`,
-              background: C.base,
-              padding: '64px 0',
-              textAlign: 'center',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: `${C.ink}30` }} aria-hidden="true">person_search</span>
-            <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>尚未生成人设方案</p>
-            <p style={{ marginTop: 8, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>填写上方表单，点击「生成专属人设方案」开始分析</p>
-          </div>
+          <Reveal>
+            <div
+              data-testid="step3b-empty-state"
+              className="lg-glass"
+              style={{
+                marginBottom: 32,
+                borderRadius: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '64px 0',
+                textAlign: 'center',
+                border: `0.5px dashed ${C.line}`,
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: 'rgba(255,255,255,0.2)' }} aria-hidden="true">person_search</span>
+              <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>尚未生成人设方案</p>
+              <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>填写上方表单，点击「生成专属人设方案」开始分析</p>
+            </div>
+          </Reveal>
         )}
 
         {/* ── 报告区 · 仅有真实数据时显示 ──────────────────────── */}
         {hasRealResult && (
         <>
         {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-        <div className="mb-8 grid grid-cols-4 gap-6">
-          {/* 人设完整度 · 环形进度 · 蓝 */}
-          <div
-            className="ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 20,
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">verified</span>
-              </span>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  borderRadius: 999,
-                  background: `${C.ikb}15`,
-                  padding: '2px 8px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: C.ikb,
-                  fontFamily: F.mono,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden="true">trending_up</span>
-                +18%
-              </span>
-            </div>
-            <div className="mt-4 flex items-end justify-between">
-              <div>
-                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                  88<span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
-                </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>人设完整度</p>
-              </div>
-              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
-                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}20`} strokeWidth="3.5" />
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.915"
-                    fill="none"
-                    stroke={C.ikb}
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="88 100"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* 记忆锚点 · 迷你柱 · 玫红 */}
-          <div
-            className="ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: C.paper,
-              padding: 20,
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}15`, color: C.burgundyText }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">push_pin</span>
-              </span>
-              <span
-                style={{
-                  borderRadius: 999,
-                  background: `${C.burgundy}15`,
-                  padding: '2px 8px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: C.burgundyText,
-                  fontFamily: F.mono,
-                }}
-              >
-                已评估
-              </span>
-            </div>
-            <div className="mt-4">
-              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {result.coreIdentity.memoryPoints.length}
-                <span style={{ fontSize: 15, color: '#6b7280' }}> 个</span>
-              </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>记忆锚点</p>
-            </div>
-            <div className="mt-3 flex h-6 items-end gap-1">
-              {[58, 84, 70, 96, 78].map((h, i) => (
-                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: `${C.burgundy}B0`, height: `${h}%` }} />
-              ))}
-            </div>
-          </div>
-
-          {/* 内容支柱 · 进度条 · 紫 */}
-          <div
-            className="ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: C.paper,
-              padding: 20,
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">view_column</span>
-              </span>
-              <span
-                style={{
-                  borderRadius: 999,
-                  background: `${C.accent3}18`,
-                  padding: '2px 8px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: C.purpleText,
-                  fontFamily: F.mono,
-                }}
-              >
-                全覆盖
-              </span>
-            </div>
-            <div className="mt-4">
-              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {result.contentPersona.contentPillars.length}
-                <span style={{ fontSize: 15, color: '#6b7280' }}> 个</span>
-              </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>内容支柱</p>
-            </div>
-            <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.accent3}20` }}>
-              <div style={{ height: 8, width: '100%', borderRadius: 999, background: C.grad }} />
-            </div>
-          </div>
-
-          {/* 信任背书 · 关键词 chip · 蓝 */}
-          <div
-            className="ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: C.paper,
-              padding: 20,
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">shield_with_heart</span>
-              </span>
-              <span
-                style={{
-                  borderRadius: 999,
-                  background: `${C.ikb}15`,
-                  padding: '2px 8px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: C.ikb,
-                  fontFamily: F.mono,
-                }}
-              >
-                {result.trustSystem.backings.length} 项
-              </span>
-            </div>
-            <div className="mt-4">
-              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {result.trustSystem.backings.length}
-                <span style={{ fontSize: 15, color: '#6b7280' }}> 项</span>
-              </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>信任背书</p>
-            </div>
-            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {['实战案例', '客户反馈', '历程背书'].slice(0, 3).map((k) => (
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, marginBottom: 32 }}>
+          {/* 人设完整度 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 20 }}
+            >
+              <div className="flex items-center justify-between">
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">verified</span>
+                </span>
                 <span
-                  key={k}
                   style={{
-                    background: `${C.ikb}12`,
-                    padding: '2px 6px',
-                    fontSize: 10,
-                    fontWeight: 500,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    borderRadius: 999,
+                    background: 'rgba(168,197,224,0.22)',
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
                     color: C.ikb,
                     fontFamily: F.mono,
+                    textShadow: C.textShadow,
                   }}
                 >
-                  {k}
+                  <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden="true">trending_up</span>
+                  +18%
                 </span>
-              ))}
-            </div>
-          </div>
-        </div>
+              </div>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                    88<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>%</span>
+                  </p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>人设完整度</p>
+                </div>
+                <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                  <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.2)" strokeWidth="3.5" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="88 100" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 记忆锚点 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 20 }}
+            >
+              <div className="flex items-center justify-between">
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.15)', color: C.burgundyText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">push_pin</span>
+                </span>
+                <span
+                  style={{
+                    borderRadius: 999,
+                    background: 'rgba(255,255,255,0.15)',
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: C.burgundyText,
+                    fontFamily: F.mono,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  已评估
+                </span>
+              </div>
+              <div className="mt-4">
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  {result.coreIdentity.memoryPoints.length}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 个</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>记忆锚点</p>
+              </div>
+              <div className="mt-3 flex h-6 items-end gap-1">
+                {[58, 84, 70, 96, 78].map((h, i) => (
+                  <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: 'rgba(255,255,255,0.5)', height: `${h}%` }} />
+                ))}
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 内容支柱 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 20 }}
+            >
+              <div className="flex items-center justify-between">
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.purpleText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">view_column</span>
+                </span>
+                <span
+                  style={{
+                    borderRadius: 999,
+                    background: 'rgba(168,197,224,0.18)',
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: C.purpleText,
+                    fontFamily: F.mono,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  全覆盖
+                </span>
+              </div>
+              <div className="mt-4">
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  {result.contentPersona.contentPillars.length}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 个</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>内容支柱</p>
+              </div>
+              <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: 'rgba(168,197,224,0.2)' }}>
+                <div style={{ height: 8, width: '100%', borderRadius: 999, background: C.grad }} />
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 信任背书 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 20 }}
+            >
+              <div className="flex items-center justify-between">
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">shield_with_heart</span>
+                </span>
+                <span
+                  style={{
+                    borderRadius: 999,
+                    background: 'rgba(168,197,224,0.22)',
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  {result.trustSystem.backings.length} 项
+                </span>
+              </div>
+              <div className="mt-4">
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  {result.trustSystem.backings.length}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 项</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>信任背书</p>
+              </div>
+              <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {['实战案例', '客户反馈', '历程背书'].slice(0, 3).map((k) => (
+                  <span
+                    key={k}
+                    style={{
+                      borderRadius: 4,
+                      background: 'rgba(168,197,224,0.18)',
+                      padding: '2px 6px',
+                      fontSize: 10,
+                      fontWeight: 500,
+                      color: C.ikb,
+                      fontFamily: F.mono,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    {k}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </Item>
+        </RevealGroup>
 
         {/* ── 结果区(3 列 bento)─────────────────────────────── */}
         <div className="grid grid-cols-3 gap-6">
           {/* 左 2 列 */}
           <div className="col-span-2 space-y-6">
-            {/* Core Identity · 白底 + 顶部 3px 渐变色条 */}
-            <section
-              style={{
-                position: 'relative',
-                overflow: 'hidden',
-                border: `1px solid ${C.line}`,
-                background: C.paper,
-                padding: 0,
-              }}
-            >
-              {/* 顶部 3px 渐变色条 */}
-              <div style={{ height: 3, width: '100%', background: C.grad }} aria-hidden="true" />
-              {/* 装饰光晕(极淡,装饰用) */}
-              <div style={{ pointerEvents: 'none', position: 'absolute', right: -40, top: -40, height: 192, width: 192, borderRadius: '50%', background: `${C.ikb}05`, filter: 'blur(40px)' }} aria-hidden="true" />
-              <div style={{ pointerEvents: 'none', position: 'absolute', bottom: -40, left: '40%', height: 120, width: 120, borderRadius: '50%', background: `${C.burgundy}05`, filter: 'blur(32px)' }} aria-hidden="true" />
-              <div style={{ position: 'relative', zIndex: 10, padding: 32 }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-                  <div>
-                    <h3 style={{ marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#6b7280', fontFamily: F.mono, letterSpacing: '0.04em' }}>
-                      核心定位基因 (Core Identity)
-                    </h3>
-                    <div
-                      style={{
-                        marginBottom: 16,
-                        fontSize: 22,
-                        fontWeight: 700,
-                        lineHeight: 1.3,
-                        fontFamily: F.display,
-                        background: C.grad,
-                        WebkitBackgroundClip: 'text',
-                        backgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        color: 'transparent',
-                      }}
-                    >
-                      {result.coreIdentity.identityTag}
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                      {result.coreIdentity.traits.map((t) => (
-                        <span
-                          key={t.name}
-                          style={{
-                            borderRadius: 999,
-                            border: `1px solid ${C.line}`,
-                            background: C.base,
-                            padding: '4px 12px',
-                            fontSize: 13,
-                            fontWeight: 500,
-                            color: C.ink,
-                            fontFamily: F.cn,
-                          }}
-                        >
-                          {t.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      position: 'relative',
-                      display: 'flex',
-                      height: 128,
-                      width: 128,
-                      flexShrink: 0,
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '50%',
-                      border: `4px solid ${C.line}`,
-                      background: C.base,
-                    }}
-                  >
-                    <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#6b7280', fontFamily: F.mono }}>ID</span>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.display }}>#72421</span>
-                    <div style={{ position: 'absolute', bottom: -8, right: -8, height: 24, width: 24, borderRadius: '50%', border: `2px solid ${C.paper}`, background: C.burgundy }} aria-hidden="true" />
-                  </div>
-                </div>
-                <div style={{ marginTop: 32, borderTop: `1px solid ${C.line}`, paddingTop: 24 }}>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
-                    {result.coreIdentity.differentiation}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* IP 孵化成长路线图 */}
-            <section style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
-              <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-                <span className="material-symbols-outlined" style={{ color: C.ikb }} aria-hidden="true">timeline</span>
-                IP 孵化成长路线图
-              </h3>
-              <div className="grid grid-cols-3 gap-6">
-                {result.roadmap.map((r, i) => {
-                  const accent = ACCENT[r.accent] ?? C.ikb;
-                  return (
-                    <div key={r.period} style={{ border: `1px solid ${C.line}`, background: C.base, padding: 20 }}>
-                      <div style={{ marginBottom: 8, height: 12, width: 12, borderRadius: '50%', backgroundColor: accent }} aria-hidden="true" />
+            {/* Core Identity */}
+            <Reveal>
+              <section
+                className="lg-glass"
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderRadius: 20,
+                  padding: 0,
+                }}
+              >
+                {/* 顶部冷蓝渐变色条 */}
+                <div style={{ height: 3, width: '100%', background: C.grad }} aria-hidden="true" />
+                <div style={{ position: 'relative', zIndex: 10, padding: 32 }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+                    <div>
+                      <h3 style={{ marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, letterSpacing: '0.04em' }}>
+                        核心定位基因 (Core Identity)
+                      </h3>
                       <div
                         style={{
-                          marginBottom: 4,
-                          fontSize: 12,
+                          marginBottom: 16,
+                          fontSize: 22,
                           fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.08em',
-                          color: accent,
-                          fontFamily: F.mono,
+                          lineHeight: 1.3,
+                          fontFamily: F.display,
+                          background: C.grad,
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          color: 'transparent',
                         }}
                       >
-                        阶段 {String(i + 1).padStart(2, '0')}
+                        {result.coreIdentity.identityTag}
                       </div>
-                      <h4 style={{ marginBottom: 8, fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{r.period}</h4>
-                      <p style={{ fontSize: 12, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{r.goal}</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {result.coreIdentity.traits.map((t) => (
+                          <span
+                            key={t.name}
+                            style={{
+                              borderRadius: 999,
+                              border: `0.5px solid ${C.line}`,
+                              background: 'rgba(255,255,255,0.1)',
+                              padding: '4px 12px',
+                              fontSize: 13,
+                              fontWeight: 500,
+                              color: C.ink,
+                              fontFamily: F.cn,
+                              textShadow: C.textShadow,
+                            }}
+                          >
+                            {t.name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            </section>
+                    <div
+                      style={{
+                        position: 'relative',
+                        display: 'flex',
+                        height: 128,
+                        width: 128,
+                        flexShrink: 0,
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        border: `2px solid rgba(168,197,224,0.4)`,
+                        background: 'rgba(168,197,224,0.1)',
+                      }}
+                    >
+                      <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>ID</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>#72421</span>
+                      <div style={{ position: 'absolute', bottom: -8, right: -8, height: 24, width: 24, borderRadius: '50%', border: `2px solid rgba(255,255,255,0.2)`, background: 'rgba(168,197,224,0.5)' }} aria-hidden="true" />
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 32, borderTop: `0.5px solid ${C.line}`, paddingTop: 24 }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      {result.coreIdentity.differentiation}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </Reveal>
+
+            {/* IP 孵化成长路线图 */}
+            <Reveal>
+              <section className="lg-glass" style={{ borderRadius: 20, padding: 32 }}>
+                <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="material-symbols-outlined" style={{ color: C.ikb }} aria-hidden="true">timeline</span>
+                  IP 孵化成长路线图
+                </h3>
+                <div className="grid grid-cols-3 gap-6">
+                  {result.roadmap.map((r, i) => {
+                    const accent = ACCENT[r.accent] ?? C.ikb;
+                    return (
+                      <motion.div
+                        key={r.period}
+                        className="lg-glass"
+                        whileHover={{ y: -4 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        style={{ borderRadius: 14, padding: 20 }}
+                      >
+                        <div style={{ marginBottom: 8, height: 12, width: 12, borderRadius: '50%', backgroundColor: accent }} aria-hidden="true" />
+                        <div
+                          style={{
+                            marginBottom: 4,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            color: accent,
+                            fontFamily: F.mono,
+                            textShadow: C.textShadow,
+                          }}
+                        >
+                          阶段 {String(i + 1).padStart(2, '0')}
+                        </div>
+                        <h4 style={{ marginBottom: 8, fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{r.period}</h4>
+                        <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{r.goal}</p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </section>
+            </Reveal>
 
             {/* 信任背书体系 */}
-            <section style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
-              <h3 style={{ marginBottom: 24, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>信任背书体系</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {result.trustSystem.backings.slice(0, 3).map((b) => (
-                  <div
-                    key={b.claim}
-                    className="ikb-hovercard"
-                    style={{
-                      border: `1px solid ${C.line}`,
-                      background: C.base,
-                      padding: 16,
-                    }}
-                  >
-                    <div style={{ marginBottom: 12, display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">verified</span>
-                    </div>
-                    <h4 style={{ marginBottom: 4, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn }}>{b.claim}</h4>
-                    <p style={{ fontSize: 12, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{b.display}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
+            <Reveal>
+              <section className="lg-glass" style={{ borderRadius: 20, padding: 32 }}>
+                <h3 style={{ marginBottom: 24, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>信任背书体系</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {result.trustSystem.backings.slice(0, 3).map((b) => (
+                    <motion.div
+                      key={b.claim}
+                      className="lg-glass"
+                      whileHover={{ y: -4 }}
+                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                      style={{ borderRadius: 14, padding: 16 }}
+                    >
+                      <div style={{ marginBottom: 12, display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">verified</span>
+                      </div>
+                      <h4 style={{ marginBottom: 4, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{b.claim}</h4>
+                      <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{b.display}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            </Reveal>
           </div>
 
           {/* 右 1 列 · 内容矩阵占比 */}
           <div className="space-y-6">
-            <section style={{ display: 'flex', height: '100%', flexDirection: 'column', border: `1px solid ${C.line}`, background: C.paper, padding: 24 }}>
-              <h3 style={{ marginBottom: 4, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>内容矩阵占比</h3>
-              <p style={{ marginBottom: 24, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
-                基于算法优化的最佳内容输出配比，平衡专业深度与受众广度。
-              </p>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {result.contentPersona.contentPillars.map((p, i) => {
-                  const pct = parseInt(String(p.percentage), 10) || 0;
-                  const color = BAR_COLORS[i % BAR_COLORS.length];
-                  return (
-                    <div key={p.title}>
-                      <div style={{ marginBottom: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: C.ink, fontFamily: F.cn }}>{p.title}</span>
-                        <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color, fontFamily: F.mono }}>{p.percentage}</span>
+            <Reveal>
+              <section className="lg-glass" style={{ display: 'flex', height: '100%', flexDirection: 'column', borderRadius: 20, padding: 24 }}>
+                <h3 style={{ marginBottom: 4, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>内容矩阵占比</h3>
+                <p style={{ marginBottom: 24, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                  基于算法优化的最佳内容输出配比，平衡专业深度与受众广度。
+                </p>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  {result.contentPersona.contentPillars.map((p, i) => {
+                    const pct = parseInt(String(p.percentage), 10) || 0;
+                    const color = BAR_COLORS[i % BAR_COLORS.length];
+                    return (
+                      <div key={p.title}>
+                        <div style={{ marginBottom: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.title}</span>
+                          <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color, fontFamily: F.mono, textShadow: C.textShadow }}>{p.percentage}</span>
+                        </div>
+                        <div style={{ height: 8, width: '100%', borderRadius: 999, background: 'rgba(255,255,255,0.12)' }}>
+                          <div style={{ height: 8, borderRadius: 999, backgroundColor: color, width: `${pct}%` }} />
+                        </div>
+                        <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{p.desc}</p>
                       </div>
-                      <div style={{ height: 8, width: '100%', borderRadius: 999, background: `${C.line}` }}>
-                        <div
-                          style={{ height: 8, borderRadius: 999, backgroundColor: color, width: `${pct}%` }}
-                        />
-                      </div>
-                      <p style={{ marginTop: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{p.desc}</p>
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{ marginTop: 24, borderTop: `1px solid ${C.line}`, paddingTop: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, color: C.ikb, fontFamily: F.cn }}>
-                  <span style={{ height: 8, width: 8, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
-                  配比状态健康，建议持续执行
+                    );
+                  })}
                 </div>
-              </div>
-            </section>
+                <div style={{ marginTop: 24, borderTop: `0.5px solid ${C.line}`, paddingTop: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    <span style={{ height: 8, width: 8, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+                    配比状态健康，建议持续执行
+                  </div>
+                </div>
+              </section>
+            </Reveal>
           </div>
         </div>
 
         {/* ── P0 补充区块 · 思想体系 / 内容人设 / 信任体系补充 ─── */}
 
         {/* 思想体系 · thoughtSystem */}
-        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
-          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">lightbulb</span>
-            </span>
-            思想体系
-          </h3>
+        <Reveal>
+          <section className="lg-glass" style={{ marginTop: 24, borderRadius: 20, padding: 32 }}>
+            <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">lightbulb</span>
+              </span>
+              思想体系
+            </h3>
 
-          {/* 核心信念 coreBeliefs */}
-          <div style={{ marginBottom: 32 }}>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
-              核心信念
-            </h4>
-            <div className="space-y-4">
-              {result.thoughtSystem.coreBeliefs.map((cb, i) => (
-                <div
-                  key={i}
-                  style={{
-                    border: `1px solid ${C.line}`,
-                    background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-                    padding: 20,
-                  }}
-                >
-                  <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <span
-                      style={{
-                        marginTop: 2,
-                        display: 'flex',
-                        height: 24,
-                        width: 24,
-                        flexShrink: 0,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '50%',
-                        background: C.ikb,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: '#fff',
-                        fontFamily: F.mono,
-                      }}
-                    >
-                      {i + 1}
-                    </span>
-                    <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0 }}>{cb.belief}</p>
+            {/* 核心信念 coreBeliefs */}
+            <div style={{ marginBottom: 32 }}>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+                核心信念
+              </h4>
+              <div className="space-y-4">
+                {result.thoughtSystem.coreBeliefs.map((cb, i) => (
+                  <div
+                    key={i}
+                    className="lg-glass"
+                    style={{ borderRadius: 14, padding: 20 }}
+                  >
+                    <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span
+                        style={{
+                          marginTop: 2,
+                          display: 'flex',
+                          height: 24,
+                          width: 24,
+                          flexShrink: 0,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '50%',
+                          background: 'rgba(168,197,224,0.5)',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: '#fff',
+                          fontFamily: F.mono,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {i + 1}
+                      </span>
+                      <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{cb.belief}</p>
+                    </div>
+                    <p style={{ marginBottom: 8, paddingLeft: 36, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{cb.reason}</p>
+                    <div style={{ marginLeft: 36, borderRadius: 8, border: `0.5px solid rgba(168,197,224,0.35)`, background: 'rgba(168,197,224,0.12)', padding: '8px 12px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>内容角度 · </span>
+                      <span style={{ fontSize: 12, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>{cb.angle}</span>
+                    </div>
                   </div>
-                  <p style={{ marginBottom: 8, paddingLeft: 36, fontSize: 13, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{cb.reason}</p>
-                  <div style={{ marginLeft: 36, border: `1px solid ${C.ikb}30`, background: `${C.ikb}08`, padding: '8px 12px' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>内容角度 · </span>
-                    <span style={{ fontSize: 12, color: '#374151', fontFamily: F.cn }}>{cb.angle}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* 独特观点 viewpoints */}
-          <div style={{ marginBottom: 32 }}>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
-              独特观点
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              {result.thoughtSystem.viewpoints.map((vp, i) => (
-                <div
-                  key={i}
-                  style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 20 }}
-                >
-                  <p style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn }}>{vp.title}</p>
-                  <p style={{ marginBottom: 12, fontSize: 13, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{vp.desc}</p>
-                  <div style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}08`, padding: '8px 12px' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>示例标题 · </span>
-                    <span style={{ fontSize: 12, color: '#374151', fontFamily: F.cn }}>{vp.exampleTitle}</span>
+            {/* 独特观点 viewpoints */}
+            <div style={{ marginBottom: 32 }}>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ height: 4, width: 16, borderRadius: 999, background: 'rgba(255,255,255,0.7)', display: 'inline-block' }} aria-hidden="true" />
+                独特观点
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                {result.thoughtSystem.viewpoints.map((vp, i) => (
+                  <div
+                    key={i}
+                    className="lg-glass"
+                    style={{ borderRadius: 14, padding: 20 }}
+                  >
+                    <p style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{vp.title}</p>
+                    <p style={{ marginBottom: 12, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{vp.desc}</p>
+                    <div style={{ borderRadius: 8, border: `0.5px solid rgba(255,255,255,0.25)`, background: 'rgba(255,255,255,0.08)', padding: '8px 12px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono, textShadow: C.textShadow }}>示例标题 · </span>
+                      <span style={{ fontSize: 12, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>{vp.exampleTitle}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* 品牌金句 mottos */}
-          <div>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.accent3, display: 'inline-block' }} aria-hidden="true" />
-              品牌金句
-            </h4>
-            <div className="grid grid-cols-3 gap-4">
-              {result.thoughtSystem.mottos.map((m, i) => (
-                <div
-                  key={i}
-                  style={{
-                    border: `1px solid ${C.accent3}40`,
-                    background: `linear-gradient(135deg, ${C.accent3}08 0%, ${C.paper} 100%)`,
-                    padding: 20,
-                  }}
-                >
-                  <p style={{ marginBottom: 12, fontSize: 16, fontWeight: 700, lineHeight: 1.4, color: C.purpleText, fontFamily: F.display }}>{m.motto}</p>
-                  <div style={{ marginBottom: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
-                    <span style={{ fontWeight: 600, color: C.ink }}>使用时机 · </span>
-                    {m.whenToUse}
+            {/* 品牌金句 mottos */}
+            <div>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ height: 4, width: 16, borderRadius: 999, background: C.accent3, display: 'inline-block' }} aria-hidden="true" />
+                品牌金句
+              </h4>
+              <div className="grid grid-cols-3 gap-4">
+                {result.thoughtSystem.mottos.map((m, i) => (
+                  <div
+                    key={i}
+                    className="lg-glass"
+                    style={{ borderRadius: 14, padding: 20 }}
+                  >
+                    <p style={{ marginBottom: 12, fontSize: 16, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>{m.motto}</p>
+                    <div style={{ marginBottom: 6, fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                      <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>使用时机 · </span>
+                      {m.whenToUse}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                      <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>效果 · </span>
+                      {m.effect}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
-                    <span style={{ fontWeight: 600, color: C.ink }}>效果 · </span>
-                    {m.effect}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </Reveal>
 
         {/* 内容人设 · contentPersona */}
-        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
-          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}15`, color: C.burgundyText }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">person_play</span>
-            </span>
-            内容人设
-          </h3>
+        <Reveal>
+          <section className="lg-glass" style={{ marginTop: 24, borderRadius: 20, padding: 32 }}>
+            <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.15)', color: C.burgundyText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">person_play</span>
+              </span>
+              内容人设
+            </h3>
 
-          {/* 表达风格 speakingStyle */}
-          <div
-            style={{
-              marginBottom: 24,
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.burgundy}06 100%)`,
-              padding: 20,
-            }}
-          >
-            <h4 style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn }}>表达风格</h4>
-            <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
-              {result.contentPersona.speakingStyle}
-            </p>
-          </div>
-
-          {/* Dos & Donts */}
-          <div className="mb-6 grid grid-cols-2 gap-4">
-            <div style={{ border: '1px solid #dcfce7', background: '#f0fdf4', padding: 20 }}>
-              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: '#166534', fontFamily: F.cn }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">check_circle</span>
-                建议这样说
-              </h4>
-              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {result.contentPersona.speakingDos.map((d, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} aria-hidden="true" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
+            {/* 表达风格 speakingStyle */}
+            <div
+              className="lg-glass"
+              style={{
+                marginBottom: 24,
+                borderRadius: 14,
+                padding: 20,
+              }}
+            >
+              <h4 style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>表达风格</h4>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                {result.contentPersona.speakingStyle}
+              </p>
             </div>
-            <div style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}08`, padding: 20 }}>
-              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">cancel</span>
-                避免这样说
-              </h4>
-              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {result.contentPersona.speakingDonts.map((d, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
 
-          {/* 示例开场白 examplePitch */}
-          <div style={{ marginBottom: 24, border: `1px solid ${C.line}`, background: C.base, padding: 20 }}>
-            <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">record_voice_over</span>
-              示例开场白
-            </h4>
-            <p style={{ fontSize: 14, lineHeight: 1.8, color: '#374151', whiteSpace: 'pre-wrap', fontFamily: F.cn }}>
-              {result.contentPersona.examplePitch}
-            </p>
-          </div>
-
-          {/* 视觉形象 visualStyle */}
-          <div>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.burgundyText }} aria-hidden="true">style</span>
-              视觉形象建议
-            </h4>
-            <div className="grid grid-cols-3 gap-4">
-              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
-                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>整体风格</p>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                  {result.contentPersona.visualStyle.style}
-                </p>
-              </div>
-              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
-                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>穿搭建议</p>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                  {result.contentPersona.visualStyle.outfit}
-                </p>
-              </div>
-              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
-                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.purpleText, fontFamily: F.mono }}>场景选择</p>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
-                  {result.contentPersona.visualStyle.scene}
-                </p>
-              </div>
-            </div>
-            {result.contentPersona.visualStyle.props.length > 0 && (
-              <div style={{ marginTop: 16, border: `1px solid ${C.line}`, background: C.base, padding: '16px 20px' }}>
-                <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: '#374151', fontFamily: F.cn }}>道具清单</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {result.contentPersona.visualStyle.props.map((prop) => (
-                    <span
-                      key={prop}
-                      style={{
-                        border: `1px solid ${C.line}`,
-                        background: C.paper,
-                        padding: '4px 12px',
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: '#374151',
-                        borderRadius: 999,
-                        fontFamily: F.cn,
-                      }}
-                    >
-                      {prop}
-                    </span>
+            {/* Dos & Donts */}
+            <div className="mb-6 grid grid-cols-2 gap-4">
+              <div className="lg-glass" style={{ borderRadius: 14, padding: 20, border: `0.5px solid rgba(168,197,224,0.4)` }}>
+                <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">check_circle</span>
+                  建议这样说
+                </h4>
+                <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {result.contentPersona.speakingDos.map((d, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+                      {d}
+                    </li>
                   ))}
+                </ul>
+              </div>
+              <div className="lg-glass" style={{ borderRadius: 14, padding: 20, border: `0.5px solid rgba(255,255,255,0.2)` }}>
+                <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">cancel</span>
+                  避免这样说
+                </h4>
+                <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {result.contentPersona.speakingDonts.map((d, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', display: 'inline-block' }} aria-hidden="true" />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* 示例开场白 examplePitch */}
+            <div className="lg-glass" style={{ marginBottom: 24, borderRadius: 14, padding: 20 }}>
+              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">record_voice_over</span>
+                示例开场白
+              </h4>
+              <p style={{ fontSize: 14, lineHeight: 1.8, color: C.burgundyText, whiteSpace: 'pre-wrap', fontFamily: F.cn, textShadow: C.textShadow }}>
+                {result.contentPersona.examplePitch}
+              </p>
+            </div>
+
+            {/* 视觉形象 visualStyle */}
+            <div>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.burgundyText }} aria-hidden="true">style</span>
+                视觉形象建议
+              </h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="lg-glass" style={{ borderRadius: 14, padding: 16 }}>
+                  <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>整体风格</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {result.contentPersona.visualStyle.style}
+                  </p>
+                </div>
+                <div className="lg-glass" style={{ borderRadius: 14, padding: 16 }}>
+                  <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono, textShadow: C.textShadow }}>穿搭建议</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {result.contentPersona.visualStyle.outfit}
+                  </p>
+                </div>
+                <div className="lg-glass" style={{ borderRadius: 14, padding: 16 }}>
+                  <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.purpleText, fontFamily: F.mono, textShadow: C.textShadow }}>场景选择</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {result.contentPersona.visualStyle.scene}
+                  </p>
                 </div>
               </div>
-            )}
-          </div>
-        </section>
+              {result.contentPersona.visualStyle.props.length > 0 && (
+                <div className="lg-glass" style={{ marginTop: 16, borderRadius: 14, padding: '16px 20px' }}>
+                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>道具清单</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {result.contentPersona.visualStyle.props.map((prop) => (
+                      <span
+                        key={prop}
+                        style={{
+                          border: `0.5px solid ${C.line}`,
+                          background: 'rgba(255,255,255,0.1)',
+                          padding: '4px 12px',
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: C.ink,
+                          borderRadius: 999,
+                          fontFamily: F.cn,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {prop}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        </Reveal>
 
         {/* 信任体系补充 · trustSystem socialProofs + storyLine */}
-        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
-          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">workspace_premium</span>
-            </span>
-            信任体系 · 社会证明与故事线
-          </h3>
+        <Reveal>
+          <section className="lg-glass" style={{ marginTop: 24, borderRadius: 20, padding: 32 }}>
+            <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.purpleText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">workspace_premium</span>
+              </span>
+              信任体系 · 社会证明与故事线
+            </h3>
 
-          {/* 社会证明 socialProofs */}
-          <div style={{ marginBottom: 32 }}>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
-              社会证明
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              {result.trustSystem.socialProofs.map((sp, i) => (
-                <div
-                  key={i}
-                  style={{
-                    border: `1px solid ${C.line}`,
-                    background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-                    padding: 20,
-                  }}
-                >
-                  <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <span style={{ display: 'flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">thumb_up</span>
-                    </span>
-                    <p style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0 }}>{sp.proof}</p>
-                  </div>
-                  <div style={{ border: `1px solid ${C.ikb}25`, background: `${C.ikb}08`, padding: '8px 12px' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>落地方式 · </span>
-                    <span style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>{sp.method}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 故事线 storyLine */}
-          <div>
-            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
-              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
-              IP 故事线
-            </h4>
-            <div className="space-y-4">
-              <div
-                style={{
-                  border: `1px solid ${C.line}`,
-                  background: `linear-gradient(135deg, ${C.paper} 0%, ${C.burgundy}05 100%)`,
-                  padding: 20,
-                }}
-              >
-                <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.burgundyText, fontFamily: F.mono }}>核心故事</p>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
-                  {result.trustSystem.storyLine.mainStory}
-                </p>
-              </div>
+            {/* 社会证明 socialProofs */}
+            <div style={{ marginBottom: 32 }}>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+                社会证明
+              </h4>
               <div className="grid grid-cols-2 gap-4">
-                <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 20 }}>
-                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.ikb, fontFamily: F.mono }}>关键转折点</p>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
-                    {result.trustSystem.storyLine.turningPoint}
-                  </p>
-                </div>
-                <div style={{ border: `1px solid ${C.accent3}40`, background: `${C.accent3}06`, padding: 20 }}>
-                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.purpleText, fontFamily: F.mono }}>叙事方式</p>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
-                    {result.trustSystem.storyLine.narrationMethod}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 综合示意</span>
-        </div>
-        <div className="mb-8 grid grid-cols-12 gap-6">
-          {/* 人设竞争力雷达 */}
-          <div
-            className="col-span-5 ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `${C.ikb}15`,
-                    color: C.ikb,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>85</p>
-                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
-              </div>
-            </div>
-            {(() => {
-              const dims = RADAR_DIMS;
-              const cx = 130;
-              const cy = 122;
-              const R = 88;
-              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-              const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-              const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-              return (
-                <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="人设竞争力雷达图：六维模型评估">
-                  <title>人设竞争力雷达图</title>
-                  <defs>
-                    <linearGradient id="s3b-radarFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                    </linearGradient>
-                  </defs>
-                  {[0.25, 0.5, 0.75, 1].map((f) => (
-                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
-                  ))}
-                  {dims.map((_, i) => {
-                    const [x, y] = pt(i, R);
-                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
-                  })}
-                  <polygon points={dataPoly} fill="url(#s3b-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                  {dims.map((d, i) => {
-                    const [x, y] = pt(i, R * (d.value / 100));
-                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                  })}
-                  {dims.map((d, i) => {
-                    const [x, y] = pt(i, R + 16);
-                    return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                        {d.label}
-                      </text>
-                    );
-                  })}
-                </svg>
-              );
-            })()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
-              {RADAR_DIMS.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, display: 'inline-block', flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 6 个月影响力预估 */}
-          <div
-            className="col-span-7 ikb-hovercard"
-            style={{
-              border: `1px solid ${C.line}`,
-              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
-              padding: 24,
-            }}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  style={{
-                    display: 'flex',
-                    height: 36,
-                    width: 36,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `${C.burgundy}15`,
-                    color: C.burgundyText,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>6 个月影响力预估</h3>
-                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {['曝光', '涨粉', '互动'].map((t, i) => (
-                  <span
-                    key={t}
-                    style={{
-                      borderRadius: 4,
-                      padding: '4px 10px',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      fontFamily: F.mono,
-                      background: i === 0 ? C.ikb : `${C.ikb}12`,
-                      color: i === 0 ? '#fff' : '#6b7280',
-                    }}
+                {result.trustSystem.socialProofs.map((sp, i) => (
+                  <div
+                    key={i}
+                    className="lg-glass"
+                    style={{ borderRadius: 14, padding: 20 }}
                   >
-                    {t}
-                  </span>
+                    <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{ display: 'flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">thumb_up</span>
+                      </span>
+                      <p style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{sp.proof}</p>
+                    </div>
+                    <div style={{ borderRadius: 8, border: `0.5px solid rgba(168,197,224,0.35)`, background: 'rgba(168,197,224,0.12)', padding: '8px 12px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>落地方式 · </span>
+                      <span style={{ fontSize: 13, lineHeight: 1.6, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>{sp.method}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>38.5K</p>
-              <span
-                style={{
-                  marginBottom: 4,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  borderRadius: 999,
-                  background: `${C.ikb}15`,
-                  padding: '2px 8px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: C.ikb,
-                  fontFamily: F.mono,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>
-                +186%
-              </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+
+            {/* 故事线 storyLine */}
+            <div>
+              <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ height: 4, width: 16, borderRadius: 999, background: 'rgba(255,255,255,0.7)', display: 'inline-block' }} aria-hidden="true" />
+                IP 故事线
+              </h4>
+              <div className="space-y-4">
+                <div
+                  className="lg-glass"
+                  style={{ borderRadius: 14, padding: 20 }}
+                >
+                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.burgundyText, fontFamily: F.mono, textShadow: C.textShadow }}>核心故事</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {result.trustSystem.storyLine.mainStory}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="lg-glass" style={{ borderRadius: 14, padding: 20 }}>
+                    <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>关键转折点</p>
+                    <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      {result.trustSystem.storyLine.turningPoint}
+                    </p>
+                  </div>
+                  <div className="lg-glass" style={{ borderRadius: 14, padding: 20, border: `0.5px solid rgba(168,197,224,0.4)` }}>
+                    <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.purpleText, fontFamily: F.mono, textShadow: C.textShadow }}>叙事方式</p>
+                    <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      {result.trustSystem.storyLine.narrationMethod}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            {(() => {
-              const data = TREND_DATA;
-              const W = 560;
-              const H = 168;
-              const padL = 6;
-              const padR = 6;
-              const padT = 12;
-              const padB = 8;
-              const innerW = W - padL - padR;
-              const innerH = H - padT - padB;
-              const max = 110;
-              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-              const y = (v: number) => padT + innerH * (1 - v / max);
-              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-              return (
-                <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="6 个月影响力预估趋势图">
-                  <title>6 个月影响力预估趋势图</title>
-                  <defs>
-                    <linearGradient id="s3b-trendFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                    </linearGradient>
-                    <linearGradient id="s3b-trendLine" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={C.ikb} />
-                      <stop offset="100%" stopColor={C.burgundy} />
-                    </linearGradient>
-                  </defs>
-                  {[0, 0.33, 0.66, 1].map((f) => (
-                    <line
-                      key={f}
-                      x1={padL}
-                      x2={W - padR}
-                      y1={(padT + innerH * f).toFixed(1)}
-                      y2={(padT + innerH * f).toFixed(1)}
-                      stroke={C.line}
-                      strokeWidth="1"
-                    />
+          </section>
+        </Reveal>
+
+        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+        <Reveal>
+          <div className="mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 综合示意</span>
+          </div>
+          <div className="mb-8 grid grid-cols-12 gap-6">
+            {/* 人设竞争力雷达 */}
+            <div
+              className="col-span-5 lg-glass lg-spec"
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div className="mb-1 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    style={{
+                      display: 'flex',
+                      height: 36,
+                      width: 36,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      background: 'rgba(168,197,224,0.22)',
+                      color: C.ikb,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>人设竞争力雷达</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>85</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                </div>
+              </div>
+              {(() => {
+                const dims = RADAR_DIMS;
+                const cx = 130;
+                const cy = 122;
+                const R = 88;
+                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+                const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+                const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+                const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+                return (
+                  <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="人设竞争力雷达图：六维模型评估">
+                    <title>人设竞争力雷达图</title>
+                    <defs>
+                      <linearGradient id="s3b-radarFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                        <stop offset="100%" stopColor="rgba(255,255,255,0.5)" stopOpacity="0.12" />
+                      </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((f) => (
+                      <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                    ))}
+                    {dims.map((_, i) => {
+                      const [x, y] = pt(i, R);
+                      return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
+                    })}
+                    <polygon points={dataPoly} fill="url(#s3b-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                    {dims.map((d, i) => {
+                      const [x, y] = pt(i, R * (d.value / 100));
+                      return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
+                    })}
+                    {dims.map((d, i) => {
+                      const [x, y] = pt(i, R + 16);
+                      return (
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.7)" fontSize="10.5" fontWeight="600">
+                          {d.label}
+                        </text>
+                      );
+                    })}
+                  </svg>
+                );
+              })()}
+              <div className="mt-2 grid grid-cols-3 gap-y-2">
+                {RADAR_DIMS.map((d) => (
+                  <div key={d.label} className="flex items-center gap-1.5">
+                    <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, display: 'inline-block', flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 6 个月影响力预估 */}
+            <div
+              className="col-span-7 lg-glass lg-spec"
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    style={{
+                      display: 'flex',
+                      height: 36,
+                      width: 36,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      background: 'rgba(255,255,255,0.15)',
+                      color: C.burgundyText,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>6 个月影响力预估</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {['曝光', '涨粉', '互动'].map((t, i) => (
+                    <span
+                      key={t}
+                      style={{
+                        borderRadius: 4,
+                        padding: '4px 10px',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        fontFamily: F.mono,
+                        background: i === 0 ? 'rgba(168,197,224,0.5)' : 'rgba(168,197,224,0.15)',
+                        color: i === 0 ? '#fff' : 'rgba(255,255,255,0.6)',
+                        textShadow: C.textShadow,
+                      }}
+                    >
+                      {t}
+                    </span>
                   ))}
-                  <path d={area} fill="url(#s3b-trendFill)" />
-                  <path d={line} fill="none" stroke="url(#s3b-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  {data.map((v, i) =>
-                    i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
-                  )}
-                </svg>
-              );
-            })()}
-            <div className="mt-1 flex justify-between px-1">
-              {TREND_LABELS.map((m) => (
-                <span key={m} style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>{m}</span>
-              ))}
+                </div>
+              </div>
+              <div className="mb-3 flex items-end gap-3">
+                <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>38.5K</p>
+                <span
+                  style={{
+                    marginBottom: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    borderRadius: 999,
+                    background: 'rgba(168,197,224,0.22)',
+                    padding: '2px 8px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>
+                  +186%
+                </span>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
+              </div>
+              {(() => {
+                const data = TREND_DATA;
+                const W = 560;
+                const H = 168;
+                const padL = 6;
+                const padR = 6;
+                const padT = 12;
+                const padB = 8;
+                const innerW = W - padL - padR;
+                const innerH = H - padT - padB;
+                const max = 110;
+                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+                const y = (v: number) => padT + innerH * (1 - v / max);
+                const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+                return (
+                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="6 个月影响力预估趋势图">
+                    <title>6 个月影响力预估趋势图</title>
+                    <defs>
+                      <linearGradient id="s3b-trendFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="s3b-trendLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={C.ikb} />
+                        <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
+                      </linearGradient>
+                    </defs>
+                    {[0, 0.33, 0.66, 1].map((f) => (
+                      <line
+                        key={f}
+                        x1={padL}
+                        x2={W - padR}
+                        y1={(padT + innerH * f).toFixed(1)}
+                        y2={(padT + innerH * f).toFixed(1)}
+                        stroke={C.line}
+                        strokeWidth="1"
+                      />
+                    ))}
+                    <path d={area} fill="url(#s3b-trendFill)" />
+                    <path d={line} fill="none" stroke="url(#s3b-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    {data.map((v, i) =>
+                      i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
+                    )}
+                  </svg>
+                );
+              })()}
+              <div className="mt-1 flex justify-between px-1">
+                {TREND_LABELS.map((m) => (
+                  <span key={m} style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>{m}</span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
         </>
         )}
       </div>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
