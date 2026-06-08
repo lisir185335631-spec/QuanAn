@@ -1,17 +1,16 @@
 /**
- * DeepLearning.tsx — /deep-learning · IKB 红蓝紫渐变体系
+ * DeepLearning.tsx — /deep-learning · iOS26 液态玻璃皮
  * 阶段2 phase-2: 接真 trpc.deepLearning.* (list/parse/delete/applyFormula/createFromFile/learn/learnStatus)
- * 逻辑/testid 零回退 · IKB 皮 · 5 组件 inline
+ * 逻辑/testid 零回退 · 液态玻璃皮 · 5 组件 inline
  */
 
-import '@/styles/ikb-hero.css';
-
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { C, F } from '@/components/home/ikb/system';
-import { IKBLayout } from '@/layouts/IKBLayout';
+import { LiquidShell } from '@/components/home-next/LiquidShell';
+import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   DEEP_LEARNING_H1,
   DEEP_LEARNING_SUBTITLE,
@@ -60,7 +59,7 @@ interface BatchSample {
   source: string;
 }
 
-// ── Inline: SampleForm (IKB) ─────────────────────────────────────────────────
+// ── Inline: SampleForm (液态玻璃) ────────────────────────────────────────────
 
 type TabKey = 'paste' | 'upload';
 
@@ -150,80 +149,103 @@ function SampleFormPioneer({
   return (
     <div
       data-testid="sample-form"
-      className="relative overflow-hidden rounded-xl p-6"
-      style={{ background: `linear-gradient(135deg,${C.paper},${C.base})`, border: `1px solid ${C.line}` }}
+      className="lg-glass"
+      style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, padding: 28 }}
     >
-      {/* ambient glows */}
-      <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: `${C.ikb}08` }} />
-      <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: `${C.burgundy}06` }} />
-
       {/* card header */}
-      <div className="relative mb-6 flex items-center gap-3 pb-5" style={{ borderBottom: `1px solid ${C.line}` }}>
+      <div style={{ position: 'relative', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 14, paddingBottom: 20, borderBottom: `0.5px solid ${C.line}` }}>
         <span
-          className="ikb-gradbtn flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
-          style={{ fontFamily: F.cn }}
+          style={{
+            display: 'flex',
+            height: 44,
+            width: 44,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
+            color: C.ikb,
+            fontFamily: F.cn,
+          }}
         >
-          <span className="material-symbols-outlined" aria-hidden={true}>psychology</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>psychology</span>
         </span>
         <div>
-          <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>添加文案样本</h2>
-          <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>上传文件或粘贴文案 · AI 风格解析</p>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>添加文案样本</h2>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>上传文件或粘贴文案 · AI 风格解析</p>
         </div>
       </div>
 
-      <div className="relative space-y-5">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {/* 2 tab */}
-        <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="输入方式">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} role="radiogroup" aria-label="输入方式">
           <button
             data-testid="tab-upload"
             type="button"
             onClick={() => handleTabClick('upload')}
-            className="ikb-hovercard ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
-            style={
-              activeTab === 'upload'
-                ? { borderColor: C.ikb, background: C.ikb, color: C.paper, fontFamily: F.cn }
-                : { borderColor: C.line, color: '#6b7280', background: C.base, fontFamily: F.cn }
-            }
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              borderRadius: 10,
+              border: `0.5px solid ${activeTab === 'upload' ? C.ikb : C.line}`,
+              padding: '10px 16px',
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: F.cn,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              background: activeTab === 'upload' ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.06)',
+              color: activeTab === 'upload' ? C.ikb : 'rgba(255,255,255,0.6)',
+              textShadow: activeTab === 'upload' ? C.textShadow : 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>upload_file</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>upload_file</span>
             {DL_TAB_UPLOAD}
           </button>
           <button
             data-testid="tab-paste"
             type="button"
             onClick={() => handleTabClick('paste')}
-            className="ikb-hovercard ikb-focusring flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-semibold transition-colors"
-            style={
-              activeTab === 'paste'
-                ? { borderColor: C.ikb, background: C.ikb, color: C.paper, fontFamily: F.cn }
-                : { borderColor: C.line, color: '#6b7280', background: C.base, fontFamily: F.cn }
-            }
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              borderRadius: 10,
+              border: `0.5px solid ${activeTab === 'paste' ? C.ikb : C.line}`,
+              padding: '10px 16px',
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: F.cn,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              background: activeTab === 'paste' ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.06)',
+              color: activeTab === 'paste' ? C.ikb : 'rgba(255,255,255,0.6)',
+              textShadow: activeTab === 'paste' ? C.textShadow : 'none',
+            }}
           >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>description</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>description</span>
             {DL_TAB_PASTE}
           </button>
         </div>
 
         {/* ── Upload tab content ── */}
         {activeTab === 'upload' && (
-          <div data-testid="upload-tab-content" className="space-y-4">
+          <div data-testid="upload-tab-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div
-              className="rounded-lg border p-3 text-[12px]"
-              style={{ borderColor: `${C.accent3}30`, background: `${C.accent3}08`, color: C.purpleText, fontFamily: F.cn }}
+              className="lg-glass"
+              style={{ borderRadius: 10, padding: 12, fontSize: 12, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}
             >
               粘贴素材链接即可，文件直传即将上线
             </div>
             <div>
               <label
                 htmlFor="dl-file-url"
-                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide before:h-3.5 before:w-1 before:rounded-full before:content-['']"
-                style={{ color: C.ink, fontFamily: F.cn, ['--tw-gradient-from' as string]: C.ikb }}
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
               >
                 <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                   aria-hidden={true}
                 />
                 文件 URL
@@ -235,20 +257,45 @@ function SampleFormPioneer({
                 placeholder="https://example.com/your-file.pdf"
                 value={fileUrl}
                 onChange={(e) => onFileUrlChange(e.target.value)}
-                className="ikb-input w-full rounded-lg px-4 py-3 text-[14px] outline-none transition-all focus-within:ring-1"
-                style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+                style={{
+                  width: '100%',
+                  borderRadius: 10,
+                  padding: '12px 16px',
+                  fontSize: 14,
+                  outline: 'none',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: `0.5px solid ${C.line}`,
+                  color: C.ink,
+                  fontFamily: F.cn,
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
-            <div className="flex justify-end">
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 data-testid="file-submit-btn"
                 type="button"
                 disabled={!fileUrl.trim() || isFilePending}
                 onClick={onFileSubmit}
-                className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ fontFamily: F.cn }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 10,
+                  padding: '10px 16px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: F.cn,
+                  cursor: !fileUrl.trim() || isFilePending ? 'not-allowed' : 'pointer',
+                  opacity: !fileUrl.trim() || isFilePending ? 0.4 : 1,
+                  background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  color: C.ink,
+                  textShadow: C.textShadow,
+                  transition: 'all 0.2s',
+                }}
               >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>upload</span>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>upload</span>
                 {isFilePending ? '提交中…' : '提交文件'}
               </button>
             </div>
@@ -257,24 +304,22 @@ function SampleFormPioneer({
 
         {/* ── Paste tab content ── */}
         {activeTab === 'paste' && (
-          <div data-testid="paste-tab-content" className="space-y-4">
+          <div data-testid="paste-tab-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* 添加文案样本 / 批量粘贴 row */}
-            <div className="flex items-center justify-between">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <button
                 data-testid="add-sample-label"
                 type="button"
-                className="ikb-focusring flex items-center gap-1.5 text-[13px] font-semibold hover:opacity-80"
-                style={{ color: C.ikb, fontFamily: F.cn }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: C.ikb, fontFamily: F.cn, background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>add_circle</span>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>add_circle</span>
                 {DL_ADD_SAMPLE_LABEL}
               </button>
               <button
                 data-testid="batch-paste-btn"
                 type="button"
                 onClick={handleBatchPaste}
-                className="ikb-focusring text-[13px] font-semibold hover:opacity-80"
-                style={{ color: C.ikb, fontFamily: F.cn }}
+                style={{ fontSize: 13, fontWeight: 600, color: C.ikb, fontFamily: F.cn, background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 {DL_BATCH_PASTE}
               </button>
@@ -284,12 +329,10 @@ function SampleFormPioneer({
             <div>
               <label
                 htmlFor="dl-platform"
-                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
               >
                 <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                   aria-hidden={true}
                 />
                 来源平台
@@ -299,8 +342,17 @@ function SampleFormPioneer({
                 data-testid="platform-select"
                 value={sourcePlatform}
                 onChange={(e) => onSourcePlatformChange(e.target.value)}
-                className="ikb-input w-48 rounded-lg px-3 py-2.5 text-[14px] outline-none transition-all focus-within:ring-1"
-                style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+                style={{
+                  width: 192,
+                  borderRadius: 10,
+                  padding: '10px 12px',
+                  fontSize: 14,
+                  outline: 'none',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: `0.5px solid ${C.line}`,
+                  color: C.ink,
+                  fontFamily: F.cn,
+                }}
               >
                 {PLATFORMS.map((p) => (
                   <option key={p.value} value={p.value}>{p.label}</option>
@@ -312,19 +364,17 @@ function SampleFormPioneer({
             <div>
               <label
                 htmlFor="dl-textarea"
-                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
               >
                 <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                   aria-hidden={true}
                 />
                 粘贴文案内容
               </label>
               <div
-                className="overflow-hidden rounded-xl transition-all focus-within:ring-1"
-                style={{ border: `1px solid ${C.line}`, background: C.base }}
+                className="lg-glass"
+                style={{ overflow: 'hidden', borderRadius: 12, transition: 'all 0.2s' }}
               >
                 <textarea
                   id="dl-textarea"
@@ -334,54 +384,86 @@ function SampleFormPioneer({
                   onChange={(e) => onTextChange(e.target.value)}
                   rows={5}
                   maxLength={TEXT_MAX}
-                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-                  style={{ color: C.ink, fontFamily: F.cn }}
+                  style={{
+                    width: '100%',
+                    resize: 'none',
+                    border: 'none',
+                    background: 'transparent',
+                    padding: 16,
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    outline: 'none',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    boxSizing: 'border-box',
+                  }}
                 />
                 <div
-                  className="flex items-center justify-between gap-3 px-4 py-2.5"
-                  style={{ borderTop: `1px solid ${C.line}`, background: 'rgba(255,255,255,0.6)' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    padding: '10px 16px',
+                    borderTop: `0.5px solid ${C.line}`,
+                  }}
                 >
                   <span
                     data-testid="ctrl-enter-hint"
-                    className="text-[11px]"
-                    style={{ color: '#6b7280', fontFamily: F.cn }}
+                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}
                   >
                     {DL_HINT_CTRL_ENTER}
                   </span>
                   <span
-                    className="shrink-0 text-[11px] tabular-nums"
-                    style={{ color: isTextTooLong ? C.burgundyText : '#6b7280', fontFamily: F.mono }}
+                    style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: isTextTooLong ? 'rgba(255,120,120,0.9)' : 'rgba(255,255,255,0.55)' }}
                   >
                     {text.length} 字
                   </span>
                 </div>
               </div>
               {text.length > 0 && text.length < TEXT_MIN_PARSE && (
-                <p data-testid="text-length-warning" className="mt-1.5 text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>
+                <p data-testid="text-length-warning" style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,120,120,0.9)', fontFamily: F.cn }}>
                   文案需不少于 100 字（当前 {text.length} 字）
                 </p>
               )}
               {isTextTooLong && (
-                <p data-testid="text-too-long-warning" className="mt-1.5 text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>
+                <p data-testid="text-too-long-warning" style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,120,120,0.9)', fontFamily: F.cn }}>
                   超过 10000 字（当前 {text.length} 字）
                 </p>
               )}
             </div>
 
             {/* 添加这篇 row */}
-            <div className="flex justify-end">
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 data-testid="add-this-btn"
                 type="button"
                 disabled={!text.trim() || text.trim().length < TEXT_MIN_LEARN || isTextTooLong}
                 onClick={onAddThis}
-                className="ikb-focusring flex items-center gap-2 rounded-lg border px-4 py-2 text-[13px] font-semibold transition-all hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ borderColor: C.ikb, color: C.ikb, fontFamily: F.cn,
-                  ['--hover-bg' as string]: C.ikb }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.ikb; (e.currentTarget as HTMLButtonElement).style.color = C.paper; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 10,
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  padding: '8px 16px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: F.cn,
+                  cursor: !text.trim() || text.trim().length < TEXT_MIN_LEARN || isTextTooLong ? 'not-allowed' : 'pointer',
+                  opacity: !text.trim() || text.trim().length < TEXT_MIN_LEARN || isTextTooLong ? 0.4 : 1,
+                  background: 'rgba(168,197,224,0.15)',
+                  color: C.ikb,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  if (!(!text.trim() || text.trim().length < TEXT_MIN_LEARN || isTextTooLong)) {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.15)'; }}
               >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>add</span>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>add</span>
                 {DL_ADD_THIS_BTN}
               </button>
             </div>
@@ -390,31 +472,38 @@ function SampleFormPioneer({
             {samples.length > 0 && (
               <div
                 data-testid="collected-samples"
-                className="space-y-2 rounded-lg border p-3"
-                style={{ borderColor: `${C.ikb}28`, background: `${C.ikb}06` }}
+                className="lg-glass"
+                style={{ display: 'flex', flexDirection: 'column', gap: 8, borderRadius: 12, padding: 12 }}
               >
-                <p className="text-[12px] font-semibold" style={{ color: C.ikb, fontFamily: F.cn }}>已收集 {samples.length} 篇样本</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.cn, margin: 0 }}>已收集 {samples.length} 篇样本</p>
                 {samples.map((s, i) => (
                   <div
                     key={i}
                     data-testid={`collected-sample-${i}`}
-                    className="flex items-center justify-between gap-2 rounded-md border bg-white px-3 py-2"
-                    style={{ borderColor: C.line }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 8,
+                      borderRadius: 8,
+                      border: `0.5px solid ${C.line}`,
+                      background: 'rgba(255,255,255,0.06)',
+                      padding: '8px 12px',
+                    }}
                   >
-                    <span className="flex-1 truncate text-[13px]" style={{ color: '#444653', fontFamily: F.cn }}>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
                       {s.source} · {s.text.slice(0, 30)}{s.text.length > 30 ? '…' : ''}
                     </span>
                     <button
                       data-testid={`remove-sample-${i}`}
                       type="button"
                       onClick={() => onRemoveSample(i)}
-                      className="ikb-focusring shrink-0 rounded p-1 transition-colors"
-                      style={{ color: C.burgundy }}
+                      style={{ flexShrink: 0, borderRadius: 6, padding: 4, color: 'rgba(255,120,120,0.85)', background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
                       aria-label={`移除样本 ${i + 1}`}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${C.burgundy}14`; }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,120,120,0.15)'; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                     >
-                      <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>close</span>
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>close</span>
                     </button>
                   </div>
                 ))}
@@ -425,20 +514,18 @@ function SampleFormPioneer({
             <div>
               <label
                 htmlFor="dl-archive-name"
-                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
-                style={{ color: C.ink, fontFamily: F.cn }}
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
               >
                 <span
-                  className="inline-block h-3.5 w-1 rounded-full"
-                  style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                  style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                   aria-hidden={true}
                 />
                 学习档案名称
               </label>
-              <div className="relative">
+              <div style={{ position: 'relative' }}>
                 <span
-                  className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
-                  style={{ color: '#6b7280' }}
+                  className="material-symbols-outlined"
+                  style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }}
                   aria-hidden={true}
                 >folder</span>
                 <input
@@ -448,11 +535,21 @@ function SampleFormPioneer({
                   placeholder={DL_NAME_PLACEHOLDER}
                   value={archiveName}
                   onChange={(e) => onArchiveNameChange(e.target.value)}
-                  className="ikb-input w-full rounded-lg py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus-within:ring-1"
-                  style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
+                  style={{
+                    width: '100%',
+                    borderRadius: 10,
+                    padding: '12px 12px 12px 40px',
+                    fontSize: 14,
+                    outline: 'none',
+                    background: 'rgba(255,255,255,0.08)',
+                    border: `0.5px solid ${C.line}`,
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
-              <p className="mt-1.5 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
                 已添加 {sampleCount} 篇文案样本
               </p>
             </div>
@@ -461,10 +558,10 @@ function SampleFormPioneer({
             {learnJobId && learnJobStatus && (
               <div
                 data-testid="learn-job-status"
-                className="rounded-lg border px-4 py-3"
-                style={{ borderColor: `${C.ikb}28`, background: `${C.ikb}06` }}
+                className="lg-glass"
+                style={{ borderRadius: 10, padding: '12px 16px' }}
               >
-                <p className="text-[13px]" style={{ color: C.ikb, fontFamily: F.cn }}>
+                <p style={{ fontSize: 13, color: C.ikb, fontFamily: F.cn, margin: 0 }}>
                   {learnJobStatus === 'queued' && '已加入队列，等待分析中…'}
                   {learnJobStatus === 'processing' && '正在深度分析中，请稍候…'}
                   {learnJobStatus === 'completed' && '深度学习已完成'}
@@ -474,21 +571,43 @@ function SampleFormPioneer({
             )}
 
             {/* 主 CTA */}
-            <button
+            <motion.button
               data-testid="start-learning-btn"
               type="button"
               disabled={startDisabled}
               onClick={onStart}
-              className="ikb-gradbtn ikb-focusring flex w-full items-center justify-center gap-2 rounded-xl px-8 py-3.5 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ fontFamily: F.cn }}
+              whileHover={startDisabled ? {} : { y: -3 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                borderRadius: 14,
+                padding: '14px 32px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                fontFamily: F.cn,
+                cursor: startDisabled ? 'not-allowed' : 'pointer',
+                opacity: startDisabled ? 0.5 : 1,
+                background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
+                border: `0.5px solid rgba(168,197,224,0.55)`,
+                color: C.ink,
+                textShadow: C.textShadow,
+                transition: 'opacity 0.2s',
+                boxSizing: 'border-box',
+              }}
             >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>neurology</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>neurology</span>
               {isLearnPending
                 ? '分析中…'
                 : isParsePending
                 ? '解析中…'
                 : `${DL_START_BTN_PREFIX}${DL_START_BTN_SUFFIX(sampleCount)}`}
-            </button>
+            </motion.button>
           </div>
         )}
 
@@ -496,21 +615,19 @@ function SampleFormPioneer({
         {parseAnalysis && (
           <div
             data-testid="parse-result"
-            className="rounded-xl border p-5 space-y-4"
-            style={{ borderColor: `${C.ikb}28`, background: `${C.ikb}06` }}
+            className="lg-glass"
+            style={{ borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}
           >
             <p
-              className="text-[13px] font-extrabold tracking-wide flex items-center gap-1.5"
-              style={{ color: C.ikb, fontFamily: F.cn }}
+              style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6, color: C.ikb, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                 aria-hidden={true}
               />
               解析结果
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
                 { label: '核心公式', testid: 'parse-core-formula', value: parseAnalysis.coreFormula },
                 { label: '钩子类型', testid: 'parse-hook-type', value: parseAnalysis.hookType },
@@ -519,30 +636,37 @@ function SampleFormPioneer({
               ].map((item) => (
                 <div
                   key={item.testid}
-                  className="rounded-lg border bg-white p-3 space-y-1"
-                  style={{ borderColor: C.line }}
+                  className="lg-glass"
+                  style={{ borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 4 }}
                 >
                   <p
-                    className="text-[11px] font-bold uppercase tracking-wide"
-                    style={{ color: '#6b7280', fontFamily: F.mono }}
+                    style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}
                   >{item.label}</p>
                   <p
                     data-testid={item.testid}
-                    className="text-[13px]"
-                    style={{ color: C.ink, fontFamily: F.cn }}
+                    style={{ fontSize: 13, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
                   >{item.value}</p>
                 </div>
               ))}
             </div>
             {parseAnalysis.keywords.length > 0 && (
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide mb-1" style={{ color: '#6b7280', fontFamily: F.mono }}>关键词</p>
-                <div className="flex flex-wrap gap-1" data-testid="parse-keywords">
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, marginBottom: 4 }}>关键词</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} data-testid="parse-keywords">
                   {parseAnalysis.keywords.map((kw, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium"
-                      style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        borderRadius: 6,
+                        padding: '2px 8px',
+                        fontSize: 12,
+                        fontWeight: 500,
+                        background: 'rgba(168,197,224,0.18)',
+                        color: C.ikb,
+                        fontFamily: F.cn,
+                      }}
                     >
                       {kw}
                     </span>
@@ -555,12 +679,10 @@ function SampleFormPioneer({
             {parsedQueueId !== null && (
               <div
                 data-testid="apply-formula-section"
-                className="space-y-3 pt-2"
-                style={{ borderTop: `1px solid ${C.line}` }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 8, borderTop: `0.5px solid ${C.line}` }}
               >
                 <p
-                  className="text-[13px] font-extrabold tracking-wide"
-                  style={{ color: C.burgundyText, fontFamily: F.cn }}
+                  style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
                 >用此公式生成文案</p>
                 <input
                   data-testid="apply-topic-input"
@@ -570,28 +692,54 @@ function SampleFormPioneer({
                   placeholder="输入新主题，如：护肤品推广、健身打卡…"
                   value={applyTopic}
                   onChange={(e) => setApplyTopic(e.target.value)}
-                  className="ikb-input w-full rounded-lg border bg-white px-4 py-2.5 text-[14px] outline-none transition-all focus-within:ring-1"
-                  style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
+                  style={{
+                    width: '100%',
+                    borderRadius: 10,
+                    padding: '10px 16px',
+                    fontSize: 14,
+                    outline: 'none',
+                    background: 'rgba(255,255,255,0.08)',
+                    border: `0.5px solid ${C.line}`,
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    boxSizing: 'border-box',
+                  }}
                 />
                 {applyTopic.length > 500 && (
-                  <p className="text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>主题不能超过 500 字</p>
+                  <p style={{ fontSize: 12, color: 'rgba(255,120,120,0.9)', fontFamily: F.cn }}>主题不能超过 500 字</p>
                 )}
                 <button
                   data-testid="apply-formula-btn"
                   type="button"
                   disabled={isApplyPending || !applyTopic.trim() || applyTopic.length > 500}
                   onClick={() => onApplyFormula(parsedQueueId, applyTopic)}
-                  className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ fontFamily: F.cn }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 10,
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    fontFamily: F.cn,
+                    cursor: isApplyPending || !applyTopic.trim() || applyTopic.length > 500 ? 'not-allowed' : 'pointer',
+                    opacity: isApplyPending || !applyTopic.trim() || applyTopic.length > 500 ? 0.4 : 1,
+                    background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
+                    border: `0.5px solid rgba(168,197,224,0.55)`,
+                    color: C.ink,
+                    textShadow: C.textShadow,
+                    alignSelf: 'flex-start',
+                    transition: 'opacity 0.2s',
+                  }}
                 >
-                  <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>auto_awesome</span>
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>auto_awesome</span>
                   {isApplyPending ? '生成中…' : '用公式生成'}
                 </button>
                 {applyContent && (
                   <div
                     data-testid="apply-formula-result"
-                    className="rounded-lg border bg-white p-4 text-[14px] leading-relaxed whitespace-pre-wrap"
-                    style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
+                    className="lg-glass"
+                    style={{ borderRadius: 10, padding: 16, fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: 'rgba(255,255,255,0.85)', fontFamily: F.cn }}
                   >
                     {applyContent}
                   </div>
@@ -605,41 +753,50 @@ function SampleFormPioneer({
   );
 }
 
-// ── Archive status chip (IKB) ─────────────────────────────────────────────────
+// ── Archive status chip (液态玻璃) ────────────────────────────────────────────
 
 function ArchiveStatusChip({ status }: { status: string }) {
   const label = getDLArchiveStatusLabel(status);
 
-  let chipStyle: React.CSSProperties = { background: '#f3f4f6', color: '#6b7280' };
-  let dotColor = '#6b7280';
+  let chipStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' };
+  let dotColor = 'rgba(255,255,255,0.6)';
 
   if (status === 'approved') {
-    chipStyle = { background: `${C.ikb}12`, color: C.ikb };
+    chipStyle = { background: 'rgba(168,197,224,0.2)', color: C.ikb };
     dotColor = C.ikb;
   } else if (status === 'pending') {
-    chipStyle = { background: `${C.accent3}14`, color: C.purpleText };
+    chipStyle = { background: 'rgba(168,197,224,0.15)', color: 'rgba(255,255,255,0.8)' };
     dotColor = C.accent3;
   } else if (status === 'rejected') {
-    chipStyle = { background: `${C.burgundy}12`, color: C.burgundyText };
-    dotColor = C.burgundy;
+    chipStyle = { background: 'rgba(255,120,120,0.15)', color: 'rgba(255,150,150,0.9)' };
+    dotColor = 'rgba(255,120,120,0.9)';
   } else if (status === 'cancelled') {
-    chipStyle = { background: '#e5e7eb', color: '#6b7280' };
-    dotColor = '#6b7280';
+    chipStyle = { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' };
+    dotColor = 'rgba(255,255,255,0.5)';
   }
 
   return (
     <span
       data-testid="archive-done-chip"
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-semibold"
-      style={{ ...chipStyle, fontFamily: F.cn }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        borderRadius: 9999,
+        padding: '2px 10px',
+        fontSize: 12,
+        fontWeight: 600,
+        fontFamily: F.cn,
+        ...chipStyle,
+      }}
     >
-      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+      <span style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: dotColor, display: 'inline-block' }} />
       {label}
     </span>
   );
 }
 
-// ── Inline: QueueArchiveCard (IKB) — wraps a QueueRow ────────────────────────
+// ── Inline: QueueArchiveCard (液态玻璃) ──────────────────────────────────────
 
 interface QueueArchiveCardProps {
   row: QueueRow;
@@ -669,17 +826,16 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
   return (
     <div
       data-testid={`archive-card-${row.id}`}
-      className="rounded-xl border p-6 space-y-6"
-      style={{ background: C.paper, border: `1px solid ${C.line}` }}
+      className="lg-glass"
+      style={{ borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}
     >
       {/* header row */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
             <h3
               data-testid="archive-title"
-              className="text-[16px] font-bold"
-              style={{ color: C.ink, fontFamily: F.cn }}
+              style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               {row.sample.slice(0, 40)}{row.sample.length > 40 ? '…' : ''}
             </h3>
@@ -687,27 +843,25 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
           </div>
           <p
             data-testid="archive-subtitle"
-            className="flex items-center gap-1 text-[12px]"
-            style={{ color: '#6b7280', fontFamily: F.cn }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}
           >
-            <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>description</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>description</span>
             {row.sourcePlatform} · {createdDateStr}
           </p>
         </div>
 
         {/* action buttons */}
-        <div className="flex shrink-0 items-center gap-1">
+        <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 4 }}>
           <button
             data-testid="archive-copy-btn"
             type="button"
             onClick={handleCopy}
             aria-label="复制档案"
-            className="ikb-focusring rounded-md p-1.5 transition-colors"
-            style={{ color: C.ikb }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}12`; }}
+            style={{ borderRadius: 8, padding: 6, color: C.ikb, background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.15)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
           </button>
           <button
             data-testid="archive-delete-btn"
@@ -715,12 +869,11 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
             onClick={handleDelete}
             disabled={isDeleting}
             aria-label="删除档案"
-            className="ikb-focusring rounded-md p-1.5 transition-colors disabled:opacity-40"
-            style={{ color: C.burgundy }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${C.burgundy}12`; }}
+            style={{ borderRadius: 8, padding: 6, color: 'rgba(255,120,120,0.85)', background: 'none', border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer', opacity: isDeleting ? 0.4 : 1, transition: 'background 0.15s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,120,120,0.12)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>
               {isDeleting ? 'hourglass_empty' : 'delete'}
             </span>
           </button>
@@ -729,12 +882,11 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-label={expanded ? '折叠档案' : '展开档案'}
-            className="ikb-focusring rounded-md p-1.5 transition-colors"
-            style={{ color: '#6b7280' }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.base; }}
+            style={{ borderRadius: 8, padding: 6, color: 'rgba(255,255,255,0.55)', background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>
               {expanded ? 'expand_less' : 'expand_more'}
             </span>
           </button>
@@ -753,79 +905,71 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
 
       {/* expanded content */}
       {expanded && (
-        <div data-testid="archive-expanded" className="space-y-4">
+        <div data-testid="archive-expanded" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* 核心公式 */}
-          <div data-testid="style-portrait-section" className="space-y-2">
+          <div data-testid="style-portrait-section" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <p
-              className="flex items-center gap-1.5 text-[13px] font-extrabold tracking-wide"
-              style={{ color: C.ikb, fontFamily: F.cn }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: C.ikb, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                 aria-hidden={true}
               />
               {DL_SECTION_STYLE_PORTRAIT}
             </p>
             <p
               data-testid="style-portrait-body"
-              className="rounded-lg border p-4 text-[14px] leading-relaxed"
-              style={{ borderColor: C.line, background: `${C.ikb}06`, color: '#444653', fontFamily: F.cn }}
+              className="lg-glass"
+              style={{ borderRadius: 10, padding: 16, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}
             >
               核心公式：{row.coreFormula}
             </p>
           </div>
 
           {/* 文案逻辑 placeholder */}
-          <div data-testid="logic-grid-section" className="space-y-3">
+          <div data-testid="logic-grid-section" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <p
-              className="flex items-center gap-1.5 text-[13px] font-extrabold tracking-wide"
-              style={{ color: C.burgundyText, fontFamily: F.cn }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom,${C.burgundy},${C.ikb})` }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: 'linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(168,197,224,0.5))' }}
                 aria-hidden={true}
               />
               {DL_SECTION_LOGIC}
             </p>
-            <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
               状态：{row.status} · 详细分析在审核完成后可见
             </p>
           </div>
 
           {/* 包装风格 placeholder */}
-          <div data-testid="packaging-grid-section" className="space-y-3">
+          <div data-testid="packaging-grid-section" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <p
-              className="flex items-center gap-1.5 text-[13px] font-extrabold tracking-wide"
-              style={{ color: C.burgundyText, fontFamily: F.cn }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom,${C.burgundy},${C.ikb})` }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: 'linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(168,197,224,0.5))' }}
                 aria-hidden={true}
               />
               {DL_SECTION_PACKAGING}
             </p>
-            <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
               来源平台：{row.sourcePlatform}
             </p>
           </div>
 
           {/* 精华片段 placeholder */}
-          <div data-testid="highlights-section" className="space-y-3">
+          <div data-testid="highlights-section" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <p
-              className="flex items-center gap-1.5 text-[13px] font-extrabold tracking-wide"
-              style={{ color: C.ink, fontFamily: F.cn }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: C.accent3 }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: C.accent3 }}
                 aria-hidden={true}
               />
               {DL_SECTION_HIGHLIGHTS_PREFIX} (0)
             </p>
-            <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
               文案摘要：{row.sample.slice(0, 120)}{row.sample.length > 120 ? '…' : ''}
             </p>
           </div>
@@ -835,79 +979,114 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
   );
 }
 
-// ── Inline: EmptyArchives (IKB) ───────────────────────────────────────────────
+// ── Inline: EmptyArchives (液态玻璃) ─────────────────────────────────────────
 
 function EmptyArchivesPioneer() {
   return (
     <div
       data-testid="empty-archives"
-      className="flex flex-col items-center gap-4 rounded-xl border border-dashed py-16 text-center"
-      style={{ borderColor: `${C.ikb}30`, background: C.base }}
+      className="lg-glass"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 16,
+        borderRadius: 18,
+        padding: '64px 24px',
+        textAlign: 'center',
+        border: `0.5px dashed rgba(168,197,224,0.35)`,
+      }}
     >
       <span
-        className="flex h-16 w-16 items-center justify-center rounded-2xl"
-        style={{ background: `${C.ikb}10` }}
+        style={{
+          display: 'flex',
+          height: 64,
+          width: 64,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 18,
+          background: 'rgba(168,197,224,0.15)',
+        }}
       >
         <span
-          className="material-symbols-outlined text-[40px]"
-          style={{ color: `${C.ikb}60` }}
+          className="material-symbols-outlined"
+          style={{ fontSize: 40, color: 'rgba(168,197,224,0.55)' }}
           aria-hidden={true}
         >neurology</span>
       </span>
-      <p className="text-[16px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>{DL_EMPTY_TITLE}</p>
-      <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{DL_EMPTY_DESC}</p>
+      <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_TITLE}</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_DESC}</p>
     </div>
   );
 }
 
-// ── Inline: ArchiveSkeleton (IKB) ─────────────────────────────────────────────
+// ── Inline: ArchiveSkeleton (液态玻璃) ────────────────────────────────────────
 
 function ArchiveSkeletonPioneer() {
   return (
-    <div data-testid="archives-skeleton" className="space-y-4">
+    <div data-testid="archives-skeleton" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {[1, 2].map((i) => (
         <div
           key={i}
-          className="rounded-xl border p-6 space-y-4 animate-pulse"
-          style={{ borderColor: C.line, background: C.paper }}
+          className="lg-glass"
+          style={{ borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', gap: 16, animation: 'pulse 2s ease-in-out infinite' }}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 space-y-2">
-              <div className="h-5 w-1/3 rounded" style={{ background: C.line }} />
-              <div className="h-4 w-1/4 rounded" style={{ background: C.base }} />
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ height: 20, width: '33%', borderRadius: 6, background: 'rgba(255,255,255,0.12)' }} />
+              <div style={{ height: 16, width: '25%', borderRadius: 6, background: 'rgba(255,255,255,0.08)' }} />
             </div>
-            <div className="flex gap-2">
-              <div className="h-8 w-8 rounded-md" style={{ background: C.line }} />
-              <div className="h-8 w-8 rounded-md" style={{ background: C.line }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ height: 32, width: 32, borderRadius: 8, background: 'rgba(255,255,255,0.12)' }} />
+              <div style={{ height: 32, width: 32, borderRadius: 8, background: 'rgba(255,255,255,0.12)' }} />
             </div>
           </div>
-          <div className="h-16 rounded-lg" style={{ background: C.base }} />
+          <div style={{ height: 64, borderRadius: 10, background: 'rgba(255,255,255,0.08)' }} />
         </div>
       ))}
     </div>
   );
 }
 
-// ── Inline: ArchivesError (IKB) ───────────────────────────────────────────────
+// ── Inline: ArchivesError (液态玻璃) ─────────────────────────────────────────
 
 function ArchivesErrorPioneer({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="archives-error"
-      className="flex flex-col items-center gap-4 rounded-xl border border-dashed py-12 text-center"
-      style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08` }}
+      className="lg-glass"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 16,
+        borderRadius: 18,
+        padding: '48px 24px',
+        textAlign: 'center',
+        border: `0.5px dashed rgba(255,120,120,0.35)`,
+      }}
     >
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: `${C.burgundy}18` }}>
-        <span className="material-symbols-outlined text-[32px]" style={{ color: C.burgundyText }} aria-hidden={true}>error</span>
+      <span style={{ display: 'flex', height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 16, background: 'rgba(255,120,120,0.15)' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'rgba(255,150,150,0.9)' }} aria-hidden={true}>error</span>
       </span>
-      <p className="text-[15px] font-semibold" style={{ color: C.burgundyText, fontFamily: F.cn }}>加载学习档案失败</p>
+      <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(255,150,150,0.9)', fontFamily: F.cn, margin: 0 }}>加载学习档案失败</p>
       <button
         type="button"
         onClick={onRetry}
-        className="ikb-focusring rounded-lg px-4 py-2 text-[13px] font-semibold text-white"
-        style={{ background: C.burgundy, fontFamily: F.cn }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.burgundyText; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.burgundy; }}
+        style={{
+          borderRadius: 10,
+          padding: '8px 16px',
+          fontSize: 13,
+          fontWeight: 600,
+          fontFamily: F.cn,
+          cursor: 'pointer',
+          background: 'rgba(255,120,120,0.25)',
+          border: `0.5px solid rgba(255,120,120,0.4)`,
+          color: 'rgba(255,200,200,0.95)',
+          transition: 'background 0.2s',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,120,120,0.35)'; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,120,120,0.25)'; }}
       >
         重试
       </button>
@@ -915,56 +1094,60 @@ function ArchivesErrorPioneer({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-// ── Inline: UsageInstructions (IKB) ──────────────────────────────────────────
+// ── Inline: UsageInstructions (液态玻璃) ──────────────────────────────────────
 
 function UsageInstructionsPioneer() {
   return (
     <div
       data-testid="usage-instructions"
-      className="rounded-xl border p-6 space-y-5"
-      style={{ borderColor: C.line, background: C.paper }}
+      className="lg-glass"
+      style={{ borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}
     >
-      <div className="flex items-center gap-3 pb-4" style={{ borderBottom: `1px solid ${C.line}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 16, borderBottom: `0.5px solid ${C.line}` }}>
         <span
-          className="flex h-9 w-9 items-center justify-center rounded-lg"
-          style={{ background: `${C.ikb}12`, color: C.ikb }}
+          style={{
+            display: 'flex',
+            height: 36,
+            width: 36,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 10,
+            background: 'rgba(168,197,224,0.18)',
+            color: C.ikb,
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>info</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>info</span>
         </span>
         <h3
           data-testid="usage-instructions-title"
-          className="text-[16px] font-bold"
-          style={{ color: C.ink, fontFamily: F.cn }}
+          style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
         >
           {DL_USAGE_TITLE}
         </h3>
       </div>
-      <div className="space-y-5">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {DL_USAGE_SECTIONS.map((section, si) => (
-          <div key={si} data-testid={`usage-section-${si}`} className="space-y-2">
+          <div key={si} data-testid={`usage-section-${si}`} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <p
               data-testid={`usage-section-title-${si}`}
-              className="flex items-center gap-1.5 text-[13px] font-extrabold tracking-wide"
-              style={{ color: C.ikb, fontFamily: F.cn }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: C.ikb, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
             >
               <span
-                className="inline-block h-3 w-1 rounded-full"
-                style={{ background: `linear-gradient(to bottom,${C.ikb},${C.burgundy})` }}
+                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
                 aria-hidden={true}
               />
               {section.title}
             </p>
-            <ul className="space-y-1.5">
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: 0, padding: 0, listStyle: 'none' }}>
               {section.bullets.map((bullet, bi) => (
                 <li
                   key={bi}
                   data-testid={`usage-bullet-${si}-${bi}`}
-                  className="flex items-start gap-2 text-[13px] leading-relaxed"
-                  style={{ color: '#444653', fontFamily: F.cn }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}
                 >
                   <span
-                    className="material-symbols-outlined mt-0.5 shrink-0 text-[14px]"
-                    style={{ color: `${C.ikb}80` }}
+                    className="material-symbols-outlined"
+                    style={{ marginTop: 2, flexShrink: 0, fontSize: 14, color: 'rgba(168,197,224,0.7)' }}
                     aria-hidden={true}
                   >chevron_right</span>
                   {bullet}
@@ -978,40 +1161,83 @@ function UsageInstructionsPioneer() {
   );
 }
 
-// ── Inline: DeepLearningHeader (IKB) ─────────────────────────────────────────
+// ── Inline: DeepLearningHeader (液态玻璃) ─────────────────────────────────────
 
 function DeepLearningHeaderPioneer() {
   return (
     <header
       data-testid="deep-learning-header"
-      className="mb-12 flex flex-row items-center justify-between gap-8"
+      style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}
     >
-      <div className="shrink-0">
-        <div className="mb-3 flex items-center gap-3">
+      <div style={{ flexShrink: 0 }}>
+        <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
-            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-            style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            style={{
+              borderRadius: 9999,
+              border: `0.5px solid ${C.line}`,
+              background: 'rgba(255,255,255,0.10)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ink,
+              fontFamily: F.mono,
+              textShadow: C.textShadow,
+            }}
           >
             智能引擎
           </span>
           <span
-            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
-            style={{ borderColor: `${C.ikb}40`, background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+            style={{
+              borderRadius: 9999,
+              border: `0.5px solid rgba(168,197,224,0.55)`,
+              background: 'rgba(168,197,224,0.18)',
+              backdropFilter: 'blur(12px)',
+              padding: '4px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ikb,
+              fontFamily: F.mono,
+              textShadow: C.textShadow,
+            }}
           >
             AI 训练
           </span>
-        </div>
+        </Reveal>
         <h1
           data-testid="deep-learning-h1"
-          className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
-          style={{ fontFamily: F.display }}
+          style={{
+            whiteSpace: 'nowrap',
+            fontSize: 52,
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            fontFamily: F.display,
+            margin: 0,
+            background: C.grad,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            textShadow: 'none',
+          }}
         >
           {DEEP_LEARNING_H1}
         </h1>
         <p
           data-testid="deep-learning-subtitle"
-          className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
-          style={{ color: '#444653', fontFamily: F.cn }}
+          style={{
+            marginTop: 10,
+            maxWidth: 820,
+            fontSize: 16,
+            lineHeight: 1.6,
+            color: C.burgundyText,
+            fontFamily: F.cn,
+            textShadow: C.textShadow,
+          }}
         >
           {DEEP_LEARNING_SUBTITLE}
         </p>
@@ -1218,201 +1444,207 @@ export default function DeepLearning() {
     createFromFileMutation.mutate({ fileUrl: fileUrl.trim(), userTitle: archiveName || undefined });
   }
 
-  // ── KPI legend data (IKB 三主色轮转) ─────────────────────────────────────────
+  // ── KPI legend data (液态玻璃色系) ───────────────────────────────────────────
   const radarDims = [
     { label: '语料覆盖', value: 85, color: C.ikb },
-    { label: '风格捕捉', value: 90, color: C.burgundy },
+    { label: '风格捕捉', value: 90, color: 'rgba(255,255,255,0.85)' },
     { label: '语气还原', value: 88, color: C.accent3 },
     { label: '术语掌握', value: 82, color: C.ikb },
-    { label: '上下文',   value: 78, color: C.burgundy },
+    { label: '上下文',   value: 78, color: 'rgba(255,255,255,0.85)' },
     { label: '泛化力',   value: 86, color: C.accent3 },
   ];
 
   return (
-    <IKBLayout>
+    <LiquidShell>
       <main
         data-testid="deep-learning-page"
-        className="space-y-8"
+        style={{ display: 'flex', flexDirection: 'column', gap: 32 }}
       >
         {/* ── Header ──────────────────────────────────────────── */}
         <DeepLearningHeaderPioneer />
 
         {/* ── KPI 卡一排(4 卡) ────────────────────────────────── */}
-        <div className="mb-8 grid grid-cols-4 gap-6">
-          {/* 档案数 · 蓝 */}
-          <div
-            className="rounded-xl border p-5 ikb-hovercard"
-            style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.ikb}12`, color: C.ikb }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>folder_open</span>
-              </span>
-              <span
-                className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
-              >
-                <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>+1
-              </span>
-            </div>
-            <div className="mt-4 flex items-end justify-between">
-              <div>
-                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                  {archives.length}<span className="text-[15px]" style={{ color: '#6b7280' }}> 份</span>
-                </p>
-                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>学习档案</p>
-              </div>
-              <div className="h-12 w-12 shrink-0">
-                <svg viewBox="0 0 36 36" className="-rotate-90">
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}18`} strokeWidth="3.5" />
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray={`${Math.min(100, archives.length * 25)} 100`} />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* 样本数 · 玫红 */}
-          <div
-            className="rounded-xl border p-5 ikb-hovercard"
-            style={{ borderColor: C.line, background: C.paper }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
-              </span>
-              <span
-                className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-                style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.cn }}
-              >已分析</span>
-            </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                {archives.length + samples.length}
-                <span className="text-[15px]" style={{ color: '#6b7280' }}> 篇</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>文案样本</p>
-            </div>
-            <div className="mt-3 flex h-6 items-end gap-1">
-              {[48, 80, 65, 92, 74].map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t"
-                  style={{ height: `${h}%`, background: `${C.burgundy}70` }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* 训练进度 · 紫 */}
-          <div
-            className="rounded-xl border p-5 ikb-hovercard"
-            style={{ borderColor: C.line, background: C.paper }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.accent3}14`, color: C.purpleText }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>model_training</span>
-              </span>
-              <span
-                className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-                style={{ background: `${C.accent3}14`, color: C.purpleText, fontFamily: F.cn }}
-              >模拟示意</span>
-            </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                —<span className="text-[15px]" style={{ color: '#6b7280' }}>%</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>训练进度</p>
-            </div>
-            <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}18` }}>
-              <div
-                className="h-2 w-1/2 rounded-full"
-                style={{ background: `linear-gradient(to right,${C.accent3},${C.ikb})` }}
-              />
-            </div>
-          </div>
-
-          {/* 模型版本 · 蓝 */}
-          <div
-            className="rounded-xl border p-5 ikb-hovercard"
-            style={{ borderColor: C.line, background: C.paper }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: `${C.ikb}12`, color: C.ikb }}
-              >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>smart_toy</span>
-              </span>
-              <span
-                className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
-              >最新</span>
-            </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
-                v1<span className="text-[15px]" style={{ color: '#6b7280' }}>.0</span>
-              </p>
-              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>模型版本</p>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-1">
-              {['风格分析', '逻辑提取'].map((k) => (
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 8 }}>
+          {/* 档案数 · 冷蓝 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 18, padding: 20 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
-                  key={k}
-                  className="rounded px-1.5 py-0.5 text-[10px] font-medium"
-                  style={{ background: `${C.ikb}10`, color: C.ikb, fontFamily: F.cn }}
+                  style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.2)', color: C.ikb }}
                 >
-                  {k}
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>folder_open</span>
                 </span>
-              ))}
-            </div>
-          </div>
-        </div>
+                <span
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.cn }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>+1
+                </span>
+              </div>
+              <div style={{ marginTop: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                    {archives.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 份</span>
+                  </p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>学习档案</p>
+                </div>
+                <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                  <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.2)" strokeWidth="3.5" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray={`${Math.min(100, archives.length * 25)} 100`} />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 样本数 · 白 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 18, padding: 20 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)' }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>article</span>
+                </span>
+                <span
+                  style={{ borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}
+                >已分析</span>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  {archives.length + samples.length}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 篇</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>文案样本</p>
+              </div>
+              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
+                {[48, 80, 65, 92, 74].map((h, i) => (
+                  <div
+                    key={i}
+                    style={{ flex: 1, borderRadius: '4px 4px 0 0', height: `${h}%`, background: 'rgba(255,255,255,0.35)' }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 训练进度 · 冷蓝渐变 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 18, padding: 20 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.ikb }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>model_training</span>
+                </span>
+                <span
+                  style={{ borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.15)', color: C.ikb, fontFamily: F.cn }}
+                >模拟示意</span>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  —<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>%</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>训练进度</p>
+              </div>
+              <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
+                <div
+                  style={{ height: 8, width: '50%', borderRadius: 9999, background: `linear-gradient(to right,${C.ikb},rgba(120,160,220,0.8))` }}
+                />
+              </div>
+            </motion.div>
+          </Item>
+
+          {/* 模型版本 · 冷蓝 */}
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 18, padding: 20 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.ikb }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>smart_toy</span>
+                </span>
+                <span
+                  style={{ borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.cn }}
+                >最新</span>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                  v1<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>.0</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>模型版本</p>
+              </div>
+              <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {['风格分析', '逻辑提取'].map((k) => (
+                  <span
+                    key={k}
+                    style={{ borderRadius: 4, padding: '2px 6px', fontSize: 10, fontWeight: 500, background: 'rgba(168,197,224,0.15)', color: C.ikb, fontFamily: F.cn }}
+                  >
+                    {k}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </Item>
+        </RevealGroup>
 
         {/* ── 样本表单 ─────────────────────────────────────────── */}
-        <SampleFormPioneer
-          text={text}
-          onTextChange={setText}
-          archiveName={archiveName}
-          onArchiveNameChange={setArchiveName}
-          sourcePlatform={sourcePlatform}
-          onSourcePlatformChange={setSourcePlatform}
-          samples={samples}
-          onAddThis={handleAddThis}
-          onRemoveSample={handleRemoveSample}
-          onStart={handleStart}
-          isLearnPending={learnMutation.isPending}
-          isParsePending={parseMutation.isPending}
-          parseAnalysis={parseAnalysis}
-          parsedQueueId={parsedQueueId}
-          onApplyFormula={(queueId, topic) => handleApplyFormula(queueId, topic)}
-          isApplyPending={applyMutation.isPending}
-          applyContent={applyContent}
-          fileUrl={fileUrl}
-          onFileUrlChange={setFileUrl}
-          onFileSubmit={handleFileSubmit}
-          isFilePending={createFromFileMutation.isPending}
-          learnJobId={learnJobId}
-          learnJobStatus={learnJobStatus}
-        />
+        <Reveal>
+          <SampleFormPioneer
+            text={text}
+            onTextChange={setText}
+            archiveName={archiveName}
+            onArchiveNameChange={setArchiveName}
+            sourcePlatform={sourcePlatform}
+            onSourcePlatformChange={setSourcePlatform}
+            samples={samples}
+            onAddThis={handleAddThis}
+            onRemoveSample={handleRemoveSample}
+            onStart={handleStart}
+            isLearnPending={learnMutation.isPending}
+            isParsePending={parseMutation.isPending}
+            parseAnalysis={parseAnalysis}
+            parsedQueueId={parsedQueueId}
+            onApplyFormula={(queueId, topic) => handleApplyFormula(queueId, topic)}
+            isApplyPending={applyMutation.isPending}
+            applyContent={applyContent}
+            fileUrl={fileUrl}
+            onFileUrlChange={setFileUrl}
+            onFileSubmit={handleFileSubmit}
+            isFilePending={createFromFileMutation.isPending}
+            learnJobId={learnJobId}
+            learnJobStatus={learnJobStatus}
+          />
+        </Reveal>
 
         {/* ── 档案区 ───────────────────────────────────────────── */}
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <h2
             data-testid="archives-heading"
-            className="text-[20px] font-extrabold tracking-tight"
-            style={{ color: C.ink, fontFamily: F.cn }}
+            style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em', color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
           >
             {DL_ARCHIVES_TITLE_PREFIX}
-            <span className="ml-2 text-[16px] font-normal" style={{ color: '#6b7280' }}>({archives.length})</span>
+            <span style={{ marginLeft: 8, fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.55)' }}>({archives.length})</span>
           </h2>
 
           {isListLoading && <ArchiveSkeletonPioneer />}
@@ -1426,197 +1658,206 @@ export default function DeepLearning() {
           )}
 
           {!isListLoading && !isListError && archives.length > 0 && (
-            archives.map((row) => (
-              <QueueArchiveCardPioneer
-                key={row.id}
-                row={row}
-                onDelete={handleDelete}
-                isDeletePending={deleteMutation.isPending}
-                deletingId={deletingId}
-              />
-            ))
+            <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {archives.map((row) => (
+                <Item key={row.id}>
+                  <QueueArchiveCardPioneer
+                    row={row}
+                    onDelete={handleDelete}
+                    isDeletePending={deleteMutation.isPending}
+                    deletingId={deletingId}
+                  />
+                </Item>
+              ))}
+            </RevealGroup>
           )}
         </div>
 
         {/* ── 使用说明 ─────────────────────────────────────────── */}
-        <UsageInstructionsPioneer />
+        <Reveal>
+          <UsageInstructionsPioneer />
+        </Reveal>
 
         {/* ── 数据洞察 band ────────────────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
+        <Reveal style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span
-            className="material-symbols-outlined text-[20px]"
-            style={{ color: C.ikb }}
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: C.ikb }}
             aria-hidden={true}
           >insights</span>
-          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力数据洞察</h2>
-          <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 学习能力数据洞察</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
           <span
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
+            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, padding: '4px 12px', fontSize: 12, fontWeight: 600, background: 'rgba(168,197,224,0.15)', color: C.ikb, fontFamily: F.cn }}
           >
-            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
+            <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
             模型已就绪
           </span>
-        </div>
+        </Reveal>
 
         {/* ── 数据洞察: 雷达 + 趋势 ───────────────────────────── */}
-        <div className="mb-8 grid grid-cols-12 gap-6">
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 8 }}>
           {/* AI 学习能力雷达 */}
-          <div
-            className="col-span-5 ikb-hovercard rounded-xl border p-6"
-            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
-          >
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: `${C.ikb}12`, color: C.ikb }}
-                >
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
-                </span>
-                <div>
-                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>AI 学习能力雷达</h3>
-                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估（模拟示意）</p>
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span
+                    style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.ikb }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 学习能力雷达</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估（模拟示意）</p>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>86</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>综合分</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb, fontFamily: F.display }}>86</p>
-                <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>综合分</p>
+              {(() => {
+                const cx = 130;
+                const cy = 122;
+                const R = 88;
+                const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+                const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+                const poly = (r: number) => radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+                const dataPoly = radarDims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+                return (
+                  <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="dl-radarFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                        <stop offset="100%" stopColor="rgba(168,197,224,0.3)" stopOpacity="0.12" />
+                      </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((f) => (
+                      <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                    ))}
+                    {radarDims.map((_, i) => {
+                      const [x, y] = pt(i, R);
+                      return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
+                    })}
+                    <polygon points={dataPoly} fill="url(#dl-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                    {radarDims.map((d, i) => {
+                      const [x, y] = pt(i, R * (d.value / 100));
+                      return <circle key={i} cx={x} cy={y} r="3.2" fill="rgba(255,255,255,0.9)" stroke={d.color} strokeWidth="2" />;
+                    })}
+                    {radarDims.map((d, i) => {
+                      const [x, y] = pt(i, R + 16);
+                      return (
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.65)" fontSize="10.5" fontWeight="600">
+                          {d.label}
+                        </text>
+                      );
+                    })}
+                  </svg>
+                );
+              })()}
+              <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
+                {radarDims.map((d) => (
+                  <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, display: 'inline-block' }} />
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                  </div>
+                ))}
               </div>
-            </div>
-            {(() => {
-              const cx = 130;
-              const cy = 122;
-              const R = 88;
-              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-              const poly = (r: number) => radarDims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-              const dataPoly = radarDims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-              return (
-                <svg viewBox="0 0 260 244" className="w-full">
-                  <defs>
-                    <linearGradient id="dl-radarFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
-                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
-                    </linearGradient>
-                  </defs>
-                  {[0.25, 0.5, 0.75, 1].map((f) => (
-                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
-                  ))}
-                  {radarDims.map((_, i) => {
-                    const [x, y] = pt(i, R);
-                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
-                  })}
-                  <polygon points={dataPoly} fill="url(#dl-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
-                  {radarDims.map((d, i) => {
-                    const [x, y] = pt(i, R * (d.value / 100));
-                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                  })}
-                  {radarDims.map((d, i) => {
-                    const [x, y] = pt(i, R + 16);
-                    return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                        {d.label}
-                      </text>
-                    );
-                  })}
-                </svg>
-              );
-            })()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
-              {radarDims.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
-                  <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+            </motion.div>
+          </Item>
 
           {/* 训练样本积累趋势 */}
-          <div
-            className="col-span-7 ikb-hovercard rounded-xl border p-6"
-            style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: `${C.burgundy}12`, color: C.burgundy }}
-                >
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
-                </span>
-                <div>
-                  <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>训练样本积累</h3>
-                  <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>按当前学习档案测算</p>
+          <Item>
+            <motion.div
+              className="lg-glass lg-spec"
+              whileHover={{ y: -4 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{ borderRadius: 20, padding: 24 }}
+            >
+              <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span
+                    style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)' }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>训练样本积累</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>按当前学习档案测算</p>
+                  </div>
                 </div>
+                <span
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.cn }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+86%
+                </span>
               </div>
-              <span
-                className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
-                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.cn }}
-              >
-                <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+86%
-              </span>
-            </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>{archives.length}</p>
-              <span className="mb-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
-            </div>
-            {(() => {
-              const data = [10, 18, 22, 30, 42, 38, 55, 62, 58, 70, 80, 96];
-              const W = 560;
-              const H = 168;
-              const padL = 6;
-              const padR = 6;
-              const padT = 12;
-              const padB = 8;
-              const innerW = W - padL - padR;
-              const innerH = H - padT - padB;
-              const max = 110;
-              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-              const y = (v: number) => padT + innerH * (1 - v / max);
-              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-              return (
-                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-                  <defs>
-                    <linearGradient id="dl-trendFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
-                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
-                    </linearGradient>
-                    <linearGradient id="dl-trendLine" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={C.ikb} />
-                      <stop offset="100%" stopColor={C.burgundy} />
-                    </linearGradient>
-                  </defs>
-                  {[0, 0.33, 0.66, 1].map((f) => (
-                    <line
-                      key={f}
-                      x1={padL}
-                      x2={W - padR}
-                      y1={(padT + innerH * f).toFixed(1)}
-                      y2={(padT + innerH * f).toFixed(1)}
-                      stroke={C.line}
-                      strokeWidth="1"
-                    />
-                  ))}
-                  <path d={area} fill="url(#dl-trendFill)" />
-                  <path d={line} fill="none" stroke="url(#dl-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  {data.map((v, i) =>
-                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
-                  )}
-                </svg>
-              );
-            })()}
-            <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
-              {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-            </div>
-          </div>
-        </div>
+              <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{archives.length}</p>
+                <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
+              </div>
+              {(() => {
+                const data = [10, 18, 22, 30, 42, 38, 55, 62, 58, 70, 80, 96];
+                const W = 560;
+                const H = 168;
+                const padL = 6;
+                const padR = 6;
+                const padT = 12;
+                const padB = 8;
+                const innerW = W - padL - padR;
+                const innerH = H - padT - padB;
+                const max = 110;
+                const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+                const y = (v: number) => padT + innerH * (1 - v / max);
+                const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+                const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+                return (
+                  <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="dl-trendFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="dl-trendLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={C.ikb} />
+                        <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
+                      </linearGradient>
+                    </defs>
+                    {[0, 0.33, 0.66, 1].map((f) => (
+                      <line
+                        key={f}
+                        x1={padL}
+                        x2={W - padR}
+                        y1={(padT + innerH * f).toFixed(1)}
+                        y2={(padT + innerH * f).toFixed(1)}
+                        stroke={C.line}
+                        strokeWidth="1"
+                      />
+                    ))}
+                    <path d={area} fill="url(#dl-trendFill)" />
+                    <path d={line} fill="none" stroke="url(#dl-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    {data.map((v, i) =>
+                      i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
+                    )}
+                  </svg>
+                );
+              })()}
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
+                {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
+                  <span key={m}>{m}</span>
+                ))}
+              </div>
+            </motion.div>
+          </Item>
+        </RevealGroup>
       </main>
-    </IKBLayout>
+    </LiquidShell>
   );
 }
