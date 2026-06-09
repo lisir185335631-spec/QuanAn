@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
 import { EditAccountModal } from '@/components/accounts/EditAccountModal';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import {
   ACCOUNT_ACTIVE_CHIP,
@@ -120,6 +120,9 @@ function LiquidAccountCard({
         overflow: 'hidden',
         borderRadius: 18,
         padding: 24,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
       data-testid={`ip-account-card-${account.id}`}
     >
@@ -161,7 +164,7 @@ function LiquidAccountCard({
         </span>
       )}
 
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 20, flex: 1 }}>
         {/* 液态玻璃渐变圆形头像 (testid 保留) */}
         <div
           style={{
@@ -187,7 +190,7 @@ function LiquidAccountCard({
           {account.name[0] ?? '?'}
         </div>
 
-        <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
           {/* 账号名 */}
           <h3
             style={{
@@ -269,7 +272,7 @@ function LiquidAccountCard({
           </p>
 
           {/* 操作按钮行 */}
-          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ marginTop: 'auto', paddingTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               type="button"
               aria-label={`编辑账号 ${account.name}`}
@@ -523,48 +526,47 @@ export default function Accounts() {
           </div>
 
           {/* 新建账号 · 主按钮 (受控 modal) */}
-          <motion.button
-            type="button"
-            data-testid="create-account-trigger"
-            aria-label="新建账号"
-            onClick={() => setCreateOpen(true)}
-            className="lg-gradbtn"
-            whileHover={{ y: -3 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              borderRadius: 9999,
-              padding: '12px 28px',
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              cursor: 'pointer',
-              fontFamily: F.cn,
-              border: 'none',
-            }}
-          >
-            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 18 }}>
-              add
-            </span>
-            {ACCOUNTS_CREATE_BTN}
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              data-testid="create-account-trigger"
+              aria-label="新建账号"
+              onClick={() => setCreateOpen(true)}
+              className="lg-gradbtn"
+              style={{
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 9999,
+                padding: '12px 28px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: F.cn,
+                border: 'none',
+              }}
+            >
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                add
+              </span>
+              {ACCOUNTS_CREATE_BTN}
+            </button>
+          </Magnetic>
         </header>
       </Reveal>
 
       {/* ── KPI 概览一排 (4 卡) ──────────────────────────────────────────────── */}
       <RevealGroup
-        style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
+        style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
       >
         {/* 账号总数 · 冷蓝 · 环形进度 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -576,10 +578,10 @@ export default function Accounts() {
                   justifyContent: 'center',
                   borderRadius: 10,
                   background: 'rgba(168,197,224,0.18)',
-                  color: C.ikb,
+                  color: C.ink,
                 }}
               >
-                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
                   manage_accounts
                 </span>
               </span>
@@ -619,13 +621,13 @@ export default function Accounts() {
                 >
                   {totalAccounts}
                   <span
-                    style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}
+                    style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}
                   >
                     {' '}
                     个
                   </span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   账号总数
                 </p>
               </div>
@@ -655,12 +657,12 @@ export default function Accounts() {
         </Item>
 
         {/* 活跃账号 · 玻璃 · 迷你柱 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -707,12 +709,12 @@ export default function Accounts() {
                 }}
               >
                 {activeAccountsCount}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   {' '}
                   个
                 </span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 活跃账号
               </p>
             </div>
@@ -733,12 +735,12 @@ export default function Accounts() {
         </Item>
 
         {/* 平台覆盖 · 冷蓝 · 进度条 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -750,10 +752,10 @@ export default function Accounts() {
                   justifyContent: 'center',
                   borderRadius: 10,
                   background: 'rgba(168,197,224,0.18)',
-                  color: C.ikb,
+                  color: C.ink,
                 }}
               >
-                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
                   hub
                 </span>
               </span>
@@ -785,12 +787,12 @@ export default function Accounts() {
                 }}
               >
                 {platformCoverage}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   {' '}
                   平台
                 </span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 平台覆盖
               </p>
             </div>
@@ -816,12 +818,12 @@ export default function Accounts() {
         </Item>
 
         {/* 总粉丝 · 冷蓝 · 关键词 chip */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -833,10 +835,10 @@ export default function Accounts() {
                   justifyContent: 'center',
                   borderRadius: 10,
                   background: 'rgba(168,197,224,0.18)',
-                  color: C.ikb,
+                  color: C.ink,
                 }}
               >
-                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
                   group
                 </span>
               </span>
@@ -869,7 +871,7 @@ export default function Accounts() {
               >
                 {TOTAL_FANS_LABEL}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 总粉丝数
               </p>
             </div>
@@ -907,10 +909,10 @@ export default function Accounts() {
             justifyContent: 'center',
             borderRadius: 10,
             background: 'rgba(168,197,224,0.18)',
-            color: C.ikb,
+            color: C.ink,
           }}
         >
-          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
             insights
           </span>
         </span>
@@ -926,7 +928,7 @@ export default function Accounts() {
         >
           数据洞察
         </h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
           · 账号矩阵健康度 · 粉丝增长趋势
         </span>
         <span
@@ -964,7 +966,7 @@ export default function Accounts() {
       <Reveal>
         <div
           className="lg-glass"
-          style={{ marginBottom: 32, borderRadius: 20, overflow: 'hidden', padding: 24 }}
+          style={{ marginBottom: 44, borderRadius: 20, overflow: 'hidden', padding: 24 }}
         >
           <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -997,7 +999,7 @@ export default function Accounts() {
                 >
                   粉丝增长曲线
                 </h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', margin: 0, fontFamily: F.cn }}>
                   按当前账号矩阵测算 · 90 天趋势
                 </p>
               </div>
@@ -1015,7 +1017,7 @@ export default function Accounts() {
                       i === 0
                         ? 'rgba(168,197,224,0.35)'
                         : 'rgba(255,255,255,0.08)',
-                    color: i === 0 ? C.ink : 'rgba(255,255,255,0.55)',
+                    color: i === 0 ? C.ink : 'rgba(255,255,255,0.8)',
                     fontFamily: F.mono,
                     border: i === 0 ? `0.5px solid ${C.ikb}55` : `0.5px solid rgba(255,255,255,0.15)`,
                   }}
@@ -1064,7 +1066,7 @@ export default function Accounts() {
               </span>
               增长强劲
             </span>
-            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
               较冷启动基线
             </span>
           </div>
@@ -1162,10 +1164,10 @@ export default function Accounts() {
             justifyContent: 'center',
             borderRadius: 10,
             background: 'rgba(168,197,224,0.18)',
-            color: C.ikb,
+            color: C.ink,
           }}
         >
-          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
             grid_view
           </span>
         </span>
@@ -1181,13 +1183,13 @@ export default function Accounts() {
         >
           账号列表
         </h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
           · {active.length} 个账号
         </span>
       </Reveal>
 
       {/* ── 账号列表 ─────────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="accounts-list">
+      <div data-testid="accounts-list">
         {isLoading ? (
           <div
             className="lg-glass"
@@ -1209,7 +1211,7 @@ export default function Accounts() {
             >
               hourglass_empty
             </span>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
               加载中…
             </p>
           </div>
@@ -1235,7 +1237,7 @@ export default function Accounts() {
               error_outline
             </span>
             <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn }}>加载失败</p>
-            <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+            <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
               请刷新页面重试
             </p>
           </div>
@@ -1260,7 +1262,7 @@ export default function Accounts() {
             >
               manage_accounts
             </span>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
               暂无账号
             </p>
             <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn }}>
@@ -1268,9 +1270,9 @@ export default function Accounts() {
             </p>
           </div>
         ) : (
-          <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
             {active.map((account) => (
-              <Item key={account.id}>
+              <Item key={account.id} style={{ height: '100%' }}>
                 <LiquidAccountCard
                   account={account}
                   isActive={account.id === activeAccount?.id}
