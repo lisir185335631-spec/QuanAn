@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import type { Step4Phase } from '@/components/step4/Step4PhaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
@@ -279,7 +279,7 @@ function StatusBadge({ status }: { status: RowStatus }) {
       }}
     >
       <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
-      <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>待命</span>
+      <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>待命</span>
     </div>
   );
 }
@@ -602,7 +602,7 @@ export default function Step4() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>基准参数输入</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写执行基础信息 · AI 据此生成三阶段执行计划</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>填写执行基础信息 · AI 据此生成三阶段执行计划</p>
               </div>
             </div>
             <span
@@ -658,7 +658,7 @@ export default function Step4() {
                         </span>
                         <span style={{ minWidth: 0 }}>
                           <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{p.desc}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{p.desc}</span>
                         </span>
                         <span
                           style={{
@@ -717,14 +717,14 @@ export default function Step4() {
                           style={{
                             display: 'flex', height: 40, width: 40, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 10,
                             background: active ? C.grad : 'rgba(255,255,255,0.10)',
-                            color: active ? '#fff' : 'rgba(255,255,255,0.6)',
+                            color: active ? '#fff' : 'rgba(255,255,255,0.84)',
                           }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden>{g.icon}</span>
                         </span>
                         <span style={{ minWidth: 0 }}>
                           <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{g.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{g.desc}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{g.desc}</span>
                         </span>
                         <span
                           style={{
@@ -755,7 +755,7 @@ export default function Step4() {
                   目标体量 (关注者/用户)
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }} aria-hidden>group_add</span>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)', pointerEvents: 'none' }} aria-hidden>group_add</span>
                   <input
                     id="s4-follower-count"
                     type="text"
@@ -774,6 +774,7 @@ export default function Step4() {
                       fontFamily: F.cn,
                       outline: 'none',
                       boxSizing: 'border-box',
+                      textShadow: C.textShadow,
                     }}
                     onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.boxShadow = `0 0 0 2px rgba(168,197,224,0.5)`; }}
                     onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.boxShadow = ''; }}
@@ -789,9 +790,9 @@ export default function Step4() {
                     style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 800, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
                   >
                     <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: C.grad, flexShrink: 0 }} />
-                    个人背景 <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.55)' }}>(可选)</span>
+                    个人背景 <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.8)' }}>(可选)</span>
                   </label>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden>auto_awesome</span>
                     AI 据此定制执行策略
                   </span>
@@ -839,7 +840,7 @@ export default function Step4() {
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>可包含</span>
                       {['经历', '行业', '优势', '目标', '资源'].map((t) => (
                         <span
                           key={t}
@@ -857,37 +858,34 @@ export default function Step4() {
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  <motion.button
-                    type="submit"
-                    disabled={isLoading}
-                    whileHover={{ y: -3 }}
-                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      borderRadius: 14,
-                      padding: '12px 32px',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase' as const,
-                      color: '#fff',
-                      background: C.grad,
-                      border: 'none',
-                      cursor: isLoading ? 'not-allowed' : 'pointer',
-                      opacity: isLoading ? 0.4 : 1,
-                      fontFamily: F.mono,
-                      textShadow: '0 1px 3px rgba(8,20,48,0.4)',
-                    }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden>rocket_launch</span>
-                    {isLoading ? '生成中…' : STEP4_BUTTON_GENERATE}
-                  </motion.button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="lg-gradbtn"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        borderRadius: 9999,
+                        padding: '12px 32px',
+                        fontSize: 15,
+                        fontWeight: 700,
+                        color: '#fff',
+                        border: 'none',
+                        cursor: isLoading ? 'not-allowed' : 'pointer',
+                        opacity: isLoading ? 0.4 : 1,
+                        fontFamily: F.cn,
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden>rocket_launch</span>
+                      {isLoading ? '生成中…' : STEP4_BUTTON_GENERATE}
+                    </button>
+                  </Magnetic>
                 </div>
               </div>
             </form>
@@ -896,14 +894,14 @@ export default function Step4() {
       </Reveal>
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 44 }}>
         {/* 任务总数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 22 }}
+            style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -917,9 +915,9 @@ export default function Step4() {
               <div>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                   {allScheduleItems.length}
-                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 3 }}> 项</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 3 }}> 项</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>任务总数</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>任务总数</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label="任务覆盖率 83%">
@@ -932,12 +930,12 @@ export default function Step4() {
         </Item>
 
         {/* 执行周期 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 22 }}
+            style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundyText }}>
@@ -947,9 +945,9 @@ export default function Step4() {
             </div>
             <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: '14px 0 0' }}>
               {generated.phases.length}
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 3 }}> 周期</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 3 }}> 周期</span>
             </p>
-            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>执行周期</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>执行周期</p>
             <div style={{ marginTop: 12, display: 'flex', height: 22, alignItems: 'flex-end', gap: 3 }}>
               {[45, 72, 60, 88, 95].map((h, i) => (
                 <div key={i} style={{ flex: 1, borderRadius: '3px 3px 0 0', height: `${h}%`, background: 'rgba(255,255,255,0.35)' }} />
@@ -959,12 +957,12 @@ export default function Step4() {
         </Item>
 
         {/* 里程碑数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 22 }}
+            style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.accent3 }}>
@@ -974,9 +972,9 @@ export default function Step4() {
             </div>
             <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
               {generated.phases.reduce((sum, ph) => sum + ph.milestones.length, 0)}
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 3 }}> 个</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 3 }}> 个</span>
             </p>
-            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>里程碑节点</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>里程碑节点</p>
             <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
               <div style={{ height: 6, width: '78%', borderRadius: 9999, background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }} />
             </div>
@@ -984,12 +982,12 @@ export default function Step4() {
         </Item>
 
         {/* 避坑预警数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 22 }}
+            style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -1001,9 +999,9 @@ export default function Step4() {
             </div>
             <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
               {generated.warnings.length}
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 3 }}> 项</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 3 }}> 项</span>
             </p>
-            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>避坑预警</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>避坑预警</p>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {['完播率', '引流', '直播'].map((k) => (
                 <span key={k} style={{ borderRadius: 4, padding: '2px 6px', fontSize: 10, fontWeight: 500, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono }}>{k}</span>
@@ -1015,11 +1013,11 @@ export default function Step4() {
 
       {/* ── 总览区块 ─────────────────────────────────────────── */}
       <Reveal>
-        <section style={{ marginBottom: 32 }}>
+        <section style={{ marginBottom: 44 }}>
           <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden>summarize</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>执行总览</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 核心目标 · 阶段规划 · 平台策略</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 核心目标 · 阶段规划 · 平台策略</span>
           </div>
           <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
@@ -1052,12 +1050,12 @@ export default function Step4() {
       </Reveal>
 
       {/* ── 三阶段完整展开 ────────────────────────────────────── */}
-      <section style={{ marginBottom: 32 }}>
+      <section style={{ marginBottom: 44 }}>
         <Reveal>
           <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden>timeline</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>三阶段执行路径</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 每日任务 · 里程碑 · 内容计划 · KPI</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 每日任务 · 里程碑 · 内容计划 · KPI</span>
           </div>
         </Reveal>
         <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -1089,7 +1087,7 @@ export default function Step4() {
                     </span>
                     <div>
                       <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{phase.title}</h3>
-                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{phase.weekRange} · {phase.goal}</p>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{phase.weekRange} · {phase.goal}</p>
                     </div>
                   </div>
 
@@ -1100,33 +1098,34 @@ export default function Step4() {
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden>checklist</span>
                         每日任务
                       </p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
                         {phase.dailyTasks.map((task, ti) => (
-                          <motion.div
-                            key={ti}
-                            whileHover={{ y: -2 }}
-                            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '180px 1fr',
-                              gap: 16,
-                              borderRadius: 12,
-                              border: `0.5px solid ${C.line}`,
-                              background: 'rgba(255,255,255,0.06)',
-                              padding: 12,
-                            }}
-                          >
-                            <div>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseAccentText, fontFamily: F.mono, margin: 0 }}>{task.day}</p>
-                              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: '2px 0 0' }}>{task.duration}</p>
-                            </div>
-                            <div>
-                              <p style={{ fontSize: 13, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{task.title}</p>
-                              <p style={{ marginTop: 4, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: '4px 0 0' }}>{task.desc}</p>
-                            </div>
-                          </motion.div>
+                          <Item key={ti} style={{ height: '100%' }}>
+                            <motion.div
+                              whileHover={{ y: -2 }}
+                              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                borderRadius: 12,
+                                border: `0.5px solid ${C.line}`,
+                                background: 'rgba(255,255,255,0.06)',
+                                padding: 12,
+                              }}
+                            >
+                              <div>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: phaseAccentText, fontFamily: F.mono, margin: 0 }}>{task.day}</p>
+                                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: '2px 0 0' }}>{task.duration}</p>
+                              </div>
+                              <div style={{ marginTop: 'auto' }}>
+                                <p style={{ fontSize: 13, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{task.title}</p>
+                                <p style={{ marginTop: 4, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '4px 0 0' }}>{task.desc}</p>
+                              </div>
+                            </motion.div>
+                          </Item>
                         ))}
-                      </div>
+                      </RevealGroup>
                     </div>
 
                     {/* 里程碑 */}
@@ -1165,7 +1164,7 @@ export default function Step4() {
                             <div>
                               <p style={{ fontSize: 13, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{m.goal}</p>
                               {m.criteria && (
-                                <p style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '4px 0 0' }}>验收：{m.criteria}</p>
+                                <p style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '4px 0 0' }}>验收：{m.criteria}</p>
                               )}
                             </div>
                           </div>
@@ -1188,10 +1187,10 @@ export default function Step4() {
                         }}
                       >
                         <div style={{ marginBottom: 12, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12, fontFamily: F.cn }}>
-                          <span style={{ color: 'rgba(255,255,255,0.6)' }}>
+                          <span style={{ color: 'rgba(255,255,255,0.84)' }}>
                             每周发布：<span style={{ fontWeight: 700, color: phaseAccentText }}>{phase.contentPlan.frequency}</span>
                           </span>
-                          <span style={{ color: 'rgba(255,255,255,0.6)' }}>
+                          <span style={{ color: 'rgba(255,255,255,0.84)' }}>
                             最佳时间：<span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{phase.contentPlan.bestTime}</span>
                           </span>
                         </div>
@@ -1202,7 +1201,7 @@ export default function Step4() {
                             return (
                               <div key={ci} style={{ borderRadius: 10, border: `0.5px solid ${borderColor}`, background: bgOpacity, padding: '8px 12px', fontSize: 12 }}>
                                 <span style={{ fontWeight: 600, color: C.ink, fontFamily: F.cn }}>{cat.name}</span>
-                                <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> — {cat.desc}</span>
+                                <span style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> — {cat.desc}</span>
                               </div>
                             );
                           })}
@@ -1229,11 +1228,11 @@ export default function Step4() {
                               padding: 12,
                             }}
                           >
-                            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{kpi.name}</p>
+                            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{kpi.name}</p>
                             <p style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.2, color: phaseAccentText, fontFamily: F.display, margin: '4px 0 0', textShadow: C.textShadow }}>{kpi.target}</p>
                             <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: phaseAccent.startsWith('rgba') ? 'rgba(255,255,255,0.5)' : phaseAccent }} />
-                              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: 0 }}>基准：{kpi.baseline}</p>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: phaseAccent.startsWith('rgba') ? 'rgba(255,255,255,0.72)' : phaseAccent }} />
+                              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>基准：{kpi.baseline}</p>
                             </div>
                           </motion.div>
                         ))}
@@ -1266,7 +1265,7 @@ export default function Step4() {
               </span>
               <div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>执行任务序列</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>日程表 · 全周期 {allScheduleItems.length} 项核心动作</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>日程表 · 全周期 {allScheduleItems.length} 项核心动作</p>
               </div>
             </div>
             <span
@@ -1294,7 +1293,7 @@ export default function Step4() {
                         fontWeight: 700,
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase' as const,
-                        color: 'rgba(255,255,255,0.55)',
+                        color: 'rgba(255,255,255,0.8)',
                         fontFamily: F.mono,
                         width: hi === 0 ? 96 : hi === 3 ? 128 : hi === 4 ? 80 : undefined,
                       }}
@@ -1326,12 +1325,12 @@ export default function Step4() {
                         style={{
                           display: 'flex', height: 26, width: 26, alignItems: 'center', justifyContent: 'center',
                           borderRadius: 8, border: `0.5px solid ${C.line}`,
-                          background: 'transparent', color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+                          background: 'transparent', color: 'rgba(255,255,255,0.84)', cursor: 'pointer',
                           transition: 'all 0.15s',
                         }}
                         aria-label={`验收：${item.title}`}
                         onMouseEnter={(e) => { const b = e.currentTarget; b.style.background = C.ikb; b.style.color = '#fff'; b.style.borderColor = C.ikb; }}
-                        onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = 'transparent'; b.style.color = 'rgba(255,255,255,0.6)'; b.style.borderColor = C.line; }}
+                        onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = 'transparent'; b.style.color = 'rgba(255,255,255,0.84)'; b.style.borderColor = C.line; }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden>check</span>
                       </button>
@@ -1354,7 +1353,7 @@ export default function Step4() {
       </Reveal>
 
       {/* ── 避坑预警 + 成功标准 ────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 44 }}>
         {/* 避坑预警 */}
         <Item>
           <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
@@ -1383,7 +1382,7 @@ export default function Step4() {
                       <span className="material-symbols-outlined" style={{ marginTop: 2, flexShrink: 0, fontSize: 16, color: even ? C.burgundyText : C.accent3 }} aria-hidden>error_outline</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{w.signal}</span>
                     </div>
-                    <p style={{ marginBottom: 4, paddingLeft: 24, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '4px 0' }}>{w.meaning}</p>
+                    <p style={{ marginBottom: 4, paddingLeft: 24, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '4px 0' }}>{w.meaning}</p>
                     <p style={{ paddingLeft: 24, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
                       <span style={{ fontWeight: 600, color: even ? C.burgundyText : C.purpleText }}>方案：</span>
                       {w.solution}
@@ -1450,7 +1449,7 @@ export default function Step4() {
         <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -1465,7 +1464,7 @@ export default function Step4() {
           </span>
         </div>
       </Reveal>
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 44 }}>
         {/* 执行健康度雷达 */}
         <Item>
           <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
@@ -1476,7 +1475,7 @@ export default function Step4() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>执行健康度雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1489,7 +1488,7 @@ export default function Step4() {
                 >
                   83
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -1534,7 +1533,7 @@ export default function Step4() {
               {RADAR_DIMS_S4.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1552,7 +1551,7 @@ export default function Step4() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>累计完成度预估</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前执行计划测算</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>按当前执行计划测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1562,7 +1561,7 @@ export default function Step4() {
                     style={{
                       borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, fontFamily: F.mono,
                       background: i === 0 ? C.grad : 'rgba(255,255,255,0.10)',
-                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.6)',
+                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.84)',
                     }}
                   >
                     {t}
@@ -1575,7 +1574,7 @@ export default function Step4() {
               <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 3, borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden>trending_up</span>+{generated.phases.length * 3} 阶段
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>第9周完成</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>第9周完成</span>
             </div>
             {(() => {
               const data = TREND_DATA_S4;
@@ -1609,7 +1608,7 @@ export default function Step4() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingInline: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingInline: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {TREND_LABELS_S4.map((m) => <span key={m}>{m}</span>)}
             </div>
           </div>
@@ -1622,7 +1621,7 @@ export default function Step4() {
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
             {/* Feedback */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>这个结果对你有帮助吗？</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>这个结果对你有帮助吗？</span>
               <motion.button
                 type="button"
                 onClick={handleFeedbackUp}
