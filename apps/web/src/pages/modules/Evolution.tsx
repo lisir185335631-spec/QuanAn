@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   EVOLUTION_ARCHIVE_ADD,
   EVOLUTION_ARCHIVE_DONE_CHIP,
@@ -76,12 +76,12 @@ function EvolutionHeader({ onTrigger }: EvolutionHeaderProps) {
     <header data-testid="evolution-header" style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
       <div style={{ flexShrink: 0 }}>
         <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div data-testid="evolution-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+          <div data-testid="evolution-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>
             <span style={{ fontFamily: F.mono, color: C.ikb, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', textShadow: C.textShadow }}>
               {EVOLUTION_BREADCRUMB_LEFT}
             </span>
             <span className="material-symbols-outlined" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} aria-hidden={true}>chevron_right</span>
-            <span style={{ color: 'rgba(255,255,255,0.6)', textShadow: C.textShadow }}>{EVOLUTION_H1}</span>
+            <span style={{ color: 'rgba(255,255,255,0.84)', textShadow: C.textShadow }}>{EVOLUTION_H1}</span>
           </div>
         </Reveal>
         <Reveal style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -149,33 +149,33 @@ function EvolutionHeader({ onTrigger }: EvolutionHeaderProps) {
           {EVOLUTION_SUBTITLE_PARTS.suffix}
         </p>
       </div>
-      <motion.button
-        type="button"
-        data-testid="trigger-evolution-btn"
-        onClick={onTrigger}
-        whileHover={{ y: -3 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        className="lg-gradbtn"
-        style={{
-          flexShrink: 0,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          whiteSpace: 'nowrap',
-          borderRadius: 9999,
-          padding: '10px 22px',
-          fontSize: 13,
-          fontWeight: 700,
-          fontFamily: F.cn,
-          color: '#fff',
-          cursor: 'pointer',
-          border: 'none',
-        }}
-        aria-label="触发进化"
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>bolt</span>
-        {EVOLUTION_TRIGGER_BTN}
-      </motion.button>
+      <Magnetic strength={0.3}>
+        <button
+          type="button"
+          data-testid="trigger-evolution-btn"
+          onClick={onTrigger}
+          className="lg-gradbtn"
+          style={{
+            flexShrink: 0,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            whiteSpace: 'nowrap',
+            borderRadius: 9999,
+            padding: '10px 22px',
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: F.cn,
+            color: '#fff',
+            cursor: 'pointer',
+            border: 'none',
+          }}
+          aria-label="触发进化"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>bolt</span>
+          {EVOLUTION_TRIGGER_BTN}
+        </button>
+      </Magnetic>
     </header>
   );
 }
@@ -202,7 +202,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
         className="lg-glass"
         whileHover={{ y: -4 }}
         transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{ marginBottom: 32, overflow: 'hidden', borderRadius: 20, padding: 24 }}
+        style={{ marginBottom: 44, overflow: 'hidden', borderRadius: 20, padding: 24 }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -231,14 +231,14 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
                 </p>
                 <p
                   data-testid="level-info"
-                  style={{ marginTop: 2, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '2px 0 0', fontFamily: F.cn }}
+                  style={{ marginTop: 2, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '2px 0 0', fontFamily: F.cn }}
                 >
                   {infoText}
                 </p>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>
                 <span>进化经验</span>
                 <span>{progressPct}%</span>
               </div>
@@ -255,7 +255,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
               </div>
               <p
                 data-testid="level-next"
-                style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0 }}
+                style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0 }}
               >
                 {nextText}
               </p>
@@ -294,7 +294,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
                 >
                   <span
                     className="material-symbols-outlined"
-                    style={{ fontSize: 20, color: isActive ? '#fff' : 'rgba(255,255,255,0.6)' }}
+                    style={{ fontSize: 20, color: isActive ? '#fff' : 'rgba(255,255,255,0.84)' }}
                     aria-hidden={true}
                   >
                     {lvl.id === 'L1'
@@ -372,13 +372,13 @@ const STAT_VARIANT_STYLES: Record<StatVariant, StatVariantStyle> = {
 function StatCard({ variant, label, value, unit = '', showDelta = false }: StatCardProps) {
   const s = STAT_VARIANT_STYLES[variant];
   return (
-    <Item>
+    <Item style={{ height: '100%' }}>
       <motion.div
         data-testid={`stat-card-${variant}`}
         className="lg-glass lg-spec"
         whileHover={{ y: -5 }}
         transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{ borderRadius: 20, padding: 22 }}
+        style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span
@@ -414,11 +414,11 @@ function StatCard({ variant, label, value, unit = '', showDelta = false }: StatC
         <div style={{ marginTop: 16 }}>
           <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
             {value}
-            {unit && <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginLeft: 2 }}>{unit}</span>}
+            {unit && <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', marginLeft: 2 }}>{unit}</span>}
           </p>
           <p
             data-testid={`stat-label-${variant}`}
-            style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}
+            style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}
           >
             {label}
           </p>
@@ -474,7 +474,7 @@ function InsightCard({ items }: { items: InsightItem[] }) {
           >
             {EVOLUTION_INSIGHT_EMPTY_TITLE}
           </p>
-          <p style={{ maxWidth: 200, fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>
+          <p style={{ maxWidth: 200, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
             {EVOLUTION_INSIGHT_EMPTY_DESC}
           </p>
         </div>
@@ -507,39 +507,40 @@ function InsightCard({ items }: { items: InsightItem[] }) {
         </span>
         <h3 style={{ fontSize: 13, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{EVOLUTION_INSIGHT_TITLE}</h3>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
         {items.map((item) => (
-          <div
-            key={String(item.id)}
-            data-testid={`insight-item-${String(item.id)}`}
-            className="lg-glass"
-            style={{ borderRadius: 12, padding: '12px 16px' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <Item key={String(item.id)} style={{ height: '100%' }}>
+            <div
+              data-testid={`insight-item-${String(item.id)}`}
+              className="lg-glass"
+              style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '12px 16px', height: '100%' }}
+            >
               <span style={{ fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>
                 {item.direction ?? '综合'}
               </span>
-              {item.levelAfter && (
-                <span
-                  style={{
-                    borderRadius: 9999,
-                    padding: '2px 8px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    background: 'rgba(168,197,224,0.18)',
-                    color: C.ikb,
-                  }}
-                >
-                  → {item.levelAfter}
-                </span>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 'auto' }}>
+                {item.levelAfter && (
+                  <span
+                    style={{
+                      borderRadius: 9999,
+                      padding: '2px 8px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      background: 'rgba(168,197,224,0.18)',
+                      color: C.ikb,
+                    }}
+                  >
+                    → {item.levelAfter}
+                  </span>
+                )}
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
+                  {item.triggerType} · {new Date(item.createdAt).toLocaleDateString('zh-CN')}
+                </p>
+              </div>
             </div>
-            <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0', fontFamily: F.cn }}>
-              {item.triggerType} · {new Date(item.createdAt).toLocaleDateString('zh-CN')}
-            </p>
-          </div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
     </motion.div>
   );
 }
@@ -589,7 +590,7 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
           >
             {EVOLUTION_FEEDBACK_EMPTY_TITLE}
           </p>
-          <p style={{ maxWidth: 200, fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>
+          <p style={{ maxWidth: 200, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
             {EVOLUTION_FEEDBACK_EMPTY_DESC}
           </p>
         </div>
@@ -622,32 +623,30 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
         </span>
         <h3 style={{ fontSize: 13, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{EVOLUTION_FEEDBACK_TITLE}</h3>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
         {items.map((item) => (
-          <div
-            key={String(item.id)}
-            data-testid={`feedback-item-${String(item.id)}`}
-            className="lg-glass"
-            style={{ display: 'flex', alignItems: 'flex-start', gap: 12, borderRadius: 12, padding: '12px 16px' }}
-          >
-            <span
-              style={{ marginTop: 2, fontSize: 18, flexShrink: 0 }}
-              aria-label={item.rating === 'good' ? '好评' : '差评'}
+          <Item key={String(item.id)} style={{ height: '100%' }}>
+            <div
+              data-testid={`feedback-item-${String(item.id)}`}
+              className="lg-glass"
+              style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '12px 16px', height: '100%' }}
             >
-              {item.rating === 'good' ? '👍' : '👎'}
-            </span>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{item.agentId}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ marginRight: 6 }} aria-label={item.rating === 'good' ? '好评' : '差评'}>
+                  {item.rating === 'good' ? '👍' : '👎'}
+                </span>
+                {item.agentId}
+              </p>
               {item.comment && (
-                <p style={{ marginTop: 2, fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: '2px 0 0', fontFamily: F.cn }}>{item.comment}</p>
+                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn }}>{item.comment}</p>
               )}
-              <p style={{ marginTop: 2, fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '2px 0 0', fontFamily: F.cn }}>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: 'auto 0 0', fontFamily: F.cn }}>
                 {new Date(item.createdAt).toLocaleDateString('zh-CN')}
               </p>
             </div>
-          </div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
     </motion.div>
   );
 }
@@ -668,7 +667,7 @@ function SettingRow({ label, desc, control, testid = 'setting-row' }: SettingRow
     >
       <div>
         <p style={{ fontSize: 13, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{label}</p>
-        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0', fontFamily: F.cn }}>{desc}</p>
+        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn }}>{desc}</p>
       </div>
       <div style={{ flexShrink: 0 }}>{control}</div>
     </div>
@@ -746,9 +745,9 @@ export default function Evolution() {
           <EvolutionHeader onTrigger={handleTrigger} />
           <div
             data-testid="evolution-loading"
-            style={{ display: 'flex', minHeight: 400, alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)' }}
+            style={{ display: 'flex', minHeight: 400, alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.84)' }}
           >
-            <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: C.ikb }} aria-hidden={true}>progress_activity</span>
+            <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>progress_activity</span>
           </div>
         </div>
       </LiquidShell>
@@ -767,25 +766,25 @@ export default function Evolution() {
           >
             <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'rgba(255,255,255,0.9)' }} aria-hidden={true}>error</span>
             <p style={{ fontSize: 14, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>加载进化档案失败，请刷新重试</p>
-            <motion.button
-              type="button"
-              onClick={() => void profileQuery.refetch()}
-              whileHover={{ y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-gradbtn"
-              style={{
-                borderRadius: 9999,
-                padding: '8px 20px',
-                fontSize: 13,
-                fontWeight: 700,
-                fontFamily: F.cn,
-                color: '#fff',
-                cursor: 'pointer',
-                border: 'none',
-              }}
-            >
-              重试
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={() => void profileQuery.refetch()}
+                className="lg-gradbtn"
+                style={{
+                  borderRadius: 9999,
+                  padding: '8px 20px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  fontFamily: F.cn,
+                  color: '#fff',
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+              >
+                重试
+              </button>
+            </Magnetic>
           </div>
         </div>
       </LiquidShell>
@@ -809,7 +808,7 @@ export default function Evolution() {
             >
               暂无进化档案
             </p>
-            <p style={{ maxWidth: 320, fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>
+            <p style={{ maxWidth: 320, fontSize: 13, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
               开始使用各功能并留下反馈，积累后进化档案将自动创建
             </p>
           </div>
@@ -833,7 +832,7 @@ export default function Evolution() {
         />
 
         {/* §3 4 StatCard KPI */}
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 44 }}>
           <StatCard
             variant="good"
             label={EVOLUTION_STAT_LABELS.good}
@@ -858,14 +857,14 @@ export default function Evolution() {
         </RevealGroup>
 
         {/* §5 2-col: 洞察 + 反馈 */}
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 44 }}>
           <Item><InsightCard items={insights} /></Item>
           <Item><FeedbackCard items={feedbacks} /></Item>
         </RevealGroup>
 
         {/* §6 深度学习档案 — 显示计数 + 跳转入口 */}
         <Reveal>
-          <section style={{ marginBottom: 32 }}>
+          <section style={{ marginBottom: 44 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <h2 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>auto_awesome</span>
@@ -925,7 +924,7 @@ export default function Evolution() {
                     <p style={{ fontSize: 13, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
                       已完成 {deepLearningCount} 个深度学习档案
                     </p>
-                    <p style={{ marginTop: 2, fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: '2px 0 0', fontFamily: F.cn }}>
+                    <p style={{ marginTop: 2, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: '2px 0 0', fontFamily: F.cn }}>
                       点击「新增学习」继续积累 · 或在深度学习页查看详情
                     </p>
                   </div>
@@ -952,7 +951,7 @@ export default function Evolution() {
                 className="lg-glass"
                 style={{ borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}
               >
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
                   还没有深度学习档案 · 点击「新增学习」开始积累
                 </p>
               </div>
@@ -962,7 +961,7 @@ export default function Evolution() {
 
         {/* §7 进化设置 */}
         <Reveal>
-          <section style={{ marginBottom: 32 }}>
+          <section style={{ marginBottom: 44 }}>
             <h2 style={{ fontSize: 16, fontWeight: 800, color: C.ink, margin: '0 0 16px', fontFamily: F.cn, textShadow: C.textShadow }}>{EVOLUTION_SETTINGS_TITLE}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <SettingRow
@@ -1041,7 +1040,7 @@ export default function Evolution() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
             <span
               style={{
                 marginLeft: 'auto',
@@ -1090,12 +1089,12 @@ export default function Evolution() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>进化维度雷达</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, margin: 0, textShadow: C.textShadow }}>73</p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>综合分</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>73</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>综合分</p>
                 </div>
               </div>
               {(() => {
@@ -1134,7 +1133,7 @@ export default function Evolution() {
                     {dims.map((d, i) => {
                       const [x, y] = pt(i, R + 16);
                       return (
-                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
                           {d.label}
                         </text>
                       );
@@ -1146,7 +1145,7 @@ export default function Evolution() {
                 {EV_RADAR_DIMS.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{d.value}</span>
                   </div>
                 ))}
@@ -1180,7 +1179,7 @@ export default function Evolution() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>进化成长曲线</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>按进化维度综合测算</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>按进化维度综合测算</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1195,7 +1194,7 @@ export default function Evolution() {
                         fontFamily: F.cn,
                         ...(i === 0
                           ? { background: C.grad, color: '#fff', textShadow: C.textShadow }
-                          : { background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.6)' }),
+                          : { background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.84)' }),
                       }}
                     >
                       {t}
@@ -1223,7 +1222,7 @@ export default function Evolution() {
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>
                   +360%
                 </span>
-                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较冷启动基线</span>
               </div>
               {(() => {
                 const data = EV_TREND_DATA;
@@ -1258,7 +1257,7 @@ export default function Evolution() {
                   </svg>
                 );
               })()}
-              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
                 {EV_TREND_LABELS.map((m) => <span key={m}>{m}</span>)}
               </div>
             </motion.div>
