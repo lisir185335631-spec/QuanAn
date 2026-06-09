@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   DEEP_LEARNING_H1,
   DEEP_LEARNING_SUBTITLE,
@@ -163,15 +163,15 @@ function SampleFormPioneer({
             justifyContent: 'center',
             borderRadius: 12,
             background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
-            color: C.ikb,
+            color: C.ink,
             fontFamily: F.cn,
           }}
         >
-          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>psychology</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>psychology</span>
         </span>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>添加文案样本</h2>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>上传文件或粘贴文案 · AI 风格解析</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>上传文件或粘贴文案 · AI 风格解析</p>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ function SampleFormPioneer({
               cursor: 'pointer',
               transition: 'all 0.2s',
               background: activeTab === 'upload' ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.06)',
-              color: activeTab === 'upload' ? C.ikb : 'rgba(255,255,255,0.6)',
+              color: activeTab === 'upload' ? C.ikb : 'rgba(255,255,255,0.84)',
               textShadow: activeTab === 'upload' ? C.textShadow : 'none',
             }}
           >
@@ -221,7 +221,7 @@ function SampleFormPioneer({
               cursor: 'pointer',
               transition: 'all 0.2s',
               background: activeTab === 'paste' ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.06)',
-              color: activeTab === 'paste' ? C.ikb : 'rgba(255,255,255,0.6)',
+              color: activeTab === 'paste' ? C.ikb : 'rgba(255,255,255,0.84)',
               textShadow: activeTab === 'paste' ? C.textShadow : 'none',
             }}
           >
@@ -410,12 +410,12 @@ function SampleFormPioneer({
                 >
                   <span
                     data-testid="ctrl-enter-hint"
-                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}
+                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}
                   >
                     {DL_HINT_CTRL_ENTER}
                   </span>
                   <span
-                    style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: isTextTooLong ? 'rgba(255,120,120,0.9)' : 'rgba(255,255,255,0.55)' }}
+                    style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: isTextTooLong ? 'rgba(255,120,120,0.9)' : 'rgba(255,255,255,0.8)' }}
                   >
                     {text.length} 字
                   </span>
@@ -549,7 +549,7 @@ function SampleFormPioneer({
                   }}
                 />
               </div>
-              <p style={{ marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                 已添加 {sampleCount} 篇文案样本
               </p>
             </div>
@@ -571,43 +571,39 @@ function SampleFormPioneer({
             )}
 
             {/* 主 CTA */}
-            <motion.button
-              data-testid="start-learning-btn"
-              type="button"
-              disabled={startDisabled}
-              onClick={onStart}
-              whileHover={startDisabled ? {} : { y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                borderRadius: 14,
-                padding: '14px 32px',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                fontFamily: F.cn,
-                cursor: startDisabled ? 'not-allowed' : 'pointer',
-                opacity: startDisabled ? 0.5 : 1,
-                background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
-                border: `0.5px solid rgba(168,197,224,0.55)`,
-                color: C.ink,
-                textShadow: C.textShadow,
-                transition: 'opacity 0.2s',
-                boxSizing: 'border-box',
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>neurology</span>
-              {isLearnPending
-                ? '分析中…'
-                : isParsePending
-                ? '解析中…'
-                : `${DL_START_BTN_PREFIX}${DL_START_BTN_SUFFIX(sampleCount)}`}
-            </motion.button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Magnetic strength={0.3}>
+              <button
+                data-testid="start-learning-btn"
+                type="button"
+                disabled={startDisabled}
+                onClick={onStart}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  borderRadius: 9999,
+                  padding: '14px 32px',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  fontFamily: F.cn,
+                  cursor: startDisabled ? 'not-allowed' : 'pointer',
+                  opacity: startDisabled ? 0.5 : 1,
+                  color: '#fff',
+                  border: 'none',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>neurology</span>
+                {isLearnPending
+                  ? '分析中…'
+                  : isParsePending
+                  ? '解析中…'
+                  : `${DL_START_BTN_PREFIX}${DL_START_BTN_SUFFIX(sampleCount)}`}
+              </button>
+            </Magnetic>
+            </div>
           </div>
         )}
 
@@ -640,7 +636,7 @@ function SampleFormPioneer({
                   style={{ borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 4 }}
                 >
                   <p
-                    style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}
+                    style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}
                   >{item.label}</p>
                   <p
                     data-testid={item.testid}
@@ -651,7 +647,7 @@ function SampleFormPioneer({
             </div>
             {parseAnalysis.keywords.length > 0 && (
               <div>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, marginBottom: 4 }}>关键词</p>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, marginBottom: 4 }}>关键词</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} data-testid="parse-keywords">
                   {parseAnalysis.keywords.map((kw, i) => (
                     <span
@@ -758,7 +754,7 @@ function SampleFormPioneer({
 function ArchiveStatusChip({ status }: { status: string }) {
   const label = getDLArchiveStatusLabel(status);
 
-  let chipStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' };
+  let chipStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.84)' };
   let dotColor = 'rgba(255,255,255,0.6)';
 
   if (status === 'approved') {
@@ -771,7 +767,7 @@ function ArchiveStatusChip({ status }: { status: string }) {
     chipStyle = { background: 'rgba(255,120,120,0.15)', color: 'rgba(255,150,150,0.9)' };
     dotColor = 'rgba(255,120,120,0.9)';
   } else if (status === 'cancelled') {
-    chipStyle = { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' };
+    chipStyle = { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.72)' };
     dotColor = 'rgba(255,255,255,0.5)';
   }
 
@@ -843,7 +839,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
           </div>
           <p
             data-testid="archive-subtitle"
-            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>description</span>
             {row.sourcePlatform} · {createdDateStr}
@@ -882,7 +878,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-label={expanded ? '折叠档案' : '展开档案'}
-            style={{ borderRadius: 8, padding: 6, color: 'rgba(255,255,255,0.55)', background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+            style={{ borderRadius: 8, padding: 6, color: 'rgba(255,255,255,0.8)', background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
@@ -937,7 +933,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
               />
               {DL_SECTION_LOGIC}
             </p>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
               状态：{row.status} · 详细分析在审核完成后可见
             </p>
           </div>
@@ -953,7 +949,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
               />
               {DL_SECTION_PACKAGING}
             </p>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
               来源平台：{row.sourcePlatform}
             </p>
           </div>
@@ -969,7 +965,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
               />
               {DL_SECTION_HIGHLIGHTS_PREFIX} (0)
             </p>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
               文案摘要：{row.sample.slice(0, 120)}{row.sample.length > 120 ? '…' : ''}
             </p>
           </div>
@@ -1010,12 +1006,12 @@ function EmptyArchivesPioneer() {
       >
         <span
           className="material-symbols-outlined"
-          style={{ fontSize: 40, color: 'rgba(168,197,224,0.55)' }}
+          style={{ fontSize: 40, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}
           aria-hidden={true}
         >neurology</span>
       </span>
-      <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_TITLE}</p>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_DESC}</p>
+      <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_TITLE}</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_DESC}</p>
     </div>
   );
 }
@@ -1125,38 +1121,44 @@ function UsageInstructionsPioneer() {
           {DL_USAGE_TITLE}
         </h3>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
         {DL_USAGE_SECTIONS.map((section, si) => (
-          <div key={si} data-testid={`usage-section-${si}`} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p
-              data-testid={`usage-section-title-${si}`}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: C.ikb, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
+          <Item key={si} style={{ height: '100%' }}>
+            <div
+              data-testid={`usage-section-${si}`}
+              className="lg-glass"
+              style={{ display: 'flex', flexDirection: 'column', gap: 8, borderRadius: 14, padding: 16, height: '100%' }}
             >
-              <span
-                style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
-                aria-hidden={true}
-              />
-              {section.title}
-            </p>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: 0, padding: 0, listStyle: 'none' }}>
-              {section.bullets.map((bullet, bi) => (
-                <li
-                  key={bi}
-                  data-testid={`usage-bullet-${si}-${bi}`}
-                  style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ marginTop: 2, flexShrink: 0, fontSize: 14, color: 'rgba(168,197,224,0.7)' }}
-                    aria-hidden={true}
-                  >chevron_right</span>
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
+              <p
+                data-testid={`usage-section-title-${si}`}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', color: C.ikb, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
+              >
+                <span
+                  style={{ display: 'inline-block', height: 12, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom,${C.ikb},rgba(168,197,224,0.5))` }}
+                  aria-hidden={true}
+                />
+                {section.title}
+              </p>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: 0, padding: 0, listStyle: 'none', marginTop: 'auto' }}>
+                {section.bullets.map((bullet, bi) => (
+                  <li
+                    key={bi}
+                    data-testid={`usage-bullet-${si}-${bi}`}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}
+                  >
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ marginTop: 2, flexShrink: 0, fontSize: 14, color: 'rgba(168,197,224,0.7)' }}
+                      aria-hidden={true}
+                    >chevron_right</span>
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Item>
         ))}
-      </div>
+      </RevealGroup>
     </div>
   );
 }
@@ -1466,12 +1468,12 @@ export default function DeepLearning() {
         {/* ── KPI 卡一排(4 卡) ────────────────────────────────── */}
         <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 8 }}>
           {/* 档案数 · 冷蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 18, padding: 20 }}
+              style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -1488,9 +1490,9 @@ export default function DeepLearning() {
               <div style={{ marginTop: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                    {archives.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 份</span>
+                    {archives.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 份</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>学习档案</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>学习档案</p>
                 </div>
                 <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                   <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }}>
@@ -1503,12 +1505,12 @@ export default function DeepLearning() {
           </Item>
 
           {/* 样本数 · 白 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 18, padding: 20 }}
+              style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -1523,9 +1525,9 @@ export default function DeepLearning() {
               <div style={{ marginTop: 14 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                   {archives.length + samples.length}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 篇</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 篇</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>文案样本</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>文案样本</p>
               </div>
               <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                 {[48, 80, 65, 92, 74].map((h, i) => (
@@ -1539,12 +1541,12 @@ export default function DeepLearning() {
           </Item>
 
           {/* 训练进度 · 冷蓝渐变 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 18, padding: 20 }}
+              style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -1558,9 +1560,9 @@ export default function DeepLearning() {
               </div>
               <div style={{ marginTop: 14 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  —<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>%</span>
+                  —<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>%</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>训练进度</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>训练进度</p>
               </div>
               <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
                 <div
@@ -1571,12 +1573,12 @@ export default function DeepLearning() {
           </Item>
 
           {/* 模型版本 · 冷蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 18, padding: 20 }}
+              style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -1590,9 +1592,9 @@ export default function DeepLearning() {
               </div>
               <div style={{ marginTop: 14 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  v1<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>.0</span>
+                  v1<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>.0</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>模型版本</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>模型版本</p>
               </div>
               <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {['风格分析', '逻辑提取'].map((k) => (
@@ -1644,7 +1646,7 @@ export default function DeepLearning() {
             style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em', color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}
           >
             {DL_ARCHIVES_TITLE_PREFIX}
-            <span style={{ marginLeft: 8, fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.55)' }}>({archives.length})</span>
+            <span style={{ marginLeft: 8, fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.8)' }}>({archives.length})</span>
           </h2>
 
           {isListLoading && <ArchiveSkeletonPioneer />}
@@ -1682,11 +1684,11 @@ export default function DeepLearning() {
         <Reveal style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span
             className="material-symbols-outlined"
-            style={{ fontSize: 20, color: C.ikb }}
+            style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}
             aria-hidden={true}
           >insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 学习能力数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 综合评估 · 实时测算</span>
           <span
             style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, padding: '4px 12px', fontSize: 12, fontWeight: 600, background: 'rgba(168,197,224,0.15)', color: C.ikb, fontFamily: F.cn }}
           >
@@ -1714,12 +1716,12 @@ export default function DeepLearning() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 学习能力雷达</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估（模拟示意）</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>六维模型评估（模拟示意）</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>86</p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>综合分</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>86</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>综合分</p>
                 </div>
               </div>
               {(() => {
@@ -1765,7 +1767,7 @@ export default function DeepLearning() {
                 {radarDims.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, display: 'inline-block' }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                   </div>
                 ))}
@@ -1790,7 +1792,7 @@ export default function DeepLearning() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>训练样本积累</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>按当前学习档案测算</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>按当前学习档案测算</p>
                   </div>
                 </div>
                 <span
@@ -1801,7 +1803,7 @@ export default function DeepLearning() {
               </div>
               <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
                 <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{archives.length}</p>
-                <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
+                <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>份学习档案 · 持续积累中</span>
               </div>
               {(() => {
                 const data = [10, 18, 22, 30, 42, 38, 55, 62, 58, 70, 80, 96];
@@ -1849,7 +1851,7 @@ export default function DeepLearning() {
                   </svg>
                 );
               })()}
-              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
                 {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                   <span key={m}>{m}</span>
                 ))}
