@@ -151,14 +151,14 @@ export default function Dashboard() {
         </Reveal>
 
         {/* ── 数据概览 KPI 卡一排 ───────────────────────────────── */}
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 44 }}>
           {/* 市场洞察 · 环形进度 · 蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 20 }}
+              style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -171,9 +171,9 @@ export default function Dashboard() {
               <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                    8.4M<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> TB</span>
+                    8.4M<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> TB</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>市场洞察</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>市场洞察</p>
                 </div>
                 <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                   <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
@@ -201,12 +201,12 @@ export default function Dashboard() {
           </Item>
 
           {/* 收益模型 · 迷你柱 · 玫红 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 20 }}
+              style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundy }}>
@@ -216,9 +216,9 @@ export default function Dashboard() {
               </div>
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  ¥2.1B<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> CNY</span>
+                  ¥2.1B<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> CNY</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>收益模型</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>收益模型</p>
               </div>
               <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                 {[58, 84, 70, 96, 78].map((h, i) => (
@@ -229,12 +229,12 @@ export default function Dashboard() {
           </Item>
 
           {/* 内容生成 · 进度条 · 紫 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 20 }}
+              style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.18)', color: C.accent3 }}>
@@ -244,9 +244,9 @@ export default function Dashboard() {
               </div>
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  45K<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 节点/秒</span>
+                  45K<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 节点/秒</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>内容生成</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>内容生成</p>
               </div>
               <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(255,255,255,0.10)' }}>
                 <div
@@ -262,12 +262,12 @@ export default function Dashboard() {
           </Item>
 
           {/* 部署进度 · 环形 + 百分比 · 蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 20 }}
+              style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -278,9 +278,9 @@ export default function Dashboard() {
               <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                    78<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>%</span>
+                    78<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>%</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>整体部署进度</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>整体部署进度</p>
                 </div>
                 <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                   <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
@@ -315,7 +315,7 @@ export default function Dashboard() {
             style={{
               borderRadius: 20,
               padding: 32,
-              marginBottom: 32,
+              marginBottom: 44,
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -345,8 +345,8 @@ export default function Dashboard() {
                 部署进度
               </h3>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                <span style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, textShadow: C.textShadow }}>78</span>
-                <span style={{ marginBottom: 4, fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>%</span>
+                <span style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>78</span>
+                <span style={{ marginBottom: 4, fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>%</span>
                 <span style={{ marginBottom: 4, marginLeft: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', border: `0.5px solid rgba(168,197,224,0.45)`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
                   <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+5%
                 </span>
@@ -386,7 +386,7 @@ export default function Dashboard() {
                         ? C.ikb
                         : i === DEPLOY_PHASES.length - 2
                           ? C.burgundyText
-                          : 'rgba(255,255,255,0.5)',
+                          : 'rgba(255,255,255,0.72)',
                       fontFamily: F.mono,
                       textShadow: C.textShadow,
                     }}
@@ -448,17 +448,17 @@ export default function Dashboard() {
                   <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
                   实时监控
                 </span>
-                <span aria-hidden={true} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.6)' }}>sort</span>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.84)' }}>sort</span>
               </div>
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', textAlign: 'left', fontSize: 14, borderCollapse: 'collapse' }}>
                 <thead style={{ borderBottom: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.04)' }}>
                   <tr>
-                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>标识符</th>
-                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>来源</th>
-                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>状态</th>
-                    <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>延迟</th>
+                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>标识符</th>
+                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>来源</th>
+                    <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>状态</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>延迟</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -543,15 +543,15 @@ export default function Dashboard() {
 
         {/* ── 数据洞察 band (雷达 + 趋势) ──────────────────────── */}
         <Reveal style={{ marginTop: 32, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', border: `0.5px solid rgba(168,197,224,0.45)`, padding: '4px 12px', fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.mono }}>
             <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
             模型已就绪
           </span>
         </Reveal>
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 44 }}>
           {/* 系统健康度雷达 · col-span-5 */}
           <Item>
             <motion.div
@@ -567,12 +567,12 @@ export default function Dashboard() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>系统健康度雷达</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>84</p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>综合分</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>84</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>综合分</p>
                 </div>
               </div>
               {(() => {
@@ -619,7 +619,7 @@ export default function Dashboard() {
                 {DB_RADAR_DIMS.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0, display: 'inline-block' }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
                   </div>
                 ))}
@@ -642,7 +642,7 @@ export default function Dashboard() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>7 日吞吐趋势</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>按当前系统节点测算</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>按当前系统节点测算</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -655,7 +655,7 @@ export default function Dashboard() {
                         fontSize: 11,
                         fontWeight: 600,
                         background: i === 0 ? 'rgba(168,197,224,0.45)' : 'rgba(255,255,255,0.08)',
-                        color: i === 0 ? C.ink : 'rgba(255,255,255,0.5)',
+                        color: i === 0 ? C.ink : 'rgba(255,255,255,0.72)',
                         fontFamily: F.mono,
                       }}
                     >
@@ -669,7 +669,7 @@ export default function Dashboard() {
                 <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', border: `0.5px solid rgba(168,197,224,0.45)`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
                   <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+142%
                 </span>
-                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>节点/秒峰值</span>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>节点/秒峰值</span>
               </div>
               {(() => {
                 const data = DB_TREND_DATA;
@@ -719,7 +719,7 @@ export default function Dashboard() {
               })()}
               <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4 }}>
                 {DB_TREND_LABELS.map((m) => (
-                  <span key={m} style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>{m}</span>
+                  <span key={m} style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>{m}</span>
                 ))}
               </div>
             </motion.div>
