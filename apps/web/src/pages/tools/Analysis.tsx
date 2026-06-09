@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   ANALYSIS_CONS,
   ANALYSIS_CONS_TITLE,
@@ -140,32 +140,32 @@ export default function Analysis() {
           </div>
           {/* 重新分析按钮 */}
           <div style={{ flexShrink: 0 }}>
-            <motion.button
-              type="button"
-              aria-label="重新分析"
-              onClick={handleAnalyze}
-              disabled={!copy.trim()}
-              whileHover={{ y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-gradbtn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                borderRadius: 9999,
-                padding: '10px 22px',
-                fontSize: 13,
-                fontWeight: 700,
-                fontFamily: F.mono,
-                cursor: 'pointer',
-                border: 'none',
-                opacity: copy.trim() ? 1 : 0.4,
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
-              重新分析
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                aria-label="重新分析"
+                onClick={handleAnalyze}
+                disabled={!copy.trim()}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 9999,
+                  padding: '10px 22px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                  border: 'none',
+                  opacity: copy.trim() ? 1 : 0.4,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
+                重新分析
+              </button>
+            </Magnetic>
           </div>
         </header>
       </Reveal>
@@ -175,7 +175,7 @@ export default function Analysis() {
         <div
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             display: 'flex',
             alignItems: 'flex-start',
             gap: 12,
@@ -183,7 +183,7 @@ export default function Analysis() {
             padding: 18,
           }}
         >
-          <span className="material-symbols-outlined" style={{ marginTop: 2, flexShrink: 0, fontSize: 20, color: C.ikb }} aria-hidden={true}>info</span>
+          <span className="material-symbols-outlined" style={{ marginTop: 2, flexShrink: 0, fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>info</span>
           <p style={{ fontSize: 14, lineHeight: 1.6, color: C.purpleText, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
             <span style={{ fontWeight: 700 }}>使用方法：</span>
             粘贴任意短视频文案/口播稿 → AI 将从结构、节奏、爆款元素等多维度深度分析
@@ -225,14 +225,14 @@ export default function Analysis() {
                   justifyContent: 'center',
                   borderRadius: 12,
                   background: 'linear-gradient(135deg, rgba(168,197,224,0.4), rgba(120,160,220,0.25))',
-                  color: C.ikb,
+                  color: C.ink,
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>content_paste_search</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 22, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>content_paste_search</span>
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>输入文案内容</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>粘贴短视频文案 · AI 多维度深度分析</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>粘贴短视频文案 · AI 多维度深度分析</p>
               </div>
             </div>
             <span
@@ -285,7 +285,7 @@ export default function Analysis() {
                 />
                 文案内容 <span style={{ marginLeft: 4, color: C.yellow }}>*</span>
               </label>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }} aria-hidden={true}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }} aria-hidden={true}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.yellow }} aria-hidden={true}>auto_awesome</span>
                 AI 据此深度拆解
               </span>
@@ -330,7 +330,7 @@ export default function Analysis() {
                 }}
               >
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>支持</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>支持</span>
                   {['口播稿', '字幕', '描述文案', '评论区文案'].map((t) => (
                     <span
                       key={t}
@@ -340,7 +340,7 @@ export default function Analysis() {
                         fontSize: 11,
                         fontWeight: 500,
                         background: 'rgba(168,197,224,0.12)',
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,0.84)',
                         border: `0.5px solid ${C.line}`,
                         fontFamily: F.cn,
                       }}
@@ -349,39 +349,37 @@ export default function Analysis() {
                     </span>
                   ))}
                 </div>
-                <span style={{ flexShrink: 0, tabularNums: true, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono } as React.CSSProperties}>{copy.length} 字</span>
+                <span style={{ flexShrink: 0, tabularNums: true, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono } as React.CSSProperties}>{copy.length} 字</span>
               </div>
             </div>
           </div>
 
           {/* CTA */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <motion.button
-              type="button"
-              onClick={handleAnalyze}
-              disabled={!copy.trim()}
-              whileHover={{ y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-gradbtn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                borderRadius: 9999,
-                padding: '12px 32px',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                fontFamily: F.mono,
-                cursor: 'pointer',
-                border: 'none',
-                opacity: copy.trim() ? 1 : 0.4,
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
-              {ANALYSIS_CTA}
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleAnalyze}
+                disabled={!copy.trim()}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 9999,
+                  padding: '12px 32px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                  border: 'none',
+                  opacity: copy.trim() ? 1 : 0.4,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
+                {ANALYSIS_CTA}
+              </button>
+            </Magnetic>
           </div>
         </section>
       </Reveal>
@@ -484,7 +482,7 @@ export default function Analysis() {
                       </div>
                       <div style={{ padding: 16 }}>
                         {it.type !== undefined && (
-                          <p style={{ marginBottom: 6, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>类型：{it.type}</p>
+                          <p style={{ marginBottom: 6, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>类型：{it.type}</p>
                         )}
                         <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn, margin: 0 }}>{it.desc}</p>
                       </div>
@@ -522,10 +520,10 @@ export default function Analysis() {
                   justifyContent: 'center',
                   borderRadius: 9,
                   background: 'rgba(255,255,255,0.14)',
-                  color: C.ikb,
+                  color: C.ink,
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>stars</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>stars</span>
               </span>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{ANALYSIS_ELEMENTS_TITLE}</h3>
             </div>
@@ -685,32 +683,36 @@ export default function Analysis() {
               <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{ANALYSIS_SUGGESTIONS_TITLE}</h3>
             </div>
             <div style={{ padding: 24 }}>
-              <ol style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: 0, padding: 0, listStyle: 'none' }}>
+              <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
                 {ANALYSIS_SUGGESTIONS.map((s, i) => (
-                  <li key={s} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <span
-                      style={{
-                        display: 'flex',
-                        height: 28,
-                        width: 28,
-                        flexShrink: 0,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '50%',
-                        fontSize: 12,
-                        fontWeight: 800,
-                        color: '#fff',
-                        background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
-                        fontFamily: F.mono,
-                        textShadow: C.textShadow,
-                      }}
-                    >
-                      {i + 1}
-                    </span>
-                    <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn, margin: 0 }}>{s}</p>
-                  </li>
+                  <Item key={s} style={{ height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRadius: 12, padding: '12px 14px', background: 'rgba(255,255,255,0.04)', border: `0.5px solid ${C.line}` }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <span
+                          style={{
+                            display: 'flex',
+                            height: 28,
+                            width: 28,
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%',
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
+                            fontFamily: F.mono,
+                            textShadow: C.textShadow,
+                          }}
+                        >
+                          {i + 1}
+                        </span>
+                        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>{s}</p>
+                      </div>
+                    </div>
+                  </Item>
                 ))}
-              </ol>
+              </RevealGroup>
             </div>
           </section>
         </Reveal>
@@ -719,9 +721,9 @@ export default function Analysis() {
       {/* ── 数据洞察 band ────────────────────────────────────────────────── */}
       <Reveal style={{ marginTop: 48, marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -767,14 +769,14 @@ export default function Analysis() {
                     justifyContent: 'center',
                     borderRadius: 10,
                     background: 'rgba(168,197,224,0.22)',
-                    color: C.ikb,
+                    color: C.ink,
                   }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>radar</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>radar</span>
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{ANALYSIS_DIMENSIONS_TITLE}</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -794,7 +796,7 @@ export default function Analysis() {
                 >
                   {ANALYSIS_OVERALL_SCORE}
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}>{ANALYSIS_OVERALL_LABEL}</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}>{ANALYSIS_OVERALL_LABEL}</p>
               </div>
             </div>
             {(() => {
@@ -841,7 +843,7 @@ export default function Analysis() {
               {RADAR_DIMS_AN.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: d.color }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -870,14 +872,14 @@ export default function Analysis() {
                     justifyContent: 'center',
                     borderRadius: 10,
                     background: 'rgba(168,197,224,0.22)',
-                    color: C.ikb,
+                    color: C.ink,
                   }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>grade</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>grade</span>
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{ANALYSIS_OVERALL_LABEL}</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>综合 AI 评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>综合 AI 评估</p>
                 </div>
                 <span
                   style={{
@@ -900,7 +902,7 @@ export default function Analysis() {
                 <div>
                   <p style={{ fontSize: 64, fontWeight: 800, lineHeight: 1, margin: 0, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     {ANALYSIS_OVERALL_SCORE}
-                    <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>/100</span>
+                    <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>/100</span>
                   </p>
                 </div>
                 {/* 环形进度 */}
@@ -924,7 +926,7 @@ export default function Analysis() {
               <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {ANALYSIS_DIMENSIONS.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ width: 90, flexShrink: 0, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ width: 90, flexShrink: 0, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <div style={{ height: 6, flex: 1, overflow: 'hidden', borderRadius: 9999, background: 'rgba(168,197,224,0.14)' }}>
                       <div
                         style={{
@@ -942,13 +944,14 @@ export default function Analysis() {
             </motion.div>
 
             {/* 小 KPI 一排 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+            <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
               {/* 爆款元素数 */}
+              <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -4 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 16, padding: 18 }}
+                style={{ borderRadius: 16, padding: 18, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -981,17 +984,19 @@ export default function Analysis() {
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
                   {ANALYSIS_ELEMENTS.length}
-                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 个</span>
+                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 个</span>
                 </p>
-                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
+                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
               </motion.div>
+              </Item>
 
               {/* 优点数 */}
+              <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -4 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 16, padding: 18 }}
+                style={{ borderRadius: 16, padding: 18, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1024,17 +1029,19 @@ export default function Analysis() {
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
                   {ANALYSIS_PROS.length}
-                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 条</span>
+                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 条</span>
                 </p>
-                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>亮点</p>
+                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>亮点</p>
               </motion.div>
+              </Item>
 
               {/* 建议数 */}
+              <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -4 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 16, padding: 18 }}
+                style={{ borderRadius: 16, padding: 18, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1067,11 +1074,12 @@ export default function Analysis() {
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
                   {ANALYSIS_SUGGESTIONS.length}
-                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 条</span>
+                  <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 条</span>
                 </p>
-                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>优化建议</p>
+                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>优化建议</p>
               </motion.div>
-            </div>
+              </Item>
+            </RevealGroup>
           </div>
         </Item>
       </RevealGroup>
@@ -1089,7 +1097,7 @@ export default function Analysis() {
             paddingTop: 24,
           }}
         >
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{ANALYSIS_FEEDBACK_PROMPT}</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{ANALYSIS_FEEDBACK_PROMPT}</p>
           <motion.button
             type="button"
             onClick={handleFeedbackUp}
@@ -1105,7 +1113,7 @@ export default function Analysis() {
               borderRadius: 10,
               border: `0.5px solid ${C.line}`,
               background: 'rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               cursor: 'pointer',
             }}
           >
@@ -1126,7 +1134,7 @@ export default function Analysis() {
               borderRadius: 10,
               border: `0.5px solid ${C.line}`,
               background: 'rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               cursor: 'pointer',
             }}
           >
