@@ -216,7 +216,7 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
             borderRadius: '50%',
             border: `1px solid ${C.line}`,
             background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.84)',
             cursor: 'pointer',
             transition: 'border-color 0.15s, color 0.15s, background 0.15s',
           }}
@@ -229,7 +229,7 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
           onMouseLeave={(e) => {
             const btn = e.currentTarget as HTMLButtonElement;
             btn.style.borderColor = C.line;
-            btn.style.color = 'rgba(255,255,255,0.6)';
+            btn.style.color = 'rgba(255,255,255,0.84)';
             btn.style.background = 'rgba(255,255,255,0.08)';
           }}
         >
@@ -237,7 +237,7 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
         </button>
 
         <h3 style={{ marginBottom: 4, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>生成详情</h3>
-        <p style={{ marginBottom: 16, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{entry.timestamp}</p>
+        <p style={{ marginBottom: 16, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{entry.timestamp}</p>
         <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={`drawer-${entry.id}`} />
         <div
           className="lg-glass"
@@ -298,6 +298,9 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
         borderRadius: 16,
         padding: 20,
         opacity: isDeleting ? 0.5 : 1,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* 右上 3 icon btn */}
@@ -322,7 +325,7 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
               borderRadius: '50%',
               border: '1px solid transparent',
               background: 'transparent',
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(255,255,255,0.84)',
               cursor: isDeleting || (key === 'delete' && isAnyDeleting) ? 'not-allowed' : 'pointer',
               opacity: isDeleting || (key === 'delete' && isAnyDeleting) ? 0.5 : 1,
               transition: 'background 0.15s, color 0.15s, border-color 0.15s',
@@ -339,7 +342,7 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
               const btn = e.currentTarget as HTMLButtonElement;
               btn.style.background = 'transparent';
               btn.style.borderColor = 'transparent';
-              btn.style.color = 'rgba(255,255,255,0.6)';
+              btn.style.color = 'rgba(255,255,255,0.84)';
             }}
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>
@@ -354,14 +357,14 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
 
       {/* row 2 · 主题 */}
       <p data-testid={`history-topic-${entry.id}`} style={{ marginTop: 12, fontSize: 14, lineHeight: 1.65, fontFamily: F.cn }}>
-        <span style={{ color: 'rgba(255,255,255,0.6)' }}>{HISTORY_TOPIC_PREFIX}</span>
+        <span style={{ color: 'rgba(255,255,255,0.84)' }}>{HISTORY_TOPIC_PREFIX}</span>
         <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>{entry.topic}</span>
       </p>
 
       {/* row 3 · timestamp */}
       <p
         data-testid={`history-timestamp-${entry.id}`}
-        style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}
+        style={{ marginTop: 'auto', paddingTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}
       >
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>schedule</span>
         {entry.timestamp}
@@ -399,15 +402,15 @@ function HistoryList({ entries, onView, onCopy, onDelete, deletingId, isAnyDelet
         }}
       >
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 48, color: 'rgba(216,232,255,0.35)' }}>history</span>
-        <p style={{ marginTop: 12, fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>暂无历史记录</p>
+        <p style={{ marginTop: 12, fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>暂无历史记录</p>
       </div>
     );
   }
 
   return (
-    <RevealGroup data-testid="history-list" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <RevealGroup data-testid="history-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
       {entries.map((entry) => (
-        <Item key={entry.id}>
+        <Item key={entry.id} style={{ height: '100%' }}>
           <EntryCard
             entry={entry}
             isDeleting={deletingId === entry.id}
@@ -580,15 +583,15 @@ export default function History() {
       </header>
 
       {/* ── KPI 概览 ─────────────────────────────────────────── */}
-      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
         {kpiItems.map((kpi) => (
-          <Item key={kpi.label}>
+          <Item key={kpi.label} style={{ height: '100%' }}>
             <motion.div
               data-testid={`history-kpi-${kpi.label}`}
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -611,7 +614,7 @@ export default function History() {
               <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {kpi.value}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 {kpi.label} · {kpi.sub}
               </p>
             </motion.div>
@@ -645,7 +648,7 @@ export default function History() {
               <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>history</span>
             </span>
             <h2 id="history-section-title" style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>生成记录</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· 共 {entries.length} 条</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· 共 {entries.length} 条</span>
           </div>
 
           {isError ? (
