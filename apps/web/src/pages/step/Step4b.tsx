@@ -4,7 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { type Step4bStage } from '@/components/step4b/Step4bStageSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
@@ -327,7 +327,7 @@ function CaseStatusBadge({ status }: { status: CaseStatus }) {
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 6, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)', padding: '3px 10px', opacity: 0.6 }}>
       <span style={{ height: 6, width: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.5)', display: 'inline-block' }} />
-      <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>初始化中</span>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.84)' }}>初始化中</span>
     </div>
   );
 }
@@ -501,7 +501,7 @@ export default function Step4b() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, textShadow: C.textShadow }}>输入变现参数</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>填写基础信息 · AI 据此规划完整变现路径</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>填写基础信息 · AI 据此规划完整变现路径</p>
               </div>
             </div>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', padding: '4px 12px', fontSize: 12, fontWeight: 600, color: C.ikb }}>
@@ -518,7 +518,7 @@ export default function Step4b() {
                     <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: C.grad, marginRight: 4 }} aria-hidden={true} />
                     产品/服务描述 <span style={{ marginLeft: 4, color: C.ikb }}>*</span>
                   </label>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>auto_awesome</span>
                     AI 据此测算变现潜力
                   </span>
@@ -535,14 +535,14 @@ export default function Step4b() {
                   />
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: 'rgba(255,255,255,0.06)', padding: '8px 16px', borderTop: `0.5px solid ${C.line}` }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>可包含</span>
                       {['定价', '受众', '交付', '服务范围', '培训'].map((t) => (
                         <span key={t} style={{ borderRadius: 9999, background: 'rgba(168,197,224,0.2)', padding: '2px 10px', fontSize: 11, fontWeight: 500, color: C.ikb }}>
                           {t}
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.6)' }}>{productService.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.84)' }}>{productService.length} 字</span>
                   </div>
                 </div>
               </div>
@@ -555,7 +555,7 @@ export default function Step4b() {
                     目标受众
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)' }} aria-hidden={true}>groups</span>
+                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)' }} aria-hidden={true}>groups</span>
                     <input
                       id="s4b-target-audience"
                       type="text"
@@ -573,7 +573,7 @@ export default function Step4b() {
                     IP定位
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)' }} aria-hidden={true}>person_pin</span>
+                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)' }} aria-hidden={true}>person_pin</span>
                     <input
                       id="s4b-ip-positioning"
                       type="text"
@@ -595,7 +595,7 @@ export default function Step4b() {
                     当前收入水平
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)' }} aria-hidden={true}>monetization_on</span>
+                    <span className="material-symbols-outlined" style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)' }} aria-hidden={true}>monetization_on</span>
                     <input
                       id="s4b-current-income"
                       type="text"
@@ -608,14 +608,17 @@ export default function Step4b() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <button
-                    type="submit"
-                    disabled={!productService.trim() || isLoading}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, padding: '13px 32px', fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', border: 'none', cursor: !productService.trim() || isLoading ? 'not-allowed' : 'pointer', opacity: !productService.trim() || isLoading ? 0.4 : 1, background: 'linear-gradient(110deg,#4a7fd4 0%,#2a5abf 100%)', boxShadow: '0 4px 16px rgba(43,83,230,0.35)' }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>payments</span>
-                    {isLoading ? '生成中…' : STEP4B_BUTTON_GENERATE_REAL}
-                  </button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      type="submit"
+                      disabled={!productService.trim() || isLoading}
+                      className="lg-gradbtn"
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 9999, padding: '13px 32px', fontSize: 15, fontWeight: 700, color: '#fff', fontFamily: F.cn, border: 'none', cursor: !productService.trim() || isLoading ? 'not-allowed' : 'pointer', opacity: !productService.trim() || isLoading ? 0.4 : 1 }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>payments</span>
+                      {isLoading ? '生成中…' : STEP4B_BUTTON_GENERATE_REAL}
+                    </button>
+                  </Magnetic>
                 </div>
               </div>
             </form>
@@ -636,8 +639,8 @@ export default function Step4b() {
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
         {/* 预估年营收 */}
-        <Item>
-          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20 }}>
+        <Item style={{ height: '100%' }}>
+          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>monitoring</span>
@@ -649,9 +652,9 @@ export default function Step4b() {
             <div style={{ marginTop: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                  1,420<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>万</span>
+                  1,420<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}>万</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>预估年营收(ARR)</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>预估年营收(ARR)</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label="78% 进度">
@@ -664,8 +667,8 @@ export default function Step4b() {
         </Item>
 
         {/* 变现渠道数 */}
-        <Item>
-          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20 }}>
+        <Item style={{ height: '100%' }}>
+          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(228,238,255,0.18)', color: C.yellow }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>account_tree</span>
@@ -674,9 +677,9 @@ export default function Step4b() {
             </div>
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                {generated.revenueStructure.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 条</span>
+                {generated.revenueStructure.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}> 条</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>变现渠道</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>变现渠道</p>
             </div>
             <div style={{ marginTop: 10, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
               {[40, 70, 85, 58, 92].map((h, i) => (
@@ -687,8 +690,8 @@ export default function Step4b() {
         </Item>
 
         {/* 客单价区间 */}
-        <Item>
-          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20 }}>
+        <Item style={{ height: '100%' }}>
+          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.accent3 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>sell</span>
@@ -697,9 +700,9 @@ export default function Step4b() {
             </div>
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                1万<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>-100万</span>
+                1万<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}>-100万</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>客单价区间</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>客单价区间</p>
             </div>
             <div style={{ marginTop: 10, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.18)' }} aria-hidden={true}>
               <div style={{ height: 8, borderRadius: 9999, width: '82%', background: `linear-gradient(to right,${C.ikb},${C.accent3})` }} />
@@ -708,8 +711,8 @@ export default function Step4b() {
         </Item>
 
         {/* 综合转化率 */}
-        <Item>
-          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20 }}>
+        <Item style={{ height: '100%' }}>
+          <motion.div className="lg-glass lg-spec" whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 240, damping: 18 }} style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>conversion_path</span>
@@ -720,9 +723,9 @@ export default function Step4b() {
             </div>
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                3.8<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>%</span>
+                3.8<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}>%</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>综合转化率</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>综合转化率</p>
             </div>
             <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {['引流品', '信任品', '利润品'].map((k) => (
@@ -767,7 +770,7 @@ export default function Step4b() {
                   <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                     <div>
                       <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.84)' }}>
                           阶段 {String(stage.number).padStart(2, '0')}
                         </span>
                         <span className="lg-glass" style={{ borderRadius: 6, padding: '2px 8px', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>
@@ -819,7 +822,7 @@ export default function Step4b() {
                                 {product.priceRange}
                               </span>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>
                               <div>
                                 <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>目标客户</span>
                                 <p style={{ marginTop: 2, lineHeight: 1.5 }}>{product.targetCustomer}</p>
@@ -928,7 +931,7 @@ export default function Step4b() {
           {/* 收入结构模型 */}
           <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
             <h3 style={{ marginBottom: 4, fontSize: 16, fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>收入结构模型</h3>
-            <p style={{ marginBottom: 16, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>三色环形占比 · 冷蓝玻璃轮转</p>
+            <p style={{ marginBottom: 16, fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>三色环形占比 · 冷蓝玻璃轮转</p>
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 160 160" width="160" height="160" role="img" aria-label="收入结构环形图">
                 <circle cx="80" cy="80" fill="none" r="70" stroke="rgba(255,255,255,0.1)" strokeWidth="12" />
@@ -937,20 +940,22 @@ export default function Step4b() {
                 ))}
               </svg>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
               {donutSegments.map((seg) => (
-                <div key={seg.name} className="lg-glass" style={{ borderRadius: 10, padding: 12 }}>
-                  <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ height: 10, width: 10, flexShrink: 0, borderRadius: '50%', backgroundColor: seg.color }} />
-                    <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{seg.name}</span>
-                    <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, color: seg.color }}>{seg.percentage}</span>
+                <Item key={seg.name} style={{ height: '100%' }}>
+                  <div className="lg-glass" style={{ borderRadius: 10, padding: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ height: 10, width: 10, flexShrink: 0, borderRadius: '50%', backgroundColor: seg.color }} />
+                      <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{seg.name}</span>
+                      <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, color: seg.color }}>{seg.percentage}</span>
+                    </div>
+                    {seg.desc && (
+                      <p style={{ paddingLeft: 18, fontSize: 11, lineHeight: 1.5, color: 'rgba(255,255,255,0.84)', marginTop: 'auto', paddingTop: 6 }}>{seg.desc}</p>
+                    )}
                   </div>
-                  {seg.desc && (
-                    <p style={{ paddingLeft: 18, fontSize: 11, lineHeight: 1.5, color: 'rgba(255,255,255,0.6)' }}>{seg.desc}</p>
-                  )}
-                </div>
+                </Item>
               ))}
-            </div>
+            </RevealGroup>
           </div>
 
           {/* ARR card */}
@@ -1013,7 +1018,7 @@ export default function Step4b() {
                         {sc.category}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.6)' }}>
+                    <td style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.84)' }}>
                       {sc.outcome.length > 20 ? `${sc.outcome.slice(0, 20)}…` : sc.outcome}
                     </td>
                     <td style={{ padding: '14px 20px' }}>
@@ -1023,10 +1028,10 @@ export default function Step4b() {
                       <button
                         type="button"
                         className="lg-glass"
-                        style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 8, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.6)', background: 'transparent' }}
+                        style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 8, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.84)', background: 'transparent' }}
                         aria-label={`操作 ${sc.title}`}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)'; }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>more_vert</span>
                       </button>
@@ -1124,7 +1129,7 @@ export default function Step4b() {
         <div style={{ marginTop: 20, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>· AI 综合评估 · 实时测算</span>
           <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', padding: '4px 12px', fontSize: 12, fontWeight: 600, color: C.ikb }}>
             <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
             模型已就绪
@@ -1146,12 +1151,12 @@ export default function Step4b() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, textShadow: C.textShadow }}>变现能力雷达</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0 }}>六维模型评估</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0 }}>六维模型评估</p>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, fontFamily: F.display, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', textShadow: 'none', margin: 0 }}>81</p>
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', margin: 0 }}>综合分</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0 }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -1196,7 +1201,7 @@ export default function Step4b() {
             {RADAR_DIMS_S4B.map((d) => (
               <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>{d.label}</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)' }}>{d.label}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: C.ink }}>{d.value}</span>
               </div>
             ))}
@@ -1217,7 +1222,7 @@ export default function Step4b() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, textShadow: C.textShadow }}>营收增长预估</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0 }}>按当前变现矩阵测算</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0 }}>按当前变现矩阵测算</p>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1226,7 +1231,7 @@ export default function Step4b() {
                   key={t}
                   style={i === 0
                     ? { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'linear-gradient(110deg,#4a7fd4,#2a5abf)', color: '#fff' }
-                    : { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }
+                    : { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.84)' }
                   }
                 >
                   {t}
@@ -1239,7 +1244,7 @@ export default function Step4b() {
             <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, background: 'rgba(168,197,224,0.2)', padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>+128%
             </span>
-            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>同比增长</span>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)' }}>同比增长</span>
           </div>
           {(() => {
             const data = REVENUE_TREND_S4B;
@@ -1272,7 +1277,7 @@ export default function Step4b() {
               </svg>
             );
           })()}
-          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)' }}>
             {REVENUE_LABELS_S4B.map((m) => (
               <span key={m}>{m}</span>
             ))}
@@ -1290,7 +1295,7 @@ export default function Step4b() {
         >
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)' }}>这个结果对你有帮助吗？</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.84)' }}>这个结果对你有帮助吗？</span>
               <button
                 type="button"
                 onClick={handleFeedbackUp}
