@@ -10,7 +10,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   MY_TOPICS_BACK,
   MY_TOPICS_BACK_HREF,
@@ -108,7 +108,7 @@ interface TopicCardProps {
 function TopicCard({ item, index }: TopicCardProps) {
   const badge = getSourceColor(item.source);
   return (
-    <Item>
+    <Item style={{ height: '100%' }}>
       <motion.div
         className="lg-glass lg-spec"
         whileHover={{ y: -4 }}
@@ -119,6 +119,7 @@ function TopicCard({ item, index }: TopicCardProps) {
           gap: 8,
           borderRadius: 16,
           padding: '16px 20px',
+          height: '100%',
         }}
         data-testid={`topic-card-${index}`}
       >
@@ -191,7 +192,7 @@ function TopicCard({ item, index }: TopicCardProps) {
           )}
 
           {/* Date */}
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
             {formatDate(item.createdAt)}
           </span>
         </div>
@@ -210,7 +211,7 @@ function TopicList({ items }: TopicListProps) {
   return (
     <div data-testid="topic-list">
       <RevealGroup
-        style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+        style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(2, 1fr)' }}
       >
         {items.map((item, i) => (
           <TopicCard key={item.id} item={item} index={i} />
@@ -226,7 +227,7 @@ function TopicListSkeleton() {
   return (
     <div
       className="grid gap-3"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+      style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
       data-testid="topic-list-skeleton"
     >
       {Array.from({ length: 6 }).map((_, i) => (
@@ -271,13 +272,13 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
             marginBottom: 16,
             fontSize: 13,
             fontWeight: 500,
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.72)',
             textDecoration: 'none',
             fontFamily: F.cn,
             transition: 'color 0.15s',
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = C.ikb; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.6)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.72)'; }}
           data-testid="back-link"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>arrow_back</span>
@@ -341,7 +342,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
         >
           {MY_TOPICS_BREADCRUMB}
         </span>
-        <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>›</span>
+        <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12 }}>›</span>
         <span
           style={{ fontSize: 14, fontWeight: 600, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}
           data-testid="breadcrumb-right"
@@ -413,7 +414,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
             const accent = kpiAccents[kpi.accentIdx];
             const bg = kpiBgs[kpi.accentIdx];
             return (
-              <Item key={kpi.label}>
+              <Item key={kpi.label} style={{ height: '100%' }}>
                 <motion.div
                   className="lg-glass lg-spec"
                   whileHover={{ y: -5 }}
@@ -425,6 +426,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
                     width: 108,
                     borderRadius: 16,
                     padding: '12px',
+                    height: '100%',
                   }}
                 >
                   <span
@@ -448,7 +450,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
                   <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: accent, fontFamily: F.display, textShadow: C.textShadow }}>
                     {kpi.value}
                   </span>
-                  <span style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                  <span style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                     {kpi.label}
                   </span>
                 </motion.div>
@@ -515,12 +517,14 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
             placeholder={MY_TOPICS_SEARCH_PLACEHOLDER}
             style={{
               flex: 1,
+              minWidth: 0,
               background: 'transparent',
               border: 'none',
               outline: 'none',
               fontSize: 14,
               color: C.ink,
               fontFamily: F.cn,
+              textShadow: C.textShadow,
             }}
             data-testid="search-input"
           />
@@ -600,7 +604,7 @@ interface MyTopicsFiltersProps {
 function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
   return (
     <Reveal>
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 8 }} data-testid="filter-chips">
+      <div style={{ marginBottom: 44, display: 'flex', alignItems: 'center', gap: 8 }} data-testid="filter-chips">
         {MY_TOPICS_FILTERS.map(({ key, label }) => {
           const isActive = active === key;
           return (
@@ -684,7 +688,7 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
           aria-hidden={true}
           data-testid="empty-heart-icon"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 44, color: C.ikb }}>favorite</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 44, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>favorite</span>
         </span>
         <p
           style={{ marginBottom: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}
@@ -694,45 +698,42 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
         </p>
         <p
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             maxWidth: 400,
             textAlign: 'center',
             fontSize: 14,
             lineHeight: 1.65,
-            color: 'rgba(255,255,255,0.65)',
+            color: 'rgba(255,255,255,0.84)',
             fontFamily: F.cn,
           }}
           data-testid="empty-desc"
         >
           {MY_TOPICS_EMPTY_DESC}
         </p>
-        <motion.button
-          type="button"
-          onClick={onCta}
-          data-testid="empty-cta-btn"
-          whileHover={{ y: -3 }}
-          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            borderRadius: 12,
-            padding: '12px 32px',
-            fontSize: 13,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            color: '#fff',
-            fontFamily: F.mono,
-            border: 'none',
-            cursor: 'pointer',
-            background: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
-            textShadow: C.textShadow,
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>local_fire_department</span>
-          {MY_TOPICS_EMPTY_CTA}
-        </motion.button>
+        <Magnetic strength={0.3}>
+          <button
+            type="button"
+            onClick={onCta}
+            data-testid="empty-cta-btn"
+            className="lg-gradbtn"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              borderRadius: 9999,
+              padding: '12px 32px',
+              fontSize: 13,
+              fontWeight: 700,
+              color: '#fff',
+              fontFamily: F.cn,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>local_fire_department</span>
+            {MY_TOPICS_EMPTY_CTA}
+          </button>
+        </Magnetic>
       </div>
     </Reveal>
   );
@@ -888,7 +889,7 @@ export default function MyTopics() {
               >
                 <span
                   className="material-symbols-outlined"
-                  style={{ fontSize: 36, color: 'rgba(255,255,255,0.55)' }}
+                  style={{ fontSize: 36, color: 'rgba(255,255,255,0.8)' }}
                 >
                   error_outline
                 </span>
@@ -896,27 +897,28 @@ export default function MyTopics() {
               <p style={{ marginBottom: 16, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 加载失败，请重试
               </p>
-              <motion.button
-                type="button"
-                onClick={() => { void refetch(); }}
-                whileHover={{ y: -2 }}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{
-                  borderRadius: 12,
-                  padding: '10px 24px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: '#fff',
-                  fontFamily: F.mono,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
-                  textShadow: C.textShadow,
-                }}
-                data-testid="retry-btn"
-              >
-                重试
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  onClick={() => { void refetch(); }}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    borderRadius: 9999,
+                    padding: '10px 24px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                  data-testid="retry-btn"
+                >
+                  重试
+                </button>
+              </Magnetic>
             </div>
           </Reveal>
         ) : items.length === 0 ? (
