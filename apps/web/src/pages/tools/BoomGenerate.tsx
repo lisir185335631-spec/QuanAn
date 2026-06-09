@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   BOOM_ANALYSIS_BODY,
   BOOM_ANALYSIS_TAG,
@@ -188,7 +188,7 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
         </span>
         <div>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_PICKER_TITLE}</h2>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>多选 · 当前 {selectedKeys.length} 个</p>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>多选 · 当前 {selectedKeys.length} 个</p>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -314,7 +314,7 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
         </span>
         <div>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_SETTINGS_TITLE}</h2>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>行业 + 主题，精准定向生成</p>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>行业 + 主题，精准定向生成</p>
         </div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
@@ -351,7 +351,7 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
           <div style={{ position: 'relative' }}>
             <span
               className="material-symbols-outlined"
-              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }}
+              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)', pointerEvents: 'none' }}
               aria-hidden={true}
             >storefront</span>
             <input
@@ -413,7 +413,7 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
           <div style={{ position: 'relative' }}>
             <span
               className="material-symbols-outlined"
-              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.5)', pointerEvents: 'none' }}
+              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)', pointerEvents: 'none' }}
               aria-hidden={true}
             >topic</span>
             <input
@@ -455,33 +455,32 @@ interface BoomCTAProps {
 function BoomCTA({ onClick }: BoomCTAProps) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <motion.button
-        type="button"
-        onClick={onClick}
-        className="lg-gradbtn"
-        whileHover={{ y: -3 }}
-        whileTap={{ y: 1 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          borderRadius: 9999,
-          padding: '12px 32px',
-          fontSize: 12,
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.15em',
-          color: '#fff',
-          fontFamily: F.mono,
-          border: 'none',
-          cursor: 'pointer',
-          outline: 'none',
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-        {BOOM_CTA}
-      </motion.button>
+      <Magnetic strength={0.3}>
+        <motion.button
+          type="button"
+          onClick={onClick}
+          className="lg-gradbtn"
+          whileTap={{ y: 1 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 9999,
+            padding: '12px 32px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: '#fff',
+            fontFamily: F.cn,
+            border: 'none',
+            cursor: 'pointer',
+            outline: 'none',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
+          {BOOM_CTA}
+        </motion.button>
+      </Magnetic>
     </div>
   );
 }
@@ -516,7 +515,7 @@ function BoomAnalysis() {
           </span>
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{BOOM_ANALYSIS_TITLE}</h3>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>AI 策略解析 · 实时生效</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>AI 策略解析 · 实时生效</p>
           </div>
         </div>
         <span
@@ -591,7 +590,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
       className="lg-glass lg-spec"
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-      style={{ overflow: 'hidden', borderRadius: 20 }}
+      style={{ overflow: 'hidden', borderRadius: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
     >
       <div
         style={{
@@ -651,7 +650,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
                 borderRadius: 8,
                 border: `0.5px solid ${C.line}`,
                 background: 'rgba(255,255,255,0.07)',
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(255,255,255,0.84)',
                 padding: '6px 10px',
                 fontSize: 11,
                 fontWeight: 500,
@@ -720,7 +719,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
         </div>
       </div>
 
-      <div style={{ padding: 24 }}>
+      <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {sections.map((sec) => (
             <div key={sec.label} style={{ borderLeft: `2px solid ${sec.borderColor}`, paddingLeft: 16 }}>
@@ -733,7 +732,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
         <div
           className="lg-glass"
           style={{
-            marginTop: 24,
+            marginTop: 'auto',
             borderRadius: 14,
             padding: 16,
           }}
@@ -750,7 +749,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
               paddingTop: 12,
             }}
           >
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{BOOM_FEEDBACK_PROMPT}</p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{BOOM_FEEDBACK_PROMPT}</p>
             <button
               type="button"
               aria-label="有帮助"
@@ -763,7 +762,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
                 borderRadius: 8,
                 border: `0.5px solid ${C.line}`,
                 background: 'rgba(255,255,255,0.07)',
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(255,255,255,0.84)',
                 cursor: 'pointer',
                 transition: 'all 0.18s',
                 outline: 'none',
@@ -785,7 +784,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
                 borderRadius: 8,
                 border: `0.5px solid ${C.line}`,
                 background: 'rgba(255,255,255,0.07)',
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(255,255,255,0.84)',
                 cursor: 'pointer',
                 transition: 'all 0.18s',
                 outline: 'none',
@@ -818,9 +817,9 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
 // ── inline BoomResultList ─────────────────────────────────────────────────────
 function BoomResultList({ entries }: { entries: ReadonlyArray<BoomEntry> }) {
   return (
-    <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
       {entries.map((entry) => (
-        <Item key={entry.index}>
+        <Item key={entry.index} style={{ height: '100%' }}>
           <BoomResultEntry entry={entry} />
         </Item>
       ))}
@@ -879,52 +878,53 @@ export default function BoomGenerate() {
             <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_fix_high</span>
             智能优化
           </button>
-          <motion.button
-            type="button"
-            aria-label="导出方案"
-            onClick={() => {
-              const text = JSON.stringify(BOOM_ENTRIES, null, 2);
-              navigator.clipboard.writeText(text).then(
-                () => toast.success('已复制全部'),
-                () => toast.error('复制失败'),
-              );
-            }}
-            className="lg-gradbtn"
-            whileHover={{ y: -3 }}
-            whileTap={{ y: 1 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{
-              display: 'inline-flex',
-              flexShrink: 0,
-              alignItems: 'center',
-              gap: 8,
-              whiteSpace: 'nowrap',
-              borderRadius: 9999,
-              padding: '10px 18px',
-              fontSize: 13,
-              fontWeight: 600,
-              color: '#fff',
-              fontFamily: F.mono,
-              border: 'none',
-              cursor: 'pointer',
-              outline: 'none',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>download</span>
-            导出方案
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <motion.button
+              type="button"
+              aria-label="导出方案"
+              onClick={() => {
+                const text = JSON.stringify(BOOM_ENTRIES, null, 2);
+                navigator.clipboard.writeText(text).then(
+                  () => toast.success('已复制全部'),
+                  () => toast.error('复制失败'),
+                );
+              }}
+              className="lg-gradbtn"
+              whileTap={{ y: 1 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{
+                display: 'inline-flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                borderRadius: 9999,
+                padding: '10px 18px',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#fff',
+                fontFamily: F.cn,
+                border: 'none',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>download</span>
+              导出方案
+            </motion.button>
+          </Magnetic>
         </div>
       </header>
 
       {/* ── KPI 概览一排 (4 卡) ────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {/* 爆款元素 · 冷蓝 · 环形 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -963,9 +963,9 @@ export default function BoomGenerate() {
               <div>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {totalElements}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label="爆款元素覆盖率">
@@ -978,12 +978,12 @@ export default function BoomGenerate() {
         </Item>
 
         {/* 选中元素 · yellow · 进度条 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1016,9 +1016,9 @@ export default function BoomGenerate() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {selectedKeys.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 2 }}>个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>选中元素</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>选中元素</p>
             </div>
             <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 9999, background: 'rgba(228,238,255,0.15)' }}>
               <div
@@ -1035,12 +1035,12 @@ export default function BoomGenerate() {
         </Item>
 
         {/* 生成结果 · accent3 · 迷你柱 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1073,9 +1073,9 @@ export default function BoomGenerate() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {BOOM_ENTRIES.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>篇</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 2 }}>篇</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>生成结果</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>生成结果</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
               {[64, 88, 72, 96, 82].map((h, i) => (
@@ -1086,12 +1086,12 @@ export default function BoomGenerate() {
         </Item>
 
         {/* 命中率 · 冷蓝 · chips */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1124,9 +1124,9 @@ export default function BoomGenerate() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 87
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 2 }}>%</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 2 }}>%</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>命中率</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>命中率</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }} aria-hidden={true}>
               {['共鸣', '转化', '爆款'].map((k) => (
@@ -1167,12 +1167,12 @@ export default function BoomGenerate() {
       </Reveal>
 
       {/* ── CTA ─────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 44 }}>
         <BoomCTA onClick={handleGenerate} />
       </div>
 
       {/* ── 元素组合分析 ────────────────────────────────────── */}
-      <Reveal style={{ marginBottom: 32 }}>
+      <Reveal style={{ marginBottom: 44 }}>
         <BoomAnalysis />
       </Reveal>
 
@@ -1183,7 +1183,7 @@ export default function BoomGenerate() {
       <Reveal style={{ marginTop: 40, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
           style={{
             marginLeft: 'auto',
@@ -1239,7 +1239,7 @@ export default function BoomGenerate() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>爆款力雷达</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -1257,7 +1257,7 @@ export default function BoomGenerate() {
                   margin: 0,
                 }}
               >86</p>
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -1304,7 +1304,7 @@ export default function BoomGenerate() {
             {RADAR_DIMS_BM.map((d) => (
               <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
               </div>
             ))}
@@ -1336,7 +1336,7 @@ export default function BoomGenerate() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>元素权重 / 热度曲线</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前选中元素测算</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>按当前选中元素测算</p>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1380,7 +1380,7 @@ export default function BoomGenerate() {
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>+248%
             </span>
-            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较基准值</span>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较基准值</span>
           </div>
           {(() => {
             const data = TREND_DATA_BM;
@@ -1429,7 +1429,7 @@ export default function BoomGenerate() {
               </svg>
             );
           })()}
-          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
             {TREND_LABELS_BM.map((m) => (
               <span key={m}>{m}</span>
             ))}
