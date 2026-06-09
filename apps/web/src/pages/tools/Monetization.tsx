@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { STEP1_INDUSTRIES_56 } from '@/lib/constants/industries';
 import {
   MONETIZATION_CTA,
@@ -247,14 +247,14 @@ function MonetizationForm({
                 justifyContent: 'center',
                 borderRadius: 12,
                 background: 'linear-gradient(135deg, rgba(168,197,224,0.4), rgba(120,160,220,0.25))',
-                color: C.ikb,
+                color: C.ink,
               }}
             >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>tune</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>tune</span>
             </span>
             <div>
               <h2 style={{ fontSize: 17, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{MONETIZATION_FORM_TITLE}</h2>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成变现模型</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成变现模型</p>
             </div>
           </div>
           <span
@@ -447,40 +447,37 @@ function MonetizationForm({
           </div>
 
           {/* CTA */}
-          <motion.button
-            type="button"
-            data-testid="mn-generate-btn"
-            onClick={onGenerate}
-            disabled={isPending}
-            aria-label={MONETIZATION_CTA}
-            className="lg-gradbtn"
-            whileHover={isPending ? undefined : { y: -3 }}
-            whileTap={isPending ? undefined : { y: 0 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{
-              marginTop: 8,
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              borderRadius: 12,
-              padding: '12px 16px',
-              fontSize: 12,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.15em',
-              color: '#fff',
-              fontFamily: F.mono,
-              border: 'none',
-              cursor: isPending ? 'not-allowed' : 'pointer',
-              opacity: isPending ? 0.6 : 1,
-              textShadow: C.textShadow,
-            }}
-          >
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
-            {MONETIZATION_CTA}
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              data-testid="mn-generate-btn"
+              onClick={onGenerate}
+              disabled={isPending}
+              aria-label={MONETIZATION_CTA}
+              className="lg-gradbtn"
+              style={{
+                marginTop: 8,
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                borderRadius: 9999,
+                padding: '12px 16px',
+                fontSize: 14,
+                fontWeight: 700,
+                color: '#fff',
+                fontFamily: F.cn,
+                border: 'none',
+                cursor: isPending ? 'not-allowed' : 'pointer',
+                opacity: isPending ? 0.6 : 1,
+                textShadow: C.textShadow,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+              {MONETIZATION_CTA}
+            </button>
+          </Magnetic>
         </div>
       </section>
     </Reveal>
@@ -515,11 +512,11 @@ function MonetizationEmptyState() {
             justifyContent: 'center',
             borderRadius: 18,
             background: 'rgba(168,197,224,0.18)',
-            color: C.ikb,
+            color: C.ink,
             marginBottom: 16,
           }}
         >
-          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>account_balance</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>account_balance</span>
         </span>
         <h3
           style={{
@@ -533,7 +530,7 @@ function MonetizationEmptyState() {
         >
           {MONETIZATION_RESULT_TITLE}
         </h3>
-        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
           填写左侧表单，点击「{MONETIZATION_CTA}」<br />AI 将为您生成专属变现路径
         </p>
       </div>
@@ -556,10 +553,10 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
 
   // KPI 从真结果派生
   const kpis = [
-    { icon: 'route', label: '产品矩阵', value: `${productMatrix.length}`, unit: '款', badge: '全层次', color: C.ikb, bg: 'rgba(168,197,224,0.18)' },
+    { icon: 'route', label: '产品矩阵', value: `${productMatrix.length}`, unit: '款', badge: '全层次', color: C.ink, bg: 'rgba(168,197,224,0.18)' },
     { icon: 'currency_yen', label: '漏斗步骤', value: `${conversionFunnel.length}`, unit: '步', badge: '转化路径', color: C.yellow, bg: 'rgba(228,238,255,0.18)' },
     { icon: 'grid_view', label: '定价策略', value: '已生成', unit: '', badge: '定价方案', color: C.accent3, bg: 'rgba(168,197,224,0.18)' },
-    { icon: 'sell', label: 'AI 生成', value: '✓', unit: '', badge: '变现模型', color: C.ikb, bg: 'rgba(168,197,224,0.18)' },
+    { icon: 'sell', label: 'AI 生成', value: '✓', unit: '', badge: '变现模型', color: C.ink, bg: 'rgba(168,197,224,0.18)' },
   ];
 
   // 雷达六维 (变现能力) — 固定展示维度
@@ -658,12 +655,12 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       {/* ── KPI 概览一排 (4 cards) ────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {kpis.map((k) => (
-          <Item key={k.label}>
+          <Item key={k.label} style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 16, padding: 18 }}
+              style={{ borderRadius: 16, padding: 18, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -699,10 +696,10 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 <p style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: k.color, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                   {k.value}
                   {k.unit && (
-                    <span style={{ marginLeft: 3, fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.unit}</span>
+                    <span style={{ marginLeft: 3, fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.unit}</span>
                   )}
                 </p>
-                <p style={{ marginTop: 5, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+                <p style={{ marginTop: 5, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.label}</p>
               </div>
             </motion.div>
           </Item>
@@ -756,43 +753,46 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>产品矩阵</h3>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }} data-testid="mn-product-matrix">
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} data-testid="mn-product-matrix">
             {productMatrix.map((item, idx) => {
               const c = ACCENT_CYCLE[idx % ACCENT_CYCLE.length];
               return (
-                <motion.div
-                  key={idx}
-                  className="lg-glass lg-spec"
-                  whileHover={{ y: -3 }}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{ display: 'flex', alignItems: 'flex-start', gap: 12, borderRadius: 12, padding: '12px 14px' }}
-                >
-                  <span
-                    style={{
-                      marginTop: 2,
-                      display: 'flex',
-                      height: 24,
-                      width: 24,
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 9999,
-                      fontSize: 11,
-                      fontWeight: 800,
-                      color: '#fff',
-                      background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(120,160,220,0.4))',
-                      fontFamily: F.mono,
-                      textShadow: C.textShadow,
-                    }}
+                <Item key={idx} style={{ height: '100%' }}>
+                  <motion.div
+                    className="lg-glass lg-spec"
+                    whileHover={{ y: -3 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '12px 14px', height: '100%' }}
                   >
-                    {idx + 1}
-                  </span>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{item}</p>
-                  <span style={{ display: 'none' }}>{c}</span>
-                </motion.div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span
+                        style={{
+                          marginTop: 2,
+                          display: 'flex',
+                          height: 24,
+                          width: 24,
+                          flexShrink: 0,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 9999,
+                          fontSize: 11,
+                          fontWeight: 800,
+                          color: '#fff',
+                          background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(120,160,220,0.4))',
+                          fontFamily: F.mono,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {idx + 1}
+                      </span>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{item}</p>
+                    </div>
+                    <span style={{ display: 'none' }}>{c}</span>
+                  </motion.div>
+                </Item>
               );
             })}
-          </div>
+          </RevealGroup>
         </div>
       </Reveal>
 
@@ -870,42 +870,45 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             </span>
             转化漏斗
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }} data-testid="mn-conversion-funnel">
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} data-testid="mn-conversion-funnel">
             {conversionFunnel.map((step, idx) => {
               const c = ACCENT_CYCLE[idx % ACCENT_CYCLE.length];
               return (
-                <motion.div
-                  key={idx}
-                  className="lg-glass lg-spec"
-                  whileHover={{ y: -3 }}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 12, padding: '11px 14px' }}
-                >
-                  <span
-                    style={{
-                      display: 'flex',
-                      height: 26,
-                      width: 26,
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 9999,
-                      fontSize: 12,
-                      fontWeight: 800,
-                      color: '#fff',
-                      background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(120,160,220,0.4))',
-                      fontFamily: F.mono,
-                      textShadow: C.textShadow,
-                    }}
+                <Item key={idx} style={{ height: '100%' }}>
+                  <motion.div
+                    className="lg-glass lg-spec"
+                    whileHover={{ y: -3 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '11px 14px', height: '100%' }}
                   >
-                    {idx + 1}
-                  </span>
-                  <p style={{ fontSize: 13, lineHeight: 1.5, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{step}</p>
-                  <span style={{ display: 'none' }}>{c}</span>
-                </motion.div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span
+                        style={{
+                          display: 'flex',
+                          height: 26,
+                          width: 26,
+                          flexShrink: 0,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 800,
+                          color: '#fff',
+                          background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(120,160,220,0.4))',
+                          fontFamily: F.mono,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {idx + 1}
+                      </span>
+                      <p style={{ fontSize: 13, lineHeight: 1.5, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{step}</p>
+                    </div>
+                    <span style={{ display: 'none' }}>{c}</span>
+                  </motion.div>
+                </Item>
               );
             })}
-          </div>
+          </RevealGroup>
         </div>
       </Reveal>
 
@@ -937,7 +940,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>变现能力雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估（基于行业典型值）</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估（基于行业典型值）</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -958,7 +961,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 >
                   80
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分（参考）</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分（参考）</p>
               </div>
             </div>
             <svg viewBox="0 0 260 244" style={{ width: '100%' }} role="img" aria-label="变现能力雷达图">
@@ -993,7 +996,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               {radarDims.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: 9999, backgroundColor: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1027,7 +1030,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>营收增长预估</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>行业参考示例</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>行业参考示例</p>
                 </div>
               </div>
             </div>
@@ -1089,7 +1092,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 i % 3 === 0 ? <circle key={i} cx={tx(i)} cy={ty(v)} r="3.4" fill="rgba(255,255,255,0.9)" stroke={C.ikb} strokeWidth="2" /> : null,
               )}
             </svg>
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {['启动期', '引流期', '信任期', '利润期', '后端期', '生态期'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -1109,7 +1112,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             paddingTop: 16,
           }}
         >
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{MONETIZATION_FEEDBACK_PROMPT}</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{MONETIZATION_FEEDBACK_PROMPT}</p>
           <button
             type="button"
             onClick={handleFeedback}
@@ -1123,7 +1126,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               borderRadius: 9999,
               border: `0.5px solid ${C.line}`,
               background: 'transparent',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               cursor: 'pointer',
               transition: 'all 0.15s',
               outline: 'none',
@@ -1134,7 +1137,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)';
             }}
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>thumb_up</span>
@@ -1152,7 +1155,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               borderRadius: 9999,
               border: `0.5px solid ${C.line}`,
               background: 'transparent',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               cursor: 'pointer',
               transition: 'all 0.15s',
               outline: 'none',
