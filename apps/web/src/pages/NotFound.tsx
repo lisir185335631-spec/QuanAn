@@ -49,13 +49,13 @@ export default function NotFound() {
                 borderRadius: '50%',
                 border: '1.5px solid rgba(168,197,224,0.45)',
                 background: 'rgba(168,197,224,0.14)',
-                marginBottom: 32,
+                marginBottom: 44,
               }}
             >
               <span
                 className="material-symbols-outlined"
                 aria-hidden={true}
-                style={{ fontSize: 44, color: C.ikb }}
+                style={{ fontSize: 44, color: C.ink, filter: 'drop-shadow(0 0 8px rgba(168,197,224,0.55))' }}
               >
                 error_outline
               </span>
