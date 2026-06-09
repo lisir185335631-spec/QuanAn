@@ -1108,18 +1108,18 @@ export default function Step7() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <motion.button
-                    type="button"
-                    onClick={handleOptimize}
-                    aria-label="AI 优化"
-                    whileHover={{ y: -3 }}
-                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                    className="lg-gradbtn"
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 14, padding: '12px 24px', fontSize: 13, fontWeight: 700, color: '#fff', fontFamily: F.mono, border: 'none', cursor: 'pointer' }}
-                  >
-                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
-                    AI 优化
-                  </motion.button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      type="button"
+                      onClick={handleOptimize}
+                      aria-label="AI 优化"
+                      className="lg-gradbtn"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 9999, padding: '12px 24px', fontSize: 13, fontWeight: 700, color: '#fff', fontFamily: F.cn, border: 'none', cursor: 'pointer' }}
+                    >
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+                      AI 优化
+                    </button>
+                  </Magnetic>
                   <motion.button
                     type="button"
                     onClick={handleGenerate}
