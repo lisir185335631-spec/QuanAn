@@ -4,7 +4,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep } from '@/hooks/useStepData';
 import { stepLsKey } from '@/lib/ls-namespace';
@@ -396,31 +396,31 @@ export default function Step8() {
               <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: C.ikb }}>auto_fix_high</span>
               智能优化
             </motion.button>
-            <motion.button
-              type="button"
-              onClick={handleCopyAll}
-              aria-label="导出方案"
-              className="lg-gradbtn"
-              whileHover={{ y: -2 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 18px',
-                fontSize: 13,
-                fontWeight: 600,
-                color: '#fff',
-                fontFamily: F.mono,
-                cursor: 'pointer',
-                borderRadius: 9999,
-                border: 'none',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>download</span>
-              导出方案
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                aria-label="导出方案"
+                className="lg-gradbtn"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 18px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                  borderRadius: 9999,
+                  border: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>download</span>
+                导出方案
+              </button>
+            </Magnetic>
           </div>
         </header>
       </Reveal>
@@ -459,7 +459,7 @@ export default function Step8() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>直播策划参数</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写产品信息与目标受众 · AI 据此生成三套完整直播脚本</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>填写产品信息与目标受众 · AI 据此生成三套完整直播脚本</p>
               </div>
             </div>
             <span
@@ -559,7 +559,7 @@ export default function Step8() {
                       </span>
                       <span style={{ minWidth: 0 }}>
                         <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{p.desc}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{p.desc}</span>
                       </span>
                       <span
                         style={{
@@ -655,14 +655,14 @@ export default function Step8() {
                           background: active
                             ? 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))'
                             : 'rgba(255,255,255,0.08)',
-                          color: active ? C.ikb : 'rgba(255,255,255,0.55)',
+                          color: active ? C.ikb : 'rgba(255,255,255,0.8)',
                         }}
                       >
                         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>{opt.icon}</span>
                       </span>
                       <span style={{ minWidth: 0 }}>
                         <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{opt.label}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{opt.sub}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{opt.sub}</span>
                       </span>
                       <span
                         style={{
@@ -717,9 +717,9 @@ export default function Step8() {
                     }}
                   />
                   产品/服务信息
-                  <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>（可选）</span>
+                  <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（可选）</span>
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
                   AI 据此定制直播话术
                 </span>
@@ -759,7 +759,7 @@ export default function Step8() {
                   }}
                 >
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>可包含</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>可包含</span>
                     {['定价', '卖点', '服务范围', '成交案例', '课程体系'].map((t) => (
                       <span
                         key={t}
@@ -769,7 +769,7 @@ export default function Step8() {
                           fontSize: 11,
                           fontWeight: 500,
                           background: 'rgba(255,255,255,0.10)',
-                          color: 'rgba(255,255,255,0.6)',
+                          color: 'rgba(255,255,255,0.84)',
                           fontFamily: F.cn,
                         }}
                       >
@@ -811,7 +811,7 @@ export default function Step8() {
                   }}
                 />
                 目标受众
-                <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>（可选）</span>
+                <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（可选）</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <span
@@ -838,14 +838,16 @@ export default function Step8() {
                   className="lg-glass"
                   style={{
                     width: '100%',
+                    boxSizing: 'border-box',
                     borderRadius: 12,
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px 16px 12px 40px',
                     fontSize: 14,
                     outline: 'none',
                     border: 'none',
                     background: 'transparent',
                     color: C.ink,
                     fontFamily: F.cn,
+                    textShadow: C.textShadow,
                   }}
                 />
               </div>
@@ -853,32 +855,30 @@ export default function Step8() {
 
             {/* 提交按钮 */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                className="lg-gradbtn"
-                whileHover={isLoading ? {} : { y: -2 }}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 14,
-                  padding: '12px 32px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  fontFamily: F.mono,
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
-                  opacity: isLoading ? 0.4 : 1,
-                  border: 'none',
-                }}
-              >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>mic</span>
-                {isLoading ? '生成中…' : '生成直播方案'}
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '12px 32px',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    opacity: isLoading ? 0.4 : 1,
+                    border: 'none',
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>mic</span>
+                  {isLoading ? '生成中…' : '生成直播方案'}
+                </button>
+              </Magnetic>
             </div>
           </form>
         </section>
@@ -1065,7 +1065,7 @@ export default function Step8() {
             data-testid="step8-empty-state"
             className="lg-glass"
             style={{
-              marginBottom: 32,
+              marginBottom: 44,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -1086,13 +1086,13 @@ export default function Step8() {
                 justifyContent: 'center',
                 borderRadius: 20,
                 background: 'rgba(168,197,224,0.18)',
-                color: C.ikb,
+                color: C.ink,
               }}
             >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>podcasts</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>podcasts</span>
             </span>
             <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>尚未生成直播策划方案</p>
-            <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>填写上方表单，点击「生成直播方案」开始生成</p>
+            <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>填写上方表单，点击「生成直播方案」开始生成</p>
           </div>
         </Reveal>
       )}
@@ -1102,14 +1102,14 @@ export default function Step8() {
       <>
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, marginBottom: 44 }}>
         {/* 方案模块数 · 环形 · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1146,9 +1146,9 @@ export default function Step8() {
               <div>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                   6
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 模块</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}> 模块</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>方案模块数</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>方案模块数</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label="方案模块数覆盖 100%">
@@ -1161,12 +1161,12 @@ export default function Step8() {
         </Item>
 
         {/* 开场话术 · 字数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1188,9 +1188,9 @@ export default function Step8() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {result.opening.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 字</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}> 字</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>开场话术字数</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>开场话术字数</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[45, 72, 60, 88, 95].map((h, i) => (
@@ -1201,12 +1201,12 @@ export default function Step8() {
         </Item>
 
         {/* 产品话术 · 字数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1228,9 +1228,9 @@ export default function Step8() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {result.product.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 字</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}> 字</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>产品话术字数</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>产品话术字数</p>
             </div>
             <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
               <div
@@ -1246,12 +1246,12 @@ export default function Step8() {
         </Item>
 
         {/* 流程环节 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1275,9 +1275,9 @@ export default function Step8() {
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 6
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}> 环节</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}> 环节</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>流程环节</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>流程环节</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {['开场', '暖场', '逼单'].map((k) => (
@@ -1306,11 +1306,11 @@ export default function Step8() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>article</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>直播方案</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 6 模块完整脚本 · AI 个性化生成</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 6 模块完整脚本 · AI 个性化生成</span>
         </div>
       </Reveal>
 
-      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14, marginBottom: 44 }}>
         {([
           { key: 'opening' as const, label: '开场 / 钩子话术', icon: 'record_voice_over', accent: 'green' as const, desc: '自我介绍 · 钩子设计 · 留人话术' },
           { key: 'warmup' as const, label: '暖场互动话术', icon: 'groups', accent: 'normal' as const, desc: '互动话题 · 福利点 · 氛围营造' },
@@ -1323,12 +1323,12 @@ export default function Step8() {
           const aText = accentText(accent);
           const aBg = accentBg(accent);
           return (
-            <Item key={key}>
+            <Item key={key} style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass"
                 whileHover={{ y: -3 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ overflow: 'hidden', borderRadius: 18 }}
+                style={{ overflow: 'hidden', borderRadius: 18, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 {/* 模块头 */}
                 <div
@@ -1361,7 +1361,7 @@ export default function Step8() {
                     </span>
                     <div>
                       <h4 style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{label}</h4>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>{desc}</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>{desc}</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1409,7 +1409,7 @@ export default function Step8() {
                   </div>
                 </div>
                 {/* 话术内容 */}
-                <div style={{ padding: 20 }}>
+                <div style={{ padding: 20, flex: 1 }}>
                   <div
                     style={{
                       borderRadius: 12,
@@ -1463,7 +1463,7 @@ export default function Step8() {
             </span>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 智能优化</h3>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>一键优化直播脚本 · 提升转化率</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>一键优化直播脚本 · 提升转化率</p>
             </div>
           </div>
           <div style={{ padding: 24 }}>
@@ -1471,32 +1471,32 @@ export default function Step8() {
               AI 将基于最新直播数据与转化模型，对当前方案的话术节奏、逼单时机、互动设计进行深度优化，提升整体转化率。
             </p>
             <div style={{ display: 'flex', gap: 12 }}>
-              <motion.button
-                type="button"
-                onClick={handleOptimize}
-                disabled={!canBulkActions}
-                aria-label="一键优化脚本"
-                className="lg-gradbtn"
-                whileHover={!canBulkActions ? {} : { y: -2 }}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 14,
-                  padding: '12px 24px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: '#fff',
-                  fontFamily: F.mono,
-                  cursor: !canBulkActions ? 'not-allowed' : 'pointer',
-                  opacity: !canBulkActions ? 0.4 : 1,
-                  border: 'none',
-                }}
-              >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
-                一键优化脚本
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  onClick={handleOptimize}
+                  disabled={!canBulkActions}
+                  aria-label="一键优化脚本"
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '12px 24px',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    cursor: !canBulkActions ? 'not-allowed' : 'pointer',
+                    opacity: !canBulkActions ? 0.4 : 1,
+                    border: 'none',
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+                  一键优化脚本
+                </button>
+              </Magnetic>
               <motion.button
                 type="button"
                 onClick={handleRegenerateAll}
@@ -1612,7 +1612,7 @@ export default function Step8() {
         <div data-testid="step8-generate-output" style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -1634,7 +1634,7 @@ export default function Step8() {
         </div>
       </Reveal>
 
-      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 直播转化力雷达 */}
         <Item>
           <motion.div
@@ -1661,7 +1661,7 @@ export default function Step8() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>直播转化力雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估 · 参考值</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>六维模型评估 · 参考值</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1681,7 +1681,7 @@ export default function Step8() {
                 >
                   83
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
               </div>
             </div>
             {(() => {
@@ -1762,7 +1762,7 @@ export default function Step8() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>直播节奏·在线人数曲线</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>沿 7 环节的在线人数/情绪预估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>沿 7 环节的在线人数/情绪预估</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1775,7 +1775,7 @@ export default function Step8() {
                       fontSize: 11,
                       fontWeight: 600,
                       background: i === 0 ? C.ikb : 'rgba(255,255,255,0.08)',
-                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.55)',
+                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.8)',
                       fontFamily: F.mono,
                     }}
                   >
@@ -1802,7 +1802,7 @@ export default function Step8() {
               >
                 <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+192%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>峰值在线人数</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>峰值在线人数</span>
             </div>
             {(() => {
               const data = TREND_DATA_S8;
@@ -1851,7 +1851,7 @@ export default function Step8() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {TREND_LABELS_S8.map((m) => (
                 <span key={m}>{m}</span>
               ))}
