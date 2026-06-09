@@ -30,7 +30,7 @@ export function DiagnosisProgressBar({ currentStep, totalSteps }: DiagnosisProgr
           style={
             i <= currentStep
               ? { background: 'linear-gradient(110deg, #2B53E6 0%, #7A3BE0 52%, #EF3E6B 100%)' }
-              : { background: '#e5e7eb' }
+              : { background: 'rgba(255,255,255,0.12)' }
           }
         />
       ))}

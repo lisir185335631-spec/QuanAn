@@ -1,3 +1,4 @@
+import { C, F } from '@/components/home-next/ikb/system';
 import { DIAGNOSIS_CHIP_LABEL } from '@/lib/constants/diagnosis';
 
 export function DiagnosisChip() {
@@ -6,12 +7,12 @@ export function DiagnosisChip() {
       data-testid="diagnosis-chip"
       className="inline-flex items-center gap-2 rounded-lg px-3 py-1"
       style={{
-        border: '1px solid rgba(43,83,230,0.35)',
-        background: 'linear-gradient(110deg, #2B53E6 0%, #7A3BE0 52%, #EF3E6B 100%)',
+        border: `1px solid ${C.line}`,
+        background: 'rgba(216,232,255,0.14)',
       }}
     >
-      <span className="material-symbols-outlined text-[16px] text-white" aria-hidden={true}>monitor_heart</span>
-      <span className="text-[12px] font-bold uppercase tracking-widest text-white">{DIAGNOSIS_CHIP_LABEL}</span>
+      <span className="material-symbols-outlined text-[16px]" aria-hidden={true} style={{ color: C.ikb, filter: 'drop-shadow(0 1px 4px rgba(5,12,34,.8))' }}>monitor_heart</span>
+      <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{DIAGNOSIS_CHIP_LABEL}</span>
     </div>
   );
 }

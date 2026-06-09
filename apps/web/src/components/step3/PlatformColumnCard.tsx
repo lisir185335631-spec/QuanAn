@@ -1,3 +1,4 @@
+import { C, F } from '@/components/home-next/ikb/system';
 import { STEP3_PLATFORMS_5 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +24,7 @@ export function PlatformColumnCard({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <p className="text-xs font-semibold text-[#374151]">{platform.label}</p>
+      <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{platform.label}</p>
       {referenceImageUrl ? (
         <img
           src={referenceImageUrl}
@@ -31,7 +32,7 @@ export function PlatformColumnCard({
           className="w-full rounded-md object-cover"
         />
       ) : (
-        <div className="border border-dashed border-[#e5e7eb] rounded-md flex items-center justify-center py-8 text-xs text-[#6b7280]">
+        <div className="rounded-md flex items-center justify-center py-8 text-xs" style={{ border: `1px dashed ${C.line}`, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
           参考图占位
         </div>
       )}

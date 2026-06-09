@@ -1,6 +1,7 @@
 import { Eye } from 'lucide-react';
 
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import { SubCard } from '@/components/ui/sub-card';
 import {
@@ -46,13 +47,13 @@ interface SubSectionProps {
 function SubSection({ label, description }: SubSectionProps) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-[#374151]">{label}</p>
+      <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{label}</p>
       {description ? (
-        <p className="text-xs text-[#6b7280] leading-relaxed">{description}</p>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{description}</p>
       ) : (
         <div className="animate-pulse space-y-1">
-          <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-          <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
+          <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+          <div className="h-3 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
         </div>
       )}
     </div>
@@ -69,12 +70,12 @@ export function AvatarDesignSection({
   if (content === null) {
     return (
       <div className={cn('space-y-3', className)}>
-        <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+        <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
           <FlameIcon className="h-4 w-4 shrink-0" aria-hidden size={4} />
           {H3_LABEL}
         </h3>
         <SubCard>
-          <p className="text-xs text-[#6b7280] text-center py-4">
+          <p className="text-xs text-center py-4" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
             {STEP3_EMPTY_PLACEHOLDER}
           </p>
         </SubCard>
@@ -87,7 +88,7 @@ export function AvatarDesignSection({
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+      <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
         <FlameIcon className="h-4 w-4 shrink-0" aria-hidden size={4} />
         {H3_LABEL}
       </h3>
@@ -113,12 +114,12 @@ export function AvatarDesignSection({
       {hasContent && content.必含元素 && content.必含元素.length > 0 && (
         <SubCard>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-[#374151]">必含元素</p>
+            <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>必含元素</p>
             <ul className="space-y-2">
               {content.必含元素.map((item, i) => (
-                <li key={i} className="text-xs text-[#6b7280] leading-relaxed">
-                  <span className="text-[#002fa7] mr-1">•</span>
-                  <span className="font-medium text-[#374151]">{item.title}：</span>
+                <li key={i} className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="mr-1" style={{ color: C.ikb }}>•</span>
+                  <span className="font-medium" style={{ color: C.ink }}>{item.title}：</span>
                   {item.desc}
                 </li>
               ))}
@@ -131,13 +132,13 @@ export function AvatarDesignSection({
       {hasContent && content.禁忌 && content.禁忌.length > 0 && (
         <SubCard>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-[#781621]">禁忌</p>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(255,120,120,0.95)', fontFamily: F.cn, textShadow: C.textShadow }}>禁忌</p>
             <ul className="space-y-2">
               {content.禁忌.map((item, i) => (
-                <li key={i} className="text-xs text-[#6b7280] leading-relaxed flex gap-2">
-                  <span className="text-[#781621] shrink-0">✗</span>
+                <li key={i} className="text-xs leading-relaxed flex gap-2" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="shrink-0" style={{ color: 'rgba(255,120,120,0.95)' }}>✗</span>
                   <span>
-                    <span className="font-medium text-[#374151]">{item.title}：</span>
+                    <span className="font-medium" style={{ color: C.ink }}>{item.title}：</span>
                     {item.desc}
                   </span>
                 </li>
@@ -151,7 +152,7 @@ export function AvatarDesignSection({
       <SubCard>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-[#374151]">头像参考图</p>
+            <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>头像参考图</p>
             <Button
               variant="outline"
               size="sm"
@@ -164,8 +165,8 @@ export function AvatarDesignSection({
           </div>
           {hasContent && content.aiPrompt && (
             <div className="space-y-1">
-              <p className="text-[11px] font-medium text-[#9ca3af]">AI Prompt</p>
-              <p className="text-[11px] text-[#6b7280] leading-relaxed font-mono bg-[#f8f9fa] rounded p-2 whitespace-pre-wrap">
+              <p className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>AI Prompt</p>
+              <p className="text-[11px] leading-relaxed whitespace-pre-wrap rounded p-2" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, background: 'rgba(255,255,255,0.07)', border: `0.5px solid ${C.line}`, textShadow: C.textShadow }}>
                 {content.aiPrompt}
               </p>
             </div>
@@ -177,7 +178,7 @@ export function AvatarDesignSection({
               className="w-full rounded-md object-cover"
             />
           ) : (
-            <div className="border border-dashed border-[#e5e7eb] rounded-md flex items-center justify-center py-8 text-xs text-[#6b7280]">
+            <div className="rounded-md flex items-center justify-center py-8 text-xs" style={{ border: `1px dashed ${C.line}`, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
               基于AI设计方案生成头像参考图，帮助你直观了解效果
             </div>
           )}

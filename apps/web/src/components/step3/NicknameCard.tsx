@@ -2,6 +2,7 @@ import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { SparkleIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import { SubCard } from '@/components/ui/sub-card';
 import { cn } from '@/lib/utils';
@@ -34,7 +35,7 @@ export function NicknameCard({ nickname, className }: NicknameCardProps) {
     >
       {/* name row + copy button */}
       <div className="flex items-center justify-between gap-2">
-        <h4 className="flex items-center gap-1.5 text-sm font-semibold text-[#111827]">
+        <h4 className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
           {nickname.hasSparkle && (
             <SparkleIcon size={4} className="h-4 w-4 shrink-0" aria-hidden="true" />
           )}
@@ -46,19 +47,19 @@ export function NicknameCard({ nickname, className }: NicknameCardProps) {
       </div>
 
       {/* description */}
-      <p className="text-xs text-[#6b7280] leading-relaxed">{nickname.description}</p>
+      <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{nickname.description}</p>
 
       {/* psychology (optional · 截图无) */}
       {nickname.psychology && (
-        <p className="text-xs text-[#6b7280] leading-relaxed">
-          <span className="font-medium text-[#4b5563]">心理学依据：</span>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+          <span className="font-medium" style={{ color: C.ink }}>心理学依据：</span>
           {nickname.psychology}
         </p>
       )}
 
       {/* searchability */}
-      <p className="text-xs text-[#6b7280] leading-relaxed">
-        <span className="font-medium text-[#4b5563]">搜索友好度：</span>
+      <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+        <span className="font-medium" style={{ color: C.ink }}>搜索友好度：</span>
         {nickname.searchability}
       </p>
 
@@ -68,7 +69,8 @@ export function NicknameCard({ nickname, className }: NicknameCardProps) {
           {nickname.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/20 rounded-full px-2.5 py-0.5"
+              className="inline-block text-xs rounded-full px-2.5 py-0.5"
+              style={{ background: 'rgba(216,232,255,0.15)', color: C.ikb, border: `0.5px solid rgba(216,232,255,0.3)` }}
             >
               {tag}
             </span>

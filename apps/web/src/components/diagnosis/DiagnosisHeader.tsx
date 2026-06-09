@@ -1,3 +1,4 @@
+import { C, F } from '@/components/home-next/ikb/system';
 import { DIAGNOSIS_H1, DIAGNOSIS_SUBTITLE } from '@/lib/constants/diagnosis';
 
 import { DiagnosisChip } from './DiagnosisChip';
@@ -16,9 +17,11 @@ export function DiagnosisHeader({ currentStep, totalSteps }: DiagnosisHeaderProp
         <span
           className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
           style={{
-            border: '1px solid rgba(22,32,72,0.13)',
-            background: '#F3F5FC',
-            color: '#161D33',
+            border: `1px solid ${C.line}`,
+            background: 'rgba(255,255,255,0.08)',
+            color: C.ikb,
+            textShadow: C.textShadow,
+            fontFamily: F.cn,
           }}
         >
           智能引擎
@@ -28,10 +31,16 @@ export function DiagnosisHeader({ currentStep, totalSteps }: DiagnosisHeaderProp
       {/* H1 */}
       <h1
         className="ikb-gradtext text-[40px] font-extrabold tracking-tighter"
+        style={{ textShadow: C.textShadow }}
       >
         {DIAGNOSIS_H1}
       </h1>
-      <p className="mt-2 text-[16px] leading-relaxed text-[#444653]">{DIAGNOSIS_SUBTITLE}</p>
+      <p
+        className="mt-2 text-[16px] leading-relaxed"
+        style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}
+      >
+        {DIAGNOSIS_SUBTITLE}
+      </p>
       {/* 进度条 */}
       <div className="mt-6">
         <DiagnosisProgressBar currentStep={currentStep} totalSteps={totalSteps} />

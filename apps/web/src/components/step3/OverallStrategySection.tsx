@@ -1,4 +1,5 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { SubCard } from '@/components/ui/sub-card';
 import {
   STEP3_EMPTY_PLACEHOLDER,
@@ -34,13 +35,13 @@ interface SubSectionProps {
 function SubSection({ label, description }: SubSectionProps) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-[#374151]">{label}</p>
+      <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{label}</p>
       {description ? (
-        <p className="text-xs text-[#6b7280] leading-relaxed">{description}</p>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{description}</p>
       ) : (
         <div className="animate-pulse space-y-1">
-          <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-          <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
+          <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+          <div className="h-3 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
         </div>
       )}
     </div>
@@ -52,12 +53,12 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
   if (content === null) {
     return (
       <div className={cn('space-y-3', className)}>
-        <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+        <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
           <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
           {H3_LABEL}
         </h3>
         <SubCard>
-          <p className="text-xs text-[#6b7280] text-center py-4">
+          <p className="text-xs text-center py-4" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
             {STEP3_EMPTY_PLACEHOLDER}
           </p>
         </SubCard>
@@ -70,7 +71,7 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+      <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
         <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
         {H3_LABEL}
       </h3>
@@ -92,11 +93,11 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
       {hasContent && content.时长策略 && content.时长策略.length > 0 && (
         <SubCard>
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-[#374151]">时长策略 · 主页访客转化路径设计</p>
+            <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>时长策略 · 主页访客转化路径设计</p>
             <ul className="space-y-2">
               {content.时长策略.map((item, i) => (
-                <li key={i} className="text-xs text-[#6b7280] leading-relaxed flex gap-3">
-                  <span className="shrink-0 inline-block text-[11px] font-mono bg-[#002fa7]/15 text-[#002fa7] border border-[#002fa7]/30 rounded px-2 py-0.5 min-w-[5rem] text-center">
+                <li key={i} className="text-xs leading-relaxed flex gap-3" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+                  <span className="shrink-0 inline-block text-[11px] rounded px-2 py-0.5 min-w-[5rem] text-center" style={{ fontFamily: F.mono, background: 'rgba(216,232,255,0.15)', color: C.ikb, border: `0.5px solid rgba(216,232,255,0.3)` }}>
                     {item.stage}
                   </span>
                   <span className="flex-1">{item.desc}</span>
@@ -111,12 +112,12 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
       {hasContent && content.平台优势 && content.平台优势.length > 0 && (
         <SubCard>
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-[#374151]">平台优势</p>
+            <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>平台优势</p>
             <div className="grid grid-cols-1 gap-3">
               {content.平台优势.map((item, i) => (
-                <div key={i} className="space-y-1 p-3 rounded border border-[#e5e7eb]">
-                  <p className="text-xs font-semibold text-[#002fa7]">{item.platform}</p>
-                  <p className="text-[11px] text-[#6b7280] leading-relaxed">{item.desc}</p>
+                <div key={i} className="space-y-1 p-3 rounded-lg" style={{ border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)' }}>
+                  <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn }}>{item.platform}</p>
+                  <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{item.desc}</p>
                 </div>
               ))}
             </div>

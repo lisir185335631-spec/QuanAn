@@ -1,4 +1,5 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { SubCard } from '@/components/ui/sub-card';
 import { STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
@@ -33,7 +34,7 @@ export function IntroCopySection({ formula, entries = [], coreKeywords, classNam
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+      <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
         <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
         {H3_LABEL}
       </h3>
@@ -41,13 +42,13 @@ export function IntroCopySection({ formula, entries = [], coreKeywords, classNam
       {/* ★ 简介公式 independent SubCard — AC-3 */}
       <SubCard>
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-[#374151]">★ 简介公式</p>
+          <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>★ 简介公式</p>
           {formula ? (
-            <p className="text-xs text-[#6b7280] leading-relaxed font-mono">{formula}</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, textShadow: C.textShadow }}>{formula}</p>
           ) : (
             <div className="animate-pulse space-y-1">
-              <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-              <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
+              <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+              <div className="h-3 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
             </div>
           )}
         </div>
@@ -67,12 +68,13 @@ export function IntroCopySection({ formula, entries = [], coreKeywords, classNam
       {/* 核心关键词 · 图 13 末尾 · 整个 H3-5 共享 chip 行(无 SEO 前缀) */}
       {coreKeywords && coreKeywords.length > 0 && (
         <div className="flex items-center gap-3 flex-wrap pt-2">
-          <span className="text-xs font-semibold text-[#4b5563] shrink-0">核心关键词：</span>
+          <span className="text-xs font-semibold shrink-0" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>核心关键词：</span>
           <div className="flex flex-wrap gap-2">
             {coreKeywords.map((kw) => (
               <span
                 key={kw}
-                className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/25 rounded px-3 py-1"
+                className="inline-block text-xs rounded px-3 py-1"
+                style={{ background: 'rgba(216,232,255,0.15)', color: C.ikb, border: `0.5px solid rgba(216,232,255,0.3)` }}
               >
                 {kw}
               </span>
