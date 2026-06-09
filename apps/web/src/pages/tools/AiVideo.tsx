@@ -1576,7 +1576,7 @@ export default function AiVideo() {
           </span>
         </div>
       </Reveal>
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <div style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 视频制作力雷达 */}
         <motion.div
           className="lg-glass lg-spec"

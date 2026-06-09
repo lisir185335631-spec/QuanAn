@@ -1213,7 +1213,7 @@ export default function BoomGenerate() {
           模型已就绪
         </span>
       </Reveal>
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <div style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 爆款力雷达 */}
         <motion.div
           className="lg-glass lg-spec"
