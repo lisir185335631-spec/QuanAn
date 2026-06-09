@@ -747,7 +747,7 @@ export default function Analysis() {
       </Reveal>
 
       {/* ── 雷达 + KPI 一行 ──────────────────────────────────────────────── */}
-      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
 
         {/* AnalysisDimensions · 雷达 */}
         <Item>
