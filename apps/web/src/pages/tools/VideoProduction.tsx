@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   VIDEO_PRODUCTION_BGM,
   VIDEO_PRODUCTION_BGM_TITLE,
@@ -418,7 +418,7 @@ export default function VideoProduction() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>输入文案</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>填写脚本文案 · AI 据此生成完整制作方案</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>填写脚本文案 · AI 据此生成完整制作方案</p>
               </div>
             </div>
             {/* 状态角标 */}
@@ -469,7 +469,7 @@ export default function VideoProduction() {
                   fontSize: 12,
                   fontWeight: 600,
                   background: 'rgba(255,255,255,0.10)',
-                  color: 'rgba(255,255,255,0.6)',
+                  color: 'rgba(255,255,255,0.84)',
                   fontFamily: F.mono,
                 }}
               >
@@ -551,7 +551,7 @@ export default function VideoProduction() {
                 />
                 视频文案
               </label>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>
                   auto_awesome
                 </span>
@@ -600,7 +600,7 @@ export default function VideoProduction() {
                 }}
               >
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>建议包含</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>建议包含</span>
                   {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
                     <span
                       key={t}
@@ -610,7 +610,7 @@ export default function VideoProduction() {
                         fontSize: 11,
                         fontWeight: 500,
                         background: 'rgba(255,255,255,0.10)',
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,0.84)',
                         fontFamily: F.cn,
                       }}
                     >
@@ -618,55 +618,51 @@ export default function VideoProduction() {
                     </span>
                   ))}
                 </div>
-                <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>
+                <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>
                   {copy.length} 字
                 </span>
               </div>
             </div>
             {/* 生成按钮 */}
             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
-              <motion.button
-                type="button"
-                data-testid="vp-generate-btn"
-                onClick={handleGenerate}
-                disabled={!copy.trim() || isPending}
-                whileHover={!copy.trim() || isPending ? {} : { y: -2 }}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 14,
-                  padding: '12px 32px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  background: C.grad,
-                  border: 'none',
-                  cursor: !copy.trim() || isPending ? 'not-allowed' : 'pointer',
-                  opacity: !copy.trim() || isPending ? 0.4 : 1,
-                  fontFamily: F.mono,
-                  boxShadow: '0 4px 24px rgba(168,197,224,0.40)',
-                  transition: 'opacity 0.2s',
-                }}
-              >
-                {isPending ? (
-                  <>
-                    <svg style={{ height: 16, width: 16, animation: 'spin 1s linear infinite' }} viewBox="0 0 24 24" fill="none" aria-hidden={true}>
-                      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    生成中…
-                  </>
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>videocam</span>
-                    {VIDEO_PRODUCTION_CTA}
-                  </>
-                )}
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  data-testid="vp-generate-btn"
+                  onClick={handleGenerate}
+                  disabled={!copy.trim() || isPending}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '12px 32px',
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: '#fff',
+                    border: 'none',
+                    cursor: !copy.trim() || isPending ? 'not-allowed' : 'pointer',
+                    opacity: !copy.trim() || isPending ? 0.4 : 1,
+                    fontFamily: F.cn,
+                  }}
+                >
+                  {isPending ? (
+                    <>
+                      <svg style={{ height: 16, width: 16, animation: 'spin 1s linear infinite' }} viewBox="0 0 24 24" fill="none" aria-hidden={true}>
+                        <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      生成中…
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>videocam</span>
+                      {VIDEO_PRODUCTION_CTA}
+                    </>
+                  )}
+                </button>
+              </Magnetic>
             </div>
           </div>
         </div>
@@ -704,8 +700,8 @@ export default function VideoProduction() {
               </svg>
             </span>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: C.ikb, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>AI 正在生成制作方案…</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0', fontFamily: F.cn }}>分析文案 · 生成分镜 · 编排制作流程，预计 20-45 秒</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>AI 正在生成制作方案…</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn }}>分析文案 · 生成分镜 · 编排制作流程，预计 20-45 秒</p>
             </div>
             <div style={{ marginLeft: 'auto', height: 6, width: 160, overflow: 'hidden', borderRadius: 9999, background: 'rgba(168,197,224,0.20)' }}>
               <div style={{ height: '100%', width: '100%', borderRadius: 9999, background: C.ikb, animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite' }} />
@@ -741,12 +737,12 @@ export default function VideoProduction() {
       {/* ── KPI 概览一排(4 卡) ─────────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
         {/* 分镜场景数 · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -785,9 +781,9 @@ export default function VideoProduction() {
               <div>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                   {kpiSceneCount}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginLeft: 4 }}> 个</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', marginLeft: 4 }}> 个</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>分镜场景</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>分镜场景</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
@@ -809,12 +805,12 @@ export default function VideoProduction() {
         </Item>
 
         {/* 预计时长 · 迷你柱 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -849,7 +845,7 @@ export default function VideoProduction() {
               <p style={{ fontSize: 18, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {hasResult ? (productionContent.schedule.slice(0, 6) || '约 80s') : '约 80s'}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>预计时长</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>预计时长</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
@@ -863,12 +859,12 @@ export default function VideoProduction() {
         </Item>
 
         {/* 口播段落 · 紫 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -902,9 +898,9 @@ export default function VideoProduction() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {teleprompterDisplay.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginLeft: 4 }}> 段</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', marginLeft: 4 }}> 段</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>口播段落</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>口播段落</p>
             </div>
             <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.18)' }}>
               <div style={{ height: 8, borderRadius: 9999, width: '100%', background: C.grad }} />
@@ -913,12 +909,12 @@ export default function VideoProduction() {
         </Item>
 
         {/* BGM建议 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -952,9 +948,9 @@ export default function VideoProduction() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {kpiBgmCount}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginLeft: 4 }}> 首</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', marginLeft: 4 }}> 首</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>BGM建议</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>BGM建议</p>
               <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '2px 0 0', fontFamily: F.mono }}>通用参考</p>
             </div>
             <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -1025,7 +1021,7 @@ export default function VideoProduction() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <h3 style={{ fontSize: 20, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{VIDEO_PRODUCTION_STORYBOARD_TITLE}</h3>
                     {!hasResult && (
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>（示例数据 · 生成后替换）</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>（示例数据 · 生成后替换）</span>
                     )}
                   </div>
                 </div>
@@ -1135,24 +1131,24 @@ export default function VideoProduction() {
                         </div>
                       </div>
                       <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                           <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>{VIDEO_PRODUCTION_SCENE_LABELS.action}:</span>{' '}
                           {s.action}
                         </p>
                         {s.cameraAngle && s.cameraAngle !== '无' && (
-                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                             <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>机位:</span>{' '}
                             {s.cameraAngle}
                           </p>
                         )}
                         {s.sfx && s.sfx !== '无' && (
-                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                             <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>音效:</span>{' '}
                             {s.sfx}
                           </p>
                         )}
                         {s.subtitle && s.subtitle !== '无' && (
-                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                             <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>字幕:</span>{' '}
                             {s.subtitle}
                           </p>
@@ -1245,7 +1241,7 @@ export default function VideoProduction() {
                         </div>
                       </div>
                       <div style={{ marginTop: 8 }}>
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                           <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>{VIDEO_PRODUCTION_SCENE_LABELS.action}:</span>{' '}
                           {s.action}
                         </p>
@@ -1509,14 +1505,14 @@ export default function VideoProduction() {
                       aria-label={`复制第 ${idx + 1} 段`}
                       style={{
                         cursor: 'pointer',
-                        color: 'rgba(255,255,255,0.55)',
+                        color: 'rgba(255,255,255,0.8)',
                         background: 'transparent',
                         border: 'none',
                         padding: 0,
                         transition: 'color 0.15s',
                       }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>content_copy</span>
                     </button>
@@ -1568,7 +1564,7 @@ export default function VideoProduction() {
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{VIDEO_PRODUCTION_BGM_TITLE}</h3>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>（通用参考 · 非本视频 AI 生成）</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>（通用参考 · 非本视频 AI 生成）</span>
                 </div>
               </div>
             </div>
@@ -1659,35 +1655,49 @@ export default function VideoProduction() {
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{VIDEO_PRODUCTION_EDITING_TITLE}</h3>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>通用剪辑指南</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>通用剪辑指南</span>
                 </div>
               </div>
             </div>
-            <ol style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: 0, padding: 0, listStyle: 'none' }}>
+            <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
               {VIDEO_PRODUCTION_EDITING.map((item, i) => (
-                <li key={item} style={{ display: 'flex', gap: 12, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
-                  <span
+                <Item key={item} style={{ height: '100%' }}>
+                  <div
+                    className="lg-glass"
                     style={{
                       display: 'flex',
-                      height: 24,
-                      width: 24,
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '50%',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: '#fff',
-                      background: 'linear-gradient(135deg, rgba(228,238,255,0.55), rgba(168,197,224,0.35))',
-                      fontFamily: F.mono,
+                      flexDirection: 'column',
+                      borderRadius: 14,
+                      padding: 14,
+                      height: '100%',
+                      boxSizing: 'border-box',
                     }}
                   >
-                    {i + 1}
-                  </span>
-                  <span>{item}</span>
-                </li>
+                    <span style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, flex: 1 }}>{item}</span>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignSelf: 'flex-start',
+                        marginTop: 'auto',
+                        paddingTop: 8,
+                        height: 24,
+                        width: 24,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: '#fff',
+                        background: 'linear-gradient(135deg, rgba(228,238,255,0.55), rgba(168,197,224,0.35))',
+                        fontFamily: F.mono,
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                  </div>
+                </Item>
               ))}
-            </ol>
+            </RevealGroup>
           </motion.div>
         </Reveal>
 
@@ -1696,7 +1706,7 @@ export default function VideoProduction() {
           <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
             <span
               style={{
                 marginLeft: 'auto',
@@ -1744,7 +1754,7 @@ export default function VideoProduction() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>制作完备度雷达</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -1764,7 +1774,7 @@ export default function VideoProduction() {
                   >
                     87
                   </p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.mono }}>综合分（示例）</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', margin: 0, fontFamily: F.mono }}>综合分（示例）</p>
                 </div>
               </div>
               {(() => {
@@ -1861,7 +1871,7 @@ export default function VideoProduction() {
                 {radarDims.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                   </div>
                 ))}
@@ -1895,7 +1905,7 @@ export default function VideoProduction() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>情绪节奏曲线</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>
                       沿 {kpiSceneCount} 个场景情绪强度推演
                       {!hasResult && <span style={{ marginLeft: 4, color: C.purpleText }}>（示例）</span>}
                     </p>
@@ -1911,7 +1921,7 @@ export default function VideoProduction() {
                         fontSize: 11,
                         fontWeight: 600,
                         background: i === 0 ? C.grad : 'rgba(255,255,255,0.08)',
-                        color: i === 0 ? '#fff' : 'rgba(255,255,255,0.6)',
+                        color: i === 0 ? '#fff' : 'rgba(255,255,255,0.84)',
                         fontFamily: F.mono,
                       }}
                     >
@@ -1942,7 +1952,7 @@ export default function VideoProduction() {
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>
                   峰值
                 </span>
-                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}场景情绪最高点
                 </span>
               </div>
@@ -2011,7 +2021,7 @@ export default function VideoProduction() {
                   </svg>
                 );
               })()}
-              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                 {Array.from({ length: kpiSceneCount }, (_, i) => `场景${i + 1}`).map((m) => (
                   <span key={m}>{m}</span>
                 ))}
@@ -2032,7 +2042,7 @@ export default function VideoProduction() {
               borderTop: `0.5px solid ${C.line}`,
             }}
           >
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>{VIDEO_PRODUCTION_FEEDBACK_PROMPT}</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>{VIDEO_PRODUCTION_FEEDBACK_PROMPT}</p>
             <motion.button
               type="button"
               onClick={handleFeedback}
