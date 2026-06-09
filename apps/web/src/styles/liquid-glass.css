@@ -220,6 +220,16 @@
     0 0 42px -6px rgba(239, 62, 107, 0.5);
 }
 
+/* 键盘焦点环(a11y · tools 页 lg-gradbtn / lg-glass 按钮) */
+.lg-gradbtn:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 10px rgba(60, 10, 90, 0.38),
+    0 10px 28px -8px rgba(122, 59, 224, 0.6),
+    0 0 0 2px rgba(168, 197, 224, 0.55);
+}
+
 /* 尊重「减少动态」无障碍偏好 */
 @media (prefers-reduced-motion: reduce) {
   .lg-fluid,

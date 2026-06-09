@@ -96,7 +96,7 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
           >
             历史记录
           </p>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
             点击记录恢复之前的 SOP 方案
           </p>
         </div>
@@ -110,7 +110,7 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
             display: 'flex', alignItems: 'center', gap: 6,
             borderRadius: 10, padding: '7px 14px',
             fontSize: 12, fontWeight: 600,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'rgba(255,255,255,0.84)',
             background: 'transparent', border: 'none', cursor: 'pointer',
             fontFamily: F.cn,
           }}
@@ -123,7 +123,7 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
 
       {isLoading ? (
         <div
-          style={{ textAlign: 'center', padding: '32px 0', fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}
+          style={{ textAlign: 'center', padding: '32px 0', fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}
           data-testid="history-loading"
         >
           加载中…
@@ -141,7 +141,7 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
         >
           <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'rgba(255,255,255,0.55)', display: 'block', marginBottom: 8 }}>history</span>
           <p style={{ margin: '0 0 4px', fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>暂无历史记录</p>
-          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
+          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
             生成第一份私域 SOP 后，记录将出现在这里
           </p>
         </div>
@@ -173,7 +173,7 @@ export function PrivateDomainHistoryView({ onRestore }: PrivateDomainHistoryView
                   onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'; }}
                   data-testid={`history-row-${row.id}`}
                 >
-                  <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.72)', whiteSpace: 'nowrap' }}>
+                  <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.84)', whiteSpace: 'nowrap' }}>
                     {formatDate(row.createdAt)}
                   </td>
                   <td style={{ ...tdStyle, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

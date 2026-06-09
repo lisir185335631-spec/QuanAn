@@ -96,7 +96,7 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
               阶段 {index + 1}
             </span>
             {isStreaming && (
@@ -135,13 +135,13 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
           ) : (
             <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'rgba(255,255,255,0.35)' }}>circle</span>
           )}
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
             {isGenerated ? '已生成' : '未生成'}
           </span>
           {isGenerated && (
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: 16, color: 'rgba(255,255,255,0.72)' }}
+              style={{ fontSize: 16, color: 'rgba(255,255,255,0.84)' }}
             >
               {expanded ? 'expand_less' : 'chevron_right'}
             </span>
@@ -166,7 +166,7 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
         >
           {phase.tactics.length > 0 && (
             <div>
-              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                 执行策略
               </p>
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -181,7 +181,7 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
           )}
           {phase.scripts.length > 0 && (
             <div>
-              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                 话术模板
               </p>
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -195,7 +195,7 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
           )}
           {phase.metrics.length > 0 && (
             <div>
-              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                 关键指标
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>

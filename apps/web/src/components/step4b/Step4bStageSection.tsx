@@ -56,7 +56,7 @@ export function Step4bStageSection({ stage, className }: Step4bStageSectionProps
             <span className="text-lg font-bold" style={{ color: C.ikb, fontFamily: F.display }}>{stage.range}</span>
             <h3 className="text-lg font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{stage.title}</h3>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>↗ {stage.duration}</p>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>↗ {stage.duration}</p>
         </div>
       </div>
 
@@ -82,9 +82,9 @@ export function Step4bStageSection({ stage, className }: Step4bStageSectionProps
                   </p>
                   <span className="text-xs font-semibold shrink-0" style={{ color: C.ikb, fontFamily: F.mono }}>{product.priceRange}</span>
                 </div>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>目标客户: {product.targetCustomer}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>月目标: {product.monthlyTarget}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>目标客户: {product.targetCustomer}</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>月目标: {product.monthlyTarget}</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   月收入: <span className="font-semibold" style={{ color: 'rgba(100,220,160,0.9)' }}>{product.monthlyRevenue}</span>
                 </p>
               </div>

@@ -5,7 +5,7 @@ import type { LucideIcon } from 'lucide-react';
 export const ACCOUNTS_H1 = 'IP账号管理' as const;
 export const ACCOUNTS_SUBTITLE = '管理多个IP账号，每个账号独立配置行业、定位和人设' as const;
 export const ACCOUNTS_CREATE_BTN = '新建账号' as const;
-export const ACCOUNT_ACTIVE_CHIP = 'ACTIVE' as const;
+export const ACCOUNT_ACTIVE_CHIP = '使用中' as const;
 
 export interface AccountChip {
   icon: LucideIcon;

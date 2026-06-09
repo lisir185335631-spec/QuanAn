@@ -95,7 +95,7 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
       {/* 来源平台 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>来源平台</label>
+        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>来源平台</label>
         <Select value={platform} onValueChange={setPlatform}>
           <SelectTrigger
             className="w-48"
@@ -122,7 +122,7 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
 
       {/* textarea */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <label htmlFor="dlt-sample" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
+        <label htmlFor="dlt-sample" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
           粘贴优秀文案（≥100 字）
         </label>
         <div
@@ -139,6 +139,8 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
             onChange={(e) => setSample(e.target.value)}
             placeholder="粘贴您想学习的文案内容…"
             rows={8}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               width: '100%',
               resize: 'none',
@@ -154,7 +156,7 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
             }}
             data-testid="sample-textarea"
           />
-          <div style={{ padding: '8px 16px', borderTop: `0.5px solid rgba(255,255,255,0.12)`, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+          <div style={{ padding: '8px 16px', borderTop: `0.5px solid rgba(255,255,255,0.12)`, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
             {sample.length} 字
           </div>
         </div>
@@ -342,7 +344,7 @@ export function LibraryTab({ onApply }: LibraryTabProps) {
     return (
       <div style={{ padding: '48px 0', textAlign: 'center' }} data-testid="library-empty">
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>暂无学习记录</p>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: '4px 0 0' }}>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '4px 0 0' }}>
           在「学习」标签页提交文案后，记录将出现在这里
         </p>
       </div>
@@ -367,10 +369,10 @@ export function LibraryTab({ onApply }: LibraryTabProps) {
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, background: 'rgba(168,197,224,0.18)', borderRadius: 6, padding: '2px 7px' }}>
                 {item.coreFormula}
               </span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
                 {item.sourcePlatform}
               </span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
                 {new Date(item.createdAt).toLocaleDateString('zh-CN')}
               </span>
             </div>
@@ -450,9 +452,9 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
       {/* 选择公式 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>选择公式</label>
+        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>选择公式</label>
         {(items as QueueItem[]).length === 0 ? (
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>暂无学习记录，请先在「学习」标签提交文案</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>暂无学习记录，请先在「学习」标签提交文案</p>
         ) : (
           <Select
             value={selectedQueueId}
@@ -484,12 +486,14 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
 
       {/* 新主题 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <label htmlFor="dlt-new-topic" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>新主题</label>
+        <label htmlFor="dlt-new-topic" style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>新主题</label>
         <input
           id="dlt-new-topic"
           value={newTopic}
           onChange={(e) => setNewTopic(e.target.value)}
           placeholder="输入您想要创作的主题…"
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.55)'; }}
+          onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
           style={{
             width: '100%',
             borderRadius: 10,

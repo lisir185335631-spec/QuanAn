@@ -1316,7 +1316,7 @@ export default function PrivateDomain() {
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ margin: 0, fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>75</p>
+                <p style={{ margin: 0, fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>75</p>
                 <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.8)' }}>综合分</p>
               </div>
             </div>

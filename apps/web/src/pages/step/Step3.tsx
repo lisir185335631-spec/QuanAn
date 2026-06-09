@@ -648,7 +648,7 @@ export default function Step3() {
               为「{industry}」生成高度定制的自媒体账号基础包装 · 构建专业、权威的数字形象基石。
             </p>
           </div>
-          <div className="flex shrink-0 flex-nowrap gap-3">
+          <div className="flex shrink-0 flex-wrap gap-3">
             <motion.button
               type="button"
               onClick={handleOptimize}
@@ -955,7 +955,15 @@ export default function Step3() {
                         fontFamily: F.cn,
                         color: C.ink,
                         outline: 'none',
-                        transition: 'border-color 0.2s',
+                        transition: 'border-color 0.2s, box-shadow 0.2s',
+                      }}
+                      onFocus={(e) => {
+                        (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                        (e.currentTarget as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
+                      }}
+                      onBlur={(e) => {
+                        (e.currentTarget as HTMLInputElement).style.borderColor = C.line;
+                        (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
                       }}
                     />
                   </div>
@@ -997,7 +1005,15 @@ export default function Step3() {
                         fontFamily: F.cn,
                         color: C.ink,
                         outline: 'none',
-                        transition: 'border-color 0.2s',
+                        transition: 'border-color 0.2s, box-shadow 0.2s',
+                      }}
+                      onFocus={(e) => {
+                        (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                        (e.currentTarget as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
+                      }}
+                      onBlur={(e) => {
+                        (e.currentTarget as HTMLInputElement).style.borderColor = C.line;
+                        (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
                       }}
                     />
                   </div>
@@ -1600,7 +1616,7 @@ export default function Step3() {
                   Core Strategy
                 </span>
                 <h3 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>核心定位策略</h3>
-                <p style={{ fontSize: 16, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>
+                <p style={{ fontSize: 16, lineHeight: 1.65, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   {generated.overallStrategy.视觉统一性}
                 </p>
               </div>
@@ -1745,7 +1761,7 @@ export default function Step3() {
               }}
             >
               <span className="material-symbols-outlined" style={{ marginBottom: 8, fontSize: 36, color: C.ikb }} aria-hidden="true">image</span>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>点击生成头像</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>点击生成头像</p>
             </motion.button>
             <div className="lg-glass" style={{ borderRadius: 12, padding: 12 }}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', fontFamily: F.mono, color: C.burgundyText }}>
@@ -1760,7 +1776,7 @@ export default function Step3() {
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden="true">content_copy</span>
                 </button>
               </div>
-              <p style={{ wordBreak: 'break-word', fontFamily: F.mono, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)' }}>
+              <p style={{ wordBreak: 'break-word', fontFamily: F.mono, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>
                 {generated.avatar.aiPrompt}
               </p>
             </div>

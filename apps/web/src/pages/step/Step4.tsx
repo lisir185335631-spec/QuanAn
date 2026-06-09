@@ -474,7 +474,7 @@ export default function Step4() {
               {STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
             </p>
           </div>
-          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 10 }}>
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 10 }}>
             <motion.button
               type="button"
               onClick={handleOptimize}
@@ -551,7 +551,7 @@ export default function Step4() {
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
-                textShadow: '0 1px 3px rgba(8,20,48,0.4)',
+                textShadow: C.textShadow,
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden>download</span>
@@ -755,7 +755,7 @@ export default function Step4() {
                   目标体量 (关注者/用户)
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.72)', pointerEvents: 'none' }} aria-hidden>group_add</span>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.84)', pointerEvents: 'none' }} aria-hidden>group_add</span>
                   <input
                     id="s4-follower-count"
                     type="text"
@@ -840,7 +840,7 @@ export default function Step4() {
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>可包含</span>
                       {['经历', '行业', '优势', '目标', '资源'].map((t) => (
                         <span
                           key={t}
@@ -858,7 +858,7 @@ export default function Step4() {
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
@@ -1116,7 +1116,7 @@ export default function Step4() {
                             >
                               <div>
                                 <p style={{ fontSize: 11, fontWeight: 700, color: phaseAccentText, fontFamily: F.mono, margin: 0 }}>{task.day}</p>
-                                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: '2px 0 0' }}>{task.duration}</p>
+                                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: '2px 0 0' }}>{task.duration}</p>
                               </div>
                               <div style={{ marginTop: 'auto' }}>
                                 <p style={{ fontSize: 13, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{task.title}</p>
@@ -1232,7 +1232,7 @@ export default function Step4() {
                             <p style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.2, color: phaseAccentText, fontFamily: F.display, margin: '4px 0 0', textShadow: C.textShadow }}>{kpi.target}</p>
                             <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                               <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: phaseAccent.startsWith('rgba') ? 'rgba(255,255,255,0.72)' : phaseAccent }} />
-                              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>基准：{kpi.baseline}</p>
+                              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>基准：{kpi.baseline}</p>
                             </div>
                           </motion.div>
                         ))}
@@ -1315,7 +1315,7 @@ export default function Step4() {
                       {`D-${String(idx + 1).padStart(2, '0')}`}
                     </td>
                     <td style={{ padding: '14px 24px', fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>{item.title}</td>
-                    <td style={{ padding: '14px 24px', color: 'rgba(255,255,255,0.65)' }}>{item.desc.slice(0, 60)}…</td>
+                    <td style={{ padding: '14px 24px', color: 'rgba(255,255,255,0.84)' }}>{item.desc.slice(0, 60)}…</td>
                     <td style={{ padding: '14px 24px' }}>
                       <StatusBadge status={getStatus(idx)} />
                     </td>
@@ -1608,7 +1608,7 @@ export default function Step4() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingInline: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingInline: 4, fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
               {TREND_LABELS_S4.map((m) => <span key={m}>{m}</span>)}
             </div>
           </div>

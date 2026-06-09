@@ -335,7 +335,7 @@ export default function Step8() {
             </p>
           </div>
           {/* 操作按钮组 */}
-          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 12 }}>
             <motion.button
               type="button"
               onClick={handleRegenerateAll}
@@ -717,7 +717,7 @@ export default function Step8() {
                     }}
                   />
                   产品/服务信息
-                  <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（可选）</span>
+                  <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.84)' }}>（可选）</span>
                 </label>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
@@ -726,7 +726,9 @@ export default function Step8() {
               </div>
               <div
                 className="lg-glass"
-                style={{ overflow: 'hidden', borderRadius: 14 }}
+                style={{ overflow: 'hidden', borderRadius: 14, transition: 'box-shadow 0.2s' }}
+                onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.45)'; }}
+                onBlurCapture={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
               >
                 <textarea
                   id="s8-product-info"
@@ -759,7 +761,7 @@ export default function Step8() {
                   }}
                 >
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>可包含</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>可包含</span>
                     {['定价', '卖点', '服务范围', '成交案例', '课程体系'].map((t) => (
                       <span
                         key={t}
@@ -848,6 +850,14 @@ export default function Step8() {
                     color: C.ink,
                     fontFamily: F.cn,
                     textShadow: C.textShadow,
+                  }}
+                  onFocus={(e) => {
+                    const wrapper = e.currentTarget.closest('.lg-glass') as HTMLElement | null;
+                    if (wrapper) wrapper.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.45)';
+                  }}
+                  onBlur={(e) => {
+                    const wrapper = e.currentTarget.closest('.lg-glass') as HTMLElement | null;
+                    if (wrapper) wrapper.style.boxShadow = '';
                   }}
                 />
               </div>
@@ -1681,7 +1691,7 @@ export default function Step8() {
                 >
                   83
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
               </div>
             </div>
             {(() => {
@@ -1728,7 +1738,7 @@ export default function Step8() {
               {RADAR_DIMS_S8.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1851,7 +1861,7 @@ export default function Step8() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
               {TREND_LABELS_S8.map((m) => (
                 <span key={m}>{m}</span>
               ))}

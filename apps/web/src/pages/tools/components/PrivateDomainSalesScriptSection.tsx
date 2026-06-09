@@ -110,7 +110,7 @@ export function PrivateDomainSalesScriptSection({
           fontWeight: 700,
           color: C.ink,
           fontFamily: F.cn,
-          textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
+          textShadow: C.textShadow,
         }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>record_voice_over</span>
@@ -176,7 +176,7 @@ export function PrivateDomainSalesScriptSection({
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 12px' }}>
-                <p style={{ flex: 1, margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn }}>{item.response}</p>
+                <p style={{ flex: 1, margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{item.response}</p>
                 <CopyButton text={`${item.objection}\n${item.response}`} />
               </div>
             </motion.div>

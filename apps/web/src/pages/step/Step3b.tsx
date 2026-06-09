@@ -304,7 +304,7 @@ export default function Step3b() {
                 {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
               </p>
             </div>
-            <div className="flex shrink-0 flex-nowrap gap-3">
+            <div className="flex shrink-0 flex-wrap gap-3">
               <motion.button
                 type="button"
                 onClick={handleOptimize}
@@ -550,7 +550,7 @@ export default function Step3b() {
                         </span>
                         <span style={{ minWidth: 0 }}>
                           <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>{p.desc}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{p.desc}</span>
                         </span>
                         <span
                           style={{
@@ -707,7 +707,7 @@ export default function Step3b() {
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>可包含</span>
                       {['背景', '经历', '技能', '转型', '成就'].map((t) => (
                         <span
                           key={t}
@@ -726,7 +726,7 @@ export default function Step3b() {
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.72)' }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.84)' }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
               </div>
@@ -789,7 +789,7 @@ export default function Step3b() {
                       }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.05)', padding: '8px 16px' }}>
-                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.72)' }}>{personalAdvantage.length} 字</span>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.84)' }}>{personalAdvantage.length} 字</span>
                     </div>
                   </div>
                 </div>
@@ -849,7 +849,7 @@ export default function Step3b() {
                       }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.05)', padding: '8px 16px' }}>
-                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.72)' }}>{personalStory.length} 字</span>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.84)' }}>{personalStory.length} 字</span>
                     </div>
                   </div>
                 </div>
@@ -1291,7 +1291,7 @@ export default function Step3b() {
                 <div style={{ position: 'relative', zIndex: 10, padding: 32 }}>
                   <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
                     <div>
-                      <h3 style={{ marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, letterSpacing: '0.04em' }}>
+                      <h3 style={{ marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, letterSpacing: '0.04em' }}>
                         核心定位基因 (Core Identity)
                       </h3>
                       <div
@@ -1346,13 +1346,13 @@ export default function Step3b() {
                         background: 'rgba(168,197,224,0.1)',
                       }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>ID</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>ID</span>
                       <span style={{ fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>#72421</span>
                       <div style={{ position: 'absolute', bottom: -8, right: -8, height: 24, width: 24, borderRadius: '50%', border: `2px solid rgba(255,255,255,0.2)`, background: 'rgba(168,197,224,0.5)' }} aria-hidden="true" />
                     </div>
                   </div>
                   <div style={{ marginTop: 32, borderTop: `0.5px solid ${C.line}`, paddingTop: 24 }}>
-                    <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.7, color: C.burgundyText, fontFamily: F.cn, textShadow: C.textShadow, overflowWrap: 'break-word' }}>
                       {result.coreIdentity.differentiation}
                     </p>
                   </div>
@@ -1394,7 +1394,7 @@ export default function Step3b() {
                           阶段 {String(i + 1).padStart(2, '0')}
                         </div>
                         <h4 style={{ marginBottom: 8, fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{r.period}</h4>
-                        <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{r.goal}</p>
+                        <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, overflowWrap: 'break-word' }}>{r.goal}</p>
                       </motion.div>
                     );
                   })}
@@ -1419,7 +1419,7 @@ export default function Step3b() {
                         <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">verified</span>
                       </div>
                       <h4 style={{ marginBottom: 4, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{b.claim}</h4>
-                      <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{b.display}</p>
+                      <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{b.display}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -1561,11 +1561,11 @@ export default function Step3b() {
                     style={{ borderRadius: 14, padding: 20 }}
                   >
                     <p style={{ marginBottom: 12, fontSize: 16, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>{m.motto}</p>
-                    <div style={{ marginBottom: 6, fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                    <div style={{ marginBottom: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                       <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>使用时机 · </span>
                       {m.whenToUse}
                     </div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                       <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>效果 · </span>
                       {m.effect}
                     </div>
@@ -1807,8 +1807,8 @@ export default function Step3b() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>85</p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>85</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分</p>
                 </div>
               </div>
               {(() => {

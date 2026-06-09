@@ -58,7 +58,7 @@ TRENDING_PLATFORM_OPTIONS.forEach((opt) => {
 // ─── inline TrendingHero ─────────────────────────────────────────────────────
 function TrendingHero() {
   return (
-    <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+    <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
       <div style={{ flexShrink: 0 }}>
         {/* chip 标签行 */}
         <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -222,6 +222,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
             zIndex: 20,
             marginTop: 8,
             width: 480,
+            maxWidth: 'min(480px, 88vw)',
             padding: 16,
             borderRadius: 12,
           }}
@@ -235,6 +236,8 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={TRENDING_IND_SEARCH_PLACEHOLDER}
               aria-label="搜索行业"
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
               style={{
                 width: '100%',
                 borderRadius: 8,
@@ -288,7 +291,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
           </div>
 
           {/* footer count */}
-          <p style={{ marginTop: 12, textAlign: 'right', fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+          <p style={{ marginTop: 12, textAlign: 'right', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
             {TRENDING_IND_TOTAL_TPL(STEP1_INDUSTRIES_56.length)}
           </p>
         </div>
@@ -445,6 +448,8 @@ function TrendingFilterCard({
                   onChange={(e) => onKeywordsChange(e.target.value)}
                   placeholder={TRENDING_FILTER_KEYWORDS_PLACEHOLDER}
                   data-testid="trending-keywords-input"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
                   style={{
                     width: '100%',
                     borderRadius: 10,
@@ -523,6 +528,8 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
           onChange={(e) => onChange(e.target.value)}
           placeholder={TRENDING_SEARCH_PLACEHOLDER}
           data-testid="trending-search-input"
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+          onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
           style={{
             width: '100%',
             borderRadius: 10,
@@ -713,7 +720,7 @@ function TrendingInsights() {
   return (
     <>
       <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)', filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>insights</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, textShadow: C.textShadow, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>数据洞察</h2>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
@@ -1153,8 +1160,8 @@ export default function Trending() {
           }}
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(255,255,255,0.4)' }}>wifi_off</span>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>加载失败</p>
-          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>加载失败</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
           <Magnetic strength={0.3}>
             <button
               type="button"
@@ -1184,8 +1191,8 @@ export default function Trending() {
           }}
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(168,197,224,0.4)' }}>search_off</span>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>暂无匹配内容</p>
-          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>暂无匹配内容</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
         </div>
       )}
 

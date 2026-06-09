@@ -231,7 +231,7 @@ export default function VideoProduction() {
   return (
     <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <Reveal style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+      <Reveal style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ flexShrink: 0 }}>
           {/* chip 标签行 */}
           <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -315,6 +315,8 @@ export default function VideoProduction() {
             whileHover={{ y: -2 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
             className="lg-glass"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -343,6 +345,8 @@ export default function VideoProduction() {
             whileHover={{ y: -2 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
             className="lg-glass"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -574,6 +578,8 @@ export default function VideoProduction() {
                 rows={10}
                 placeholder="输入你的视频脚本文案，包含标题、话题抛出、正反方观点、结论等结构"
                 className="ikb-input"
+                onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = '0'; }}
                 style={{
                   width: '100%',
                   resize: 'none',
@@ -700,7 +706,7 @@ export default function VideoProduction() {
               </svg>
             </span>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>AI 正在生成制作方案…</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>AI 正在生成制作方案…</p>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn }}>分析文案 · 生成分镜 · 编排制作流程，预计 20-45 秒</p>
             </div>
             <div style={{ marginLeft: 'auto', height: 6, width: 160, overflow: 'hidden', borderRadius: 9999, background: 'rgba(168,197,224,0.20)' }}>

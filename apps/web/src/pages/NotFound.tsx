@@ -104,7 +104,8 @@ export default function NotFound() {
                 fontFamily: F.cn,
                 fontSize: 15,
                 lineHeight: 1.65,
-                color: 'rgba(255,255,255,0.70)',
+                color: 'rgba(255,255,255,0.84)',
+                overflowWrap: 'break-word',
                 margin: '0 0 40px',
               }}
             >

@@ -412,7 +412,7 @@ export default function Analysis() {
                   width: 34,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: 9,
+                  borderRadius: 8,
                   background: 'rgba(255,255,255,0.14)',
                   color: C.ink,
                 }}
@@ -518,7 +518,7 @@ export default function Analysis() {
                   width: 34,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: 9,
+                  borderRadius: 8,
                   background: 'rgba(255,255,255,0.14)',
                   color: C.ink,
                 }}
@@ -581,7 +581,7 @@ export default function Analysis() {
                     width: 34,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 9,
+                    borderRadius: 8,
                     background: 'rgba(255,255,255,0.14)',
                     color: '#4ade80',
                   }}
@@ -626,7 +626,7 @@ export default function Analysis() {
                     width: 34,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 9,
+                    borderRadius: 8,
                     background: 'rgba(255,255,255,0.14)',
                     color: '#f87171',
                   }}
@@ -673,7 +673,7 @@ export default function Analysis() {
                   width: 34,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: 9,
+                  borderRadius: 8,
                   background: 'rgba(255,255,255,0.14)',
                   color: C.accent3,
                 }}
@@ -961,7 +961,7 @@ export default function Analysis() {
                       width: 34,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: 9,
+                      borderRadius: 8,
                       background: 'rgba(168,197,224,0.22)',
                       color: C.yellow,
                     }}
@@ -1006,7 +1006,7 @@ export default function Analysis() {
                       width: 34,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: 9,
+                      borderRadius: 8,
                       background: 'rgba(34,197,94,0.18)',
                       color: '#4ade80',
                     }}
@@ -1051,7 +1051,7 @@ export default function Analysis() {
                       width: 34,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: 9,
+                      borderRadius: 8,
                       background: 'rgba(168,197,224,0.22)',
                       color: C.accent3,
                     }}

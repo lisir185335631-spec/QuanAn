@@ -151,7 +151,7 @@ export default function Generate() {
     <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
       <Reveal>
-        <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
           <div style={{ flexShrink: 0 }}>
             {/* chip 标签行 */}
             <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -217,7 +217,7 @@ export default function Generate() {
                 maxWidth: 820,
                 fontSize: 16,
                 lineHeight: 1.6,
-                color: 'rgba(255,255,255,0.75)',
+                color: 'rgba(255,255,255,0.84)',
                 fontFamily: F.cn,
                 textShadow: C.textShadow,
               }}
@@ -234,6 +234,8 @@ export default function Generate() {
               whileHover={{ y: -3 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
               className="lg-glass"
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'flex',
                 flexShrink: 0,
@@ -263,6 +265,8 @@ export default function Generate() {
               onClick={handleCopyResult}
               whileHover={{ y: -3 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'flex',
                 flexShrink: 0,
@@ -788,6 +792,8 @@ export default function Generate() {
                   maxLength={GENERATE_TOPIC_MAXLEN}
                   rows={4}
                   placeholder="输入文案主题，例如：如何在3天内涨粉1万"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = 'none'; }}
                   style={{
                     display: 'block',
                     width: '100%',
@@ -923,7 +929,7 @@ export default function Generate() {
                       fontWeight: 600,
                       border: `0.5px solid ${C.line}`,
                       background: 'rgba(255,255,255,0.08)',
-                      color: 'rgba(255,255,255,0.75)',
+                      color: 'rgba(255,255,255,0.84)',
                       fontFamily: F.cn,
                       cursor: 'pointer',
                     }}
@@ -969,7 +975,7 @@ export default function Generate() {
                       fontWeight: 600,
                       border: `0.5px solid ${C.line}`,
                       background: 'rgba(255,255,255,0.08)',
-                      color: 'rgba(255,255,255,0.75)',
+                      color: 'rgba(255,255,255,0.84)',
                       fontFamily: F.cn,
                       cursor: 'pointer',
                     }}
@@ -1093,7 +1099,7 @@ export default function Generate() {
 
       {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
       <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }} aria-hidden={true}>insights</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: C.textShadow }} aria-hidden={true}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>数据洞察</h2>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span

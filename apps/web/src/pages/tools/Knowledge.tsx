@@ -896,7 +896,7 @@ export default function Knowledge() {
               maxWidth: 820,
               fontSize: 16,
               lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.75)',
+              color: 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
               textShadow: C.textShadow,
             }}

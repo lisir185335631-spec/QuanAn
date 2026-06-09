@@ -447,7 +447,7 @@ export default function Diagnosis() {
                 progress_activity
               </span>
               <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>AI 分析中...</p>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>正在生成 7 维度诊断报告，请稍候（约 8-15 秒）</p>
             </div>
           </FadeInWrapper>
         </div>

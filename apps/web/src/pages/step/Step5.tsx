@@ -418,7 +418,7 @@ export default function Step5() {
             </p>
           </div>
           {/* 右侧按钮组 */}
-          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 12 }}>
             <motion.button
               type="button"
               onClick={handleOptimize}
@@ -579,7 +579,7 @@ export default function Step5() {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontSize: 18,
-                    color: 'rgba(255,255,255,0.72)',
+                    color: 'rgba(255,255,255,0.84)',
                     pointerEvents: 'none',
                   }}
                   aria-hidden={true}
@@ -655,7 +655,7 @@ export default function Step5() {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontSize: 18,
-                    color: 'rgba(255,255,255,0.72)',
+                    color: 'rgba(255,255,255,0.84)',
                     pointerEvents: 'none',
                   }}
                   aria-hidden={true}
@@ -721,9 +721,9 @@ export default function Step5() {
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>description</span>
-              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>上传产品资料</p>
+              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传产品资料</p>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>产品介绍、卖点、价格体系、客户案例等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
             </motion.button>
             <motion.button
               type="button"
@@ -749,9 +749,9 @@ export default function Step5() {
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>person</span>
-              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>上传人物介绍与行业</p>
+              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传人物介绍与行业</p>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>个人经历、行业背景、专业资质、从业故事等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
             </motion.button>
           </div>
 
@@ -1286,7 +1286,7 @@ export default function Step5() {
               </div>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
                 当前类 <span style={{ fontWeight: 700, color: C.ikb }}>{filteredTopics.length}</span> / {currentTopics.length} 条
-                <span style={{ marginLeft: 4, color: 'rgba(255,255,255,0.72)' }}>· 全库 5 类 {totalGenerated} 个</span>
+                <span style={{ marginLeft: 4, color: 'rgba(255,255,255,0.84)' }}>· 全库 5 类 {totalGenerated} 个</span>
               </p>
             </div>
           </Reveal>
@@ -1690,7 +1690,7 @@ export default function Step5() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', overflow: 'hidden', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', overflow: 'hidden', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                   {TREND_LABELS_S5.filter((_, i) => i % 4 === 0).map((m) => (
                     <span key={m}>{m}</span>
                   ))}

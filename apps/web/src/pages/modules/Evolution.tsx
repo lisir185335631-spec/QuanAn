@@ -304,8 +304,8 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
                         : lvl.id === 'L3'
                           ? 'rocket_launch'
                           : lvl.id === 'L4'
-                            ? 'park'
-                            : 'workspace_premium'}
+                            ? 'workspace_premium'
+                            : 'military_tech'}
                   </span>
                 </div>
               );
@@ -349,7 +349,7 @@ const STAT_VARIANT_STYLES: Record<StatVariant, StatVariantStyle> = {
   needsImprove: {
     iconBg: 'rgba(255,255,255,0.12)',
     iconColor: 'rgba(255,255,255,0.9)',
-    icon: 'thumb_down',
+    icon: 'flag',
     chipBg: 'rgba(255,255,255,0.08)',
     chipColor: 'rgba(255,255,255,0.85)',
   },
@@ -515,7 +515,7 @@ function InsightCard({ items }: { items: InsightItem[] }) {
               className="lg-glass"
               style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '12px 16px', height: '100%' }}
             >
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                 {item.direction ?? '综合'}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 'auto' }}>
@@ -631,14 +631,14 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
               className="lg-glass"
               style={{ display: 'flex', flexDirection: 'column', borderRadius: 12, padding: '12px 16px', height: '100%' }}
             >
-              <p style={{ fontSize: 12, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                 <span style={{ marginRight: 6 }} aria-label={item.rating === 'good' ? '好评' : '差评'}>
                   {item.rating === 'good' ? '👍' : '👎'}
                 </span>
                 {item.agentId}
               </p>
               {item.comment && (
-                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn }}>{item.comment}</p>
+                <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: '4px 0 0', fontFamily: F.cn, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{item.comment}</p>
               )}
               <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: 'auto 0 0', fontFamily: F.cn }}>
                 {new Date(item.createdAt).toLocaleDateString('zh-CN')}
@@ -890,8 +890,11 @@ export default function Evolution() {
                   border: 'none',
                   fontFamily: F.cn,
                   textShadow: C.textShadow,
+                  outline: 'none',
                 }}
                 aria-label="新增深度学习"
+                onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+                onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>add</span>
                 {EVOLUTION_ARCHIVE_ADD}
@@ -989,9 +992,12 @@ export default function Evolution() {
                         ? 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)'
                         : 'rgba(255,255,255,0.15)',
                       transition: 'background 0.2s',
+                      outline: 'none',
                     }}
                     aria-pressed={autoOn}
                     aria-label="自动进化开关"
+                    onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+                    onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
                   >
                     <span
                       style={{
@@ -1093,7 +1099,7 @@ export default function Evolution() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>73</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: C.textShadow }}>73</p>
                   <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>综合分</p>
                 </div>
               </div>
@@ -1111,7 +1117,7 @@ export default function Evolution() {
                   .map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(','))
                   .join(' ');
                 return (
-                  <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
+                  <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
                     <defs>
                       <linearGradient id="ev-radarFill" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#d4e6ff" stopOpacity="0.38" />
@@ -1235,7 +1241,7 @@ export default function Evolution() {
                 const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
                 const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
                 return (
-                  <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
+                  <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} aria-hidden={true}>
                     <defs>
                       <linearGradient id="ev-trendFill" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#d4e6ff" stopOpacity="0.28" />

@@ -15,7 +15,6 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import './styles/globals.css';
 import './styles/aiipznt-motion.css';
-import './styles/pioneer.css';
 import { C, F } from './components/home/ikb/system';
 import { trpc, trpcClient, queryClient } from './lib/trpc';
 import { router } from './router';

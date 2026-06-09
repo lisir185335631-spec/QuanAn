@@ -148,7 +148,7 @@ export function BackgroundImageDesignSection({
                 <div key={i} className="space-y-1 p-3 rounded-lg" style={{ border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)' }}>
                   <p className="text-xs font-semibold" style={{ color: C.ikb, fontFamily: F.cn }}>{item.platform}</p>
                   <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>尺寸：{item.size}</p>
-                  <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{item.desc}</p>
+                  <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{item.desc}</p>
                 </div>
               ))}
             </div>
