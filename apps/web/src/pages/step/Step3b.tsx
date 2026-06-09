@@ -1297,15 +1297,12 @@ export default function Step3b() {
                       <div
                         style={{
                           marginBottom: 16,
-                          fontSize: 22,
+                          fontSize: 24,
                           fontWeight: 700,
-                          lineHeight: 1.3,
+                          lineHeight: 1.35,
                           fontFamily: F.display,
-                          background: C.grad,
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          color: 'transparent',
+                          color: C.ink,
+                          textShadow: C.textShadow,
                         }}
                       >
                         {result.coreIdentity.identityTag}
@@ -1346,8 +1343,8 @@ export default function Step3b() {
                         background: 'rgba(168,197,224,0.1)',
                       }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)', fontFamily: F.mono, textShadow: C.textShadow }}>ID</span>
-                      <span style={{ fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>#72421</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: 40, color: C.ikb, filter: 'drop-shadow(0 2px 8px rgba(130,180,255,.5))' }} aria-hidden="true">fingerprint</span>
+                      <span style={{ marginTop: 6, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.9)', fontFamily: F.mono, textShadow: C.textShadow }}>专属</span>
                       <div style={{ position: 'absolute', bottom: -8, right: -8, height: 24, width: 24, borderRadius: '50%', border: `2px solid rgba(255,255,255,0.2)`, background: 'rgba(168,197,224,0.5)' }} aria-hidden="true" />
                     </div>
                   </div>
