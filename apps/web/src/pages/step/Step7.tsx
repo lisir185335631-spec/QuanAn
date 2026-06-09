@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { trpc, type RouterOutputs } from '@/lib/trpc';
 
@@ -374,34 +374,35 @@ export default function Step7() {
               <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: C.ikb }}>auto_fix_high</span>
               智能优化
             </motion.button>
-            <motion.button
-              type="button"
-              onClick={handleCopyResult}
-              disabled={!hasResult}
-              aria-label="复制文案"
-              whileHover={hasResult ? { y: -3 } : undefined}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-gradbtn"
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                borderRadius: 12,
-                padding: '10px 20px',
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#fff',
-                fontFamily: F.mono,
-                border: 'none',
-                cursor: !hasResult ? 'not-allowed' : 'pointer',
-                opacity: !hasResult ? 0.4 : 1,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
-              复制文案
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <motion.button
+                type="button"
+                onClick={handleCopyResult}
+                disabled={!hasResult}
+                aria-label="复制文案"
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-gradbtn"
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 9999,
+                  padding: '10px 20px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  border: 'none',
+                  cursor: !hasResult ? 'not-allowed' : 'pointer',
+                  opacity: !hasResult ? 0.4 : 1,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
+                复制文案
+              </motion.button>
+            </Magnetic>
           </div>
         </header>
       </Reveal>
@@ -412,7 +413,7 @@ export default function Step7() {
           data-testid="step7-loading"
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             overflow: 'hidden',
             borderRadius: 16,
             padding: 18,
@@ -434,7 +435,7 @@ export default function Step7() {
           data-testid="step7-error"
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -544,14 +545,14 @@ export default function Step7() {
 
       {/* ── KPI 卡一排(仅有真实结果时显示)────────────────────── */}
       {hasResult && (
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }}>
           {/* 脚本类型 · 环形 · 冷蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -565,9 +566,9 @@ export default function Step7() {
                 <div>
                   <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     {SCRIPT_TYPES.length}
-                    <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>种</span>
+                    <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>种</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>脚本类型</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>脚本类型</p>
                 </div>
                 <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                   <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`脚本类型覆盖 ${Math.round((SCRIPT_TYPES.length / 10) * 100)}%`}>
@@ -584,12 +585,12 @@ export default function Step7() {
           </Item>
 
           {/* 爆款元素 · 迷你柱 · 白/冷 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(255,255,255,0.12)', color: C.burgundy }}>
@@ -600,9 +601,9 @@ export default function Step7() {
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {totalElements}
-                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>个</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>个</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
               </div>
               <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                 {[58, 84, 70, 96, 78].map((h, i) => (
@@ -613,12 +614,12 @@ export default function Step7() {
           </Item>
 
           {/* 已选元素 · 进度条 · 冷蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.accent3 }}>
@@ -629,9 +630,9 @@ export default function Step7() {
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {selectedElementIds.length}
-                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>个</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>个</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>已选元素</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>已选元素</p>
               </div>
               <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.18)' }}>
                 <div
@@ -647,12 +648,12 @@ export default function Step7() {
           </Item>
 
           {/* 文案字数 · chip · 冷蓝 */}
-          <Item>
+          <Item style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
@@ -665,9 +666,9 @@ export default function Step7() {
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                   {result.markdown.length}
-                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>字</span>
+                  <span style={{ marginLeft: 3, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>字</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>文案字数</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>文案字数</p>
               </div>
               <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {result.hooks.slice(0, 3).map((hook, i) => (
@@ -685,7 +686,7 @@ export default function Step7() {
       )}
 
       {/* ── 2 列配置区 ─────────────────────────────────────── */}
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+      <div style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
         {/* 左:脚本类型(7 · 可视化选择卡) */}
         <Reveal>
           <div className="lg-glass" style={{ borderRadius: 20, padding: 24 }}>
@@ -695,78 +696,81 @@ export default function Step7() {
               </span>
               <div>
                 <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>脚本类型</h2>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>选择适合的内容框架</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>选择适合的内容框架</p>
               </div>
             </div>
-            <div role="radiogroup" aria-label="脚本类型选择" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
               {SCRIPT_TYPES.map((type) => {
                 const active = selectedScriptTypeId === type.id;
                 return (
-                  <motion.button
-                    type="button"
-                    key={type.id}
-                    onClick={() => setSelectedScriptTypeId(type.id)}
-                    aria-pressed={active}
-                    whileHover={{ y: -2 }}
-                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                    className="lg-glass"
-                    style={{
-                      display: 'flex',
-                      width: '100%',
-                      alignItems: 'center',
-                      gap: 12,
-                      overflow: 'hidden',
-                      borderRadius: 14,
-                      padding: 14,
-                      textAlign: 'left',
-                      background: active ? 'rgba(168,197,224,0.22)' : 'transparent',
-                      border: active ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
-                      cursor: 'pointer',
-                      transition: 'background 0.2s, border-color 0.2s',
-                    }}
-                  >
-                    <span
+                  <Item key={type.id} style={{ height: '100%' }}>
+                    <motion.button
+                      type="button"
+                      onClick={() => setSelectedScriptTypeId(type.id)}
+                      aria-pressed={active}
+                      whileHover={{ y: -2 }}
+                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                      className="lg-glass"
                       style={{
                         display: 'flex',
-                        height: 40,
-                        width: 40,
-                        flexShrink: 0,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 10,
-                        background: active
-                          ? 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))'
-                          : 'rgba(255,255,255,0.08)',
-                        color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+                        flexDirection: 'column',
+                        width: '100%',
+                        height: '100%',
+                        gap: 8,
+                        overflow: 'hidden',
+                        borderRadius: 14,
+                        padding: 14,
+                        textAlign: 'left',
+                        background: active ? 'rgba(168,197,224,0.22)' : 'transparent',
+                        border: active ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s, border-color 0.2s',
                       }}
                     >
-                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
-                    </span>
-                    <span style={{ minWidth: 0, flex: 1 }}>
-                      <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.name}</span>
-                      <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{type.desc}</span>
-                    </span>
-                    <span
-                      style={{
-                        display: 'flex',
-                        height: 16,
-                        width: 16,
-                        flexShrink: 0,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '50%',
-                        background: active ? C.ikb : 'transparent',
-                        border: active ? 'none' : `1px solid rgba(255,255,255,0.3)`,
-                        color: active ? '#fff' : 'transparent',
-                        transition: 'background 0.2s',
-                      }}
-                    >
-                      <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>check</span>
-                    </span>
-                  </motion.button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span
+                          style={{
+                            display: 'flex',
+                            height: 36,
+                            width: 36,
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 10,
+                            background: active
+                              ? 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))'
+                              : 'rgba(255,255,255,0.08)',
+                            color: active ? '#fff' : 'rgba(255,255,255,0.8)',
+                          }}
+                        >
+                          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
+                        </span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.name}</span>
+                        <span
+                          style={{
+                            marginLeft: 'auto',
+                            display: 'flex',
+                            height: 16,
+                            width: 16,
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%',
+                            background: active ? C.ikb : 'transparent',
+                            border: active ? 'none' : `1px solid rgba(255,255,255,0.3)`,
+                            color: active ? '#fff' : 'transparent',
+                            transition: 'background 0.2s',
+                          }}
+                        >
+                          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>check</span>
+                        </span>
+                      </div>
+                      <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginTop: 'auto' }}>{type.desc}</span>
+                    </motion.button>
+                  </Item>
                 );
               })}
-            </div>
+            </RevealGroup>
           </div>
         </Reveal>
 
@@ -781,7 +785,7 @@ export default function Step7() {
                 </span>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>爆款元素</h2>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>多选 · 已选 {selectedElementIds.length} 个</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>多选 · 已选 {selectedElementIds.length} 个</p>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -843,7 +847,7 @@ export default function Step7() {
                   <span style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} />
                   文案主题
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.burgundy }}>auto_awesome</span>
                   AI 据此生成爆款文案
                 </span>
@@ -891,8 +895,8 @@ export default function Step7() {
                     background: 'rgba(255,255,255,0.05)',
                   }}
                 >
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>{topic.length} 字</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>{topic.length} 字</span>
                 </div>
               </div>
               {currentScript && (
@@ -911,38 +915,37 @@ export default function Step7() {
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16, color: C.ikb }}>{SCRIPT_TYPE_ICONS[currentScript.id] ?? 'article'}</span>
                   <div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{currentScript.name}</span>
-                    <span style={{ marginLeft: 6, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{currentScript.desc}</span>
+                    <span style={{ marginLeft: 6, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{currentScript.desc}</span>
                   </div>
                 </div>
               )}
               <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                <motion.button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={!topic.trim() || isLoading}
-                  whileHover={topic.trim() && !isLoading ? { y: -3 } : undefined}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  className="lg-gradbtn"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    borderRadius: 14,
-                    padding: '12px 32px',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: '#fff',
-                    fontFamily: F.mono,
-                    border: 'none',
-                    cursor: !topic.trim() || isLoading ? 'not-allowed' : 'pointer',
-                    opacity: !topic.trim() || isLoading ? 0.4 : 1,
-                  }}
-                >
-                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
-                  {isLoading ? '生成中…' : (topic.trim() ? '生成爆款文案' : '请输入主题')}
-                </motion.button>
+                <Magnetic strength={0.3}>
+                  <motion.button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={!topic.trim() || isLoading}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-gradbtn"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      borderRadius: 9999,
+                      padding: '12px 32px',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: '#fff',
+                      fontFamily: F.cn,
+                      border: 'none',
+                      cursor: !topic.trim() || isLoading ? 'not-allowed' : 'pointer',
+                      opacity: !topic.trim() || isLoading ? 0.4 : 1,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+                    {isLoading ? '生成中…' : (topic.trim() ? '生成爆款文案' : '请输入主题')}
+                  </motion.button>
+                </Magnetic>
               </div>
             </div>
           </Reveal>
@@ -956,7 +959,7 @@ export default function Step7() {
             data-testid="step7-empty-state"
             className="lg-glass"
             style={{
-              marginBottom: 32,
+              marginBottom: 44,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -967,12 +970,12 @@ export default function Step7() {
               border: `1px dashed rgba(255,255,255,0.18)`,
             }}
           >
-            <span style={{ display: 'flex', height: 64, width: 64, alignItems: 'center', justifyContent: 'center', borderRadius: 18, background: 'rgba(168,197,224,0.18)', color: C.ikb }}>
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>article</span>
+            <span style={{ display: 'flex', height: 64, width: 64, alignItems: 'center', justifyContent: 'center', borderRadius: 18, background: 'rgba(168,197,224,0.18)', color: C.ink }}>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>article</span>
             </span>
             <div>
               <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>尚未生成文案</p>
-              <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '8px 0 0' }}>选择脚本类型和爆款元素，输入主题，点击「生成爆款文案」开始</p>
+              <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '8px 0 0' }}>选择脚本类型和爆款元素，输入主题，点击「生成爆款文案」开始</p>
             </div>
           </div>
         </Reveal>
@@ -998,7 +1001,7 @@ export default function Step7() {
                   </span>
                   <div>
                     <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>生成文案</h2>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>基于「{currentScript?.name ?? '脚本类型'}」框架 · AI 深度生成</p>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>基于「{currentScript?.name ?? '脚本类型'}」框架 · AI 深度生成</p>
                   </div>
                 </div>
                 <motion.button
@@ -1066,7 +1069,7 @@ export default function Step7() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>AI 智能优化</h3>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>输入优化目标 · AI 一键深度改写文案</p>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>输入优化目标 · AI 一键深度改写文案</p>
                 </div>
               </div>
               <div style={{ padding: 24 }}>
@@ -1075,7 +1078,7 @@ export default function Step7() {
                     <span style={{ display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} />
                     优化目标
                   </label>
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', minWidth: 0 }}>
                     <span className="material-symbols-outlined" aria-hidden={true} style={{ pointerEvents: 'none', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)' }}>edit</span>
                     <input
                       id="s7-optimize-goal"
@@ -1086,6 +1089,7 @@ export default function Step7() {
                       className="lg-glass"
                       style={{
                         width: '100%',
+                        minWidth: 0,
                         borderRadius: 12,
                         padding: '12px 12px 12px 40px',
                         fontSize: 14,
@@ -1095,6 +1099,7 @@ export default function Step7() {
                         fontFamily: F.cn,
                         outline: 'none',
                         boxSizing: 'border-box',
+                        textShadow: C.textShadow,
                         transition: 'border-color 0.2s',
                       }}
                       onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = `rgba(168,197,224,0.6)`; }}
@@ -1156,14 +1161,14 @@ export default function Step7() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
               <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
               <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, padding: '4px 12px', fontSize: 12, fontWeight: 600, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>
                 <span className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', backgroundColor: C.ikb }} />
                 模型已就绪
               </span>
             </div>
           </Reveal>
-          <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+          <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
             {/* 文案爆款力雷达 */}
             <Item>
               <motion.div
@@ -1179,12 +1184,12 @@ export default function Step7() {
                     </span>
                     <div>
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>文案爆款力雷达</h3>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估 · 参考值</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估 · 参考值</p>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', fontFamily: F.display }}>84</p>
-                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.mono }}>综合分 · 参考值</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.mono }}>综合分 · 参考值</p>
                   </div>
                 </div>
                 {(() => {
@@ -1231,7 +1236,7 @@ export default function Step7() {
                   {RADAR_DIMS_S7.map((d) => (
                     <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                       <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
                     </div>
                   ))}
@@ -1254,7 +1259,7 @@ export default function Step7() {
                     </span>
                     <div>
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>爆款元素权重分布 / 文案结构曲线</h3>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>按当前选中元素测算 · 参考值</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>按当前选中元素测算 · 参考值</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1263,7 +1268,7 @@ export default function Step7() {
                         key={t}
                         style={i === 0
                           ? { background: C.ikb, color: 'rgba(6,14,38,0.85)', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 700, fontFamily: F.mono }
-                          : { background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, fontFamily: F.mono }}
+                          : { background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.8)', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, fontFamily: F.mono }}
                       >
                         {t}
                       </span>
@@ -1275,7 +1280,7 @@ export default function Step7() {
                   <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 9999, padding: '3px 10px', fontSize: 12, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, textShadow: C.textShadow }}>
                     <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+230%
                   </span>
-                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较基准值 · 参考值</span>
+                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较基准值 · 参考值</span>
                 </div>
                 {(() => {
                   const data = TREND_DATA_S7;
@@ -1322,7 +1327,7 @@ export default function Step7() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                   {TREND_LABELS_S7.map((m) => (
                     <span key={m}>{m}</span>
                   ))}
@@ -1340,10 +1345,10 @@ export default function Step7() {
             type="button"
             whileHover={{ y: -2 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow, transition: 'color 0.15s' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, background: 'transparent', border: 'none', cursor: 'pointer', textShadow: C.textShadow, transition: 'color 0.15s' }}
             onClick={handleChangeTopic}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)'; }}
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16, color: C.burgundy }}>favorite</span>
             想换个选题继续生成文案？
