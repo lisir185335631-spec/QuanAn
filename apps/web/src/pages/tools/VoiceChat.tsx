@@ -74,7 +74,7 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
           >
             {message.content}
           </p>
-          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>
             {message.timestamp}
           </p>
         </div>
@@ -122,7 +122,7 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
       {/* bottom row: timestamp + play + copy */}
       {!isStreaming && (
         <div className="flex items-center gap-3 pl-12">
-          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.72)' }}>
             {message.timestamp}
           </span>
 
@@ -130,14 +130,14 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
             type="button"
             onClick={() => toast.info(VOICE_CHAT_TOAST_AUDIO)}
             className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors"
-            style={{ color: 'rgba(255,255,255,0.6)', background: 'transparent', border: 'none' }}
+            style={{ color: 'rgba(255,255,255,0.84)', background: 'transparent', border: 'none' }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.18)';
               (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)';
             }}
             data-testid="message-play-btn"
             aria-label={VOICE_CHAT_LABEL_PLAY}
@@ -155,14 +155,14 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
               toast.info(VOICE_CHAT_TOAST_COPIED);
             }}
             className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors"
-            style={{ color: 'rgba(255,255,255,0.6)', background: 'transparent', border: 'none' }}
+            style={{ color: 'rgba(255,255,255,0.84)', background: 'transparent', border: 'none' }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,197,224,0.18)';
               (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)';
             }}
             data-testid="message-copy-btn"
             aria-label={VOICE_CHAT_LABEL_COPY}
@@ -651,12 +651,12 @@ export default function VoiceChat() {
       {/* ── 轻量概览 KPI chips ──────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 36 }}>
         {kpiCards.map((kpi, idx) => (
-          <Item key={idx}>
+          <Item key={idx} style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -676,10 +676,10 @@ export default function VoiceChat() {
                   </span>
                 </span>
               </div>
-              <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: kpi.accent, fontFamily: F.display, textShadow: C.textShadow }}>
+              <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {kpi.value}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{kpi.label}</p>
             </motion.div>
           </Item>
         ))}
@@ -729,7 +729,7 @@ export default function VoiceChat() {
               >
                 {VOICE_CHAT_CHIP_TITLE}
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }} data-testid="voice-chat-chip-subtitle">
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }} data-testid="voice-chat-chip-subtitle">
                 {VOICE_CHAT_CHIP_SUBTITLE}
               </p>
             </div>
@@ -781,7 +781,8 @@ export default function VoiceChat() {
                     justifyContent: 'center',
                     borderRadius: 18,
                     background: 'rgba(168,197,224,0.22)',
-                    color: C.ikb,
+                    color: C.ink,
+                    filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))',
                   }}
                 >
                   <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>
@@ -789,7 +790,7 @@ export default function VoiceChat() {
                   </span>
                 </span>
                 <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>开始你的对话</p>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>在下方输入问题，AI 助手将实时回复</p>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>在下方输入问题，AI 助手将实时回复</p>
               </div>
             ) : (
               messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)
