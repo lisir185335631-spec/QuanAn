@@ -166,12 +166,12 @@ function KpiOverview() {
   return (
     <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 36 }}>
       {KPI_ITEMS.map((k) => (
-        <Item key={k.label}>
+        <Item key={k.label} style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -193,9 +193,9 @@ function KpiOverview() {
             </div>
             <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
               {k.value}
-              <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.unit}</span>
+              <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.unit}</span>
             </p>
-            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.label}</p>
           </motion.div>
         </Item>
       ))}
@@ -248,7 +248,7 @@ function FlowCard({ step, index }: { step: FlowStep; index: number }) {
         </span>
       </span>
       <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{step.name}</span>
-      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{step.sub}</span>
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{step.sub}</span>
     </motion.div>
   );
 }
@@ -320,6 +320,9 @@ function SectionAccordion({ section }: { section: GuideSection }) {
       style={{
         overflow: 'hidden',
         borderRadius: 18,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* 标题行 */}
@@ -367,7 +370,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           </span>
           <div>
             <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{section.name}</p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>{section.sub}</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>{section.sub}</p>
           </div>
         </div>
         <span
@@ -376,7 +379,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           style={{
             flexShrink: 0,
             fontSize: 22,
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.8)',
             transition: 'transform 0.2s',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -489,7 +492,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
 function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
   const color = ACCENT_CYCLE[index % ACCENT_CYCLE.length];
   return (
-    <Item>
+    <Item style={{ height: '100%' }}>
       <motion.div
         data-testid={`faq-card-${index}`}
         className="lg-glass lg-spec"
@@ -498,6 +501,9 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
         style={{
           borderRadius: 18,
           padding: 22,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <div style={{ marginBottom: 10, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -510,7 +516,7 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
           </span>
           <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{faq.q}</p>
         </div>
-        <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{faq.a}</p>
+        <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, marginTop: 'auto' }}>{faq.a}</p>
       </motion.div>
     </Item>
   );
@@ -538,7 +544,7 @@ function FAQSection() {
         </span>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{GUIDE_FAQ_TITLE}</h2>
       </Reveal>
-      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
         {GUIDE_FAQS_5.map((faq, i) => (
           <FaqCard key={faq.q} faq={faq} index={i} />
         ))}
@@ -608,12 +614,15 @@ export default function Guide() {
           onChange={(e) => setSearchQuery(e.target.value)}
           style={{
             flex: 1,
+            minWidth: 0,
+            width: '100%',
             background: 'transparent',
             border: 'none',
             outline: 'none',
             fontSize: 14,
             color: C.ink,
             fontFamily: F.cn,
+            textShadow: C.textShadow,
           }}
         />
         {searchQuery && (
@@ -623,7 +632,7 @@ export default function Guide() {
             onClick={() => setSearchQuery('')}
             style={{
               flexShrink: 0,
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
@@ -631,7 +640,7 @@ export default function Guide() {
               padding: 0,
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; }}
           >
             <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -639,9 +648,9 @@ export default function Guide() {
       </div>
 
       {/* ── 14 Section 折叠卡 ────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
         {filtered.map((section) => (
-          <Item key={section.id}>
+          <Item key={section.id} style={{ height: '100%' }}>
             <SectionAccordion section={section} />
           </Item>
         ))}
