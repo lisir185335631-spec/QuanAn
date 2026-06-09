@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Reveal } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
 import { type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
 import { type IntroCopyEntry } from '@/components/step3/IntroCopySection';
@@ -783,7 +783,7 @@ export default function Step3() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>输入节点参数</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成全套账号包装矩阵</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成全套账号包装矩阵</p>
               </div>
             </div>
             <span
@@ -890,7 +890,7 @@ export default function Step3() {
                         </span>
                         <span style={{ minWidth: 0 }}>
                           <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{p.label}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>{p.desc}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>{p.desc}</span>
                         </span>
                         <span
                           style={{
@@ -938,7 +938,7 @@ export default function Step3() {
                     目标受众
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} aria-hidden="true">groups</span>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.84)', pointerEvents: 'none' }} aria-hidden="true">groups</span>
                     <input
                       id="s3-audience"
                       type="text"
@@ -979,7 +979,7 @@ export default function Step3() {
                     账号状态
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} aria-hidden="true">verified_user</span>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.84)', pointerEvents: 'none' }} aria-hidden="true">verified_user</span>
                     <input
                       id="s3-account-status"
                       type="text"
@@ -1023,7 +1023,7 @@ export default function Step3() {
                     <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
                     个人背景与核心优势提取
                   </label>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden="true">auto_awesome</span>
                     AI 据此提取人设关键词
                   </span>
@@ -1073,7 +1073,7 @@ export default function Step3() {
                     }}
                   >
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>可包含</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>可包含</span>
                       {['经历', '成就', '技能', '人设', '价值观'].map((t) => (
                         <span
                           key={t}
@@ -1091,36 +1091,34 @@ export default function Step3() {
                         </span>
                       ))}
                     </div>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.6)' }}>{personalInfo.length} 字</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.84)' }}>{personalInfo.length} 字</span>
                   </div>
                 </div>
                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  <motion.button
-                    type="submit"
-                    disabled={!personalInfo.trim() || !platform || isLoading}
-                    whileHover={(!personalInfo.trim() || !platform || isLoading) ? {} : { y: -3 }}
-                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      borderRadius: 10,
-                      padding: '12px 32px',
-                      fontFamily: F.cn,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: '#08142e',
-                      background: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
-                      border: 'none',
-                      cursor: (!personalInfo.trim() || !platform || isLoading) ? 'not-allowed' : 'pointer',
-                      opacity: (!personalInfo.trim() || !platform || isLoading) ? 0.4 : 1,
-                    }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
-                    {isLoading ? '生成中…' : '生成包装矩阵'}
-                  </motion.button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      type="submit"
+                      disabled={!personalInfo.trim() || !platform || isLoading}
+                      className="lg-gradbtn"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        borderRadius: 9999,
+                        padding: '12px 32px',
+                        fontFamily: F.cn,
+                        fontSize: 14,
+                        fontWeight: 700,
+                        color: '#fff',
+                        border: 'none',
+                        cursor: (!personalInfo.trim() || !platform || isLoading) ? 'not-allowed' : 'pointer',
+                        opacity: (!personalInfo.trim() || !platform || isLoading) ? 0.4 : 1,
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
+                      {isLoading ? '生成中…' : '生成包装矩阵'}
+                    </button>
+                  </Magnetic>
                 </div>
               </div>
             </form>
@@ -1155,7 +1153,7 @@ export default function Step3() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>人设竞争力雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1175,7 +1173,7 @@ export default function Step3() {
                 >
                   82
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -1210,7 +1208,7 @@ export default function Step3() {
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R + 16);
                     return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
                         {d.label}
                       </text>
                     );
@@ -1222,7 +1220,7 @@ export default function Step3() {
               {radarDims.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
                   <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1255,7 +1253,7 @@ export default function Step3() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>90 天曝光预估</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1269,7 +1267,7 @@ export default function Step3() {
                       fontWeight: 600,
                       fontFamily: F.mono,
                       background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
-                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.6)',
+                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.84)',
                     }}
                   >
                     {t}
@@ -1296,7 +1294,7 @@ export default function Step3() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较冷启动基线</span>
             </div>
             {(() => {
               const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
@@ -1344,7 +1342,7 @@ export default function Step3() {
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
               {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -1353,13 +1351,17 @@ export default function Step3() {
         </div>
 
         {/* ── 数据概览(KPI 仪表盘)──────────────────────────── */}
-        <div className="mb-8 grid grid-cols-4 gap-6">
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 32 }}>
           {/* 人设完整度 · 环形进度 */}
+          <Item style={{ height: '100%' }}>
           <div
             className="lg-glass lg-spec"
             style={{
               borderRadius: 16,
               padding: 20,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1387,9 +1389,9 @@ export default function Step3() {
             <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                  92<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}>%</span>
+                  92<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, fontWeight: 400 }}>%</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>人设完整度</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>人设完整度</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
@@ -1399,13 +1401,18 @@ export default function Step3() {
               </div>
             </div>
           </div>
+          </Item>
 
           {/* 推荐昵称 · 数量 + 迷你柱 */}
+          <Item style={{ height: '100%' }}>
           <div
             className="lg-glass lg-spec"
             style={{
               borderRadius: 16,
               padding: 20,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1429,9 +1436,9 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {generated.nicknames.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 个</span>
+                {generated.nicknames.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, fontWeight: 400 }}> 个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>推荐昵称</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>推荐昵称</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[58, 84, 70, 96, 78].map((h, i) => (
@@ -1439,13 +1446,18 @@ export default function Step3() {
               ))}
             </div>
           </div>
+          </Item>
 
           {/* 平台覆盖 · 进度条 */}
+          <Item style={{ height: '100%' }}>
           <div
             className="lg-glass lg-spec"
             style={{
               borderRadius: 16,
               padding: 20,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1469,21 +1481,26 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                5<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 平台</span>
+                5<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, fontWeight: 400 }}> 平台</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>平台覆盖</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>平台覆盖</p>
             </div>
             <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.accent3}22` }}>
               <div style={{ height: 8, borderRadius: 999, background: C.grad, width: '100%', transition: 'width 0.4s' }} />
             </div>
           </div>
+          </Item>
 
           {/* 简介方案 · 数量 + 关键词 */}
+          <Item style={{ height: '100%' }}>
           <div
             className="lg-glass lg-spec"
             style={{
               borderRadius: 16,
               padding: 20,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1507,9 +1524,9 @@ export default function Step3() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
-                {generated.bioEntries.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400 }}> 套</span>
+                {generated.bioEntries.length}<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, fontWeight: 400 }}> 套</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>简介文案方案</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>简介文案方案</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {(generated.bioCoreKeywords ?? []).slice(0, 3).map((k) => (
@@ -1530,7 +1547,8 @@ export default function Step3() {
               ))}
             </div>
           </div>
-        </div>
+          </Item>
+        </RevealGroup>
 
         {/* ── Results bento grid ─────────────────────────────── */}
         <div className="grid grid-cols-12 gap-6">
@@ -1646,14 +1664,14 @@ export default function Step3() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{n.name}</div>
-                      <span className="material-symbols-outlined" style={{ flexShrink: 0, color: 'rgba(255,255,255,0.6)', fontSize: 18 }} aria-hidden="true">
+                      <span className="material-symbols-outlined" style={{ flexShrink: 0, color: 'rgba(255,255,255,0.84)', fontSize: 18 }} aria-hidden="true">
                         content_copy
                       </span>
                     </div>
-                    <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{n.description}</div>
+                    <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{n.description}</div>
                     <div style={{ marginTop: 10 }}>
                       <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11 }}>
-                        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>搜索度</span>
+                        <span style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>搜索度</span>
                         <span style={{ fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>{score}%</span>
                       </div>
                       <div style={{ height: 6, width: '100%', borderRadius: 999, background: 'rgba(255,255,255,0.12)' }}>
@@ -1888,7 +1906,7 @@ export default function Step3() {
                       aria-label={`复制 ${b.platformLabel} 简介`}
                       onClick={() => copyText(b.copy)}
                       className=""
-                      style={{ cursor: 'pointer', fontSize: 16, color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', padding: 0, transition: 'color 0.2s' }}
+                      style={{ cursor: 'pointer', fontSize: 16, color: 'rgba(255,255,255,0.84)', background: 'none', border: 'none', padding: 0, transition: 'color 0.2s' }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
                     >
@@ -1970,7 +1988,7 @@ export default function Step3() {
         <div className="mb-3 flex items-center gap-2">
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -2029,7 +2047,7 @@ export default function Step3() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>人设竞争力雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -2049,7 +2067,7 @@ export default function Step3() {
                 >
                   82
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -2084,7 +2102,7 @@ export default function Step3() {
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R + 16);
                     return (
-                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
                         {d.label}
                       </text>
                     );
@@ -2096,7 +2114,7 @@ export default function Step3() {
               {radarDims.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
                   <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -2129,7 +2147,7 @@ export default function Step3() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>90 天曝光预估</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -2143,7 +2161,7 @@ export default function Step3() {
                       fontWeight: 600,
                       fontFamily: F.mono,
                       background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
-                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.6)',
+                      color: i === 0 ? '#08142e' : 'rgba(255,255,255,0.84)',
                     }}
                   >
                     {t}
@@ -2170,7 +2188,7 @@ export default function Step3() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较冷启动基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较冷启动基线</span>
             </div>
             {(() => {
               const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
@@ -2218,7 +2236,7 @@ export default function Step3() {
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
               {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
