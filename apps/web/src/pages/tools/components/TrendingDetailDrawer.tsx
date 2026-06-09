@@ -8,7 +8,7 @@ import { Bookmark, Copy, ExternalLink, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home-next/ikb/system';
+import { C, F, Magnetic } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -89,7 +89,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
         </SheetHeader>
 
         {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>
             加载中…
           </div>
         )}
@@ -99,7 +99,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
             data-testid="drawer-error"
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 160, gap: 12, textAlign: 'center', padding: '0 24px' }}
           >
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>加载失败，请重试</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>加载失败，请重试</p>
             <Button
               variant="outline"
               size="sm"
@@ -112,7 +112,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
         )}
 
         {!isLoading && !isError && !detail && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>
             暂无数据
           </div>
         )}
@@ -163,7 +163,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
               </h2>
 
               {/* Stats */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                 <span>👍 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.likeCount.toLocaleString()}</span></span>
                 <span>💬 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.commentCount.toLocaleString()}</span></span>
                 <span>🔁 <span style={{ color: C.ink, fontWeight: 700 }}>{detail.shareCount.toLocaleString()}</span></span>
@@ -188,7 +188,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
                 className="lg-glass"
                 style={{ borderRadius: 12, padding: 12 }}
               >
-                <p style={{ fontSize: 12, marginBottom: 6, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>完整内容</p>
+                <p style={{ fontSize: 12, marginBottom: 6, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>完整内容</p>
                 <p
                   data-testid="drawer-content"
                   style={{ fontSize: 14, whiteSpace: 'pre-wrap', lineHeight: 1.65, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}
@@ -198,7 +198,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
               </div>
 
               {/* Crawled at */}
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                 抓取时间：{new Date(detail.crawledAt).toLocaleString('zh-CN')}
               </p>
             </div>
@@ -243,17 +243,19 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
             保存到我的库
           </Button>
           {/* 主按钮 — lg-gradbtn 紫粉渐变 */}
-          <button
-            type="button"
-            className="lg-gradbtn"
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, borderRadius: 6, padding: '8px 12px', fontWeight: 700, fontFamily: F.cn, cursor: 'pointer', opacity: !detail ? 0.5 : 1 }}
-            onClick={handleStep7}
-            data-testid="drawer-step7-btn"
-            disabled={!detail}
-          >
-            <Zap style={{ height: 14, width: 14 }} />
-            一键到 Step 7
-          </button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              className="lg-gradbtn"
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, borderRadius: 9999, padding: '8px 12px', fontWeight: 700, fontFamily: F.cn, cursor: 'pointer', opacity: !detail ? 0.5 : 1 }}
+              onClick={handleStep7}
+              data-testid="drawer-step7-btn"
+              disabled={!detail}
+            >
+              <Zap style={{ height: 14, width: 14 }} />
+              一键到 Step 7
+            </button>
+          </Magnetic>
         </div>
       </SheetContent>
     </Sheet>

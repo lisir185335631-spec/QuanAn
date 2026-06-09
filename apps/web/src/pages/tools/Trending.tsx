@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Reveal, RevealGroup, Item } from '@/components/home-next/ikb/system';
+import { C, F, Magnetic, Reveal, RevealGroup, Item } from '@/components/home-next/ikb/system';
 import { STEP1_INDUSTRIES_56 } from '@/lib/constants/industries';
 import type { Industry } from '@/lib/constants/industries';
 import {
@@ -209,7 +209,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
         }}
       >
         <span>{selected.emoji} {selected.label}</span>
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', marginLeft: 8, flexShrink: 0 }}>expand_more</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18, color: 'rgba(255,255,255,0.72)', marginLeft: 8, flexShrink: 0 }}>expand_more</span>
       </button>
 
       {open && (
@@ -260,7 +260,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
                 style={
                   activeTab === tab.id
                     ? { borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 700, background: C.ikb, color: 'rgba(30,50,90,0.9)', fontFamily: F.mono, cursor: 'pointer', border: 'none' }
-                    : { borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, cursor: 'pointer', border: `0.5px solid ${C.line}` }
+                    : { borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.80)', fontFamily: F.mono, cursor: 'pointer', border: `0.5px solid ${C.line}` }
                 }
               >
                 {tab.emoji ? `${tab.emoji} ` : ''}{tab.label}
@@ -288,7 +288,7 @@ function IndustryDropdown({ selected, onSelect }: IndustryDropdownProps) {
           </div>
 
           {/* footer count */}
-          <p style={{ marginTop: 12, textAlign: 'right', fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
+          <p style={{ marginTop: 12, textAlign: 'right', fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
             {TRENDING_IND_TOTAL_TPL(STEP1_INDUSTRIES_56.length)}
           </p>
         </div>
@@ -321,7 +321,7 @@ function PlatformChips({ platformKey, onSelect }: PlatformChipsProps) {
           style={
             platformKey === 'all'
               ? { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: C.ikb, fontFamily: F.cn, cursor: 'pointer', border: `1px solid ${C.ikb}`, background: 'rgba(168,197,224,0.15)', textShadow: C.textShadow }
-              : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
+              : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
           }
         >
           {TRENDING_PLATFORM_ALL}
@@ -340,7 +340,7 @@ function PlatformChips({ platformKey, onSelect }: PlatformChipsProps) {
               style={
                 active
                   ? { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, borderColor: colour, backgroundColor: `${colour}22`, color: colour, fontFamily: F.cn, cursor: 'pointer', border: `1px solid ${colour}` }
-                  : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
+                  : { borderRadius: 8, padding: '8px 12px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, cursor: 'pointer', border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)' }
               }
             >
               {opt.emoji} {opt.label}
@@ -397,7 +397,7 @@ function TrendingFilterCard({
             </span>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>筛选参数</h2>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>选择行业 · 平台 · 关键词 · 抓取最新爆款内容</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, margin: 0 }}>选择行业 · 平台 · 关键词 · 抓取最新爆款内容</p>
             </div>
           </div>
           <span
@@ -456,34 +456,35 @@ function TrendingFilterCard({
                     fontFamily: F.cn,
                     outline: 'none',
                     boxSizing: 'border-box',
+                    textShadow: C.textShadow,
                   }}
                 />
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onFetch}
-              data-testid="trending-fetch-btn"
-              aria-label={TRENDING_FETCH_BTN}
-              className="lg-gradbtn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                borderRadius: 12,
-                padding: '12px 28px',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                fontFamily: F.mono,
-                cursor: 'pointer',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>refresh</span>
-              {TRENDING_FETCH_BTN}
-            </button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={onFetch}
+                data-testid="trending-fetch-btn"
+                aria-label={TRENDING_FETCH_BTN}
+                className="lg-gradbtn"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 9999,
+                  padding: '12px 28px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>refresh</span>
+                {TRENDING_FETCH_BTN}
+              </button>
+            </Magnetic>
           </div>
         </div>
       </section>
@@ -533,12 +534,13 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
             fontFamily: F.cn,
             outline: 'none',
             boxSizing: 'border-box',
+            textShadow: C.textShadow,
           }}
         />
       </div>
       {/* Visible sort control — wired to query */}
       <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 6 }} role="radiogroup" aria-label="排序方式">
-        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>排序:</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>排序:</span>
         {SORT_OPTIONS.map((opt) => (
           <button
             key={opt.value}
@@ -550,7 +552,7 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
             style={
               sort === opt.value
                 ? { borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, border: `1px solid ${C.ikb}`, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono, cursor: 'pointer', textShadow: C.textShadow }
-                : { borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, cursor: 'pointer' }
+                : { borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.80)', fontFamily: F.mono, cursor: 'pointer' }
             }
           >
             {opt.label}
@@ -559,7 +561,7 @@ function TrendingSearchBar({ value, onChange, count, sort, onSortChange }: Trend
       </div>
       <p
         data-testid="trending-count"
-        style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}
+        style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}
       >
         {TRENDING_COUNT_TPL(count)}
       </p>
@@ -649,14 +651,14 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
   ];
 
   return (
-    <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }} data-testid="trending-kpi">
+    <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }} data-testid="trending-kpi">
       {kpiCards.map((k) => (
-        <Item key={k.label}>
+        <Item key={k.label} style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -682,9 +684,9 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {k.value}
-                {k.unit && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, marginLeft: 4 }}>{k.unit}</span>}
+                {k.unit && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 4 }}>{k.unit}</span>}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.label}</p>
             </div>
             <div style={{ marginTop: 12, height: 48, width: '100%' }}>{k.chart}</div>
           </motion.div>
@@ -711,9 +713,9 @@ function TrendingInsights() {
   return (
     <>
       <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)', filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>数据洞察</h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
           style={{
             marginLeft: 'auto',
@@ -733,7 +735,7 @@ function TrendingInsights() {
           模型已就绪
         </span>
       </Reveal>
-      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 爆款趋势雷达 */}
         <Item>
           <motion.div
@@ -749,12 +751,12 @@ function TrendingInsights() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>爆款趋势雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, margin: 0, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: F.display }}>85</p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -801,7 +803,7 @@ function TrendingInsights() {
               {RADAR_DIMS.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: 9999, backgroundColor: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -824,7 +826,7 @@ function TrendingInsights() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>全网热度曲线</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>2025—2026 月均热度指数</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, margin: 0 }}>2025—2026 月均热度指数</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -845,7 +847,7 @@ function TrendingInsights() {
               >
                 <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>持续增长
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>较同期基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>较同期基线</span>
             </div>
             {(() => {
               const data = TREND_DATA;
@@ -888,7 +890,7 @@ function TrendingInsights() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {['1月', '3月', '5月', '7月', '9月', '12月'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -925,7 +927,7 @@ function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 10,
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,0.80)',
           cursor: page <= 1 ? 'not-allowed' : 'pointer',
           opacity: page <= 1 ? 0.4 : 1,
           padding: 0,
@@ -935,7 +937,7 @@ function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
       >
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>chevron_left</span>
       </button>
-      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn }}>
         第 <span style={{ fontWeight: 700, color: C.ink }}>{page}</span> / {totalPages} 页
       </span>
       <button
@@ -951,7 +953,7 @@ function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 10,
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,0.80)',
           cursor: page >= totalPages ? 'not-allowed' : 'pointer',
           opacity: page >= totalPages ? 0.4 : 1,
           padding: 0,
@@ -1152,7 +1154,7 @@ export default function Trending() {
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(255,255,255,0.4)' }}>wifi_off</span>
           <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>加载失败</p>
-          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
           <button
             type="button"
             onClick={() => void refetch()}
@@ -1181,7 +1183,7 @@ export default function Trending() {
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(168,197,224,0.4)' }}>search_off</span>
           <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>暂无匹配内容</p>
-          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>请调整筛选条件或搜索关键词后重试</p>
         </div>
       )}
 

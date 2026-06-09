@@ -64,7 +64,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
   if (items.length === 0) {
     return (
       <div
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}
         data-testid="trending-empty"
       >
         暂无数据
@@ -101,7 +101,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             fontSize: 14,
             fontWeight: 700,
             flexShrink: 0,
-            color: isTop3 ? C.ikb : 'rgba(255,255,255,0.45)',
+            color: isTop3 ? C.ikb : 'rgba(255,255,255,0.72)',
             fontFamily: F.mono,
             textShadow: isTop3 ? C.textShadow : 'none',
           }}
@@ -120,12 +120,12 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             {truncate(item.title, 60)}
           </p>
           {item.industry && (
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>{item.industry}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{item.industry}</span>
           )}
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'rgba(255,255,255,0.55)', flexShrink: 0, fontFamily: F.mono }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'rgba(255,255,255,0.80)', flexShrink: 0, fontFamily: F.mono }}>
           <span title="点赞">👍 {formatCount(item.likeCount)}</span>
           <span title="评论">💬 {formatCount(item.commentCount)}</span>
           <span title="转发">🔁 {formatCount(item.shareCount)}</span>
@@ -133,7 +133,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
         </div>
 
         {/* CrawledAt */}
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', flexShrink: 0, width: 96, textAlign: 'right', fontFamily: F.mono }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', flexShrink: 0, width: 96, textAlign: 'right', fontFamily: F.mono }}>
           {new Date(item.crawledAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
         </span>
 
@@ -146,7 +146,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             title="查看详情"
             onClick={() => onViewDetail(item.id)}
             data-testid={`btn-detail-${item.id}`}
-            style={{ color: 'rgba(255,255,255,0.55)' }}
+            style={{ color: 'rgba(255,255,255,0.80)' }}
           >
             <Eye className="h-3.5 w-3.5" />
           </Button>
@@ -157,7 +157,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             title="一键到 Step 7"
             onClick={() => handleStep7(item)}
             data-testid={`btn-step7-${item.id}`}
-            style={{ color: 'rgba(255,255,255,0.55)' }}
+            style={{ color: 'rgba(255,255,255,0.80)' }}
           >
             <Zap className="h-3.5 w-3.5" />
           </Button>
@@ -181,7 +181,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             title="保存到我的选题库"
             onClick={() => onSaveToTopics(item)}
             data-testid={`btn-save-topics-${item.id}`}
-            style={{ color: 'rgba(255,255,255,0.55)' }}
+            style={{ color: 'rgba(255,255,255,0.80)' }}
           >
             <PlusCircle className="h-3.5 w-3.5" />
           </Button>
@@ -205,7 +205,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
         borderBottom: `0.5px solid rgba(255,255,255,0.15)`,
         background: 'rgba(255,255,255,0.06)',
         fontSize: 12,
-        color: 'rgba(255,255,255,0.45)',
+        color: 'rgba(255,255,255,0.72)',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         fontFamily: F.mono,
