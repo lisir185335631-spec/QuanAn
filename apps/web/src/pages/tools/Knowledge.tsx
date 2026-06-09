@@ -93,7 +93,7 @@ function ScriptTab() {
             gap: 10,
             borderRadius: 12,
             padding: '8px 14px',
-            width: 320,
+            width: 440,
           }}
         >
           <span
@@ -116,11 +116,12 @@ function ScriptTab() {
               fontSize: 14,
               color: C.ink,
               fontFamily: F.cn,
+              textShadow: C.textShadow,
             }}
             data-testid="script-search"
           />
         </div>
-        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="script-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }} data-testid="script-count">
           {KNOWLEDGE_PAGE.countText.scripts(SCRIPT_TYPES.length, filtered.length)}
         </span>
       </div>
@@ -174,12 +175,12 @@ function ScriptTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
                   </button>
@@ -200,12 +201,12 @@ function ScriptTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
                   </button>
@@ -216,7 +217,7 @@ function ScriptTab() {
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, margin: 0 }}>{s.desc}</p>
 
               {/* methodology */}
-              <p style={{ fontSize: 11, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{s.methodology}</p>
+              <p style={{ fontSize: 11, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{s.methodology}</p>
 
               {/* expand cases — disabled (no data yet) */}
               <button
@@ -230,7 +231,7 @@ function ScriptTab() {
                   fontSize: 11,
                   cursor: 'not-allowed',
                   opacity: 0.4,
-                  color: 'rgba(255,255,255,0.6)',
+                  color: 'rgba(255,255,255,0.84)',
                   fontFamily: F.cn,
                   background: 'transparent',
                   border: 'none',
@@ -279,7 +280,7 @@ function ElementsTab() {
                   fontWeight: 600,
                   border: `0.5px solid ${active ? C.ikb : C.line}`,
                   background: active ? 'rgba(168,197,224,0.28)' : 'transparent',
-                  color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                  color: active ? C.ikb : 'rgba(255,255,255,0.84)',
                   fontFamily: F.cn,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
@@ -290,7 +291,7 @@ function ElementsTab() {
             );
           })}
         </div>
-        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="elements-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }} data-testid="elements-count">
           {KNOWLEDGE_PAGE.countText.elements(ALL_ELEMENTS.length, filtered.length)}
         </span>
       </div>
@@ -324,7 +325,7 @@ function ElementsTab() {
                         fontSize: 10,
                         fontWeight: 500,
                         background: 'rgba(168,197,224,0.15)',
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,0.84)',
                         border: `0.5px solid ${C.line}`,
                         fontFamily: F.cn,
                       }}
@@ -345,12 +346,12 @@ function ElementsTab() {
                         borderRadius: 8,
                         background: 'transparent',
                         border: `0.5px solid ${C.line}`,
-                        color: 'rgba(255,255,255,0.55)',
+                        color: 'rgba(255,255,255,0.8)',
                         cursor: 'pointer',
                         transition: 'color 0.15s, border-color 0.15s',
                       }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
                     </button>
@@ -371,12 +372,12 @@ function ElementsTab() {
                         borderRadius: 8,
                         background: 'transparent',
                         border: `0.5px solid ${C.line}`,
-                        color: 'rgba(255,255,255,0.55)',
+                        color: 'rgba(255,255,255,0.8)',
                         cursor: 'pointer',
                         transition: 'color 0.15s, border-color 0.15s',
                       }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
                     </button>
@@ -450,7 +451,7 @@ function OpeningTab() {
             gap: 10,
             borderRadius: 12,
             padding: '8px 14px',
-            width: 320,
+            width: 440,
           }}
         >
           <span
@@ -473,11 +474,12 @@ function OpeningTab() {
               fontSize: 14,
               color: C.ink,
               fontFamily: F.cn,
+              textShadow: C.textShadow,
             }}
             data-testid="opening-search"
           />
         </div>
-        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="opening-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }} data-testid="opening-count">
           {KNOWLEDGE_PAGE.countText.opening(OPENING_FORMULAS.length, filtered.length)}
         </span>
       </div>
@@ -532,12 +534,12 @@ function OpeningTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
                   </button>
@@ -558,12 +560,12 @@ function OpeningTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
                   </button>
@@ -572,13 +574,13 @@ function OpeningTab() {
 
               {/* formula */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>公式</p>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>公式</p>
                 <p style={{ fontSize: 12, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{f.formula}</p>
               </div>
 
               {/* example */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>示例</p>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>示例</p>
                 <blockquote
                   style={{
                     fontSize: 12,
@@ -624,7 +626,7 @@ function CoreTab() {
             gap: 10,
             borderRadius: 12,
             padding: '8px 14px',
-            width: 320,
+            width: 440,
           }}
         >
           <span
@@ -647,11 +649,12 @@ function CoreTab() {
               fontSize: 14,
               color: C.ink,
               fontFamily: F.cn,
+              textShadow: C.textShadow,
             }}
             data-testid="core-search"
           />
         </div>
-        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }} data-testid="core-count">
+        <span style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }} data-testid="core-count">
           {KNOWLEDGE_PAGE.countText.core(CORE_FORMULAS.length, filtered.length)}
         </span>
       </div>
@@ -687,12 +690,12 @@ function CoreTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.accent3; (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>bookmark</span>
                   </button>
@@ -713,12 +716,12 @@ function CoreTab() {
                       borderRadius: 8,
                       background: 'transparent',
                       border: `0.5px solid ${C.line}`,
-                      color: 'rgba(255,255,255,0.55)',
+                      color: 'rgba(255,255,255,0.8)',
                       cursor: 'pointer',
                       transition: 'color 0.15s, border-color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden={true}>content_copy</span>
                   </button>
@@ -763,7 +766,7 @@ function CoreTab() {
 
               {/* example quote */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>实战案例</p>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>实战案例</p>
                 <blockquote
                   style={{
                     fontSize: 12,
@@ -904,14 +907,14 @@ export default function Knowledge() {
       </header>
 
       {/* ── KPI 概览 ─────────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }}>
         {KPI_CARDS.map((kpi) => (
-          <Item key={kpi.label}>
+          <Item key={kpi.label} style={{ height: '100%' }}>
             <motion.div
               className="lg-glass lg-spec"
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 20, padding: 22 }}
+              style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
@@ -931,9 +934,9 @@ export default function Knowledge() {
               </div>
               <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {kpi.value}
-                <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> {kpi.unit}</span>
+                <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> {kpi.unit}</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+              <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{kpi.label}</p>
             </motion.div>
           </Item>
         ))}
@@ -975,7 +978,7 @@ export default function Knowledge() {
                   fontWeight: 600,
                   fontFamily: F.cn,
                   background: active ? 'rgba(168,197,224,0.12)' : 'transparent',
-                  color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                  color: active ? C.ikb : 'rgba(255,255,255,0.84)',
                   border: 'none',
                   borderBottom: active ? `2px solid ${C.ikb}` : '2px solid transparent',
                   marginBottom: -1,
@@ -1063,7 +1066,7 @@ export default function Knowledge() {
           >
             {STORY_FOOTER_TITLE}
           </h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· 短视频文案四步法</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· 短视频文案四步法</span>
         </Reveal>
         <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {STORY_STAGES.map((stage) => {
