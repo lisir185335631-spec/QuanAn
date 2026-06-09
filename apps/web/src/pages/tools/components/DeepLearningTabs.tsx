@@ -5,12 +5,10 @@
  * 逻辑/testid 零回退 · 只换视觉皮
  */
 
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home-next/ikb/system';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { C, F, Item, Magnetic, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   Select,
   SelectContent,
@@ -156,41 +154,38 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
             }}
             data-testid="sample-textarea"
           />
-          <div style={{ padding: '8px 16px', borderTop: `0.5px solid rgba(255,255,255,0.12)`, fontSize: 11, color: 'rgba(255,255,255,0.45)', fontFamily: F.mono }}>
+          <div style={{ padding: '8px 16px', borderTop: `0.5px solid rgba(255,255,255,0.12)`, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
             {sample.length} 字
           </div>
         </div>
       </div>
 
       {/* 提交按钮 */}
-      <motion.button
-        onClick={handleSubmit}
-        disabled={parseMutation.isPending || sample.length < 100}
-        data-testid="parse-submit-btn"
-        whileHover={parseMutation.isPending || sample.length < 100 ? {} : { y: -3 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{
-          alignSelf: 'flex-start',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          borderRadius: 10,
-          padding: '10px 20px',
-          fontSize: 13,
-          fontWeight: 600,
-          fontFamily: F.cn,
-          cursor: parseMutation.isPending || sample.length < 100 ? 'not-allowed' : 'pointer',
-          opacity: parseMutation.isPending || sample.length < 100 ? 0.4 : 1,
-          background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
-          border: `0.5px solid rgba(168,197,224,0.55)`,
-          color: C.ink,
-          textShadow: C.textShadow,
-          transition: 'opacity 0.2s',
-        }}
-      >
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>school</span>
-        {parseMutation.isPending ? '解析中…' : '开始深度解析'}
-      </motion.button>
+      <Magnetic strength={0.3}>
+        <button
+          onClick={handleSubmit}
+          disabled={parseMutation.isPending || sample.length < 100}
+          data-testid="parse-submit-btn"
+          className="lg-gradbtn"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 9999,
+            padding: '10px 20px',
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: F.cn,
+            cursor: parseMutation.isPending || sample.length < 100 ? 'not-allowed' : 'pointer',
+            opacity: parseMutation.isPending || sample.length < 100 ? 0.4 : 1,
+            color: '#fff',
+            border: 'none',
+          }}
+        >
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>school</span>
+          {parseMutation.isPending ? '解析中…' : '开始深度解析'}
+        </button>
+      </Magnetic>
 
       {/* 解析结果 */}
       {analysis && (
@@ -206,25 +201,25 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
           </span>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: '0 0 4px' }}>核心公式</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: '0 0 4px' }}>核心公式</p>
               <p style={{ fontSize: 13, fontWeight: 500, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }} data-testid="core-formula">
                 {analysis.coreFormula}
               </p>
             </div>
             <div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: '0 0 4px' }}>钩子类型</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: '0 0 4px' }}>钩子类型</p>
               <p style={{ fontSize: 13, color: C.ink, fontFamily: F.cn, margin: 0 }} data-testid="hook-type">
                 {analysis.hookType}
               </p>
             </div>
             <div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: '0 0 4px' }}>结构模式</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: '0 0 4px' }}>结构模式</p>
               <p style={{ fontSize: 13, color: C.ink, fontFamily: F.cn, margin: 0 }} data-testid="structure-pattern">
                 {analysis.structurePattern}
               </p>
             </div>
             <div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: '0 0 4px' }}>情绪弧线</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: '0 0 4px' }}>情绪弧线</p>
               <p style={{ fontSize: 13, color: C.ink, fontFamily: F.cn, margin: 0 }} data-testid="emotional-arc">
                 {analysis.emotionalArc}
               </p>
@@ -232,7 +227,7 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
           </div>
           {analysis.keywords.length > 0 && (
             <div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: '0 0 4px' }}>关键词</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: '0 0 4px' }}>关键词</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} data-testid="keywords-list">
                 {analysis.keywords.map((kw, i) => (
                   <span
@@ -335,7 +330,7 @@ export function LibraryTab({ onApply }: LibraryTabProps) {
   if (isLoading) {
     return (
       <p
-        style={{ padding: '32px 0', textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}
+        style={{ padding: '32px 0', textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}
         data-testid="library-loading"
       >
         加载中…
@@ -346,8 +341,8 @@ export function LibraryTab({ onApply }: LibraryTabProps) {
   if (items.length === 0) {
     return (
       <div style={{ padding: '48px 0', textAlign: 'center' }} data-testid="library-empty">
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>暂无学习记录</p>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontFamily: F.cn, margin: '4px 0 0' }}>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>暂无学习记录</p>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: '4px 0 0' }}>
           在「学习」标签页提交文案后，记录将出现在这里
         </p>
       </div>
@@ -355,63 +350,56 @@ export function LibraryTab({ onApply }: LibraryTabProps) {
   }
 
   return (
-    <ScrollArea className="h-[60vh]" data-testid="library-table">
-      <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: `0.5px solid rgba(255,255,255,0.14)`, fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
-            <th style={{ paddingBottom: 8, textAlign: 'left', fontWeight: 600, width: '40%' }}>文案摘要</th>
-            <th style={{ paddingBottom: 8, textAlign: 'left', fontWeight: 600 }}>公式名</th>
-            <th style={{ paddingBottom: 8, textAlign: 'left', fontWeight: 600 }}>平台</th>
-            <th style={{ paddingBottom: 8, textAlign: 'left', fontWeight: 600 }}>学习时间</th>
-            <th style={{ paddingBottom: 8, textAlign: 'left', fontWeight: 600 }}>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(items as QueueItem[]).map((item) => (
-            <motion.tr
-              key={item.id}
-              style={{ borderBottom: `0.5px solid rgba(255,255,255,0.08)`, cursor: 'default' }}
-              data-testid={`library-row-${item.id}`}
-              whileHover={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
-              transition={{ duration: 0.15 }}
-            >
-              <td style={{ padding: '10px 16px 10px 0', color: 'rgba(255,255,255,0.85)', fontFamily: F.cn }}>
-                {item.sample.slice(0, 80)}
-                {item.sample.length > 80 ? '…' : ''}
-              </td>
-              <td style={{ padding: '10px 16px 10px 0', color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{item.coreFormula}</td>
-              <td style={{ padding: '10px 16px 10px 0', color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{item.sourcePlatform}</td>
-              <td style={{ padding: '10px 16px 10px 0', color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+    <RevealGroup data-testid="library-table" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+      {(items as QueueItem[]).map((item) => (
+        <Item key={item.id} style={{ height: '100%' }}>
+          <div
+            data-testid={`library-row-${item.id}`}
+            className="lg-glass"
+            style={{ display: 'flex', flexDirection: 'column', borderRadius: 14, padding: 16, height: '100%' }}
+          >
+            {/* 标题 */}
+            <p style={{ fontSize: 13, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: '0 0 6px', lineHeight: 1.5 }}>
+              {item.sample.slice(0, 80)}{item.sample.length > 80 ? '…' : ''}
+            </p>
+            {/* meta 行 */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 'auto' }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, background: 'rgba(168,197,224,0.18)', borderRadius: 6, padding: '2px 7px' }}>
+                {item.coreFormula}
+              </span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
+                {item.sourcePlatform}
+              </span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '2px 7px' }}>
                 {new Date(item.createdAt).toLocaleDateString('zh-CN')}
-              </td>
-              <td style={{ padding: '10px 0' }}>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    style={{ fontSize: 12, color: C.ikb, background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.cn, padding: 0 }}
-                    onClick={() => onApply(item)}
-                    data-testid={`apply-btn-${item.id}`}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
-                  >
-                    应用
-                  </button>
-                  <button
-                    style={{ fontSize: 12, color: 'rgba(255,120,120,0.85)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.cn, padding: 0, opacity: deleteMutation.isPending ? 0.5 : 1 }}
-                    onClick={() => deleteMutation.mutate({ archiveId: item.id })}
-                    data-testid={`delete-btn-${item.id}`}
-                    disabled={deleteMutation.isPending}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
-                  >
-                    删除
-                  </button>
-                </div>
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </table>
-    </ScrollArea>
+              </span>
+            </div>
+            {/* actions */}
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+              <button
+                style={{ fontSize: 12, color: C.ikb, background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.cn, padding: 0 }}
+                onClick={() => onApply(item)}
+                data-testid={`apply-btn-${item.id}`}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
+              >
+                应用
+              </button>
+              <button
+                style={{ fontSize: 12, color: 'rgba(255,120,120,0.85)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.cn, padding: 0, opacity: deleteMutation.isPending ? 0.5 : 1 }}
+                onClick={() => deleteMutation.mutate({ archiveId: item.id })}
+                data-testid={`delete-btn-${item.id}`}
+                disabled={deleteMutation.isPending}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
+              >
+                删除
+              </button>
+            </div>
+          </div>
+        </Item>
+      ))}
+    </RevealGroup>
   );
 }
 
@@ -464,7 +452,7 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>选择公式</label>
         {(items as QueueItem[]).length === 0 ? (
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', fontFamily: F.cn, margin: 0 }}>暂无学习记录，请先在「学习」标签提交文案</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>暂无学习记录，请先在「学习」标签提交文案</p>
         ) : (
           <Select
             value={selectedQueueId}
@@ -519,34 +507,31 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
       </div>
 
       {/* 生成按钮 */}
-      <motion.button
-        onClick={handleGenerate}
-        disabled={isDisabled}
-        data-testid="generate-btn"
-        whileHover={isDisabled ? {} : { y: -3 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{
-          alignSelf: 'flex-start',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          borderRadius: 10,
-          padding: '10px 20px',
-          fontSize: 13,
-          fontWeight: 600,
-          fontFamily: F.cn,
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          opacity: isDisabled ? 0.4 : 1,
-          background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.35))',
-          border: `0.5px solid rgba(168,197,224,0.55)`,
-          color: C.ink,
-          textShadow: C.textShadow,
-          transition: 'opacity 0.2s',
-        }}
-      >
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>auto_awesome</span>
-        {applyMutation.isPending ? '生成中…' : '用公式生成文案'}
-      </motion.button>
+      <Magnetic strength={0.3}>
+        <button
+          onClick={handleGenerate}
+          disabled={isDisabled}
+          data-testid="generate-btn"
+          className="lg-gradbtn"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 9999,
+            padding: '10px 20px',
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: F.cn,
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            opacity: isDisabled ? 0.4 : 1,
+            color: '#fff',
+            border: 'none',
+          }}
+        >
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>auto_awesome</span>
+          {applyMutation.isPending ? '生成中…' : '用公式生成文案'}
+        </button>
+      </Magnetic>
 
       {/* 生成结果 */}
       {result && (
