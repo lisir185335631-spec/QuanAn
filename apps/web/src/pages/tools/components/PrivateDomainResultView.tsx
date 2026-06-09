@@ -99,7 +99,7 @@ export function PrivateDomainResultView({
           className="lg-glass"
           style={{ borderRadius: 14, padding: '12px 16px' }}
         >
-          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
+          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
             {summary}
           </p>
         </div>

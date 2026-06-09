@@ -70,7 +70,7 @@ export function PrivateDomainMomentsSection({
           fontWeight: 700,
           color: C.ink,
           fontFamily: F.cn,
-          textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
+          textShadow: C.textShadow,
         }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>photo_album</span>

@@ -332,7 +332,7 @@ export default function Step7() {
                 maxWidth: 820,
                 fontSize: 16,
                 lineHeight: 1.6,
-                color: 'rgba(255,255,255,0.75)',
+                color: 'rgba(255,255,255,0.84)',
                 fontFamily: F.cn,
                 textShadow: C.textShadow,
               }}
@@ -341,7 +341,7 @@ export default function Step7() {
             </p>
           </div>
           {/* Header 操作按钮 */}
-          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 12 }}>
             <motion.button
               type="button"
               onClick={handleOptimize}
@@ -820,7 +820,7 @@ export default function Step7() {
                                 fontFamily: F.cn,
                                 background: selected ? 'rgba(168,197,224,0.25)' : 'transparent',
                                 border: selected ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
-                                color: selected ? C.ikb : 'rgba(255,255,255,0.65)',
+                                color: selected ? C.ikb : 'rgba(255,255,255,0.84)',
                                 cursor: 'pointer',
                                 transition: 'background 0.2s, border-color 0.2s, color 0.2s',
                                 textShadow: C.textShadow,
@@ -895,8 +895,8 @@ export default function Step7() {
                     background: 'rgba(255,255,255,0.05)',
                   }}
                 >
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>{topic.length} 字</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>{topic.length} 字</span>
                 </div>
               </div>
               {currentScript && (
@@ -1019,7 +1019,7 @@ export default function Step7() {
                     padding: '8px 14px',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: 'rgba(255,255,255,0.75)',
+                    color: 'rgba(255,255,255,0.84)',
                     fontFamily: F.cn,
                     background: 'transparent',
                     border: 'none',
@@ -1028,7 +1028,7 @@ export default function Step7() {
                     transition: 'color 0.2s',
                   }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.75)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)'; }}
                 >
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>content_copy</span>
                   复制
@@ -1044,7 +1044,7 @@ export default function Step7() {
                 {result.structure && (
                   <div className="lg-glass" style={{ marginTop: 16, borderRadius: 12, padding: '12px 16px', border: `1px solid ${C.line}` }}>
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow }}>内容结构 · </span>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{result.structure}</span>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{result.structure}</span>
                   </div>
                 )}
                 {result.cta && (
@@ -1189,7 +1189,7 @@ export default function Step7() {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, background: C.grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', fontFamily: F.display }}>84</p>
-                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.mono }}>综合分 · 参考值</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.mono }}>综合分 · 参考值</p>
                   </div>
                 </div>
                 {(() => {
@@ -1327,7 +1327,7 @@ export default function Step7() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                   {TREND_LABELS_S7.map((m) => (
                     <span key={m}>{m}</span>
                   ))}

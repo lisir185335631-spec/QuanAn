@@ -444,7 +444,7 @@ export default function Step4b() {
               {STEP4B_SUBTITLE_REAL.replace('{industry}', industry)}
             </p>
           </div>
-          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+          <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 12 }}>
             <motion.button
               type="button"
               onClick={handleOptimize}
@@ -747,7 +747,7 @@ export default function Step4b() {
               <span style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(255,255,255,0.15)' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#fff' }} aria-hidden={true}>bar_chart</span>
               </span>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, fontFamily: F.display, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>收入轨迹分析</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>收入轨迹分析</h3>
             </div>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.15)', padding: '4px 12px', fontSize: 11, fontWeight: 600, color: '#fff' }}>
               <span style={{ height: 6, width: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'inline-block' }} />
@@ -792,7 +792,7 @@ export default function Step4b() {
 
                   {/* 核心策略 */}
                   <SubBlock accentColor={C.ikb} label="核心策略">
-                    <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.coreStrategy}</p>
+                    <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.coreStrategy}</p>
                   </SubBlock>
 
                   {/* 产品矩阵 */}
@@ -844,7 +844,7 @@ export default function Step4b() {
 
                   {stage.trafficStrategy && (
                     <SubBlock accentColor={C.ikb} label="流量策略">
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.trafficStrategy}</p>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.trafficStrategy}</p>
                     </SubBlock>
                   )}
 
@@ -852,7 +852,7 @@ export default function Step4b() {
                     <SubBlock accentColor={C.ikb} label="转化流程">
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {stage.conversionFlow.map((step, si) => (
-                          <div key={si} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>
+                          <div key={si} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>
                             <span style={{ marginTop: 2, display: 'flex', height: 16, width: 16, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 9, fontWeight: 800, color: '#fff', background: 'linear-gradient(135deg,rgba(168,197,224,0.6),rgba(120,160,220,0.4))' }}>
                               {si + 1}
                             </span>
@@ -865,25 +865,25 @@ export default function Step4b() {
 
                   {stage.teamBuilding && (
                     <SubBlock accentColor={C.yellow} label="团队建设">
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.teamBuilding}</p>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.teamBuilding}</p>
                     </SubBlock>
                   )}
 
                   {stage.systemBuilding && (
                     <SubBlock accentColor={C.yellow} label="体系化建设">
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.systemBuilding}</p>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.systemBuilding}</p>
                     </SubBlock>
                   )}
 
                   {stage.brandStrategy && (
                     <SubBlock accentColor={C.accent3} label="品牌化策略">
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.brandStrategy}</p>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.brandStrategy}</p>
                     </SubBlock>
                   )}
 
                   {stage.matrixLayout && (
                     <SubBlock accentColor={C.accent3} label="矩阵化布局">
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{stage.matrixLayout}</p>
+                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{stage.matrixLayout}</p>
                     </SubBlock>
                   )}
 
@@ -895,7 +895,7 @@ export default function Step4b() {
                       </p>
                       <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
                         {stage.keyActions.map((action, ai) => (
-                          <li key={ai} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>
+                          <li key={ai} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>
                             <span className="material-symbols-outlined" style={{ marginTop: 2, flexShrink: 0, fontSize: 14, color: 'rgba(168,224,180,0.9)' }} aria-hidden={true}>check_circle</span>
                             <span>{action}</span>
                           </li>
@@ -987,7 +987,7 @@ export default function Step4b() {
               <span style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(255,255,255,0.15)' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#fff' }} aria-hidden={true}>sort</span>
               </span>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, fontFamily: F.display, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>节点性能指标</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>节点性能指标</h3>
             </div>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.15)', padding: '4px 12px', fontSize: 11, fontWeight: 600, color: '#fff' }}>
               {generated.successCases.length} 条参考
@@ -1077,7 +1077,7 @@ export default function Step4b() {
                 {sc.journey && (
                   <div className="lg-glass" style={{ marginBottom: 10, borderRadius: 10, padding: 12 }}>
                     <p style={{ marginBottom: 4, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.ikb }}>成长历程</p>
-                    <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{sc.journey}</p>
+                    <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.84)' }}>{sc.journey}</p>
                   </div>
                 )}
                 <div className="lg-glass" style={{ marginBottom: 10, borderRadius: 10, padding: 12, background: 'rgba(168,224,180,0.1)' }}>
@@ -1087,7 +1087,7 @@ export default function Step4b() {
                 {sc.insight && (
                   <div className="lg-glass" style={{ borderRadius: 10, padding: 12, background: 'rgba(168,197,224,0.1)' }}>
                     <p style={{ marginBottom: 4, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.accent3 }}>启示</p>
-                    <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.75)' }}>{sc.insight}</p>
+                    <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.84)' }}>{sc.insight}</p>
                   </div>
                 )}
               </motion.div>
@@ -1117,7 +1117,7 @@ export default function Step4b() {
                   <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.grad, marginRight: 2 }} aria-hidden={true} />
                   {item.key}
                 </p>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>{item.val}</p>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)' }}>{item.val}</p>
               </div>
             ))}
           </div>
@@ -1277,7 +1277,7 @@ export default function Step4b() {
               </svg>
             );
           })()}
-          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)' }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.84)' }}>
             {REVENUE_LABELS_S4B.map((m) => (
               <span key={m}>{m}</span>
             ))}
@@ -1300,7 +1300,7 @@ export default function Step4b() {
                 type="button"
                 onClick={handleFeedbackUp}
                 className="lg-glass"
-                style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+                style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.84)', background: 'transparent' }}
                 aria-label="有帮助"
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.7)'; }}
@@ -1311,7 +1311,7 @@ export default function Step4b() {
                 type="button"
                 onClick={handleFeedbackDown}
                 className="lg-glass"
-                style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+                style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: 'pointer', border: 'none', color: 'rgba(255,255,255,0.84)', background: 'transparent' }}
                 aria-label="没帮助"
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,180,150,0.9)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.7)'; }}

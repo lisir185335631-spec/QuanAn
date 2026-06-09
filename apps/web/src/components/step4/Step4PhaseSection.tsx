@@ -54,7 +54,7 @@ export function Step4PhaseSection({ phase, className }: Step4PhaseSectionProps) 
       </div>
 
       {/* weekRange + goal */}
-      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, textShadow: C.textShadow }}>
+      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
         <span aria-hidden="true">🕐</span> {phase.weekRange} · 目标：{phase.goal}
       </p>
 
@@ -127,7 +127,7 @@ export function Step4PhaseSection({ phase, className }: Step4PhaseSectionProps) 
           <div className="grid grid-cols-2 gap-4">
             {phase.kpis.map((kpi, i) => (
               <div key={i} className="space-y-0.5">
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{kpi.name}</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{kpi.name}</p>
                 <p className="text-2xl font-bold" style={{ color: C.ikb, fontFamily: F.display }}>{kpi.target}</p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>当前基准：{kpi.baseline}</p>
               </div>

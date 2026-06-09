@@ -256,7 +256,7 @@ export default function Step6() {
           </p>
         </div>
         {/* 操作按钮行 */}
-        <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
+        <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'wrap', gap: 12 }}>
           <motion.button
             type="button"
             onClick={handleOptimize}
@@ -449,7 +449,7 @@ export default function Step6() {
                   background: 'rgba(255,255,255,0.04)',
                 }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>建议包含</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>建议包含</span>
                     {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
                       <span
                         key={t}
@@ -467,7 +467,7 @@ export default function Step6() {
                       </span>
                     ))}
                   </div>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                     {content.length} 字
                   </span>
                 </div>
@@ -1097,7 +1097,7 @@ export default function Step6() {
                               fontWeight: 500,
                               border: `0.5px solid ${C.line}`,
                               background: 'rgba(255,255,255,0.06)',
-                              color: 'rgba(255,255,255,0.75)',
+                              color: 'rgba(255,255,255,0.84)',
                               fontFamily: F.mono,
                             }}>
                               {tag}
@@ -1142,7 +1142,7 @@ export default function Step6() {
                                 }} />
                                 {label}
                               </p>
-                              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{text}</p>
+                              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{text}</p>
                             </div>
                           ))}
                         </div>
@@ -1281,7 +1281,7 @@ export default function Step6() {
                     whileHover={{ y: -2 }}
                     transition={{ type: 'spring', stiffness: 240, damping: 18 }}
                     style={{
-                      color: 'rgba(255,255,255,0.72)',
+                      color: 'rgba(255,255,255,0.84)',
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
@@ -1289,12 +1289,12 @@ export default function Step6() {
                       transition: 'color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C.accent3; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.72)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.84)'; }}
                   >
                     <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
                   </motion.button>
                 </div>
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{result.schedule}</p>
+                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, overflowWrap: 'break-word' }}>{result.schedule}</p>
               </motion.div>
             </Reveal>
           </div>
@@ -1597,7 +1597,7 @@ export default function Step6() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                   {result.shotList.filter((_, i) => i % 3 === 0).map((_, i) => (
                     <span key={i * 3}>{`镜头${i * 3 + 1}`}</span>
                   ))}

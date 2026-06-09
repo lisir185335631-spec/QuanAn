@@ -46,7 +46,7 @@ function CaseCard({ title, description, searchHint, platform }: VideoReferenceCa
               {platform}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
+          <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
             <span style={{ color: C.ikb }}>⌕</span>搜索:&nbsp;{searchHint}
           </span>
         </div>

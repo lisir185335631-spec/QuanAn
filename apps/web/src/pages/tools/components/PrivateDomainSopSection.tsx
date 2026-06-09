@@ -31,7 +31,7 @@ export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSect
           fontWeight: 700,
           color: C.ink,
           fontFamily: F.cn,
-          textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
+          textShadow: C.textShadow,
         }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>calendar_month</span>
@@ -97,7 +97,7 @@ export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSect
                 >
                   目标：{step.goal}
                 </span>
-                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
+                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                   {step.desc}
                 </p>
               </motion.div>

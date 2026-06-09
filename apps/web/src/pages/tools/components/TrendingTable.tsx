@@ -64,7 +64,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
   if (items.length === 0) {
     return (
       <div
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}
         data-testid="trending-empty"
       >
         暂无数据
@@ -101,7 +101,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             fontSize: 14,
             fontWeight: 700,
             flexShrink: 0,
-            color: isTop3 ? C.ikb : 'rgba(255,255,255,0.72)',
+            color: isTop3 ? C.ikb : 'rgba(255,255,255,0.84)',
             fontFamily: F.mono,
             textShadow: isTop3 ? C.textShadow : 'none',
           }}
@@ -120,7 +120,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
             {truncate(item.title, 60)}
           </p>
           {item.industry && (
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{item.industry}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{item.industry}</span>
           )}
         </div>
 
@@ -133,7 +133,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
         </div>
 
         {/* CrawledAt */}
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', flexShrink: 0, width: 96, textAlign: 'right', fontFamily: F.mono }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', flexShrink: 0, width: 96, textAlign: 'right', fontFamily: F.mono }}>
           {new Date(item.crawledAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
         </span>
 
@@ -205,7 +205,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics,
         borderBottom: `0.5px solid rgba(255,255,255,0.15)`,
         background: 'rgba(255,255,255,0.06)',
         fontSize: 12,
-        color: 'rgba(255,255,255,0.72)',
+        color: 'rgba(255,255,255,0.84)',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         fontFamily: F.mono,

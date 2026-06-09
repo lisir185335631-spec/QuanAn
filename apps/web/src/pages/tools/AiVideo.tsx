@@ -102,6 +102,8 @@ function InlinePlatformCard({
         cursor: 'pointer',
         outline: 'none',
       }}
+      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+      onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
     >
       <span
         style={{
@@ -180,6 +182,8 @@ function InlineVideoTypeCard({
         cursor: 'pointer',
         outline: 'none',
       }}
+      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+      onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
     >
       <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
       <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{type.desc}</span>
@@ -340,6 +344,8 @@ function InlineResultTitleCard({
             type="button"
             onClick={onCopy}
             data-testid="result-copy-btn"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -364,6 +370,8 @@ function InlineResultTitleCard({
             type="button"
             onClick={onExport}
             data-testid="result-export-btn"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -475,7 +483,7 @@ function InlineAdviceCard({
             {ADVICE_ICONS[advice.id] ?? 'lightbulb'}
           </span>
         </span>
-        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>
           <span style={{ fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{advice.label}</span>
           {advice.content}
         </p>
@@ -738,7 +746,7 @@ export default function AiVideo() {
   return (
     <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ flexShrink: 0 }}>
           <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
@@ -817,6 +825,8 @@ export default function AiVideo() {
             type="button"
             aria-label="复制全部分镜"
             onClick={() => toast.success('已复制全部分镜')}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               flexShrink: 0,
@@ -847,6 +857,8 @@ export default function AiVideo() {
             type="button"
             aria-label="导出 CSV"
             onClick={() => toast.info('CSV 导出 · 即将上线')}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               flexShrink: 0,
@@ -1016,6 +1028,8 @@ export default function AiVideo() {
                   maxLength={5000}
                   rows={10}
                   placeholder="输入你的短视频文案，包含标题、话题、正反方观点、结论等结构"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = '0'; }}
                   style={{
                     width: '100%',
                     resize: 'none',
@@ -1430,6 +1444,8 @@ export default function AiVideo() {
               type="button"
               onClick={handleRestart}
               data-testid="ai-video-restart"
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -1608,7 +1624,7 @@ export default function AiVideo() {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>86</p>
+              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: C.textShadow }}>86</p>
               <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', margin: 0 }}>综合分</p>
             </div>
           </div>

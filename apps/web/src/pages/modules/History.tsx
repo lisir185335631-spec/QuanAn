@@ -356,7 +356,7 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
       <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={entry.id} />
 
       {/* row 2 · 主题 */}
-      <p data-testid={`history-topic-${entry.id}`} style={{ marginTop: 12, fontSize: 14, lineHeight: 1.65, fontFamily: F.cn }}>
+      <p data-testid={`history-topic-${entry.id}`} style={{ marginTop: 12, fontSize: 14, lineHeight: 1.65, fontFamily: F.cn, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
         <span style={{ color: 'rgba(255,255,255,0.84)' }}>{HISTORY_TOPIC_PREFIX}</span>
         <span style={{ fontWeight: 600, color: C.ink, textShadow: C.textShadow }}>{entry.topic}</span>
       </p>

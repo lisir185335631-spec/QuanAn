@@ -378,7 +378,7 @@ export default function AcquisitionVideo() {
   return (
     <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+      <header style={{ marginBottom: 40, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ flexShrink: 0 }}>
           {/* chip 标签行 */}
           <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -444,7 +444,7 @@ export default function AcquisitionVideo() {
               maxWidth: 820,
               fontSize: 16,
               lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.75)',
+              color: 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
               textShadow: C.textShadow,
             }}
@@ -456,7 +456,7 @@ export default function AcquisitionVideo() {
         <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
           <button
             type="button"
-            aria-label="智能优化功能开发中"
+            aria-label="智能优化"
             data-testid="av-optimize-btn"
             disabled
             onClick={() => toast.info('优化功能开发中')}
@@ -549,7 +549,7 @@ export default function AcquisitionVideo() {
       <Reveal style={{ marginBottom: 36 }}>
         <div
           className="lg-glass"
-          style={{ borderRadius: 22, padding: 28, overflow: 'hidden', position: 'relative' }}
+          style={{ borderRadius: 20, padding: 28, overflow: 'hidden', position: 'relative' }}
         >
           {/* 装饰光晕 */}
           <div style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: '50%', background: 'rgba(168,197,224,0.12)', filter: 'blur(40px)', pointerEvents: 'none' }} />
@@ -670,6 +670,8 @@ export default function AcquisitionVideo() {
                 data-testid="av-conversion-goal-select"
                 value={conversionGoal}
                 onChange={(e) => setConversionGoal(e.target.value)}
+                onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+                onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
                 style={{
                   width: '100%', borderRadius: 12, padding: '12px 16px', fontSize: 14,
                   color: C.ink, fontFamily: F.cn, background: 'rgba(255,255,255,0.10)',
@@ -720,6 +722,8 @@ export default function AcquisitionVideo() {
                   onChange={(e) => setCustomerProfile(e.target.value)}
                   rows={3}
                   placeholder="例如：想要创业的 25-40 岁宝妈，有积蓄但缺方向"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = 'none'; }}
                   style={{
                     width: '100%', resize: 'none', border: 'none', background: 'transparent',
                     padding: 16, fontSize: 14, lineHeight: 1.65, color: C.ink,
@@ -781,6 +785,8 @@ export default function AcquisitionVideo() {
                   onChange={(e) => setProductHighlights(e.target.value)}
                   rows={3}
                   placeholder="例如：零基础可学、3个月回本、一对一指导"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = 'none'; }}
                   style={{
                     width: '100%', resize: 'none', border: 'none', background: 'transparent',
                     padding: 16, fontSize: 14, lineHeight: 1.65, color: C.ink,

@@ -476,7 +476,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
                     >
                       check_circle
                     </span>
-                    <span style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{tip}</span>
+                    <span style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{tip}</span>
                   </li>
                 ))}
               </ul>
@@ -516,7 +516,7 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
           </span>
           <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>{faq.q}</p>
         </div>
-        <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, marginTop: 'auto' }}>{faq.a}</p>
+        <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginTop: 'auto' }}>{faq.a}</p>
       </motion.div>
     </Item>
   );

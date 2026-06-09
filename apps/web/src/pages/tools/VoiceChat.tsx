@@ -122,7 +122,7 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
       {/* bottom row: timestamp + play + copy */}
       {!isStreaming && (
         <div className="flex items-center gap-3 pl-12">
-          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.72)' }}>
+          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.84)' }}>
             {message.timestamp}
           </span>
 

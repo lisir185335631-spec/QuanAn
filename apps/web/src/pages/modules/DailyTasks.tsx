@@ -282,7 +282,7 @@ function TodayProgressSection({
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>{pct}%</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>{pct}%</span>
           <ProgressRing pct={pct} />
         </div>
       </div>
@@ -366,7 +366,7 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
           }}
           onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '2px'; }}
           onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
-          aria-label={isCompleted ? `已完成` : `标记完成`}
+          aria-label={isCompleted ? `已完成：${task.title}` : `标记完成：${task.title}`}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {isCompleted ? 'check_circle' : isMarking ? 'hourglass_empty' : 'radio_button_unchecked'}
@@ -406,7 +406,7 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
               }}
             >
               <span style={{ height: 6, width: 6, borderRadius: '50%', background: pri.dot, display: 'inline-block' }} />
-              {PRIORITY_LABELS[priority]}优先
+              {PRIORITY_LABELS[priority]}优先级
             </span>
             {/* Category chip */}
             <span
@@ -1175,7 +1175,7 @@ export default function DailyTasks() {
             </div>
             <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                   {todayPct}
                   <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}>%</span>
                 </p>
@@ -1312,7 +1312,7 @@ export default function DailyTasks() {
               </div>
               <div style={{ textAlign: 'right' }}>
                 {/* P1: clarified as reference score */}
-                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>78</p>
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>78</p>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn }}>参考示例分</p>
               </div>
             </div>

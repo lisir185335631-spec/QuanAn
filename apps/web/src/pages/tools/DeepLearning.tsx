@@ -235,7 +235,7 @@ function SampleFormPioneer({
           <div data-testid="upload-tab-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div
               className="lg-glass"
-              style={{ borderRadius: 10, padding: 12, fontSize: 12, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}
+              style={{ borderRadius: 10, padding: 12, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}
             >
               粘贴素材链接即可，文件直传即将上线
             </div>
@@ -491,7 +491,7 @@ function SampleFormPioneer({
                       padding: '8px 12px',
                     }}
                   >
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                       {s.source} · {s.text.slice(0, 30)}{s.text.length > 30 ? '…' : ''}
                     </span>
                     <button
@@ -1011,7 +1011,7 @@ function EmptyArchivesPioneer() {
         >neurology</span>
       </span>
       <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_TITLE}</p>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_DESC}</p>
+      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>{DL_EMPTY_DESC}</p>
     </div>
   );
 }
@@ -1720,7 +1720,7 @@ export default function DeepLearning() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>86</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>86</p>
                   <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>综合分</p>
                 </div>
               </div>
@@ -1851,7 +1851,7 @@ export default function DeepLearning() {
                   </svg>
                 );
               })()}
-              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                 {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
                   <span key={m}>{m}</span>
                 ))}

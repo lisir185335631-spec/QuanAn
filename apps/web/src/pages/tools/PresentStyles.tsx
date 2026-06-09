@@ -292,6 +292,8 @@ function PresentStylesForm({
               onChange={(e) => onTextChange(e.target.value)}
               rows={4}
               placeholder={`请输入你的文案内容（至少 ${PS_TEXT_MIN} 字）`}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = '0'; }}
               style={{
                 width: '100%',
                 resize: 'vertical',
@@ -326,6 +328,8 @@ function PresentStylesForm({
             data-testid="ps-platform-select"
             value={platform}
             onChange={(e) => onPlatformChange(e.target.value)}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
             style={{
               width: '100%',
               borderRadius: 12,
@@ -572,7 +576,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 26, color: '#fff' }}>
                     {icon}
                   </span>
-                  <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: '0 1px 4px rgba(8,20,48,0.4)' }}>
+                  <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: C.textShadow }}>
                     {displayLabel}
                   </span>
                   {/* matchScore 徽章 */}
@@ -1342,7 +1346,7 @@ export default function PresentStyles() {
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 26, color: '#fff' }}>
                     {icon}
                   </span>
-                  <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: '0 1px 4px rgba(8,20,48,0.4)' }}>
+                  <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: C.textShadow }}>
                     {style.label}
                   </span>
                 </div>

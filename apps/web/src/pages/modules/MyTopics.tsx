@@ -404,7 +404,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
         </Reveal>
 
         {/* KPI 概览 · 一排 4 个小卡 · 真数据 */}
-        <RevealGroup style={{ display: 'flex', flexShrink: 0, gap: 16 }}>
+        <RevealGroup style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
           {[
             { label: '收藏选题', value: topicCount,  icon: 'favorite',   accentIdx: 0 },
             { label: '本周新增', value: weeklyNew,   icon: 'add_circle', accentIdx: 1 },
@@ -423,7 +423,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    width: 108,
+                    minWidth: 80,
                     borderRadius: 16,
                     padding: '12px',
                     height: '100%',
@@ -553,8 +553,11 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
             opacity: actionsDisabled ? 0.4 : 1,
             border: 'none',
             transition: 'color 0.15s',
+            outline: 'none',
           }}
           data-testid="copy-all-btn"
+          onFocus={(e) => { if (!actionsDisabled) (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+          onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>content_copy</span>
           {MY_TOPICS_COPY_ALL}
@@ -583,8 +586,11 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
             opacity: actionsDisabled ? 0.4 : 1,
             border: 'none',
             transition: 'color 0.15s',
+            outline: 'none',
           }}
           data-testid="download-txt-btn"
+          onFocus={(e) => { if (!actionsDisabled) (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+          onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>download</span>
           {MY_TOPICS_DOWNLOAD_TXT}
@@ -635,7 +641,10 @@ function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
                 cursor: 'pointer',
                 transition: 'color 0.15s',
                 textShadow: isActive ? C.textShadow : undefined,
+                outline: 'none',
               }}
+              onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+              onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
             >
               <span
                 className="material-symbols-outlined"
@@ -688,7 +697,7 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
           aria-hidden={true}
           data-testid="empty-heart-icon"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 44, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>favorite</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 44, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: C.textShadow }}>favorite</span>
         </span>
         <p
           style={{ marginBottom: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}

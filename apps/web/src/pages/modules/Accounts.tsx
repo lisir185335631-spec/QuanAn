@@ -201,6 +201,10 @@ function LiquidAccountCard({
               fontFamily: F.display,
               margin: 0,
               textShadow: C.textShadow,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: '100%',
             }}
           >
             {account.name}
@@ -264,8 +268,12 @@ function LiquidAccountCard({
               marginTop: 12,
               fontSize: 14,
               lineHeight: 1.65,
-              color: 'rgba(255,255,255,0.65)',
+              color: 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
             }}
           >
             {desc}
@@ -292,6 +300,7 @@ function LiquidAccountCard({
                 fontFamily: F.cn,
                 cursor: 'pointer',
                 transition: 'border-color 0.15s, color 0.15s, background 0.15s',
+                outline: 'none',
               }}
               onMouseEnter={(e) => {
                 const b = e.currentTarget as HTMLButtonElement;
@@ -305,6 +314,8 @@ function LiquidAccountCard({
                 b.style.color = 'rgba(255,255,255,0.7)';
                 b.style.background = 'rgba(255,255,255,0.08)';
               }}
+              onFocus={(e) => { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+              onBlur={(e) => { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = ''; }}
             >
               <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 edit
@@ -330,6 +341,7 @@ function LiquidAccountCard({
                 fontFamily: F.cn,
                 cursor: 'pointer',
                 transition: 'border-color 0.15s, color 0.15s, background 0.15s',
+                outline: 'none',
               }}
               onMouseEnter={(e) => {
                 const b = e.currentTarget as HTMLButtonElement;
@@ -343,6 +355,8 @@ function LiquidAccountCard({
                 b.style.color = 'rgba(255,255,255,0.7)';
                 b.style.background = 'rgba(255,255,255,0.08)';
               }}
+              onFocus={(e) => { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = `0 0 0 2px ${C.ikb}99`; }}
+              onBlur={(e) => { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = ''; }}
             >
               <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 bar_chart
@@ -370,6 +384,7 @@ function LiquidAccountCard({
                 cursor: isActive ? 'not-allowed' : 'pointer',
                 opacity: isActive ? 0.45 : 1,
                 transition: 'border-color 0.15s, color 0.15s, background 0.15s',
+                outline: 'none',
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
@@ -387,6 +402,8 @@ function LiquidAccountCard({
                   b.style.background = 'rgba(255,255,255,0.08)';
                 }
               }}
+              onFocus={(e) => { if (!isActive) { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = `0 0 0 2px ${C.ikb}99`; } }}
+              onBlur={(e) => { const b = e.currentTarget as HTMLButtonElement; b.style.boxShadow = ''; }}
             >
               <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 swap_horiz
@@ -433,7 +450,7 @@ export default function Accounts() {
   const totalAccounts = all.length;
   const activeAccountsCount = active.length;
   const platformCoverage = new Set(active.map((a) => a.platform)).size || 1;
-  const TOTAL_FANS_LABEL = '1 000+';
+  const TOTAL_FANS_LABEL = '1,000+';
 
   return (
     <LiquidShell>
@@ -444,6 +461,7 @@ export default function Accounts() {
             marginBottom: 48,
             display: 'flex',
             flexDirection: 'row',
+            flexWrap: 'wrap',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 32,

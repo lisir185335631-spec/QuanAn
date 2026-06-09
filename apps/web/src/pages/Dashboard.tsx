@@ -216,7 +216,7 @@ export default function Dashboard() {
               </div>
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  ¥2.1B<span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> CNY</span>
+                  ¥2.1B
                 </p>
                 <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>收益模型</p>
               </div>
@@ -345,7 +345,7 @@ export default function Dashboard() {
                 部署进度
               </h3>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                <span style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>78</span>
+                <span style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>78</span>
                 <span style={{ marginBottom: 4, fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>%</span>
                 <span style={{ marginBottom: 4, marginLeft: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: 'rgba(168,197,224,0.18)', border: `0.5px solid rgba(168,197,224,0.45)`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
                   <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+5%
@@ -493,7 +493,7 @@ export default function Dashboard() {
                             >
                               <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>{r.icon}</span>
                             </span>
-                            <span style={{ fontFamily: F.mono, fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>{r.id}</span>
+                            <span style={{ fontFamily: F.mono, fontSize: 13, color: 'rgba(255,255,255,0.84)' }}>{r.id}</span>
                           </div>
                         </td>
                         <td style={{ padding: '16px 24px', fontWeight: 500, color: C.ink, fontFamily: F.cn }}>{r.src}</td>
@@ -571,7 +571,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>84</p>
+                  <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>84</p>
                   <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>综合分</p>
                 </div>
               </div>
@@ -607,7 +607,7 @@ export default function Dashboard() {
                     {dims.map((d, i) => {
                       const [x, y] = pt(i, R + 16);
                       return (
-                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.7)" fontSize="10.5" fontWeight="600">
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
                           {d.label}
                         </text>
                       );
@@ -655,7 +655,7 @@ export default function Dashboard() {
                         fontSize: 11,
                         fontWeight: 600,
                         background: i === 0 ? 'rgba(168,197,224,0.45)' : 'rgba(255,255,255,0.08)',
-                        color: i === 0 ? C.ink : 'rgba(255,255,255,0.72)',
+                        color: i === 0 ? C.ink : 'rgba(255,255,255,0.84)',
                         fontFamily: F.mono,
                       }}
                     >

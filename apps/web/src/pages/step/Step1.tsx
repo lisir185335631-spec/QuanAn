@@ -326,7 +326,7 @@ export default function Step1() {
               {STEP1_SUBTITLE_PART3}
             </p>
           </div>
-          <div className="flex shrink-0 flex-nowrap gap-3">
+          <div className="flex shrink-0 flex-wrap gap-3">
             <motion.button
               type="button"
               onClick={() => setCustomModalOpen(true)}
@@ -496,7 +496,7 @@ export default function Step1() {
                     borderRadius: 9999,
                     border: active ? `1px solid rgba(168,197,224,0.7)` : `0.5px solid ${C.line}`,
                     background: active ? 'rgba(168,197,224,0.25)' : 'rgba(255,255,255,0.08)',
-                    color: active ? C.ikb : 'rgba(255,255,255,0.65)',
+                    color: active ? C.ikb : 'rgba(255,255,255,0.84)',
                     padding: '8px 16px',
                     fontSize: 12,
                     fontWeight: 700,
@@ -517,7 +517,7 @@ export default function Step1() {
                   onMouseLeave={(e) => {
                     if (!active) {
                       (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-                      (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.65)';
+                      (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)';
                     }
                   }}
                 >
@@ -554,6 +554,12 @@ export default function Step1() {
                 fontFamily: F.cn,
                 color: C.ink,
                 textShadow: C.textShadow,
+              }}
+              onFocus={(e) => {
+                (e.currentTarget.parentElement as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.45)';
+              }}
+              onBlur={(e) => {
+                (e.currentTarget.parentElement as HTMLDivElement).style.boxShadow = '';
               }}
             />
           </div>
@@ -940,7 +946,7 @@ export default function Step1() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn, textShadow: C.textShadow }}>已选择:</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>已选择:</span>
               <span
                 style={{
                   display: 'flex',

@@ -228,6 +228,8 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
                         textShadow: selected ? C.textShadow : 'none',
                         outline: 'none',
                       }}
+                      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+                      onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>
                         {item.key === 'greed' ? 'monetization_on' :
@@ -279,7 +281,7 @@ function BoomElementsPicker({ selectedKeys, onChange }: BoomElementsPickerProps)
           <span style={{ fontWeight: 700, color: C.ikb, textShadow: C.textShadow }}>
             {BOOM_SELECTED_PREFIX} {selectedKeys.length} {BOOM_SELECTED_SUFFIX}
           </span>
-          <span style={{ color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{selectedLabels.join('、')}</span>
+          <span style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{selectedLabels.join('、')}</span>
         </div>
       )}
     </div>
@@ -537,10 +539,10 @@ function BoomAnalysis() {
         </span>
       </div>
       <div style={{ padding: 24 }}>
-        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{BOOM_ANALYSIS_BODY}</p>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{BOOM_ANALYSIS_BODY}</p>
         <p style={{ marginTop: 16, fontSize: 14, lineHeight: 1.6 }}>
           <span style={{ fontWeight: 700, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>{BOOM_BEST_PRACTICE_LABEL}</span>
-          <span style={{ color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{BOOM_BEST_PRACTICE}</span>
+          <span style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{BOOM_BEST_PRACTICE}</span>
         </p>
         <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {BOOM_AVOID_LIST.map((text) => (
@@ -643,6 +645,8 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
               type="button"
               aria-label="复制"
               onClick={handleCopy}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -724,7 +728,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
           {sections.map((sec) => (
             <div key={sec.label} style={{ borderLeft: `2px solid ${sec.borderColor}`, paddingLeft: 16 }}>
               <p style={{ fontSize: 11, fontWeight: 700, marginBottom: 4, color: sec.labelColor, fontFamily: F.mono, textShadow: C.textShadow }}>{sec.label}</p>
-              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>{sec.body}</p>
+              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{sec.body}</p>
             </div>
           ))}
         </div>
@@ -753,6 +757,8 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
             <button
               type="button"
               aria-label="有帮助"
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'flex',
                 height: 28,
@@ -775,6 +781,8 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
             <button
               type="button"
               aria-label="无帮助"
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
               style={{
                 display: 'flex',
                 height: 28,
@@ -807,7 +815,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
           }}
         >
           <span style={{ fontSize: 11, fontWeight: 700, color: C.yellow, fontFamily: F.mono, textShadow: C.textShadow }}>{BOOM_REASON_PREFIX}</span>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>{entry.reason}</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{entry.reason}</span>
         </div>
       </div>
     </motion.div>
@@ -843,14 +851,16 @@ export default function BoomGenerate() {
   return (
     <LiquidShell>
       {/* ── Header ─────────────────────────────────────────── */}
-      <header style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+      <header style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
         <BoomHero />
         <div style={{ display: 'flex', flexShrink: 0, flexWrap: 'nowrap', gap: 12 }}>
           <button
             type="button"
-            aria-label="智能优化"
+            aria-label="重新生成"
             onClick={handleGenerate}
             className="lg-glass"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'inline-flex',
               flexShrink: 0,
@@ -875,8 +885,8 @@ export default function BoomGenerate() {
             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_fix_high</span>
-            智能优化
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>refresh</span>
+            重新生成
           </button>
           <Magnetic strength={0.3}>
             <motion.button

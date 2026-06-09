@@ -592,6 +592,8 @@ export default function VideoAnalysis() {
                   onChange={(e) => setContent(e.target.value)}
                   rows={8}
                   placeholder="粘贴完整口播文案/视频文字内容"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = '0'; }}
                   style={{
                     width: '100%',
                     resize: 'none',
@@ -1000,7 +1002,7 @@ export default function VideoAnalysis() {
             <div style={{ padding: 20 }}>
               <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>
+                  <span style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     {generated.hookAnalysis.score}
                   </span>
                   <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
@@ -1361,13 +1363,13 @@ export default function VideoAnalysis() {
                 {/* 标题 */}
                 <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                   <LgLabel color={C.ikb}>标题</LgLabel>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>{generated.rewriteResult.title}</p>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.title}</p>
                 </div>
 
                 {/* 开头 */}
                 <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                   <LgLabel color="rgba(255,255,255,0.85)">开头 · 黄金3秒</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.rewriteResult.intro}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.intro}</p>
                 </div>
 
                 {/* 正文 */}
@@ -1375,7 +1377,7 @@ export default function VideoAnalysis() {
                   <LgLabel color={C.ikb}>正文</LgLabel>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {generated.rewriteResult.body.map((para, i) => (
-                      <p key={i} style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{para}</p>
+                      <p key={i} style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{para}</p>
                     ))}
                   </div>
                 </div>
@@ -1386,13 +1388,13 @@ export default function VideoAnalysis() {
                   style={{ borderRadius: 12, padding: 14, background: 'rgba(168,197,224,0.12)' }}
                 >
                   <LgLabel color={C.ikb}>转折 · 升华</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.rewriteResult.twist}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.twist}</p>
                 </div>
 
                 {/* 结尾 */}
                 <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                   <LgLabel color="rgba(255,255,255,0.85)">结尾 · 引导互动</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.rewriteResult.ending}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.ending}</p>
                 </div>
 
                 {/* 话题标签 */}

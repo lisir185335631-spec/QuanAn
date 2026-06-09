@@ -175,7 +175,7 @@ function MonetizationHero() {
               maxWidth: 820,
               fontSize: 16,
               lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.75)',
+              color: 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
               textShadow: C.textShadow,
             }}
@@ -295,6 +295,8 @@ function MonetizationForm({
               id="mn-industry"
               value={industryId}
               onChange={(e) => onIndustryChange(e.target.value)}
+              onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+              onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
               style={{
                 width: '100%',
                 borderRadius: 10,
@@ -341,6 +343,8 @@ function MonetizationForm({
                 onChange={(e) => onProductChange(e.target.value)}
                 rows={3}
                 placeholder="例如：线上英语培训课程，面向职场白领"
+                onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.border = '0.5px solid rgba(168,197,224,0.7)'; }}
+                onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.border = 'none'; }}
                 style={{
                   width: '100%',
                   resize: 'vertical',
@@ -385,6 +389,8 @@ function MonetizationForm({
                 value={audience}
                 onChange={(e) => onAudienceChange(e.target.value)}
                 placeholder="例如：25-40岁职场女性"
+                onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+                onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
                 style={{
                   width: '100%',
                   borderRadius: 10,
@@ -429,6 +435,8 @@ function MonetizationForm({
                 value={positioning}
                 onChange={(e) => onPositioningChange(e.target.value)}
                 placeholder="例如：专业、接地气的英语老师人设"
+                onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+                onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
                 style={{
                   width: '100%',
                   borderRadius: 10,
@@ -721,7 +729,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
                 flexShrink: 0,
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: 11,
+                borderRadius: 12,
                 background: 'linear-gradient(135deg, rgba(168,197,224,0.4), rgba(120,160,220,0.25))',
                 color: C.ikb,
               }}
@@ -1117,6 +1125,8 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             type="button"
             onClick={handleFeedback}
             aria-label="有帮助"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               height: 32,
@@ -1146,6 +1156,8 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             type="button"
             onClick={handleFeedback}
             aria-label="无帮助"
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
             style={{
               display: 'flex',
               height: 32,

@@ -188,7 +188,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
                 className="lg-glass"
                 style={{ borderRadius: 12, padding: 12 }}
               >
-                <p style={{ fontSize: 12, marginBottom: 6, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>完整内容</p>
+                <p style={{ fontSize: 12, marginBottom: 6, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>完整内容</p>
                 <p
                   data-testid="drawer-content"
                   style={{ fontSize: 14, whiteSpace: 'pre-wrap', lineHeight: 1.65, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}
@@ -198,7 +198,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
               </div>
 
               {/* Crawled at */}
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>
                 抓取时间：{new Date(detail.crawledAt).toLocaleString('zh-CN')}
               </p>
             </div>

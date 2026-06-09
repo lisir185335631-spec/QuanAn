@@ -344,7 +344,7 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 32, rowGap: 12 }}>
             <div>
               <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>已完成</p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>{completed}</p>
+              <p style={{ fontSize: 22, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{completed}</p>
             </div>
             <div>
               <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>总步数</p>
@@ -406,7 +406,7 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
             style={{
               fontSize: 15,
               fontWeight: 700,
-              color: step.done ? C.ink : 'rgba(255,255,255,0.75)',
+              color: step.done ? C.ink : 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
               margin: '0 0 6px',
               textShadow: C.textShadow,
@@ -686,7 +686,7 @@ function IpMaturityRadar() {
                 fontFamily: F.display,
                 margin: 0,
                 color: C.ink,
-                textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
+                textShadow: C.textShadow,
               }}
             >
               {avg}
@@ -799,7 +799,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
                   fontWeight: 600,
                   fontFamily: F.mono,
                   background: i === 0 ? 'rgba(168,197,224,0.45)' : 'rgba(255,255,255,0.08)',
-                  color: i === 0 ? C.ink : 'rgba(255,255,255,0.72)',
+                  color: i === 0 ? C.ink : 'rgba(255,255,255,0.84)',
                 }}
               >
                 {t}
