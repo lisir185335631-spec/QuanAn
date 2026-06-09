@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   AI_VIDEO_ADVICE,
   AI_VIDEO_CHIP_SUBTITLE,
@@ -182,7 +182,7 @@ function InlineVideoTypeCard({
       }}
     >
       <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
-      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{type.desc}</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{type.desc}</span>
       <span
         style={{
           position: 'absolute',
@@ -227,14 +227,14 @@ function InlineEmptyPlaceholderCard() {
         movie
       </span>
       <h3 style={{ marginBottom: 12, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{AI_VIDEO_EMPTY_H3}</h3>
-      <p style={{ marginBottom: 24, maxWidth: 440, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{AI_VIDEO_EMPTY_DESC}</p>
+      <p style={{ marginBottom: 24, maxWidth: 440, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{AI_VIDEO_EMPTY_DESC}</p>
       <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'left', listStyle: 'none', padding: 0, margin: 0 }}>
         {AI_VIDEO_EMPTY_BULLETS.map((bullet) => (
           <li key={bullet} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 16, color: C.ikb, flexShrink: 0 }} aria-hidden={true}>
               chevron_right
             </span>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>{bullet}</span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{bullet}</span>
           </li>
         ))}
       </ul>
@@ -319,7 +319,7 @@ function InlineResultTitleCard({
               Storyboard
             </span>
             <h2 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{title}</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>
                   timer
@@ -447,38 +447,40 @@ function InlineAdviceCard({
 }) {
   const accent = ADVICE_ACCENT[index % 3] ?? C.ikb;
   return (
-    <motion.div
-      className="lg-glass"
-      whileHover={{ y: -3 }}
-      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-      style={{ display: 'flex', alignItems: 'flex-start', gap: 16, borderRadius: 14, padding: 16 }}
-      data-testid={`advice-card-${advice.id}`}
-    >
-      <span
-        style={{
-          display: 'flex',
-          height: 36,
-          width: 36,
-          flexShrink: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 10,
-          background: 'rgba(168,197,224,0.2)',
-        }}
+    <Item style={{ height: '100%' }}>
+      <motion.div
+        className="lg-glass"
+        whileHover={{ y: -3 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+        style={{ display: 'flex', flexDirection: 'column', gap: 12, borderRadius: 14, padding: 16, height: '100%' }}
+        data-testid={`advice-card-${advice.id}`}
       >
         <span
-          className="material-symbols-outlined"
-          style={{ fontSize: 20, color: accent }}
-          aria-hidden={true}
+          style={{
+            display: 'flex',
+            height: 36,
+            width: 36,
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 10,
+            background: 'rgba(168,197,224,0.2)',
+          }}
         >
-          {ADVICE_ICONS[advice.id] ?? 'lightbulb'}
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: accent }}
+            aria-hidden={true}
+          >
+            {ADVICE_ICONS[advice.id] ?? 'lightbulb'}
+          </span>
         </span>
-      </span>
-      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0 }}>
-        <span style={{ fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{advice.label}</span>
-        {advice.content}
-      </p>
-    </motion.div>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>
+          <span style={{ fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{advice.label}</span>
+          {advice.content}
+        </p>
+      </motion.div>
+    </Item>
   );
 }
 
@@ -596,7 +598,7 @@ function InlineShotCard({
                 background: 'rgba(255,255,255,0.06)',
               }}
             >
-              <p style={{ marginBottom: 4, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', margin: '0 0 4px' }}>{label}</p>
+              <p style={{ marginBottom: 4, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', margin: '0 0 4px' }}>{label}</p>
               <p style={{ fontSize: 12, lineHeight: 1.4, color: 'rgba(255,255,255,0.75)', margin: 0 }}>{value}</p>
             </div>
           ))}
@@ -941,7 +943,7 @@ export default function AiVideo() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>STORYBOARD</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>专业分镜表生成器 · 文案一键转拍摄方案</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>专业分镜表生成器 · 文案一键转拍摄方案</p>
               </div>
             </div>
             {/* 待生成状态 badge */}
@@ -993,7 +995,7 @@ export default function AiVideo() {
                   />
                   {AI_VIDEO_LABEL_TEXT}
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>
                     auto_awesome
                   </span>
@@ -1040,7 +1042,7 @@ export default function AiVideo() {
                   }}
                 >
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>建议包含</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)' }}>建议包含</span>
                     {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
                       <span
                         key={t}
@@ -1050,7 +1052,7 @@ export default function AiVideo() {
                           fontSize: 11,
                           fontWeight: 500,
                           background: 'rgba(255,255,255,0.08)',
-                          color: 'rgba(255,255,255,0.6)',
+                          color: 'rgba(255,255,255,0.84)',
                           border: `1px solid ${C.line}`,
                         }}
                       >
@@ -1059,7 +1061,7 @@ export default function AiVideo() {
                     ))}
                   </div>
                   <span
-                    style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.5)', fontVariantNumeric: 'tabular-nums' }}
+                    style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontVariantNumeric: 'tabular-nums' }}
                     data-testid="ai-video-char-count"
                   >
                     {text.length}/5000
@@ -1138,48 +1140,47 @@ export default function AiVideo() {
 
             {/* 主 CTA */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={handleGenerate}
-                data-testid="ai-video-cta"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 14,
-                  padding: '12px 32px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  border: 'none',
-                  color: '#fff',
-                  background: C.grad,
-                  fontFamily: F.mono,
-                  textShadow: C.textShadow,
-                  outline: 'none',
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
-                  auto_awesome
-                </span>
-                {AI_VIDEO_CTA_TEXT}
-              </button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  data-testid="ai-video-cta"
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '14px 34px',
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    outline: 'none',
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
+                    auto_awesome
+                  </span>
+                  {AI_VIDEO_CTA_TEXT}
+                </button>
+              </Magnetic>
             </div>
           </div>
         </section>
       </Reveal>
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 44 }}>
         {/* 分镜数 · 环形进度 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1222,9 +1223,9 @@ export default function AiVideo() {
               <div>
                 <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
                   {AI_VIDEO_MOCK_SHOTS.length}
-                  <span style={{ marginLeft: 4, fontSize: 15, fontWeight: 400, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 个</span>
+                  <span style={{ marginLeft: 4, fontSize: 15, fontWeight: 400, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 个</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>分镜数</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}>分镜数</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
@@ -1246,12 +1247,12 @@ export default function AiVideo() {
         </Item>
 
         {/* 总时长 · 迷你柱 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1287,7 +1288,7 @@ export default function AiVideo() {
               <p style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
                 {AI_VIDEO_RESULT_TOTAL_DURATION}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>总时长</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}>总时长</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
@@ -1301,12 +1302,12 @@ export default function AiVideo() {
         </Item>
 
         {/* 目标平台 · 进度条 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1342,7 +1343,7 @@ export default function AiVideo() {
               <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
                 {selectedPlatformLabel}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>目标平台</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}>目标平台</p>
             </div>
             <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(255,255,255,0.12)' }}>
               <div
@@ -1353,12 +1354,12 @@ export default function AiVideo() {
         </Item>
 
         {/* 视频类型 · 关键词 chip */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1394,7 +1395,7 @@ export default function AiVideo() {
               <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>
                 {selectedTypeLabel}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>视频类型</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}>视频类型</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {['口播', '剧情', 'Vlog'].map((k) => (
@@ -1439,7 +1440,7 @@ export default function AiVideo() {
                 fontWeight: 500,
                 cursor: 'pointer',
                 border: `1px solid ${C.line}`,
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(255,255,255,0.84)',
                 background: 'rgba(255,255,255,0.08)',
                 outline: 'none',
               }}
@@ -1463,12 +1464,12 @@ export default function AiVideo() {
           {/* 时间轴 */}
           <InlineTimelineBar segments={AI_VIDEO_TIMELINE_SEGMENTS} />
 
-          {/* 3 段建议 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* 3 段建议 · 两列卡片 */}
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
             {AI_VIDEO_ADVICE.map((a, i) => (
               <InlineAdviceCard key={a.id} advice={a} index={i} />
             ))}
-          </div>
+          </RevealGroup>
 
           {/* 10 SHOT 分镜时间线 */}
           <Reveal>
@@ -1554,7 +1555,7 @@ export default function AiVideo() {
             insights
           </span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           {/* 模型就绪 badge */}
           <span
             style={{
@@ -1603,12 +1604,12 @@ export default function AiVideo() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>视频制作力雷达</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, margin: 0, textShadow: C.textShadow }}>86</p>
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', margin: 0 }}>综合分</p>
+              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>86</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', margin: 0 }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -1687,7 +1688,7 @@ export default function AiVideo() {
             {RADAR_DIMS.map((d) => (
               <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, textShadow: C.textShadow }}>{d.value}</span>
               </div>
             ))}
@@ -1721,7 +1722,7 @@ export default function AiVideo() {
               </span>
               <div>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>分镜情绪/节奏曲线</h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>沿 10 个镜头情绪强度推演</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>沿 10 个镜头情绪强度推演</p>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1731,7 +1732,7 @@ export default function AiVideo() {
                   style={
                     i === 0
                       ? { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: C.ikb, color: '#fff' }
-                      : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }
+                      : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.84)' }
                   }
                 >
                   {t}
@@ -1761,7 +1762,7 @@ export default function AiVideo() {
               </span>
               峰值
             </span>
-            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>第9镜情绪最高点</span>
+            <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>第9镜情绪最高点</span>
           </div>
           {(() => {
             const data = EMOTION_CURVE;
@@ -1829,7 +1830,7 @@ export default function AiVideo() {
               </svg>
             );
           })()}
-          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
             {Array.from({ length: 10 }, (_, i) => `镜头${i + 1}`).map((m) => (
               <span key={m}>{m}</span>
             ))}
