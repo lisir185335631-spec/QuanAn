@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
 import {
   type Industry,
@@ -176,7 +176,7 @@ export default function Step1() {
         {dims.map((d, i) => {
           const [x, y] = pt(i, R + 16);
           return (
-            <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+            <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
               {d.label}
             </text>
           );
@@ -355,46 +355,44 @@ export default function Step1() {
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
               自定义行业
             </motion.button>
-            <motion.button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!hasSelection}
-              whileHover={hasSelection ? { y: -3 } : undefined}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                borderRadius: 12,
-                padding: '10px 18px',
-                fontFamily: F.cn,
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#fff',
-                border: 'none',
-                cursor: hasSelection ? 'pointer' : 'not-allowed',
-                opacity: hasSelection ? 1 : 0.4,
-                background: C.grad,
-                textShadow: C.textShadow,
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-              确认并进入下一步
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!hasSelection}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 9999,
+                  padding: '10px 22px',
+                  fontFamily: F.cn,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#fff',
+                  border: 'none',
+                  cursor: hasSelection ? 'pointer' : 'not-allowed',
+                  opacity: hasSelection ? 1 : 0.4,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+                确认并进入下一步
+              </button>
+            </Magnetic>
           </div>
         </header>
 
         {/* ── KPI 概览卡(4 张)──────────────────────────────── */}
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 44 }}>
           {S1_KPI.map((kpi, idx) => (
-            <Item key={kpi.label}>
+            <Item key={kpi.label} style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 22 }}
+                style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -435,9 +433,9 @@ export default function Step1() {
                   <div>
                     <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                       {idx === 2 ? (hasSelection ? '1' : '0') : kpi.value}
-                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, fontWeight: 400, marginLeft: 4 }}>{kpi.unit}</span>
+                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, fontWeight: 400, marginLeft: 4 }}>{kpi.unit}</span>
                     </p>
-                    <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{kpi.label}</p>
+                    <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{kpi.label}</p>
                   </div>
                   {kpi.extra === 'ring' && (
                     <div style={{ height: 48, width: 48, flexShrink: 0 }}>
@@ -548,13 +546,14 @@ export default function Step1() {
               placeholder={STEP1_SEARCH_PLACEHOLDER}
               data-testid="industry-search"
               style={{
-                width: 220,
+                width: 340,
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
                 fontSize: 14,
                 fontFamily: F.cn,
                 color: C.ink,
+                textShadow: C.textShadow,
               }}
             />
           </div>
@@ -687,7 +686,7 @@ export default function Step1() {
                           fontWeight: 700,
                           letterSpacing: '0.08em',
                           textTransform: 'uppercase',
-                          color: 'rgba(255,255,255,0.6)',
+                          color: 'rgba(255,255,255,0.84)',
                           fontFamily: F.mono,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -702,11 +701,11 @@ export default function Step1() {
                     {/* 微指标: 热度进度条 */}
                     <div style={{ width: '100%' }}>
                       <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10 }}>
-                        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>热度</span>
+                        <span style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>热度</span>
                         <span
                           style={{
                             fontWeight: 700,
-                            color: active ? C.ikb : 'rgba(255,255,255,0.6)',
+                            color: active ? C.ikb : 'rgba(255,255,255,0.84)',
                             fontFamily: F.mono,
                           }}
                         >
@@ -737,7 +736,7 @@ export default function Step1() {
         <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -795,7 +794,7 @@ export default function Step1() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>赛道吸引力雷达</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -816,7 +815,7 @@ export default function Step1() {
                   >
                     81
                   </p>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分</p>
                 </div>
               </div>
               {renderRadar()}
@@ -824,7 +823,7 @@ export default function Step1() {
                 {S1_RADAR_DIMS.map((d) => (
                   <div key={d.label} className="flex items-center gap-1.5">
                     <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
                   </div>
                 ))}
@@ -858,7 +857,7 @@ export default function Step1() {
                   </span>
                   <div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>赛道热度趋势</h3>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -872,7 +871,7 @@ export default function Step1() {
                         fontWeight: 600,
                         fontFamily: F.mono,
                         background: i === 0 ? 'rgba(168,197,224,0.35)' : 'rgba(255,255,255,0.10)',
-                        color: i === 0 ? C.ikb : 'rgba(255,255,255,0.6)',
+                        color: i === 0 ? C.ikb : 'rgba(255,255,255,0.84)',
                         textShadow: C.textShadow,
                       }}
                     >
@@ -900,10 +899,10 @@ export default function Step1() {
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
                 </span>
-                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较同期基线</span>
+                <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较同期基线</span>
               </div>
               {renderTrend()}
-              <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>
+              <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>
                 {S1_TREND_LABELS.map((m) => (
                   <span key={m}>{m}</span>
                 ))}
@@ -979,32 +978,29 @@ export default function Step1() {
                 </button>
               </span>
             </div>
-            <motion.button
-              type="button"
-              onClick={handleSubmit}
-              whileHover={{ y: -2 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                borderRadius: 12,
-                padding: '12px 32px',
-                fontSize: 14,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: '#fff',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: F.cn,
-                background: C.grad,
-                textShadow: C.textShadow,
-              }}
-            >
-              确认并进入下一步
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 9999,
+                  padding: '12px 32px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: F.cn,
+                }}
+              >
+                确认并进入下一步
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+              </button>
+            </Magnetic>
           </div>
         </div>
       )}
