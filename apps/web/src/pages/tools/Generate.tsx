@@ -562,77 +562,82 @@ export default function Generate() {
                   <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>选择适合的内容框架</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
                 {SCRIPT_TYPES.map((type) => {
                   const active = scriptKey === type.key;
                   return (
-                    <motion.button
-                      type="button"
-                      key={type.key}
-                      aria-pressed={active}
-                      data-state={active ? 'active' : 'inactive'}
-                      onClick={() => setScriptKey(type.key)}
-                      whileHover={{ y: -2 }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                      className={active ? undefined : 'lg-glass'}
-                      style={{
-                        position: 'relative',
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
-                        gap: 12,
-                        overflow: 'hidden',
-                        borderRadius: 14,
-                        padding: '12px 14px',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        border: active ? `0.5px solid rgba(168,197,224,0.6)` : `0.5px solid ${C.line}`,
-                        background: active ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.06)',
-                        transition: 'background 0.2s, border-color 0.2s',
-                      }}
-                    >
-                      <span
+                    <Item key={type.key} style={{ height: '100%' }}>
+                      <motion.button
+                        type="button"
+                        aria-pressed={active}
+                        data-state={active ? 'active' : 'inactive'}
+                        onClick={() => setScriptKey(type.key)}
+                        whileHover={{ y: -2 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        className={active ? undefined : 'lg-glass'}
                         style={{
+                          position: 'relative',
                           display: 'flex',
-                          height: 40,
-                          width: 40,
-                          flexShrink: 0,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: 10,
-                          background: active
-                            ? C.grad
-                            : 'rgba(255,255,255,0.10)',
-                          color: active ? '#fff' : 'rgba(255,255,255,0.84)',
+                          flexDirection: 'column',
+                          width: '100%',
+                          height: '100%',
+                          alignItems: 'flex-start',
+                          gap: 10,
+                          overflow: 'hidden',
+                          borderRadius: 14,
+                          padding: '12px 14px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          border: active ? `0.5px solid rgba(168,197,224,0.6)` : `0.5px solid ${C.line}`,
+                          background: active ? 'rgba(168,197,224,0.22)' : 'rgba(255,255,255,0.06)',
+                          transition: 'background 0.2s, border-color 0.2s',
                         }}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>{SCRIPT_TYPE_ICONS[type.key] ?? 'article'}</span>
-                      </span>
-                      <span style={{ minWidth: 0, flex: 1 }}>
-                        <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{type.desc}</span>
-                      </span>
-                      <span
-                        style={{
-                          display: 'flex',
-                          height: 16,
-                          width: 16,
-                          flexShrink: 0,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: '50%',
-                          background: active ? C.ikb : 'transparent',
-                          border: active ? 'none' : `0.5px solid ${C.line}`,
-                          color: active ? '#fff' : 'transparent',
-                          transition: 'all 0.2s',
-                        }}
-                      >
-                        <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>check</span>
-                      </span>
-                    </motion.button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                          <span
+                            style={{
+                              display: 'flex',
+                              height: 40,
+                              width: 40,
+                              flexShrink: 0,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: 10,
+                              background: active
+                                ? C.grad
+                                : 'rgba(255,255,255,0.10)',
+                              color: active ? '#fff' : 'rgba(255,255,255,0.84)',
+                            }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>{SCRIPT_TYPE_ICONS[type.key] ?? 'article'}</span>
+                          </span>
+                          <span
+                            style={{
+                              display: 'flex',
+                              height: 16,
+                              width: 16,
+                              flexShrink: 0,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '50%',
+                              background: active ? C.ikb : 'transparent',
+                              border: active ? 'none' : `0.5px solid ${C.line}`,
+                              color: active ? '#fff' : 'transparent',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>check</span>
+                          </span>
+                        </div>
+                        <span style={{ minWidth: 0, flex: 1 }}>
+                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{type.desc}</span>
+                        </span>
+                      </motion.button>
+                    </Item>
                   );
                 })}
-              </div>
+              </RevealGroup>
             </section>
           </Reveal>
         </div>

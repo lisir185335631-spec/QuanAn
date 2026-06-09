@@ -893,27 +893,29 @@ export default function DailyTasks() {
           >
             <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.burgundyText }}>error_outline</span>
             <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>加载今日任务失败</p>
-            <button
-              type="button"
-              data-testid="daily-tasks-retry"
-              onClick={() => void refetch()}
-              className="lg-gradbtn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                borderRadius: 12,
-                border: 'none',
-                padding: '10px 24px',
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#fff',
-                fontFamily: F.cn,
-                cursor: 'pointer',
-              }}
-            >
-              重试
-            </button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                data-testid="daily-tasks-retry"
+                onClick={() => void refetch()}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 9999,
+                  border: 'none',
+                  padding: '10px 24px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  cursor: 'pointer',
+                }}
+              >
+                重试
+              </button>
+            </Magnetic>
           </div>
         </Reveal>
       </LiquidShell>
@@ -964,30 +966,32 @@ export default function DailyTasks() {
             <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>inbox</span>
             <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>今日暂无任务</p>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
-            <button
-              type="button"
-              data-testid="daily-tasks-regenerate"
-              disabled={regenerateToday.isPending}
-              onClick={() => regenerateToday.mutate()}
-              className="lg-gradbtn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                borderRadius: 12,
-                border: 'none',
-                padding: '12px 28px',
-                fontSize: 14,
-                fontWeight: 700,
-                color: '#fff',
-                fontFamily: F.cn,
-                cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
-                opacity: regenerateToday.isPending ? 0.6 : 1,
-              }}
-            >
-              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
-              {regenerateToday.isPending ? '生成中…' : '重新生成'}
-            </button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                data-testid="daily-tasks-regenerate"
+                disabled={regenerateToday.isPending}
+                onClick={() => regenerateToday.mutate()}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 9999,
+                  border: 'none',
+                  padding: '12px 28px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
+                  opacity: regenerateToday.isPending ? 0.6 : 1,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
+                {regenerateToday.isPending ? '生成中…' : '重新生成'}
+              </button>
+            </Magnetic>
           </div>
         </Reveal>
         <FooterButtons

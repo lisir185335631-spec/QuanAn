@@ -1263,27 +1263,27 @@ export default function Monetization() {
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: 'rgba(255,120,120,0.85)' }}>error</span>
             生成失败，请检查网络后重试。
-            <motion.button
-              type="button"
-              onClick={handleGenerate}
-              className="lg-gradbtn"
-              whileHover={{ y: -2 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                marginLeft: 'auto',
-                borderRadius: 10,
-                padding: '4px 14px',
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#fff',
-                fontFamily: F.mono,
-                border: 'none',
-                cursor: 'pointer',
-                textShadow: C.textShadow,
-              }}
-            >
-              重试
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                className="lg-gradbtn"
+                style={{
+                  marginLeft: 'auto',
+                  borderRadius: 9999,
+                  padding: '4px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  border: 'none',
+                  cursor: 'pointer',
+                  textShadow: C.textShadow,
+                }}
+              >
+                重试
+              </button>
+            </Magnetic>
           </div>
         </Reveal>
       )}
