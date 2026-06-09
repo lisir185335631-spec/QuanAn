@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -444,7 +444,7 @@ export default function VideoAnalysis() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>输入文案内容</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>粘贴爆款文案 · AI 深度拆解爆款密码</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>粘贴爆款文案 · AI 深度拆解爆款密码</p>
               </div>
             </div>
             <span
@@ -505,7 +505,7 @@ export default function VideoAnalysis() {
                   aria-hidden={true}
                 />
                 视频标题
-                <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>（选填）</span>
+                <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（选填）</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <span
@@ -571,7 +571,7 @@ export default function VideoAnalysis() {
                   文案内容
                   <span style={{ marginLeft: 4, color: C.ikb }}>*</span>
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }} aria-hidden={true}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }} aria-hidden={true}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>auto_awesome</span>
                   AI 据此拆解爆款结构
                 </span>
@@ -618,7 +618,7 @@ export default function VideoAnalysis() {
                   }}
                 >
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>支持</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>支持</span>
                     {['口播稿', '字幕', '描述文案', '评论区文案'].map((t) => (
                       <span
                         key={t}
@@ -628,7 +628,7 @@ export default function VideoAnalysis() {
                           fontSize: 11,
                           fontWeight: 500,
                           background: 'rgba(255,255,255,0.08)',
-                          color: 'rgba(255,255,255,0.55)',
+                          color: 'rgba(255,255,255,0.8)',
                           border: `0.5px solid ${C.line}`,
                           fontFamily: F.cn,
                         }}
@@ -637,43 +637,39 @@ export default function VideoAnalysis() {
                       </span>
                     ))}
                   </div>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.5)' }}>{content.length} 字</span>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.72)' }}>{content.length} 字</span>
                 </div>
               </div>
             </div>
 
             {/* CTA */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={handleAnalyze}
-                disabled={!content.trim()}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 12,
-                  border: `0.5px solid rgba(168,197,224,0.55)`,
-                  background: 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.35))',
-                  backdropFilter: 'blur(12px)',
-                  padding: '12px 32px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  fontFamily: F.mono,
-                  cursor: content.trim() ? 'pointer' : 'not-allowed',
-                  transition: 'background 0.2s',
-                  textShadow: C.textShadow,
-                  opacity: content.trim() ? 1 : 0.4,
-                }}
-                onMouseEnter={(e) => { if (content.trim()) (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.5))'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.35))'; }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
-                开始深度解析
-              </button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  onClick={handleAnalyze}
+                  disabled={!content.trim()}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '12px 32px',
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    cursor: content.trim() ? 'pointer' : 'not-allowed',
+                    opacity: content.trim() ? 1 : 0.4,
+                    border: 'none',
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
+                  开始深度解析
+                </button>
+              </Magnetic>
             </div>
           </div>
         </section>
@@ -682,12 +678,12 @@ export default function VideoAnalysis() {
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
         {/* 钩子评分 · 环形 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -726,9 +722,9 @@ export default function VideoAnalysis() {
               <div>
                 <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                   {generated.hookAnalysis.score}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>钩子评分</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>钩子评分</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label={`钩子评分 ${generated.hookAnalysis.score} 分`}>
@@ -750,12 +746,12 @@ export default function VideoAnalysis() {
         </Item>
 
         {/* 爆款元素数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -790,9 +786,9 @@ export default function VideoAnalysis() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {generated.popularElements.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}> 个</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}> 个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>爆款元素</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[40, 70, 55, 85, 65].map((h, i) => (
@@ -803,12 +799,12 @@ export default function VideoAnalysis() {
         </Item>
 
         {/* 叙事结构 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -844,7 +840,7 @@ export default function VideoAnalysis() {
               <p style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {generated.narrativeStructure.label}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>叙事结构</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>叙事结构</p>
             </div>
             <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
               <div style={{ height: 6, borderRadius: 9999, width: '45%', background: 'linear-gradient(to right, #d8e8ff, #a8c5e0)' }} />
@@ -853,12 +849,12 @@ export default function VideoAnalysis() {
         </Item>
 
         {/* 仿写字数 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 18, padding: 20 }}
+            style={{ borderRadius: 18, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -893,9 +889,9 @@ export default function VideoAnalysis() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {rewriteWordCount}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}> 字</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}> 字</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>仿写总字数</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>仿写总字数</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {['标题', '开头', '正文', '结尾'].map((k) => (
@@ -1004,10 +1000,10 @@ export default function VideoAnalysis() {
             <div style={{ padding: 20 }}>
               <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: C.ikb, fontFamily: F.display, textShadow: C.textShadow }}>
+                  <span style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>
                     {generated.hookAnalysis.score}
                   </span>
-                  <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
                 </div>
                 <div>
                   <span
@@ -1155,35 +1151,37 @@ export default function VideoAnalysis() {
               {/* 元素列表 */}
               <div>
                 <LgLabel color={C.ikb}>爆款元素</LgLabel>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+                <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginTop: 4 }}>
                   {generated.popularElements.map((el, i) => (
-                    <div key={i} className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span
-                          style={{
-                            display: 'flex',
-                            height: 24,
-                            width: 24,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '50%',
-                            fontSize: 11,
-                            fontWeight: 800,
-                            color: '#fff',
-                            background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
-                            fontFamily: F.mono,
-                            textShadow: C.textShadow,
-                          }}
-                        >
-                          {i + 1}
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{el.name}</span>
+                    <Item key={i} style={{ height: '100%' }}>
+                      <div className="lg-glass" style={{ borderRadius: 12, padding: 14, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span
+                            style={{
+                              display: 'flex',
+                              height: 24,
+                              width: 24,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '50%',
+                              fontSize: 11,
+                              fontWeight: 800,
+                              color: '#fff',
+                              background: 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))',
+                              fontFamily: F.mono,
+                              textShadow: C.textShadow,
+                            }}
+                          >
+                            {i + 1}
+                          </span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{el.name}</span>
+                        </div>
+                        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: '0 0 6px' }}>{el.main}</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>{el.note}</p>
                       </div>
-                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: '0 0 6px' }}>{el.main}</p>
-                      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>{el.note}</p>
-                    </div>
+                    </Item>
                   ))}
-                </div>
+                </RevealGroup>
               </div>
 
               {/* 爆款公式 */}
@@ -1330,35 +1328,31 @@ export default function VideoAnalysis() {
                       onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.boxShadow = 'none'; }}
                     />
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleRewriteGenerate}
-                    style={{
-                      display: 'flex',
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      gap: 8,
-                      borderRadius: 12,
-                      border: `0.5px solid rgba(168,197,224,0.55)`,
-                      background: 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.35))',
-                      backdropFilter: 'blur(12px)',
-                      padding: '12px 24px',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
-                      color: '#fff',
-                      fontFamily: F.mono,
-                      cursor: 'pointer',
-                      transition: 'background 0.2s',
-                      textShadow: C.textShadow,
-                    }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.5))'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.35))'; }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-                    生成仿写
-                  </button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      type="button"
+                      onClick={handleRewriteGenerate}
+                      className="lg-gradbtn"
+                      style={{
+                        display: 'inline-flex',
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        gap: 8,
+                        borderRadius: 9999,
+                        padding: '12px 24px',
+                        fontSize: 15,
+                        fontWeight: 700,
+                        color: '#fff',
+                        fontFamily: F.cn,
+                        cursor: 'pointer',
+                        border: 'none',
+                        textShadow: C.textShadow,
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
+                      生成仿写
+                    </button>
+                  </Magnetic>
                 </div>
               </div>
 
@@ -1436,7 +1430,7 @@ export default function VideoAnalysis() {
         <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -1483,7 +1477,7 @@ export default function VideoAnalysis() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>爆款解析雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1504,7 +1498,7 @@ export default function VideoAnalysis() {
                 >
                   {Math.round(RADAR_DIMS_VA.reduce((acc, d) => acc + d.value, 0) / RADAR_DIMS_VA.length)}
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.mono }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', margin: 0, fontFamily: F.mono }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -1551,7 +1545,7 @@ export default function VideoAnalysis() {
               {RADAR_DIMS_VA.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: d.color }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
                 </div>
               ))}
@@ -1583,7 +1577,7 @@ export default function VideoAnalysis() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>黄金3秒注意力曲线 / 叙事节奏</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>注意力留存 vs 叙事张力对比</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>注意力留存 vs 叙事张力对比</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1592,7 +1586,7 @@ export default function VideoAnalysis() {
                     key={t}
                     style={i === 0
                       ? { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: C.ikb, color: '#0a1628', fontFamily: F.mono }
-                      : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }
+                      : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }
                     }
                   >
                     {t}
@@ -1647,7 +1641,7 @@ export default function VideoAnalysis() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {['开头', '第2节', '第3节', '第4节', '第5节', '第6节', '第7节', '第8节', '第9节', '第10节', '第11节', '结尾'].map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -1667,7 +1661,7 @@ export default function VideoAnalysis() {
           paddingTop: 24,
         }}
       >
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>解析结果有帮助吗？</p>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>解析结果有帮助吗？</p>
         <button
           type="button"
           onClick={handleFeedbackUp}
@@ -1681,7 +1675,7 @@ export default function VideoAnalysis() {
             borderRadius: 8,
             border: `0.5px solid ${C.line}`,
             background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.8)',
             cursor: 'pointer',
             transition: 'border-color 0.15s, color 0.15s, background 0.15s',
           }}
@@ -1694,7 +1688,7 @@ export default function VideoAnalysis() {
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLButtonElement;
             el.style.borderColor = C.line;
-            el.style.color = 'rgba(255,255,255,0.55)';
+            el.style.color = 'rgba(255,255,255,0.8)';
             el.style.background = 'rgba(255,255,255,0.08)';
           }}
         >
@@ -1713,7 +1707,7 @@ export default function VideoAnalysis() {
             borderRadius: 8,
             border: `0.5px solid ${C.line}`,
             background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.8)',
             cursor: 'pointer',
             transition: 'border-color 0.15s, color 0.15s, background 0.15s',
           }}
@@ -1726,7 +1720,7 @@ export default function VideoAnalysis() {
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLButtonElement;
             el.style.borderColor = C.line;
-            el.style.color = 'rgba(255,255,255,0.55)';
+            el.style.color = 'rgba(255,255,255,0.8)';
             el.style.background = 'rgba(255,255,255,0.08)';
           }}
         >
