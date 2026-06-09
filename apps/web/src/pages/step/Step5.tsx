@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { trpc } from '@/lib/trpc';
 import type { RouterOutputs } from '@/lib/trpc';
@@ -384,7 +384,7 @@ export default function Step5() {
             <h1
               style={{
                 whiteSpace: 'nowrap',
-                fontSize: 48,
+                fontSize: 54,
                 fontWeight: 800,
                 letterSpacing: '-0.02em',
                 fontFamily: F.display,
@@ -425,7 +425,7 @@ export default function Step5() {
               disabled={!hasResult}
               whileHover={{ y: -2 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass"
+              className="lg-glass lg-spec"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -454,7 +454,7 @@ export default function Step5() {
               disabled={isLoading}
               whileHover={{ y: -2 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass"
+              className="lg-glass lg-spec"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -484,7 +484,7 @@ export default function Step5() {
       {/* ── 输入卡 ───────────────────────────────────────────── */}
       <Reveal>
         <section
-          className="lg-glass"
+          className="lg-glass lg-spec"
           style={{ position: 'relative', marginBottom: 48, overflow: 'hidden', borderRadius: 20, padding: 28 }}
         >
           {/* 头部分隔行 */}
@@ -516,7 +516,7 @@ export default function Step5() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>选题生成参数</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>填写行业与产品信息 · AI 据此生成 5 大类 100 个爆款选题</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>填写行业与产品信息 · AI 据此生成 5 大类 100 个爆款选题</p>
               </div>
             </div>
             <span
@@ -579,7 +579,7 @@ export default function Step5() {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontSize: 18,
-                    color: 'rgba(255,255,255,0.5)',
+                    color: 'rgba(255,255,255,0.72)',
                     pointerEvents: 'none',
                   }}
                   aria-hidden={true}
@@ -655,7 +655,7 @@ export default function Step5() {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontSize: 18,
-                    color: 'rgba(255,255,255,0.5)',
+                    color: 'rgba(255,255,255,0.72)',
                     pointerEvents: 'none',
                   }}
                   aria-hidden={true}
@@ -700,9 +700,9 @@ export default function Step5() {
             <motion.button
               type="button"
               aria-label="上传产品资料"
-              whileHover={{ y: -3 }}
+              whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass"
+              className="lg-glass lg-spec"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -711,7 +711,7 @@ export default function Step5() {
                 gap: 8,
                 width: '100%',
                 cursor: 'pointer',
-                borderRadius: 14,
+                borderRadius: 18,
                 borderStyle: 'dashed',
                 borderWidth: 1,
                 borderColor: 'rgba(168,197,224,0.4)',
@@ -720,17 +720,17 @@ export default function Step5() {
                 background: 'rgba(168,197,224,0.06)',
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ikb }} aria-hidden={true}>description</span>
-              <p style={{ fontSize: 14, fontWeight: 700, color: C.ikb, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传产品资料</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>产品介绍、卖点、价格体系、客户案例等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.cn }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>description</span>
+              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>上传产品资料</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>产品介绍、卖点、价格体系、客户案例等</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
             </motion.button>
             <motion.button
               type="button"
               aria-label="上传人物介绍与行业"
-              whileHover={{ y: -3 }}
+              whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass"
+              className="lg-glass lg-spec"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -739,7 +739,7 @@ export default function Step5() {
                 gap: 8,
                 width: '100%',
                 cursor: 'pointer',
-                borderRadius: 14,
+                borderRadius: 18,
                 borderStyle: 'dashed',
                 borderWidth: 1,
                 borderColor: 'rgba(168,197,224,0.4)',
@@ -748,44 +748,42 @@ export default function Step5() {
                 background: 'rgba(168,197,224,0.06)',
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ikb }} aria-hidden={true}>person</span>
-              <p style={{ fontSize: 14, fontWeight: 700, color: C.ikb, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传人物介绍与行业</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>个人经历、行业背景、专业资质、从业故事等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.cn }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>person</span>
+              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: '0 1px 4px rgba(6,14,38,.9), 0 0 16px rgba(6,14,38,.55)' }}>上传人物介绍与行业</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>个人经历、行业背景、专业资质、从业故事等</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
             </motion.button>
           </div>
 
           {/* CTA */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <motion.button
-              type="button"
-              onClick={handleGenerateAll}
-              disabled={isLoading || !industry.trim() || !product.trim()}
-              whileHover={isLoading || !industry.trim() || !product.trim() ? {} : { y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-gradbtn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                borderRadius: 12,
-                padding: '12px 28px',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: '#fff',
-                fontFamily: F.mono,
-                cursor: isLoading || !industry.trim() || !product.trim() ? 'not-allowed' : 'pointer',
-                opacity: isLoading || !industry.trim() || !product.trim() ? 0.4 : 1,
-                border: 'none',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
-                {isLoading ? 'progress_activity' : 'refresh'}
-              </span>
-              {isLoading ? '生成中…' : '重新生成全部选题'}
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleGenerateAll}
+                disabled={isLoading || !industry.trim() || !product.trim()}
+                className="lg-gradbtn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  borderRadius: 9999,
+                  padding: '14px 34px',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#fff',
+                  fontFamily: F.cn,
+                  cursor: isLoading || !industry.trim() || !product.trim() ? 'not-allowed' : 'pointer',
+                  opacity: isLoading || !industry.trim() || !product.trim() ? 0.4 : 1,
+                  border: 'none',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
+                  {isLoading ? 'progress_activity' : 'refresh'}
+                </span>
+                {isLoading ? '生成中…' : '重新生成全部选题'}
+              </button>
+            </Magnetic>
           </div>
         </section>
       </Reveal>
@@ -795,9 +793,9 @@ export default function Step5() {
         <Reveal>
           <div
             data-testid="step5-loading"
-            className="lg-glass"
+            className="lg-glass lg-spec"
             style={{
-              marginBottom: 32,
+              marginBottom: 44,
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -821,9 +819,9 @@ export default function Step5() {
         <Reveal>
           <div
             data-testid="step5-error"
-            className="lg-glass"
+            className="lg-glass lg-spec"
             style={{
-              marginBottom: 32,
+              marginBottom: 44,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -845,7 +843,7 @@ export default function Step5() {
               onClick={handleGenerateAll}
               whileHover={{ y: -2 }}
               transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass"
+              className="lg-glass lg-spec"
               style={{
                 flexShrink: 0,
                 borderRadius: 10,
@@ -868,7 +866,7 @@ export default function Step5() {
       {dbIsLoading && (
         <div
           data-testid="step5-db-loading"
-          className="lg-glass"
+          className="lg-glass lg-spec"
           style={{
             marginBottom: 24,
             display: 'flex',
@@ -892,7 +890,7 @@ export default function Step5() {
       {dbIsError && !hasResult && (
         <div
           data-testid="step5-db-error"
-          className="lg-glass"
+          className="lg-glass lg-spec"
           style={{
             marginBottom: 24,
             display: 'flex',
@@ -915,7 +913,7 @@ export default function Step5() {
             onClick={() => { for (const q of Object.values(categoryQueries)) void q.refetch(); }}
             whileHover={{ y: -2 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            className="lg-glass"
+            className="lg-glass lg-spec"
             style={{
               flexShrink: 0,
               borderRadius: 10,
@@ -937,7 +935,7 @@ export default function Step5() {
       {hasResult && isFallbackFlag && (
         <div
           data-testid="step5-fallback-notice"
-          className="lg-glass"
+          className="lg-glass lg-spec"
           style={{
             marginBottom: 24,
             display: 'flex',
@@ -962,9 +960,9 @@ export default function Step5() {
         <Reveal>
           <div
             data-testid="step5-empty-state"
-            className="lg-glass"
+            className="lg-glass lg-spec"
             style={{
-              marginBottom: 32,
+              marginBottom: 44,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -977,7 +975,7 @@ export default function Step5() {
           >
             <span className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: 'rgba(255,255,255,0.25)' }} aria-hidden={true}>topic</span>
             <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>尚未生成爆款选题库</p>
-            <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>填写上方表单，点击「重新生成全部选题」开始生成</p>
+            <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>填写上方表单，点击「重新生成全部选题」开始生成</p>
           </div>
         </Reveal>
       )}
@@ -986,14 +984,14 @@ export default function Step5() {
       {hasResult && (
         <div data-testid="step5-output-grid">
           {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 44 }}>
             {/* 总选题 · 环形 · 冷蓝 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 22 }}
+                style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1029,9 +1027,9 @@ export default function Step5() {
                 <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div>
                     <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                      {totalGenerated}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}> 个</span>
+                      {totalGenerated}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)' }}> 个</span>
                     </p>
-                    <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>总选题</p>
+                    <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>总选题</p>
                   </div>
                   <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                     <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`总选题进度 ${Math.min(totalGenerated, 100)}%`}>
@@ -1053,12 +1051,12 @@ export default function Step5() {
             </Item>
 
             {/* 选题大类 · 迷你柱 · 白玻璃 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 22 }}
+                style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1079,9 +1077,9 @@ export default function Step5() {
                 </div>
                 <div style={{ marginTop: 16 }}>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                    {CATEGORIES.length}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}> 类</span>
+                    {CATEGORIES.length}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)' }}> 类</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>选题大类</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>选题大类</p>
                 </div>
                 <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                   {[60, 80, 70, 90, 75].map((h, i) => (
@@ -1092,12 +1090,12 @@ export default function Step5() {
             </Item>
 
             {/* 当前类 · 进度条 · 冷蓝 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 22 }}
+                style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1118,9 +1116,9 @@ export default function Step5() {
                 </div>
                 <div style={{ marginTop: 16 }}>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                    {currentTopics.length}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}> 个</span>
+                    {currentTopics.length}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)' }}> 个</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>当前类选题</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>当前类选题</p>
                 </div>
                 <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 3, background: 'rgba(168,197,224,0.18)' }}>
                   <div style={{ height: 6, borderRadius: 3, width: `${Math.min((currentTopics.length / 20) * 100, 100)}%`, background: C.grad }} />
@@ -1129,12 +1127,12 @@ export default function Step5() {
             </Item>
 
             {/* 平均评分 · chip · 冷蓝 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 22 }}
+                style={{ borderRadius: 18, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1155,9 +1153,9 @@ export default function Step5() {
                 </div>
                 <div style={{ marginTop: 16 }}>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                    {avgRating}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}> 分</span>
+                    {avgRating}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)' }}> 分</span>
                   </p>
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>平均评分</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>平均评分</p>
                 </div>
                 <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {['5星', '4星', '爆款'].map((k) => (
@@ -1173,10 +1171,10 @@ export default function Step5() {
             <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>grid_view</span>
               <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>选题大类</h2>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· 5 大类 · 点击切换</span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>· 5 大类 · 点击切换</span>
             </div>
           </Reveal>
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 32 }}>
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 44 }}>
             {CATEGORIES.map((cat) => {
               const active = activeCategory === cat.id;
               const catTopics = mergedTopics[cat.id] ?? [];
@@ -1191,9 +1189,9 @@ export default function Step5() {
                         handleGenerateCategory(cat.id);
                       }
                     }}
-                    whileHover={{ y: -4 }}
+                    whileHover={{ y: -5 }}
                     transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                    className="lg-glass"
+                    className="lg-glass lg-spec"
                     style={{
                       position: 'relative',
                       display: 'flex',
@@ -1202,8 +1200,8 @@ export default function Step5() {
                       gap: 8,
                       width: '100%',
                       overflow: 'hidden',
-                      borderRadius: 16,
-                      padding: 16,
+                      borderRadius: 18,
+                      padding: 18,
                       textAlign: 'left',
                       cursor: 'pointer',
                       border: active ? `1.5px solid rgba(168,197,224,0.7)` : undefined,
@@ -1225,7 +1223,7 @@ export default function Step5() {
                       <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>{cat.icon}</span>
                     </span>
                     <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{cat.name}</span>
-                    <span style={{ fontSize: 11, lineHeight: 1.4, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{cat.subtitle}</span>
+                    <span style={{ fontSize: 11, lineHeight: 1.4, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{cat.subtitle}</span>
                     <span style={{ borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb }}>
                       {catTopics.length > 0 ? `${catTopics.length} 个` : '0 个'}
                     </span>
@@ -1256,16 +1254,15 @@ export default function Step5() {
 
           {/* ── 搜索 + 计数 ─────────────────────────────────────── */}
           <Reveal>
-            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <div style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, alignItems: 'center' }}>
               <div
-                className="lg-glass"
+                className="lg-glass lg-spec"
                 style={{
-                  flex: 1,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 10,
-                  borderRadius: 12,
-                  padding: '10px 16px',
+                  borderRadius: 14,
+                  padding: '17px 16px',
                 }}
               >
                 <span className="material-symbols-outlined" style={{ flexShrink: 0, fontSize: 18, color: C.ikb }} aria-hidden={true}>search</span>
@@ -1280,203 +1277,175 @@ export default function Step5() {
                     background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    fontSize: 14,
+                    fontSize: 16,
                     color: C.ink,
                     fontFamily: F.cn,
+                    textShadow: C.textShadow,
                   }}
                 />
               </div>
-              <p style={{ flexShrink: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
                 当前类 <span style={{ fontWeight: 700, color: C.ikb }}>{filteredTopics.length}</span> / {currentTopics.length} 条
-                <span style={{ marginLeft: 4, color: 'rgba(255,255,255,0.5)' }}>· 全库 5 类 {totalGenerated} 个</span>
+                <span style={{ marginLeft: 4, color: 'rgba(255,255,255,0.72)' }}>· 全库 5 类 {totalGenerated} 个</span>
               </p>
             </div>
           </Reveal>
 
-          {/* ── 选题 list ────────────────────────────────────────── */}
-          <div style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {currentTopics.length === 0 && !isLoading && (
-              <div
-                className="lg-glass"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 14,
-                  borderStyle: 'dashed',
-                  padding: '32px 0',
-                  textAlign: 'center',
-                }}
-              >
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>该类选题尚未生成，点击上方「重新生成全部选题」</p>
-              </div>
-            )}
+          {/* ── 选题 list · 两列卡片网格 ──────────────────────────── */}
+          {currentTopics.length === 0 && !isLoading && (
+            <div
+              className="lg-glass"
+              style={{
+                marginBottom: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 16,
+                borderStyle: 'dashed',
+                padding: '32px 0',
+                textAlign: 'center',
+              }}
+            >
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>该类选题尚未生成，点击上方「重新生成全部选题」</p>
+            </div>
+          )}
+          <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
             {filteredTopics.map((t) => {
               const diff = difficultyStyle(t.difficulty);
               return (
-                <motion.div
-                  key={`${activeCategory}-${t.index}`}
-                  whileHover={{ y: -2 }}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  className="lg-glass"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 16,
-                    borderRadius: 14,
-                    padding: 16,
-                  }}
-                >
-                  {/* 序号 */}
-                  <span
+                <Item key={`${activeCategory}-${t.index}`} style={{ height: '100%' }}>
+                  <motion.div
+                    whileHover={{ y: -4 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-glass lg-spec"
                     style={{
                       display: 'flex',
-                      height: 32,
-                      width: 32,
-                      flexShrink: 0,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      fontSize: 13,
-                      fontWeight: 700,
-                      background: 'rgba(168,197,224,0.15)',
-                      color: 'rgba(255,255,255,0.6)',
-                      fontFamily: F.mono,
+                      flexDirection: 'column',
+                      gap: 14,
+                      borderRadius: 16,
+                      padding: 18,
+                      height: '100%',
                     }}
                   >
-                    {t.index}
-                  </span>
+                    {/* 上排:序号 + 标题 */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span
+                        style={{
+                          display: 'flex',
+                          height: 30,
+                          width: 30,
+                          flexShrink: 0,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 9,
+                          fontSize: 13,
+                          fontWeight: 700,
+                          background: 'rgba(168,197,224,0.22)',
+                          color: '#fff',
+                          fontFamily: F.mono,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {t.index}
+                      </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          minWidth: 0,
+                          fontSize: 15.5,
+                          fontWeight: 600,
+                          lineHeight: 1.5,
+                          color: C.ink,
+                          fontFamily: F.cn,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {t.title}
+                      </span>
+                    </div>
 
-                  {/* 标题 (完整) */}
-                  <span
-                    style={{
-                      flex: 1,
-                      minWidth: 0,
-                      fontSize: 15,
-                      fontWeight: 600,
-                      lineHeight: 1.4,
-                      color: C.ink,
-                      fontFamily: F.cn,
-                      textShadow: C.textShadow,
-                    }}
-                  >
-                    {t.title}
-                  </span>
-
-                  {/* 平台 chip */}
-                  <span
-                    style={{
-                      flexShrink: 0,
-                      borderRadius: 6,
-                      padding: '4px 10px',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'rgba(255,255,255,0.6)',
-                      fontFamily: F.mono,
-                    }}
-                  >
-                    {t.platform === 'douyin' ? '抖音' : t.platform}
-                  </span>
-
-                  {/* 难度徽标 */}
-                  <span
-                    style={{
-                      flexShrink: 0,
-                      borderRadius: 6,
-                      padding: '4px 10px',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      backgroundColor: diff.bg,
-                      color: diff.text,
-                      border: `1px solid ${diff.border}`,
-                    }}
-                  >
-                    {t.difficultyLabel}
-                  </span>
-
-                  {/* 评分星标 */}
-                  <span style={{ flexShrink: 0 }}>
-                    <StarRating rating={t.rating} />
-                  </span>
-
-                  {/* 操作按钮 */}
-                  <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 4 }}>
-                    <motion.button
-                      type="button"
-                      aria-label="收藏"
-                      onClick={() => handleLike(t)}
-                      whileHover={{ y: -2, color: C.accent3 }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                      className="lg-glass"
-                      style={{
-                        display: 'flex',
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 8,
-                        color: 'rgba(255,255,255,0.55)',
-                        cursor: 'pointer',
-                        border: 'none',
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>bookmark</span>
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      aria-label="优化"
-                      onClick={() => handleOptimizeOne(t)}
-                      whileHover={{ y: -2, color: C.ikb }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                      className="lg-glass"
-                      style={{
-                        display: 'flex',
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 8,
-                        color: 'rgba(255,255,255,0.55)',
-                        cursor: 'pointer',
-                        border: 'none',
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>auto_fix_high</span>
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      aria-label="复制"
-                      onClick={() => handleCopy(t)}
-                      whileHover={{ y: -2, color: C.ikb }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                      className="lg-glass"
-                      style={{
-                        display: 'flex',
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 8,
-                        color: 'rgba(255,255,255,0.55)',
-                        cursor: 'pointer',
-                        border: 'none',
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>content_copy</span>
-                    </motion.button>
-                  </div>
-                </motion.div>
+                    {/* 下排:meta(平台/难度/评分) + 操作按钮 · marginTop auto 贴底 */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 'auto' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span
+                          style={{
+                            flexShrink: 0,
+                            borderRadius: 7,
+                            padding: '3px 9px',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            background: 'rgba(255,255,255,0.14)',
+                            color: 'rgba(255,255,255,0.92)',
+                            fontFamily: F.mono,
+                            textShadow: C.textShadow,
+                          }}
+                        >
+                          {t.platform === 'douyin' ? '抖音' : t.platform}
+                        </span>
+                        <span
+                          style={{
+                            flexShrink: 0,
+                            borderRadius: 7,
+                            padding: '3px 9px',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            backgroundColor: diff.bg,
+                            color: diff.text,
+                            border: `1px solid ${diff.border}`,
+                          }}
+                        >
+                          {t.difficultyLabel}
+                        </span>
+                        <StarRating rating={t.rating} />
+                      </div>
+                      <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 4 }}>
+                        <motion.button
+                          type="button"
+                          aria-label="收藏"
+                          onClick={() => handleLike(t)}
+                          whileHover={{ y: -2, color: C.accent3 }}
+                          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                          className="lg-glass lg-spec"
+                          style={{ display: 'flex', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 9, color: 'rgba(255,255,255,0.8)', cursor: 'pointer', border: 'none' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>bookmark</span>
+                        </motion.button>
+                        <motion.button
+                          type="button"
+                          aria-label="优化"
+                          onClick={() => handleOptimizeOne(t)}
+                          whileHover={{ y: -2, color: C.ikb }}
+                          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                          className="lg-glass lg-spec"
+                          style={{ display: 'flex', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 9, color: 'rgba(255,255,255,0.8)', cursor: 'pointer', border: 'none' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>auto_fix_high</span>
+                        </motion.button>
+                        <motion.button
+                          type="button"
+                          aria-label="复制"
+                          onClick={() => handleCopy(t)}
+                          whileHover={{ y: -2, color: C.ikb }}
+                          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                          className="lg-glass lg-spec"
+                          style={{ display: 'flex', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 9, color: 'rgba(255,255,255,0.8)', cursor: 'pointer', border: 'none' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>content_copy</span>
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Item>
               );
             })}
-          </div>
+          </RevealGroup>
 
           {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
           <Reveal>
-            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
               <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>· AI 综合评估 · 实时测算</span>
               <span
                 style={{
                   marginLeft: 'auto',
@@ -1498,14 +1467,14 @@ export default function Step5() {
               </span>
             </div>
           </Reveal>
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 44 }}>
             {/* 选题矩阵雷达 (5 维) */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 24 }}
+                style={{ borderRadius: 18, padding: 24, height: '100%' }}
               >
                 <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1525,7 +1494,7 @@ export default function Step5() {
                     </span>
                     <div>
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>选题矩阵雷达</h3>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>五维强度模型 · 参考值</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>五维强度模型 · 参考值</p>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -1548,7 +1517,7 @@ export default function Step5() {
                         ? Math.round(RADAR_DIMS_S5.reduce((s, d) => s + d.value, 0) / RADAR_DIMS_S5.length)
                         : '—'}
                     </p>
-                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分 · 参考</p>
                   </div>
                 </div>
                 {(() => {
@@ -1595,7 +1564,7 @@ export default function Step5() {
                   {RADAR_DIMS_S5.map((d) => (
                     <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{d.label}</span>
                       <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                     </div>
                   ))}
@@ -1604,12 +1573,12 @@ export default function Step5() {
             </Item>
 
             {/* 选题难度分布 / 评分曲线 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 18, padding: 24 }}
+                style={{ borderRadius: 18, padding: 24, height: '100%' }}
               >
                 <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1629,7 +1598,7 @@ export default function Step5() {
                     </span>
                     <div>
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>选题难度分布 / 评分曲线</h3>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>当前类 {currentTopics.length} 条评分趋势</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>当前类 {currentTopics.length} 条评分趋势</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1639,7 +1608,7 @@ export default function Step5() {
                         style={
                           i === 0
                             ? { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(168,197,224,0.35)', color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }
-                            : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }
+                            : { borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }
                         }
                       >
                         {t}
@@ -1665,13 +1634,13 @@ export default function Step5() {
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>优质
                   </span>
-                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>平均评分</span>
+                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>平均评分</span>
                 </div>
                 {(() => {
                   const data = TREND_DATA_S5;
                   if (data.length < 2) {
                     return (
-                      <div style={{ display: 'flex', height: 168, alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                      <div style={{ display: 'flex', height: 168, alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
                         暂无足够数据
                       </div>
                     );
@@ -1721,7 +1690,7 @@ export default function Step5() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', overflow: 'hidden', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', overflow: 'hidden', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                   {TREND_LABELS_S5.filter((_, i) => i % 4 === 0).map((m) => (
                     <span key={m}>{m}</span>
                   ))}
@@ -1741,13 +1710,13 @@ export default function Step5() {
                 paddingTop: 24,
               }}
             >
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>这个结果对你有帮助吗？</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>这个结果对你有帮助吗？</p>
               <motion.button
                 type="button"
                 aria-label="有帮助"
                 whileHover={{ y: -2, color: C.ikb }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                className="lg-glass"
+                className="lg-glass lg-spec"
                 style={{
                   display: 'flex',
                   height: 32,
@@ -1755,7 +1724,7 @@ export default function Step5() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 8,
-                  color: 'rgba(255,255,255,0.55)',
+                  color: 'rgba(255,255,255,0.8)',
                   cursor: 'pointer',
                   border: 'none',
                 }}
@@ -1767,7 +1736,7 @@ export default function Step5() {
                 aria-label="无帮助"
                 whileHover={{ y: -2, color: 'rgba(255,255,255,0.95)' }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                className="lg-glass"
+                className="lg-glass lg-spec"
                 style={{
                   display: 'flex',
                   height: 32,
@@ -1775,7 +1744,7 @@ export default function Step5() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 8,
-                  color: 'rgba(255,255,255,0.55)',
+                  color: 'rgba(255,255,255,0.8)',
                   cursor: 'pointer',
                   border: 'none',
                 }}
