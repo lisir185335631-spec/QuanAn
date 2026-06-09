@@ -46,7 +46,7 @@ export function PrivateDomainFlowView({
               fontWeight: 700,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.8)',
               fontFamily: F.mono,
             }}
           >
@@ -129,7 +129,7 @@ export function PrivateDomainFlowView({
           }}
           data-testid="flow-empty-state"
         >
-          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
             点击「开始配置」填写产品信息，AI 将生成完整的私域成交执行方案
           </p>
         </div>
