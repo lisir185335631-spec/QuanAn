@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   ACQUISITION_VIDEO_CTA_GENERATE,
   ACQUISITION_VIDEO_CUSTOMER_LABEL,
@@ -129,7 +129,7 @@ function AcquisitionVideoResult({ result, isFallback }: AcquisitionVideoResultPr
   const BADGE_COLORS = [C.ikb, C.accent3, C.yellow];
 
   return (
-    <section aria-label="获客方案结果" data-testid="av-result-panel" style={{ marginBottom: 32 }}>
+    <section aria-label="获客方案结果" data-testid="av-result-panel" style={{ marginBottom: 44 }}>
       {/* isFallback 降级提示 */}
       {isFallback && (
         <Reveal>
@@ -245,16 +245,16 @@ function AcquisitionVideoResult({ result, isFallback }: AcquisitionVideoResultPr
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>lightbulb</span>
           <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>核心卖点</h2>
         </div>
-        <RevealGroup data-testid="av-key-messages" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <RevealGroup data-testid="av-key-messages" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
           {result.keyMessages.map((msg, i) => {
             const badgeColor = BADGE_COLORS[i % 3]!;
             return (
-              <Item key={i}>
+              <Item key={i} style={{ height: '100%' }}>
                 <motion.div
                   className="lg-glass lg-spec"
                   whileHover={{ y: -3 }}
                   transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{ borderRadius: 14, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', gap: 14 }}
+                  style={{ borderRadius: 14, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 14, height: '100%' }}
                 >
                   <span
                     style={{
@@ -266,7 +266,7 @@ function AcquisitionVideoResult({ result, isFallback }: AcquisitionVideoResultPr
                   >
                     {i + 1}
                   </span>
-                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn }}>{msg}</p>
+                  <p style={{ margin: 0, marginTop: 'auto', fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn }}>{msg}</p>
                 </motion.div>
               </Item>
             );
@@ -297,7 +297,7 @@ function AcquisitionVideoEmptyState() {
         <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
           填写左侧信息，点击「生成获客方案」
         </p>
-        <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+        <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
           AI 将为你生成转化导向的获客视频脚本
         </p>
       </div>
@@ -464,7 +464,7 @@ export default function AcquisitionVideo() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap',
               borderRadius: 12, padding: '10px 16px', fontSize: 12, fontWeight: 700,
-              letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+              letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.72)',
               fontFamily: F.mono, cursor: 'not-allowed', opacity: 0.45, border: 'none',
             }}
           >
@@ -573,7 +573,7 @@ export default function AcquisitionVideo() {
               </span>
               <div>
                 <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客信息</h2>
-                <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>填写行业与客户信息 · AI 据此生成精准获客视频方案</p>
+                <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>填写行业与客户信息 · AI 据此生成精准获客视频方案</p>
               </div>
             </div>
             <span
@@ -699,7 +699,7 @@ export default function AcquisitionVideo() {
                   {ACQUISITION_VIDEO_CUSTOMER_LABEL}
                   <span style={{ marginLeft: 4, fontWeight: 400, fontSize: 12, color: C.accent3 }}>*</span>
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
                   AI 据此精准定位受众
                 </span>
@@ -760,7 +760,7 @@ export default function AcquisitionVideo() {
                   {ACQUISITION_VIDEO_PRODUCT_LABEL}
                   <span style={{ marginLeft: 4, fontWeight: 400, fontSize: 12, color: C.accent3 }}>*</span>
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14, color: C.ikb }}>auto_awesome</span>
                   AI 据此塑造信任感
                 </span>
@@ -805,25 +805,25 @@ export default function AcquisitionVideo() {
 
             {/* 生成按钮 */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <motion.button
-                type="button"
-                data-testid="av-generate-btn"
-                onClick={handleGenerate}
-                disabled={isPending || !isFormValid}
-                whileHover={(!isPending && isFormValid) ? { y: -4 } : {}}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                className="lg-gradbtn"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, borderRadius: 14,
-                  padding: '12px 32px', fontSize: 12, fontWeight: 700,
-                  letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: F.mono,
-                  cursor: (isPending || !isFormValid) ? 'not-allowed' : 'pointer',
-                  opacity: (isPending || !isFormValid) ? 0.4 : 1, border: 'none',
-                }}
-              >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>movie</span>
-                {ACQUISITION_VIDEO_CTA_GENERATE}
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  data-testid="av-generate-btn"
+                  onClick={handleGenerate}
+                  disabled={isPending || !isFormValid}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8, borderRadius: 9999,
+                    padding: '12px 32px', fontSize: 14, fontWeight: 700,
+                    fontFamily: F.cn,
+                    cursor: (isPending || !isFormValid) ? 'not-allowed' : 'pointer',
+                    opacity: (isPending || !isFormValid) ? 0.4 : 1, border: 'none',
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>movie</span>
+                  {ACQUISITION_VIDEO_CTA_GENERATE}
+                </button>
+              </Magnetic>
             </div>
           </div>
         </div>
@@ -841,7 +841,7 @@ export default function AcquisitionVideo() {
         <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
           <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>· 行业参考数据 · 示例</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>· 行业参考数据 · 示例</span>
           <span
             style={{
               marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -869,7 +869,7 @@ export default function AcquisitionVideo() {
                   </span>
                   <div>
                     <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客视频力雷达</h3>
-                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>行业参考模型 · 示例</p>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>行业参考模型 · 示例</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -909,7 +909,7 @@ export default function AcquisitionVideo() {
                     {dims.map((d, i) => {
                       const [x, y] = pt(i, R + 16);
                       return (
-                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.6)" fontSize="10.5" fontWeight="600">
+                        <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.84)" fontSize="10.5" fontWeight="600">
                           {d.label}
                         </text>
                       );
@@ -921,7 +921,7 @@ export default function AcquisitionVideo() {
                 {RADAR_DIMS_AV.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                   </div>
                 ))}
@@ -944,7 +944,7 @@ export default function AcquisitionVideo() {
                   </span>
                   <div>
                     <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>获客转化漏斗 / 注意力曲线</h3>
-                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>12 周行业参考预估 · 示例</p>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>12 周行业参考预估 · 示例</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -954,7 +954,7 @@ export default function AcquisitionVideo() {
                       style={{
                         borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600,
                         background: i === 0 ? C.ikb : 'rgba(255,255,255,0.12)',
-                        color: i === 0 ? '#0a1628' : 'rgba(255,255,255,0.55)',
+                        color: i === 0 ? '#0a1628' : 'rgba(255,255,255,0.8)',
                         fontFamily: F.mono,
                       }}
                     >
@@ -974,7 +974,7 @@ export default function AcquisitionVideo() {
                 >
                   <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>+380%
                 </span>
-                <span style={{ marginBottom: 2, fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>参考值 · 第 12 周</span>
+                <span style={{ marginBottom: 2, fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>参考值 · 第 12 周</span>
               </div>
               {(() => {
                 const data = TREND_DATA_AV;
@@ -1039,7 +1039,7 @@ export default function AcquisitionVideo() {
           borderTop: `0.5px solid ${C.line}`, paddingTop: 24,
         }}
       >
-        <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>{ACQUISITION_VIDEO_FOOTER_FEEDBACK}</p>
+        <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>{ACQUISITION_VIDEO_FOOTER_FEEDBACK}</p>
         <motion.button
           type="button"
           onClick={handleFeedbackUp}
@@ -1049,7 +1049,7 @@ export default function AcquisitionVideo() {
           className="lg-glass"
           style={{
             display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
-            borderRadius: 10, color: 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer',
+            borderRadius: 10, color: 'rgba(255,255,255,0.84)', border: 'none', cursor: 'pointer',
           }}
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>thumb_up</span>
@@ -1063,7 +1063,7 @@ export default function AcquisitionVideo() {
           className="lg-glass"
           style={{
             display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center',
-            borderRadius: 10, color: 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer',
+            borderRadius: 10, color: 'rgba(255,255,255,0.84)', border: 'none', cursor: 'pointer',
           }}
         >
           <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>thumb_down</span>
