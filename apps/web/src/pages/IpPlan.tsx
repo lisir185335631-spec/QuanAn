@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   IP_PLAN_FOOTER_TPL,
   IP_PLAN_GO_COMPLETE,
@@ -206,7 +206,7 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
         whileHover={{ y: -4 }}
         transition={{ type: 'spring', stiffness: 240, damping: 18 }}
         style={{
-          marginBottom: 32,
+          marginBottom: 44,
           borderRadius: 20,
           padding: 32,
         }}
@@ -336,18 +336,18 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
                   textShadow: 'none',
                 }}
               >
-                {percent}<span style={{ fontSize: 14, WebkitTextFillColor: 'rgba(255,255,255,0.6)', backgroundImage: 'none', color: 'rgba(255,255,255,0.6)' }}>%</span>
+                {percent}<span style={{ fontSize: 14, WebkitTextFillColor: 'rgba(255,255,255,0.84)', backgroundImage: 'none', color: 'rgba(255,255,255,0.84)' }}>%</span>
               </span>
-              <span style={{ marginTop: 4, fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }}>完成度</span>
+              <span style={{ marginTop: 4, fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>完成度</span>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 32, rowGap: 12 }}>
             <div>
-              <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>已完成</p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{completed}</p>
+              <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>已完成</p>
+              <p style={{ fontSize: 22, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>{completed}</p>
             </div>
             <div>
-              <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>总步数</p>
+              <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>总步数</p>
               <p style={{ fontSize: 22, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{total}</p>
             </div>
           </div>
@@ -372,137 +372,89 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
       style={{
         borderRadius: 18,
         padding: 20,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
       data-testid={`ip-plan-step-card-${step.id}`}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* 左侧：序号 + 名称 + 状态 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {/* 序号圆圈 */}
-          <div
+      {/* 上部：序号 + 名称 + 状态 */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+        {/* 序号圆圈 */}
+        <div
+          style={{
+            display: 'flex',
+            height: 44,
+            width: 44,
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 9999,
+            fontSize: 14,
+            fontWeight: 800,
+            fontFamily: F.mono,
+            background: numBg,
+            color: numColor,
+            textShadow: C.textShadow,
+          }}
+          data-testid={`ip-plan-step-icon-circle-${index}`}
+        >
+          {String(index + 1).padStart(2, '0')}
+        </div>
+        <div>
+          <h3
             style={{
-              display: 'flex',
-              height: 48,
-              width: 48,
-              flexShrink: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 9999,
               fontSize: 15,
-              fontWeight: 800,
-              fontFamily: F.mono,
-              background: numBg,
-              color: numColor,
+              fontWeight: 700,
+              color: step.done ? C.ink : 'rgba(255,255,255,0.75)',
+              fontFamily: F.cn,
+              margin: '0 0 6px',
               textShadow: C.textShadow,
             }}
-            data-testid={`ip-plan-step-icon-circle-${index}`}
+            data-testid={`ip-plan-step-title-${step.id}`}
           >
-            {String(index + 1).padStart(2, '0')}
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3
-                style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: step.done ? C.ink : 'rgba(255,255,255,0.75)',
-                  fontFamily: F.cn,
-                  margin: 0,
-                  textShadow: C.textShadow,
-                }}
-                data-testid={`ip-plan-step-title-${step.id}`}
-              >
-                {step.title}
-              </h3>
-              {step.done ? (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    borderRadius: 9999,
-                    background: 'rgba(168,197,224,0.18)',
-                    border: `0.5px solid rgba(168,197,224,0.45)`,
-                    padding: '2px 8px',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: C.ikb,
-                    fontFamily: F.mono,
-                  }}
-                  data-testid={`ip-plan-step-status-${step.id}`}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>check_circle</span>
-                  {IP_PLAN_STATUS_DONE}
-                </span>
-              ) : (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    borderRadius: 9999,
-                    background: 'rgba(255,255,255,0.08)',
-                    padding: '2px 8px',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.55)',
-                    fontFamily: F.mono,
-                  }}
-                  data-testid={`ip-plan-step-status-${step.id}`}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>radio_button_unchecked</span>
-                  {IP_PLAN_STATUS_TODO}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* 右侧：完成标记 + 跳转链接 */}
-        <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 12 }}>
+            {step.title}
+          </h3>
           {step.done ? (
             <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 22, color: C.ikb }}
-              aria-label={`${step.title} 已完成`}
-              data-testid={`ip-plan-step-check-${step.id}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                background: 'rgba(168,197,224,0.18)',
+                border: `0.5px solid rgba(168,197,224,0.45)`,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 600,
+                color: C.ikb,
+                fontFamily: F.mono,
+              }}
+              data-testid={`ip-plan-step-status-${step.id}`}
             >
-              check_circle
+              <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>check_circle</span>
+              {IP_PLAN_STATUS_DONE}
             </span>
           ) : (
             <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 22, color: 'rgba(255,255,255,0.3)' }}
-              aria-label={`${step.title} 未完成`}
-              data-testid={`ip-plan-step-circle-${step.id}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                background: 'rgba(255,255,255,0.08)',
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.8)',
+                fontFamily: F.mono,
+              }}
+              data-testid={`ip-plan-step-status-${step.id}`}
             >
-              radio_button_unchecked
+              <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>radio_button_unchecked</span>
+              {IP_PLAN_STATUS_TODO}
             </span>
           )}
-          <a
-            href={step.href}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              borderRadius: 10,
-              border: step.done
-                ? `0.5px solid rgba(168,197,224,0.45)`
-                : `0.5px solid rgba(255,255,255,0.20)`,
-              background: step.done ? 'rgba(168,197,224,0.18)' : 'rgba(255,255,255,0.08)',
-              padding: '6px 12px',
-              fontSize: 13,
-              fontWeight: 600,
-              fontFamily: F.cn,
-              color: step.done ? C.ikb : C.burgundyText,
-              textDecoration: 'none',
-              transition: 'all 0.2s',
-            }}
-            data-testid={`ip-plan-step-action-${step.id}`}
-          >
-            {step.done ? IP_PLAN_VIEW_DETAIL : IP_PLAN_GO_COMPLETE}
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>chevron_right</span>
-          </a>
         </div>
       </div>
 
@@ -510,15 +462,62 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
       {step.done && step.extra && (
         <div
           style={{
-            marginTop: 12,
+            marginTop: 10,
             borderTop: `0.5px solid rgba(168,197,224,0.25)`,
-            paddingTop: 12,
+            paddingTop: 10,
           }}
           data-testid={`ip-plan-step-extra-${step.id}`}
         >
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>{step.extra}</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>{step.extra}</p>
         </div>
       )}
+
+      {/* 下部 meta：完成标记 + 跳转链接 · marginTop auto 贴底 */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 14 }}>
+        {step.done ? (
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: C.ikb }}
+            aria-label={`${step.title} 已完成`}
+            data-testid={`ip-plan-step-check-${step.id}`}
+          >
+            check_circle
+          </span>
+        ) : (
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: 'rgba(255,255,255,0.3)' }}
+            aria-label={`${step.title} 未完成`}
+            data-testid={`ip-plan-step-circle-${step.id}`}
+          >
+            radio_button_unchecked
+          </span>
+        )}
+        <a
+          href={step.href}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            borderRadius: 10,
+            border: step.done
+              ? `0.5px solid rgba(168,197,224,0.45)`
+              : `0.5px solid rgba(255,255,255,0.20)`,
+            background: step.done ? 'rgba(168,197,224,0.18)' : 'rgba(255,255,255,0.08)',
+            padding: '6px 12px',
+            fontSize: 13,
+            fontWeight: 600,
+            fontFamily: F.cn,
+            color: step.done ? C.ikb : C.burgundyText,
+            textDecoration: 'none',
+            transition: 'all 0.2s',
+          }}
+          data-testid={`ip-plan-step-action-${step.id}`}
+        >
+          {step.done ? IP_PLAN_VIEW_DETAIL : IP_PLAN_GO_COMPLETE}
+          <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>chevron_right</span>
+        </a>
+      </div>
     </motion.div>
   );
 }
@@ -543,11 +542,11 @@ function IpPlanStepList({ steps }: { steps: ReadonlyArray<IpPlanStep> }) {
           <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>checklist</span>
         </span>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>步骤清单</h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· 点击跳转对应步骤</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· 点击跳转对应步骤</span>
       </Reveal>
-      <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
         {steps.map((step, index) => (
-          <Item key={step.id}>
+          <Item key={step.id} style={{ height: '100%' }}>
             <StepRow step={step} index={index} />
           </Item>
         ))}
@@ -592,43 +591,39 @@ function IpPlanFooter({ remaining, onNext }: { remaining: number; onNext: () => 
             <div>
               <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>继续打造你的 IP</p>
               <p
-                style={{ marginTop: 4, fontSize: 14, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '4px 0 0' }}
+                style={{ marginTop: 4, fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '4px 0 0' }}
                 data-testid="ip-plan-footer-text"
               >
                 {IP_PLAN_FOOTER_TPL(remaining)}
               </p>
             </div>
           </div>
-          <motion.button
-            type="button"
-            onClick={onNext}
-            aria-label="继续下一步"
-            whileHover={{ y: -3 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{
-              display: 'flex',
-              flexShrink: 0,
-              alignItems: 'center',
-              gap: 8,
-              borderRadius: 12,
-              padding: '12px 32px',
-              fontSize: 13,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: C.ink,
-              border: `0.5px solid rgba(168,197,224,0.55)`,
-              background: 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.28))',
-              backdropFilter: 'blur(12px)',
-              cursor: 'pointer',
-              fontFamily: F.mono,
-              textShadow: C.textShadow,
-            }}
-            data-testid="ip-plan-next-btn"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>arrow_forward</span>
-            {IP_PLAN_NEXT_BTN}
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              onClick={onNext}
+              aria-label="继续下一步"
+              className="lg-gradbtn"
+              style={{
+                display: 'inline-flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                borderRadius: 9999,
+                padding: '12px 32px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                cursor: 'pointer',
+                fontFamily: F.cn,
+                border: 'none',
+              }}
+              data-testid="ip-plan-next-btn"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>arrow_forward</span>
+              {IP_PLAN_NEXT_BTN}
+            </button>
+          </Magnetic>
         </div>
       </motion.section>
     </Reveal>
@@ -679,7 +674,7 @@ function IpMaturityRadar() {
             </span>
             <div>
               <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>IP 成熟度雷达</h3>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>六维模型评估</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>六维模型评估</p>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -690,13 +685,13 @@ function IpMaturityRadar() {
                 lineHeight: 1,
                 fontFamily: F.display,
                 margin: 0,
-                color: C.ikb,
-                textShadow: C.textShadow,
+                color: C.ink,
+                textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
               }}
             >
               {avg}
             </p>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>综合分</p>
           </div>
         </div>
         <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
@@ -737,7 +732,7 @@ function IpMaturityRadar() {
           {dims.map((d) => (
             <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0, display: 'inline-block' }} aria-hidden={true} />
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, textShadow: C.textShadow }}>{d.value}</span>
             </div>
           ))}
@@ -790,7 +785,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
             </span>
             <div>
               <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>IP 完成进度趋势</h3>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.mono, margin: 0 }}>按步骤完成节点测算</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.mono, margin: 0 }}>按步骤完成节点测算</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -804,7 +799,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
                   fontWeight: 600,
                   fontFamily: F.mono,
                   background: i === 0 ? 'rgba(168,197,224,0.45)' : 'rgba(255,255,255,0.08)',
-                  color: i === 0 ? C.ink : 'rgba(255,255,255,0.5)',
+                  color: i === 0 ? C.ink : 'rgba(255,255,255,0.72)',
                 }}
               >
                 {t}
@@ -837,7 +832,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
             <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>
             步骤完成
           </span>
-          <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>持续推进中</span>
+          <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>持续推进中</span>
         </div>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} aria-hidden={true}>
           <defs>
@@ -869,7 +864,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
         </svg>
         <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
           {Array.from({ length: 9 }, (_, i) => `步${i + 1}`).map((m) => (
-            <span key={m} style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>{m}</span>
+            <span key={m} style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>{m}</span>
           ))}
         </div>
       </motion.div>
@@ -904,7 +899,7 @@ export default function IpPlan() {
         <IpPlanHeader completed={completed} total={total} />
 
         {/* ── KPI 概览一排 ───────────────────────────────────── */}
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 44 }}>
           {kpiItems.map((kpi) => {
             const accent = KPI_ACCENTS[kpi.accentIdx]!;
             const ringPercent = kpi.accentIdx === 0
@@ -916,12 +911,12 @@ export default function IpPlan() {
               : 100;
 
             return (
-              <Item key={kpi.label}>
+              <Item key={kpi.label} style={{ height: '100%' }}>
                 <motion.div
                   className="lg-glass lg-spec"
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{ borderRadius: 20, padding: 20 }}
+                  style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span
@@ -958,7 +953,7 @@ export default function IpPlan() {
                   <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                     <div>
                       <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: accent.valColor, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{kpi.value}</p>
-                      <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>{kpi.label}</p>
+                      <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>{kpi.label}</p>
                     </div>
                     {kpi.accentIdx === 0 && (
                       <div
@@ -1004,7 +999,7 @@ export default function IpPlan() {
                         }}
                         aria-hidden={true}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 22, color: C.ikb }}>format_list_numbered</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 22, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>format_list_numbered</span>
                       </div>
                     )}
                     {kpi.accentIdx === 1 && (
@@ -1054,7 +1049,7 @@ export default function IpPlan() {
             <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>insights</span>
           </span>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· IP 成熟度综合评估</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· IP 成熟度综合评估</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -1079,7 +1074,7 @@ export default function IpPlan() {
             模型已就绪
           </span>
         </Reveal>
-        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32, marginTop: 8 }}>
+        <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 44, marginTop: 8 }}>
           <IpMaturityRadar />
           <IpProgressTrend completed={completed} total={total} />
         </RevealGroup>
