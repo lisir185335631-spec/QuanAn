@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-import { C, F } from '@/components/home-next/ikb/system';
+import { C, F, Magnetic } from '@/components/home-next/ikb/system';
 
 import type { ChangeEvent, FormEvent } from 'react';
 
@@ -118,7 +118,7 @@ export function PrivateDomainConfigView({
           fontWeight: 700,
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,0.8)',
           fontFamily: F.mono,
         }}
       >
@@ -250,43 +250,43 @@ export function PrivateDomainConfigView({
         </div>
       </div>
 
-      <motion.button
-        type="submit"
-        disabled={!isValid(values) || isPending}
-        whileHover={isValid(values) && !isPending ? { y: -3 } : {}}
-        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          borderRadius: 12,
-          padding: '13px 20px',
-          fontSize: 13,
-          fontWeight: 700,
-          letterSpacing: '0.08em',
-          color: '#081430',
-          background: C.ikb,
-          border: 'none',
-          cursor: isValid(values) && !isPending ? 'pointer' : 'not-allowed',
-          opacity: isValid(values) && !isPending ? 1 : 0.4,
-          fontFamily: F.cn,
-        }}
-        data-testid="generate-sop-btn"
-      >
-        {isPending ? (
-          <>
-            <Loader2 style={{ height: 16, width: 16, animation: 'spin 1s linear infinite' }} />
-            AI 生成中…
-          </>
-        ) : (
-          <>
-            <Wand2 style={{ height: 16, width: 16 }} />
-            生成私域成交 SOP
-          </>
-        )}
-      </motion.button>
+      <Magnetic strength={0.3}>
+        <motion.button
+          type="submit"
+          disabled={!isValid(values) || isPending}
+          transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            borderRadius: 9999,
+            padding: '13px 20px',
+            fontSize: 13,
+            fontWeight: 700,
+            color: '#081430',
+            background: C.ikb,
+            border: 'none',
+            cursor: isValid(values) && !isPending ? 'pointer' : 'not-allowed',
+            opacity: isValid(values) && !isPending ? 1 : 0.4,
+            fontFamily: F.cn,
+          }}
+          data-testid="generate-sop-btn"
+        >
+          {isPending ? (
+            <>
+              <Loader2 style={{ height: 16, width: 16, animation: 'spin 1s linear infinite' }} />
+              AI 生成中…
+            </>
+          ) : (
+            <>
+              <Wand2 style={{ height: 16, width: 16 }} />
+              生成私域成交 SOP
+            </>
+          )}
+        </motion.button>
+      </Magnetic>
     </form>
   );
 }

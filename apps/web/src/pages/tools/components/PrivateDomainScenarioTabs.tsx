@@ -74,7 +74,7 @@ export function PrivateDomainScenarioTabs({
                 background: active
                   ? 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))'
                   : 'rgba(255,255,255,0.07)',
-                color: active ? C.ikb : 'rgba(255,255,255,0.5)',
+                color: active ? C.ikb : 'rgba(255,255,255,0.72)',
                 fontSize: 20,
               }}
             >

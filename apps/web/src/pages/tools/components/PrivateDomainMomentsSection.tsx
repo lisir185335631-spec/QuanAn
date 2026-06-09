@@ -68,12 +68,12 @@ export function PrivateDomainMomentsSection({
           gap: 8,
           fontSize: 15,
           fontWeight: 700,
-          color: C.ikb,
+          color: C.ink,
           fontFamily: F.cn,
-          textShadow: C.textShadow,
+          textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
         }}
       >
-        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }}>photo_album</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>photo_album</span>
         朋友圈文案
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

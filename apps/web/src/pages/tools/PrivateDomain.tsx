@@ -7,7 +7,7 @@ import { type FormEvent, useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -473,33 +473,32 @@ export default function PrivateDomain() {
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>content_copy</span>
               复制全部话术
             </motion.button>
-            <motion.button
-              type="button"
-              onClick={handleExport}
-              aria-label="导出"
-              whileHover={{ y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                whiteSpace: 'nowrap',
-                borderRadius: 12,
-                padding: '10px 20px',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: '#081430',
-                background: C.ikb,
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: F.mono,
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>download</span>
-              导出
-            </motion.button>
+            <Magnetic strength={0.3}>
+              <motion.button
+                type="button"
+                onClick={handleExport}
+                aria-label="导出"
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 9999,
+                  padding: '10px 20px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#081430',
+                  background: C.ikb,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: F.cn,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>download</span>
+                导出
+              </motion.button>
+            </Magnetic>
           </div>
         </header>
       </Reveal>
@@ -508,9 +507,9 @@ export default function PrivateDomain() {
       <RevealGroup style={{ marginBottom: 40 }}>
         <div role="radiogroup" aria-label="选择话术场景">
           <Reveal style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>category</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>category</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>选择场景</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>· 当前：{currentScenario.name}</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)' }}>· 当前：{currentScenario.name}</span>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
             {SCENARIOS.map((s) => {
@@ -551,13 +550,13 @@ export default function PrivateDomain() {
                         background: active
                           ? 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))'
                           : 'rgba(255,255,255,0.08)',
-                        color: active ? C.ikb : 'rgba(255,255,255,0.55)',
+                        color: active ? C.ikb : 'rgba(255,255,255,0.72)',
                       }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>{s.icon}</span>
                     </span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{s.name}</span>
-                    <span style={{ fontSize: 10, lineHeight: 1.4, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>{s.subtitle}</span>
+                    <span style={{ fontSize: 10, lineHeight: 1.4, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>{s.subtitle}</span>
                     {active && (
                       <span
                         style={{
@@ -617,7 +616,7 @@ export default function PrivateDomain() {
               </span>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>话术参数</h2>
-                <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>填写产品与用户信息 · AI 据此生成全链路话术</p>
+                <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>填写产品与用户信息 · AI 据此生成全链路话术</p>
               </div>
             </div>
             <span
@@ -711,7 +710,7 @@ export default function PrivateDomain() {
                 >
                   <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
                   目标用户
-                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.45)' }}>（选填）</span>
+                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（选填）</span>
                 </label>
                 <div style={{ position: 'relative' }}>
                   <span
@@ -763,9 +762,9 @@ export default function PrivateDomain() {
                 >
                   <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
                   具体场景
-                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.45)' }}>（选填）</span>
+                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（选填）</span>
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.yellow }} aria-hidden={true}>auto_awesome</span>
                   AI 据此生成精准话术
                 </span>
@@ -818,7 +817,7 @@ export default function PrivateDomain() {
                           fontSize: 11,
                           fontWeight: 500,
                           background: 'rgba(255,255,255,0.08)',
-                          color: 'rgba(255,255,255,0.55)',
+                          color: 'rgba(255,255,255,0.8)',
                           fontFamily: F.cn,
                         }}
                       >
@@ -826,36 +825,36 @@ export default function PrivateDomain() {
                       </span>
                     ))}
                   </div>
-                  <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>{scenario.length} 字</span>
+                  <span style={{ flexShrink: 0, fontSize: 11, color: 'rgba(255,255,255,0.72)', fontVariantNumeric: 'tabular-nums' }}>{scenario.length} 字</span>
                 </div>
               </div>
               <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                <motion.button
-                  type="submit"
-                  disabled={!productName.trim()}
-                  whileHover={productName.trim() ? { y: -3 } : {}}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    borderRadius: 12,
-                    padding: '12px 28px',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: '#081430',
-                    background: C.ikb,
-                    border: 'none',
-                    cursor: productName.trim() ? 'pointer' : 'not-allowed',
-                    opacity: productName.trim() ? 1 : 0.4,
-                    fontFamily: F.mono,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-                  生成全链路话术
-                </motion.button>
+                <Magnetic strength={0.3}>
+                  <motion.button
+                    type="submit"
+                    disabled={!productName.trim()}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      borderRadius: 9999,
+                      padding: '12px 28px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      color: '#081430',
+                      background: C.ikb,
+                      border: 'none',
+                      cursor: productName.trim() ? 'pointer' : 'not-allowed',
+                      opacity: productName.trim() ? 1 : 0.4,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
+                    生成全链路话术
+                  </motion.button>
+                </Magnetic>
               </div>
             </div>
           </form>
@@ -863,7 +862,7 @@ export default function PrivateDomain() {
       </Reveal>
 
       {/* ── KPI 卡一排 ───────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }}>
         {KPI_META.map((k, idx) => (
           <Item key={k.label}>
             <motion.div
@@ -910,7 +909,7 @@ export default function PrivateDomain() {
               <p style={{ marginTop: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                 {k.value}
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{k.label}</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{k.label}</p>
               <div style={{ marginTop: 10, height: 48, width: 48 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
                   <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.18)" strokeWidth="3.5" />
@@ -1276,9 +1275,9 @@ export default function PrivateDomain() {
       {/* ── 数据洞察 band ─────────────────────────────────────── */}
       <Reveal style={{ marginTop: 40 }}>
         <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>insights</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)' }}>· AI 综合评估 · 实时测算</span>
           <span
             style={{
               marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -1313,12 +1312,12 @@ export default function PrivateDomain() {
                 </span>
                 <div>
                   <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>私域转化力雷达</h3>
-                  <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>六维模型评估</p>
+                  <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ margin: 0, fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, textShadow: C.textShadow }}>75</p>
-                <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.55)' }}>综合分</p>
+                <p style={{ margin: 0, fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>75</p>
+                <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.8)' }}>综合分</p>
               </div>
             </div>
             <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
@@ -1353,7 +1352,7 @@ export default function PrivateDomain() {
               {radarDims.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink }}>{d.value}</span>
                 </div>
               ))}
@@ -1381,7 +1380,7 @@ export default function PrivateDomain() {
                 </span>
                 <div>
                   <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>成交转化漏斗 / 复购曲线</h3>
-                  <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>按当前链路参数测算</p>
+                  <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>按当前链路参数测算</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1391,7 +1390,7 @@ export default function PrivateDomain() {
                     style={{
                       borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600,
                       background: i === 0 ? C.ikb : 'rgba(255,255,255,0.08)',
-                      color: i === 0 ? '#081430' : 'rgba(255,255,255,0.55)',
+                      color: i === 0 ? '#081430' : 'rgba(255,255,255,0.8)',
                     }}
                   >
                     {t}
@@ -1410,7 +1409,7 @@ export default function PrivateDomain() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>+28%
               </span>
-              <span style={{ marginBottom: 2, fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>较行业基线</span>
+              <span style={{ marginBottom: 2, fontSize: 12, color: 'rgba(255,255,255,0.8)' }}>较行业基线</span>
             </div>
             <svg viewBox={`0 0 ${trendW} ${trendH}`} style={{ width: '100%' }}>
               <defs>
@@ -1460,7 +1459,7 @@ export default function PrivateDomain() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>这个结果对你有帮助吗？</p>
+            <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>这个结果对你有帮助吗？</p>
             <motion.button
               type="button"
               onClick={handleFeedbackUp}
@@ -1490,22 +1489,23 @@ export default function PrivateDomain() {
               <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>thumb_down</span>
             </motion.button>
           </div>
-          <motion.button
-            type="button"
-            onClick={handleCopyAll}
-            aria-label="复制全部话术"
-            whileHover={{ y: -3 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              borderRadius: 12, padding: '10px 22px',
-              fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-              color: '#081430', background: C.ikb, border: 'none', cursor: 'pointer', fontFamily: F.mono,
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>content_copy</span>
-            复制全部话术
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <motion.button
+              type="button"
+              onClick={handleCopyAll}
+              aria-label="复制全部话术"
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                borderRadius: 9999, padding: '10px 22px',
+                fontSize: 12, fontWeight: 700,
+                color: '#081430', background: C.ikb, border: 'none', cursor: 'pointer', fontFamily: F.cn,
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>content_copy</span>
+              复制全部话术
+            </motion.button>
+          </Magnetic>
         </div>
       </Reveal>
     </LiquidShell>

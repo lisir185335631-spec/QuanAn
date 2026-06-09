@@ -29,12 +29,12 @@ export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSect
           gap: 8,
           fontSize: 15,
           fontWeight: 700,
-          color: C.ikb,
+          color: C.ink,
           fontFamily: F.cn,
-          textShadow: C.textShadow,
+          textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)',
         }}
       >
-        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }}>calendar_month</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>calendar_month</span>
         SOP执行流程
       </h3>
       <div style={{ position: 'relative' }}>
@@ -88,7 +88,7 @@ export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSect
                     display: 'inline-block',
                     alignSelf: 'flex-start',
                     fontSize: 11,
-                    color: 'rgba(255,255,255,0.55)',
+                    color: 'rgba(255,255,255,0.8)',
                     background: 'rgba(255,255,255,0.07)',
                     borderRadius: 6,
                     padding: '2px 8px',
@@ -97,7 +97,7 @@ export function PrivateDomainSopSection({ sop, className }: PrivateDomainSopSect
                 >
                   目标：{step.goal}
                 </span>
-                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.65)', fontFamily: F.cn }}>
+                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   {step.desc}
                 </p>
               </motion.div>
