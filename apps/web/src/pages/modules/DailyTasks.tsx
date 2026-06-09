@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   DAILY_TASKS_FOOTER_BTN_1,
   DAILY_TASKS_FOOTER_BTN_1_HREF,
@@ -116,7 +116,7 @@ const STAT_ICON_META: Array<{
     icon: 'emoji_events',
     iconBg: 'rgba(168,197,224,0.18)',
     iconColor: C.ikb,
-    valueColor: C.ikb,
+    valueColor: C.ink,
     badge: 'rgba(168,197,224,0.18)',
     badgeText: C.ikb,
     barColor: C.ikb,
@@ -126,7 +126,7 @@ const STAT_ICON_META: Array<{
     icon: 'task_alt',
     iconBg: 'rgba(168,197,224,0.18)',
     iconColor: C.ikb,
-    valueColor: C.ikb,
+    valueColor: C.ink,
     badge: 'rgba(168,197,224,0.18)',
     badgeText: C.ikb,
     barColor: C.ikb,
@@ -278,11 +278,11 @@ function TodayProgressSection({
           </span>
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>今日进度</h3>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0 }}>完成 {completed} / {total} 项任务</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0 }}>完成 {completed} / {total} 项任务</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: C.ikb, fontFamily: F.display, textShadow: C.textShadow }}>{pct}%</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: F.display, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>{pct}%</span>
           <ProgressRing pct={pct} />
         </div>
       </div>
@@ -338,9 +338,12 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
         borderRadius: 18,
         padding: 24,
         opacity: isCompleted ? 0.72 : 1,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flex: 1 }}>
         <button
           type="button"
           disabled={isCompleted || isMarking}
@@ -437,7 +440,7 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
                   background: 'rgba(255,255,255,0.08)',
                   padding: '2px 8px',
                   fontSize: 11,
-                  color: 'rgba(255,255,255,0.6)',
+                  color: 'rgba(255,255,255,0.84)',
                   fontFamily: F.cn,
                 }}
               >
@@ -491,9 +494,9 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
       className="lg-glass lg-spec"
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-      style={{ borderRadius: 18, padding: 24 }}
+      style={{ borderRadius: 18, padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flex: 1 }}>
         <span
           style={{
             marginTop: 2,
@@ -609,28 +612,30 @@ function FooterButtons({
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>stethoscope</span>
         {DAILY_TASKS_FOOTER_BTN_1}
       </button>
-      <button
-        type="button"
-        onClick={onContinue}
-        data-testid="footer-btn-continue"
-        className="lg-gradbtn"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          borderRadius: 12,
-          border: 'none',
-          padding: '12px 24px',
-          fontSize: 13,
-          fontWeight: 700,
-          color: '#fff',
-          fontFamily: F.cn,
-          cursor: 'pointer',
-        }}
-      >
-        {DAILY_TASKS_FOOTER_BTN_2}
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>arrow_forward</span>
-      </button>
+      <Magnetic strength={0.3}>
+        <button
+          type="button"
+          onClick={onContinue}
+          data-testid="footer-btn-continue"
+          className="lg-gradbtn"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 9999,
+            border: 'none',
+            padding: '12px 24px',
+            fontSize: 13,
+            fontWeight: 700,
+            color: '#fff',
+            fontFamily: F.cn,
+            cursor: 'pointer',
+          }}
+        >
+          {DAILY_TASKS_FOOTER_BTN_2}
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>arrow_forward</span>
+        </button>
+      </Magnetic>
     </div>
   );
 }
@@ -956,9 +961,9 @@ export default function DailyTasks() {
               textAlign: 'center',
             }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ikb }}>inbox</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>inbox</span>
             <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.display, textShadow: C.textShadow }}>今日暂无任务</p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
             <button
               type="button"
               data-testid="daily-tasks-regenerate"
@@ -1045,17 +1050,17 @@ export default function DailyTasks() {
       </header>
 
       {/* ── KPI 卡一排 (3 stats + 今日完成率) ──────────────────────────────── */}
-      <RevealGroup style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
         {liveStats.map((stat, i) => {
           const meta = STAT_ICON_META[i] ?? STAT_ICON_META[0]!;
           return (
-            <Item key={stat.id}>
+            <Item key={stat.id} style={{ height: '100%' }}>
               <motion.div
                 data-testid="stat-card"
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 20 }}
+                style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span
@@ -1091,7 +1096,7 @@ export default function DailyTasks() {
                 <div style={{ marginTop: 16 }}>
                   <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>{stat.value}</p>
                   {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
-                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '6px 0 0', fontFamily: F.cn }}>
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: '6px 0 0', fontFamily: F.cn }}>
                     {isHistoryError
                       ? <span style={{ color: C.burgundyText }}>数据加载失败</span>
                       : stat.label}
@@ -1122,12 +1127,12 @@ export default function DailyTasks() {
         })}
 
         {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1166,11 +1171,11 @@ export default function DailyTasks() {
             </div>
             <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>
                   {todayPct}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>%</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)' }}>%</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
               </div>
               <ProgressRing pct={todayPct} />
             </div>
@@ -1179,7 +1184,7 @@ export default function DailyTasks() {
       </RevealGroup>
 
       {/* ── 今日进度卡 ──────────────────────────────────────────────────────── */}
-      <Reveal style={{ marginBottom: 32 }}>
+      <Reveal style={{ marginBottom: 44 }}>
         <TodayProgressSection completed={completedCount} total={totalCount} />
       </Reveal>
 
@@ -1219,7 +1224,7 @@ export default function DailyTasks() {
             padding: '6px 12px',
             fontSize: 12,
             fontWeight: 600,
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.84)',
             fontFamily: F.cn,
             cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
             opacity: regenerateToday.isPending ? 0.5 : 1,
@@ -1235,7 +1240,7 @@ export default function DailyTasks() {
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.6)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.84)';
           }}
           onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = `2px solid ${C.ikb}`; (e.currentTarget as HTMLButtonElement).style.outlineOffset = '2px'; }}
           onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.outline = 'none'; }}
@@ -1244,10 +1249,10 @@ export default function DailyTasks() {
           {regenerateToday.isPending ? '生成中…' : '重新生成'}
         </button>
       </Reveal>
-      <RevealGroup style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <RevealGroup style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
         {tasks.length > 0
           ? tasks.map((task) => (
-              <Item key={task.id}>
+              <Item key={task.id} style={{ height: '100%' }}>
                 <TaskRow
                   task={task}
                   onComplete={handleComplete}
@@ -1256,7 +1261,7 @@ export default function DailyTasks() {
               </Item>
             ))
           : DAILY_TASKS_MOCK.map((task) => (
-              <Item key={task.id}>
+              <Item key={task.id} style={{ height: '100%' }}>
                 <MockTaskRow task={task} />
               </Item>
             ))}
@@ -1267,9 +1272,9 @@ export default function DailyTasks() {
       <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>执行力数据洞察</h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 参考基准 · 示例</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 参考基准 · 示例</span>
       </Reveal>
-      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
+      <div style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 执行力雷达 · 六维 · 装饰 · P1: label改参考基准示例 · P12: aria-hidden */}
         <Reveal>
           <div
@@ -1298,13 +1303,13 @@ export default function DailyTasks() {
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>执行力雷达</h3>
                   {/* P1: clarified as reference/example, not real personalised data */}
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>六维参考示例</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', margin: 0, fontFamily: F.cn }}>六维参考示例</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 {/* P1: clarified as reference score */}
-                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>78</p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', margin: 0, fontFamily: F.cn }}>参考示例分</p>
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }}>78</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', margin: 0, fontFamily: F.cn }}>参考示例分</p>
               </div>
             </div>
             {(() => {
@@ -1391,7 +1396,7 @@ export default function DailyTasks() {
               ].map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, display: 'inline-block' }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
@@ -1426,7 +1431,7 @@ export default function DailyTasks() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>近 7 日任务完成</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', margin: 0, fontFamily: F.cn }}>
                     {hasHistoryData ? '按每日实际完成数量统计' : '暂无历史数据 · 完成任务后自动更新'}
                   </p>
                 </div>
@@ -1455,7 +1460,7 @@ export default function DailyTasks() {
               <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 {totalCount}
               </p>
-              <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>今日任务总数</span>
+              <span style={{ marginBottom: 4, fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>今日任务总数</span>
             </div>
             {(() => {
               const data = trendData;
@@ -1519,7 +1524,7 @@ export default function DailyTasks() {
               );
             })()}
             {/* P11: x-axis labels match actual trendData length */}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
               {xAxisLabels.map((d) => (
                 <span key={d}>{d}</span>
               ))}
