@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import { trpc } from '@/lib/trpc';
@@ -287,33 +287,33 @@ export default function Step6() {
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_fix_high</span>
             智能优化
           </motion.button>
-          <motion.button
-            type="button"
-            onClick={handleCopyAll}
-            disabled={!canBulkActions}
-            aria-label="复制方案"
-            whileHover={canBulkActions ? { y: -3 } : {}}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            className="lg-gradbtn"
-            style={{
-              display: 'flex',
-              flexShrink: 0,
-              alignItems: 'center',
-              gap: 8,
-              whiteSpace: 'nowrap',
-              borderRadius: 12,
-              padding: '10px 20px',
-              fontSize: 13,
-              fontWeight: 600,
-              color: canBulkActions ? '#fff' : 'rgba(255,255,255,0.4)',
-              fontFamily: F.mono,
-              cursor: canBulkActions ? 'pointer' : 'not-allowed',
-              border: 'none',
-            }}
-          >
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
-            复制方案
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              disabled={!canBulkActions}
+              aria-label="复制方案"
+              className="lg-gradbtn"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                borderRadius: 9999,
+                padding: '10px 20px',
+                fontSize: 13,
+                fontWeight: 600,
+                color: canBulkActions ? '#fff' : 'rgba(255,255,255,0.4)',
+                fontFamily: F.cn,
+                cursor: canBulkActions ? 'pointer' : 'not-allowed',
+                border: 'none',
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
+              复制方案
+            </button>
+          </Magnetic>
         </div>
       </Reveal>
 
@@ -341,13 +341,13 @@ export default function Step6() {
                 justifyContent: 'center',
                 borderRadius: 12,
                 background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
-                color: C.ikb,
+                color: C.ink,
               }}>
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>videocam</span>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>videocam</span>
               </span>
               <div>
                 <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>输入文案</h2>
-                <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>填写脚本文案 · AI 据此生成完整拍摄计划</p>
+                <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>填写脚本文案 · AI 据此生成完整拍摄计划</p>
               </div>
             </div>
             <span style={{
@@ -398,7 +398,7 @@ export default function Step6() {
                   }} />
                   文案内容
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.accent3 }} aria-hidden={true}>auto_awesome</span>
                   AI 据此生成分镜+提词器
                 </span>
@@ -449,7 +449,7 @@ export default function Step6() {
                   background: 'rgba(255,255,255,0.04)',
                 }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>建议包含</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>建议包含</span>
                     {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
                       <span
                         key={t}
@@ -459,7 +459,7 @@ export default function Step6() {
                           fontSize: 11,
                           fontWeight: 500,
                           background: 'rgba(168,197,224,0.12)',
-                          color: 'rgba(255,255,255,0.55)',
+                          color: 'rgba(255,255,255,0.8)',
                           fontFamily: F.mono,
                         }}
                       >
@@ -467,7 +467,7 @@ export default function Step6() {
                       </span>
                     ))}
                   </div>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                     {content.length} 字
                   </span>
                 </div>
@@ -475,32 +475,30 @@ export default function Step6() {
             </div>
             {/* 提交按钮 */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <motion.button
-                type="submit"
-                disabled={!content.trim() || isLoading}
-                whileHover={content.trim() && !isLoading ? { y: -3 } : {}}
-                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                className="lg-gradbtn"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 14,
-                  padding: '12px 32px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  fontFamily: F.mono,
-                  border: 'none',
-                  cursor: content.trim() && !isLoading ? 'pointer' : 'not-allowed',
-                  opacity: content.trim() && !isLoading ? 1 : 0.4,
-                }}
-              >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>videocam</span>
-                {isLoading ? '生成中…' : '生成拍摄计划'}
-              </motion.button>
+              <Magnetic strength={0.3}>
+                <button
+                  type="submit"
+                  disabled={!content.trim() || isLoading}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '12px 32px',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    border: 'none',
+                    cursor: content.trim() && !isLoading ? 'pointer' : 'not-allowed',
+                    opacity: content.trim() && !isLoading ? 1 : 0.4,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>videocam</span>
+                  {isLoading ? '生成中…' : '生成拍摄计划'}
+                </button>
+              </Magnetic>
             </div>
           </form>
         </section>
@@ -512,7 +510,7 @@ export default function Step6() {
           data-testid="step6-loading"
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             overflow: 'hidden',
             borderRadius: 16,
             padding: 20,
@@ -552,7 +550,7 @@ export default function Step6() {
           data-testid="step6-error"
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -700,7 +698,7 @@ export default function Step6() {
           data-testid="step6-empty-state"
           className="lg-glass"
           style={{
-            marginBottom: 32,
+            marginBottom: 44,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -719,13 +717,13 @@ export default function Step6() {
             justifyContent: 'center',
             borderRadius: 18,
             background: 'rgba(168,197,224,0.14)',
-            color: C.ikb,
+            color: C.ink,
           }}>
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>videocam_off</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>videocam_off</span>
           </span>
           <div>
             <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>尚未生成拍摄计划</p>
-            <p style={{ margin: '6px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>填写文案内容后点击「生成拍摄计划」开始生成</p>
+            <p style={{ margin: '6px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>填写文案内容后点击「生成拍摄计划」开始生成</p>
           </div>
         </div>
       )}
@@ -734,14 +732,14 @@ export default function Step6() {
       {hasResult && (
         <>
           {/* ── KPI 卡 ─────────────────────────────────────────── */}
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 44 }}>
             {/* 分镜镜头 · 环形进度 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 22 }}
+                style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{
@@ -776,9 +774,9 @@ export default function Step6() {
                   <div>
                     <p style={{ margin: 0, fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                       {result.shotList.length}
-                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginLeft: 4 }}> 个</span>
+                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginLeft: 4 }}> 个</span>
                     </p>
-                    <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>分镜镜头</p>
+                    <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>分镜镜头</p>
                   </div>
                   <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                     <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`分镜进度 ${Math.min(100, result.shotList.length * 10)}%`}>
@@ -800,12 +798,12 @@ export default function Step6() {
             </Item>
 
             {/* 拍摄时程 · 迷你柱 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 22 }}
+                style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{
@@ -848,7 +846,7 @@ export default function Step6() {
                   }}>
                     {result.schedule.length > 30 ? result.schedule.slice(0, 30) + '…' : result.schedule}
                   </p>
-                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>拍摄时程</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>拍摄时程</p>
                 </div>
                 <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                   {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
@@ -867,12 +865,12 @@ export default function Step6() {
             </Item>
 
             {/* 设备清单 · 进度条 */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 22 }}
+                style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{
@@ -902,9 +900,9 @@ export default function Step6() {
                 <div style={{ marginTop: 16 }}>
                   <p style={{ margin: 0, fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     {result.equipment.length}
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginLeft: 4 }}> 件</span>
+                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginLeft: 4 }}> 件</span>
                   </p>
-                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>拍摄设备</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>拍摄设备</p>
                 </div>
                 <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
                   <div
@@ -920,12 +918,12 @@ export default function Step6() {
             </Item>
 
             {/* 镜头维度 · 关键词 chip */}
-            <Item>
+            <Item style={{ height: '100%' }}>
               <motion.div
                 className="lg-glass lg-spec"
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                style={{ borderRadius: 20, padding: 22 }}
+                style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{
@@ -955,9 +953,9 @@ export default function Step6() {
                 <div style={{ marginTop: 16 }}>
                   <p style={{ margin: 0, fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
                     8
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginLeft: 4 }}> 维</span>
+                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginLeft: 4 }}> 维</span>
                   </p>
-                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>分镜字段</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>分镜字段</p>
                 </div>
                 <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {['景别', '角度', '运镜', '情绪'].map((k) => (
@@ -999,9 +997,9 @@ export default function Step6() {
                       justifyContent: 'center',
                       borderRadius: 12,
                       background: 'linear-gradient(135deg, rgba(168,197,224,0.5), rgba(120,160,220,0.3))',
-                      color: C.ikb,
+                      color: C.ink,
                     }}>
-                      <span className="material-symbols-outlined" aria-hidden={true}>movie</span>
+                      <span className="material-symbols-outlined" aria-hidden={true} style={{ filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>movie</span>
                     </span>
                     <div>
                       <span style={{
@@ -1283,7 +1281,7 @@ export default function Step6() {
                     whileHover={{ y: -2 }}
                     transition={{ type: 'spring', stiffness: 240, damping: 18 }}
                     style={{
-                      color: 'rgba(255,255,255,0.5)',
+                      color: 'rgba(255,255,255,0.72)',
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
@@ -1291,7 +1289,7 @@ export default function Step6() {
                       transition: 'color 0.15s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C.accent3; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.72)'; }}
                   >
                     <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
                   </motion.button>
@@ -1305,7 +1303,7 @@ export default function Step6() {
           <Reveal style={{ marginTop: 32, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
             <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>数据洞察</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
             <span style={{
               marginLeft: 'auto',
               display: 'inline-flex',
@@ -1323,7 +1321,7 @@ export default function Step6() {
               模型已就绪
             </span>
           </Reveal>
-          <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20 }}>
+          <div style={{ marginBottom: 44, display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20 }}>
             {/* 拍摄完备度雷达 */}
             <Reveal style={{ gridColumn: 'span 5' }}>
               <motion.div
@@ -1348,7 +1346,7 @@ export default function Step6() {
                     </span>
                     <div>
                       <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>拍摄完备度雷达</h3>
-                      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>六维模型评估</p>
+                      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>六维模型评估</p>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -1366,7 +1364,7 @@ export default function Step6() {
                     }}>
                       {Math.round(radarDims.reduce((s, d) => s + d.value, 0) / radarDims.length)}
                     </p>
-                    <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono }}>综合分</p>
+                    <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>综合分</p>
                   </div>
                 </div>
                 {(() => {
@@ -1463,7 +1461,7 @@ export default function Step6() {
                   {radarDims.map((d) => (
                     <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                       <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono, marginLeft: 2, textShadow: C.textShadow }}>{Math.round(d.value)}</span>
                     </div>
                   ))}
@@ -1495,7 +1493,7 @@ export default function Step6() {
                     </span>
                     <div>
                       <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>情绪节奏曲线</h3>
-                      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>沿 {result.shotList.length} 个镜头情绪强度推演</p>
+                      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>沿 {result.shotList.length} 个镜头情绪强度推演</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1504,7 +1502,7 @@ export default function Step6() {
                         key={t}
                         style={i === 0
                           ? { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: C.ikb, color: '#fff', fontFamily: F.mono }
-                          : { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontFamily: F.mono }
+                          : { borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }
                         }
                       >
                         {t}
@@ -1531,7 +1529,7 @@ export default function Step6() {
                     <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>
                     峰值
                   </span>
-                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
+                  <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
                 </div>
                 {emotionCurve.length >= 2 && (() => {
                   const data = emotionCurve;
@@ -1599,7 +1597,7 @@ export default function Step6() {
                     </svg>
                   );
                 })()}
-                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+                <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
                   {result.shotList.filter((_, i) => i % 3 === 0).map((_, i) => (
                     <span key={i * 3}>{`镜头${i * 3 + 1}`}</span>
                   ))}
