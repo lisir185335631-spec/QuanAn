@@ -26,7 +26,7 @@ export const C = {
   // 冷蓝渐变(编号/100%大字/kicker 强调)
   grad: 'linear-gradient(110deg,#d4e6ff 0%,#a8c5e0 52%,#7fb0e6 100%)',
   // 文字阴影(玻璃上保可读)
-  textShadow: '0 1px 3px rgba(6,14,38,.55), 0 2px 10px rgba(6,14,38,.32)',
+  textShadow: '0 1px 2px rgba(5,12,34,.95), 0 1px 7px rgba(5,12,34,.66), 0 2px 13px rgba(5,12,34,.4)',
 };
 
 export const F = {
