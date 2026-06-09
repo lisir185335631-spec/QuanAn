@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { HOT_ELEMENT_GROUPS, ALL_ELEMENTS } from '@/lib/constants/elements';
 import {
   GENERATE_H1,
@@ -289,14 +289,14 @@ export default function Generate() {
       </Reveal>
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }}>
         {/* 脚本类型 · 环形 · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -334,9 +334,9 @@ export default function Generate() {
               <div>
                 <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                   {SCRIPT_TYPES.length}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 种</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 种</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>脚本类型</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>脚本类型</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
                 <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label="脚本类型覆盖率环形图">
@@ -358,12 +358,12 @@ export default function Generate() {
         </Item>
 
         {/* 爆款元素 · 迷你柱 · 白 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -397,9 +397,9 @@ export default function Generate() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {TOTAL_ELEMENTS}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 个</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>爆款元素</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>爆款元素</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
               {[58, 84, 70, 96, 78].map((h, i) => (
@@ -410,12 +410,12 @@ export default function Generate() {
         </Item>
 
         {/* 已选元素 · 进度条 · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -449,9 +449,9 @@ export default function Generate() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {elementKeys.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 个</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 个</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>已选元素</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>已选元素</p>
             </div>
             <div style={{ marginTop: 12, height: 6, width: '100%', borderRadius: 9999, background: 'rgba(168,197,224,0.18)' }}>
               <div
@@ -467,12 +467,12 @@ export default function Generate() {
         </Item>
 
         {/* 文案字数 · chip · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 22 }}
+            style={{ borderRadius: 20, padding: 22, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -506,9 +506,9 @@ export default function Generate() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, margin: 0 }}>
                 {RESULT_FULL_TEXT.length}
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}> 字</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 字</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>文案字数</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>文案字数</p>
             </div>
             <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }} aria-hidden={true}>
               {['钩子', '洞察', '转化'].map((k) => (
@@ -533,7 +533,7 @@ export default function Generate() {
       </RevealGroup>
 
       {/* ── 2 列配置区(固定 grid-cols-2 · 禁断点) ─────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, marginBottom: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, marginBottom: 44 }}>
         {/* 左列:脚本类型 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* ── GenerateScriptPicker inline ── */}
@@ -559,7 +559,7 @@ export default function Generate() {
                 </span>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>{GENERATE_SCRIPT_TITLE}</h2>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>选择适合的内容框架</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>选择适合的内容框架</p>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -603,14 +603,14 @@ export default function Generate() {
                           background: active
                             ? C.grad
                             : 'rgba(255,255,255,0.10)',
-                          color: active ? '#fff' : 'rgba(255,255,255,0.6)',
+                          color: active ? '#fff' : 'rgba(255,255,255,0.84)',
                         }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>{SCRIPT_TYPE_ICONS[type.key] ?? 'article'}</span>
                       </span>
                       <span style={{ minWidth: 0, flex: 1 }}>
                         <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.label}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{type.desc}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{type.desc}</span>
                       </span>
                       <span
                         style={{
@@ -662,7 +662,7 @@ export default function Generate() {
                 </span>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>{GENERATE_ELEMENTS_TITLE}</h2>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>多选 · 已选 {elementKeys.length} 个</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>多选 · 已选 {elementKeys.length} 个</p>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -701,7 +701,7 @@ export default function Generate() {
                                 background: selected
                                   ? 'rgba(168,197,224,0.22)'
                                   : 'rgba(255,255,255,0.06)',
-                                color: selected ? C.ikb : 'rgba(255,255,255,0.6)',
+                                color: selected ? C.ikb : 'rgba(255,255,255,0.84)',
                                 transition: 'background 0.2s, border-color 0.2s, color 0.2s',
                               }}
                             >
@@ -754,7 +754,7 @@ export default function Generate() {
                   />
                   {GENERATE_TOPIC_TITLE}
                 </label>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }} aria-hidden={true}>auto_awesome</span>
                   AI 据此生成爆款文案
                 </span>
@@ -809,8 +809,8 @@ export default function Generate() {
                     background: 'rgba(255,255,255,0.04)',
                   }}
                 >
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
-                  <span style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>{topic.length}/{GENERATE_TOPIC_MAXLEN}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>支持中英文 · 越具体效果越好</span>
+                  <span style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>{topic.length}/{GENERATE_TOPIC_MAXLEN}</span>
                 </div>
               </div>
               {currentScript && (
@@ -829,40 +829,39 @@ export default function Generate() {
                   <span className="material-symbols-outlined" style={{ fontSize: 16, color: C.ikb }} aria-hidden={true}>{SCRIPT_TYPE_ICONS[currentScript.key] ?? 'article'}</span>
                   <div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.cn, textShadow: C.textShadow }}>当前：{currentScript.label}</span>
-                    <span style={{ marginLeft: 6, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{currentScript.desc}</span>
+                    <span style={{ marginLeft: 6, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{currentScript.desc}</span>
                   </div>
                 </div>
               )}
               <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                <motion.button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={!topic.trim()}
-                  whileHover={topic.trim() ? { y: -3 } : undefined}
-                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    borderRadius: 14,
-                    padding: '12px 32px',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: '#fff',
-                    fontFamily: F.mono,
-                    background: topic.trim() ? C.grad : 'rgba(255,255,255,0.12)',
-                    border: 'none',
-                    cursor: topic.trim() ? 'pointer' : 'not-allowed',
-                    opacity: topic.trim() ? 1 : 0.4,
-                    textShadow: C.textShadow,
-                    transition: 'opacity 0.2s, background 0.2s',
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-                  {topic.trim() ? GENERATE_CTA : '请输入主题'}
-                </motion.button>
+                <Magnetic strength={0.3}>
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={!topic.trim()}
+                    className="lg-gradbtn"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      borderRadius: 9999,
+                      padding: '12px 32px',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: '#fff',
+                      fontFamily: F.cn,
+                      background: topic.trim() ? C.grad : 'rgba(255,255,255,0.12)',
+                      border: 'none',
+                      cursor: topic.trim() ? 'pointer' : 'not-allowed',
+                      opacity: topic.trim() ? 1 : 0.4,
+                      textShadow: C.textShadow,
+                      transition: 'opacity 0.2s, background 0.2s',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
+                    {topic.trim() ? GENERATE_CTA : '请输入主题'}
+                  </button>
+                </Magnetic>
               </div>
             </section>
           </Reveal>
@@ -900,7 +899,7 @@ export default function Generate() {
                   </span>
                   <div>
                     <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>{GENERATE_RESULT_TITLE}</h2>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>基于「{currentScript?.label ?? '脚本类型'}」框架 · AI 深度生成</p>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>基于「{currentScript?.label ?? '脚本类型'}」框架 · AI 深度生成</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -976,51 +975,54 @@ export default function Generate() {
                 </div>
               </div>
 
-              {/* 8 段 mock 文案 · 渐变 chip 头 · whitespace-pre-wrap · 无 line-clamp */}
-              <div>
+              {/* 8 段 mock 文案 · 两列卡网格 · 渐变 chip 头 */}
+              <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, padding: '18px 18px' }}>
                 {GENERATE_RESULT_PARAGRAPHS.map((para, idx) => {
                   // 三色轮转: 冷蓝 → 白半透 → 浅蓝 → 冷蓝
                   const chipSchemes = [
                     { bg: C.grad, text: '#fff' },
-                    { bg: 'linear-gradient(135deg,rgba(255,255,255,0.55),rgba(200,220,255,0.45))', text: '#fff' },
+                    { bg: 'linear-gradient(135deg,rgba(255,255,255,0.8),rgba(200,220,255,0.45))', text: '#fff' },
                     { bg: 'linear-gradient(135deg,rgba(168,197,224,0.6),rgba(120,160,220,0.5))', text: '#fff' },
                   ];
                   const cs = chipSchemes[idx % chipSchemes.length]!;
                   return (
-                    <div
-                      key={para.label}
-                      style={{
-                        padding: '18px 24px',
-                        ...(idx < GENERATE_RESULT_PARAGRAPHS.length - 1
-                          ? { borderBottom: `0.5px solid ${C.line}` }
-                          : {}),
-                      }}
-                    >
-                      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            borderRadius: 8,
-                            padding: '4px 10px',
-                            fontSize: 11,
-                            fontWeight: 700,
-                            background: cs.bg,
-                            color: cs.text,
-                            fontFamily: F.mono,
-                            textShadow: C.textShadow,
-                          }}
-                        >
-                          {para.label}
-                        </span>
+                    <Item key={para.label} style={{ height: '100%' }}>
+                      <div
+                        className="lg-glass"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%',
+                          borderRadius: 14,
+                          padding: '14px 16px',
+                        }}
+                      >
+                        <div style={{ marginBottom: 8 }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              borderRadius: 8,
+                              padding: '4px 10px',
+                              fontSize: 11,
+                              fontWeight: 700,
+                              background: cs.bg,
+                              color: cs.text,
+                              fontFamily: F.mono,
+                              textShadow: C.textShadow,
+                            }}
+                          >
+                            {para.label}
+                          </span>
+                        </div>
+                        <p style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, marginTop: 'auto' }}>
+                          {para.body}
+                        </p>
                       </div>
-                      <p style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>
-                        {para.body}
-                      </p>
-                    </div>
+                    </Item>
                   );
                 })}
-              </div>
+              </RevealGroup>
 
               {/* 底部反馈 row */}
               <div
@@ -1031,7 +1033,7 @@ export default function Generate() {
                   borderTop: `0.5px solid ${C.line}`,
                   padding: '12px 24px',
                   fontSize: 12,
-                  color: 'rgba(255,255,255,0.55)',
+                  color: 'rgba(255,255,255,0.8)',
                   fontFamily: F.cn,
                 }}
               >
@@ -1050,7 +1052,7 @@ export default function Generate() {
                     fontSize: 12,
                     border: `0.5px solid ${C.line}`,
                     background: 'rgba(255,255,255,0.06)',
-                    color: 'rgba(255,255,255,0.6)',
+                    color: 'rgba(255,255,255,0.84)',
                     cursor: 'pointer',
                   }}
                 >
@@ -1071,7 +1073,7 @@ export default function Generate() {
                     fontSize: 12,
                     border: `0.5px solid ${C.line}`,
                     background: 'rgba(255,255,255,0.06)',
-                    color: 'rgba(255,255,255,0.6)',
+                    color: 'rgba(255,255,255,0.84)',
                     cursor: 'pointer',
                   }}
                 >
@@ -1086,9 +1088,9 @@ export default function Generate() {
 
       {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
       <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))', textShadow: '0 1px 4px rgba(6,14,38,.9),0 0 16px rgba(6,14,38,.55)' }} aria-hidden={true}>insights</span>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>数据洞察</h2>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
         <span
           style={{
             marginLeft: 'auto',
@@ -1118,7 +1120,7 @@ export default function Generate() {
         </span>
       </Reveal>
 
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 44 }}>
         {/* 文案爆款力雷达 */}
         <Item>
           <motion.div
@@ -1145,7 +1147,7 @@ export default function Generate() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>文案爆款力雷达</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1165,7 +1167,7 @@ export default function Generate() {
                 >
                   84
                 </p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.mono, margin: 0 }}>综合分</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -1246,7 +1248,7 @@ export default function Generate() {
                 </span>
                 <div>
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, margin: 0 }}>文案结构曲线</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>近 12 周文案结构趋势</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>近 12 周文案结构趋势</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1259,7 +1261,7 @@ export default function Generate() {
                       fontSize: 11,
                       fontWeight: 600,
                       background: i === 0 ? C.ikb : 'rgba(255,255,255,0.10)',
-                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.6)',
+                      color: i === 0 ? '#fff' : 'rgba(255,255,255,0.84)',
                       fontFamily: F.mono,
                     }}
                   >
@@ -1287,7 +1289,7 @@ export default function Generate() {
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>+230%
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>较基准值</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>较基准值</span>
             </div>
             {(() => {
               const data = TREND_DATA_GN;
@@ -1336,7 +1338,7 @@ export default function Generate() {
                 </svg>
               );
             })()}
-            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: 10, color: 'rgba(255,255,255,0.72)', fontFamily: F.mono }}>
               {TREND_LABELS_GN.map((m) => (
                 <span key={m}>{m}</span>
               ))}
