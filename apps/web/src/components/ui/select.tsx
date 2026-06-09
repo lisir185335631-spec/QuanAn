@@ -64,7 +64,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-none border border-[rgba(22,32,72,0.13)] bg-[#FFFFFF] text-[#161D33] shadow-[8px_8px_0_rgba(43,83,230,0.10)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-[14px] border border-[rgba(255,255,255,0.22)] bg-[rgba(22,40,72,0.82)] text-[rgba(255,255,255,0.92)] shadow-[0_16px_40px_-8px_rgba(8,20,48,0.52)] backdrop-blur-[24px] saturate-[180%] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
         position === 'popper' &&
           'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
         className
@@ -93,7 +93,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn('px-2 py-1.5 text-label-sm font-semibold text-[#161D33]/50', className)}
+    className={cn('px-2 py-1.5 text-label-sm font-semibold text-[rgba(255,255,255,0.45)]', className)}
     {...props}
   />
 ));
@@ -106,12 +106,12 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-none py-1.5 pl-2 pr-8 text-body-sm text-[#161D33] outline-none focus:bg-[#2B53E6]/[0.07] focus:text-[#2B53E6] data-[state=checked]:text-[#2B53E6] data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-[8px] py-1.5 pl-2 pr-8 text-body-sm text-[rgba(255,255,255,0.92)] outline-none focus:bg-[rgba(168,197,224,0.18)] focus:text-white data-[state=checked]:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className
     )}
     {...props}
   >
-    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center text-[#2B53E6]">
+    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center text-[rgba(168,197,224,0.9)]">
       <SelectPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </SelectPrimitive.ItemIndicator>
@@ -125,7 +125,7 @@ const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-[rgba(22,32,72,0.13)]', className)} {...props} />
+  <SelectPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-[rgba(255,255,255,0.18)]', className)} {...props} />
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 

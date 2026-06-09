@@ -1,3 +1,4 @@
+import { C, F } from '@/components/home-next/ikb/system';
 import {
   REPORT_LABEL_SCORE_TOTAL,
 } from '@/lib/constants/diagnosis';
@@ -25,11 +26,7 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
   return (
     <div
       data-testid="ip-health-score-card"
-      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft ikb-hovercard"
-      style={{
-        border: '1px solid rgba(22,32,72,0.13)',
-        background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
-      }}
+      className="lg-glass lg-spec rounded-xl p-6 flex flex-col gap-5"
     >
       {/* KPI 大数值 */}
       <div className="flex items-center gap-5">
@@ -42,7 +39,7 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
                 <stop offset="100%" stopColor="#EF3E6B" />
               </linearGradient>
             </defs>
-            <circle cx="50" cy="50" r={r} fill="none" stroke="#eef2ff" strokeWidth="8" />
+            <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="8" />
             <circle
               cx="50"
               cy="50"
@@ -56,20 +53,25 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
           </svg>
           <span
             className="absolute inset-0 flex items-center justify-center text-[26px] font-extrabold"
-            style={{ color: '#2B53E6' }}
+            style={{ color: C.ikb, textShadow: C.textShadow }}
           >
             {overallScore}
           </span>
         </div>
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-widest text-[#6b7280]">{REPORT_LABEL_SCORE_TOTAL}</p>
-          <p className="mt-1 text-[32px] font-extrabold leading-none" style={{ color: '#161D33' }}>
+          <p
+            className="text-[13px] font-semibold uppercase tracking-widest"
+            style={{ color: 'rgba(255,255,255,0.60)', fontFamily: F.cn, textShadow: C.textShadow }}
+          >
+            {REPORT_LABEL_SCORE_TOTAL}
+          </p>
+          <p className="mt-1 text-[32px] font-extrabold leading-none" style={{ color: C.ink, textShadow: C.textShadow, fontFamily: F.display }}>
             {overallScore}
-            <span className="ml-1 text-[16px] font-normal text-[#6b7280]">/ 100</span>
+            <span className="ml-1 text-[16px] font-normal" style={{ color: 'rgba(255,255,255,0.50)' }}>/ 100</span>
           </p>
           <span
             className="mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-bold"
-            style={{ background: 'rgba(43,83,230,0.10)', color: '#2B53E6' }}
+            style={{ background: 'rgba(216,232,255,0.14)', color: C.ikb, border: `1px solid ${C.line}`, textShadow: C.textShadow }}
           >
             <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
             IP健康度
@@ -80,8 +82,13 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
       <div className="flex flex-col gap-3">
         {scores.map((dim) => (
           <div key={dim.id} className="flex items-center gap-3">
-            <span className="text-[12px] font-semibold text-[#6b7280] w-16 shrink-0">{dim.shortLabel}</span>
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#eef2ff' }}>
+            <span
+              className="text-[12px] font-semibold w-16 shrink-0"
+              style={{ color: 'rgba(255,255,255,0.60)', fontFamily: F.cn }}
+            >
+              {dim.shortLabel}
+            </span>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -90,7 +97,12 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
                 }}
               />
             </div>
-            <span className="text-[12px] font-bold w-6 text-right shrink-0" style={{ color: '#161D33' }}>{dim.score}</span>
+            <span
+              className="text-[12px] font-bold w-6 text-right shrink-0"
+              style={{ color: C.ink, textShadow: C.textShadow }}
+            >
+              {dim.score}
+            </span>
           </div>
         ))}
       </div>

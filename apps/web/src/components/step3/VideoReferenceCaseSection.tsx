@@ -1,4 +1,5 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import { SubCard } from '@/components/ui/sub-card';
 import { STEP3_CTA_GENERATE_REFERENCE, STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
@@ -24,10 +25,10 @@ function CaseSkeleton() {
   return (
     <SubCard>
       <div className="space-y-3 animate-pulse">
-        <div className="h-4 bg-[#f3f4f6] rounded w-3/5" />
-        <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-        <div className="h-3 bg-[#f3f4f6] rounded w-4/5" />
-        <div className="h-6 bg-[#f3f4f6] rounded-full w-2/5 mt-2" />
+        <div className="h-4 rounded w-3/5" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-3 rounded w-4/5" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-6 rounded-full w-2/5 mt-2" style={{ background: 'rgba(255,255,255,0.08)' }} />
       </div>
     </SubCard>
   );
@@ -37,16 +38,16 @@ function CaseCard({ title, description, searchHint, platform }: VideoReferenceCa
   return (
     <SubCard>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-[#111827]">{title}</p>
-        <p className="text-xs text-[#6b7280] leading-relaxed">{description}</p>
+        <p className="text-sm font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{title}</p>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{description}</p>
         <div className="flex items-center gap-2 flex-wrap">
           {platform && (
-            <span className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/30 rounded px-2 py-0.5 font-medium">
+            <span className="inline-block text-xs rounded px-2 py-0.5 font-medium" style={{ background: 'rgba(216,232,255,0.15)', color: C.ikb, border: `0.5px solid rgba(216,232,255,0.35)` }}>
               {platform}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 text-xs text-[#6b7280]">
-            <span className="text-[#002fa7]">⌕</span>搜索:&nbsp;{searchHint}
+          <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>
+            <span style={{ color: C.ikb }}>⌕</span>搜索:&nbsp;{searchHint}
           </span>
         </div>
       </div>
@@ -64,7 +65,7 @@ export function VideoReferenceCaseSection({
     <div className={cn('space-y-3', className)}>
       {/* H3 row: FlameIcon + title + [生成参考图] button */}
       <div className="flex items-center justify-between gap-4">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+        <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
           <FlameIcon className="h-4 w-4 shrink-0" aria-hidden size={4} />
           {H3_LABEL}
         </h3>

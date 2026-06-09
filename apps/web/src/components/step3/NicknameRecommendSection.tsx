@@ -1,4 +1,5 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
+import { C, F } from '@/components/home-next/ikb/system';
 import { SubCard } from '@/components/ui/sub-card';
 import { STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
@@ -28,11 +29,11 @@ function NicknameSkeleton() {
   return (
     <SubCard>
       <div className="space-y-3 animate-pulse">
-        <div className="h-4 bg-[#f3f4f6] rounded w-2/5" />
-        <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-        <div className="h-3 bg-[#f3f4f6] rounded w-4/5" />
-        <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
-        <div className="h-6 bg-[#f3f4f6] rounded-full w-1/3" />
+        <div className="h-4 rounded w-2/5" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-3 rounded w-4/5" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-3 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="h-6 rounded-full w-1/3" style={{ background: 'rgba(255,255,255,0.08)' }} />
       </div>
     </SubCard>
   );
@@ -48,7 +49,7 @@ export function NicknameRecommendSection({
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+      <h3 className="flex items-center gap-2 text-base font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
         <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
         {H3_LABEL}
       </h3>
@@ -72,18 +73,18 @@ export function NicknameRecommendSection({
 
       {/* 命名策略 sub-section */}
       {(isEmpty || strategy) && (
-        <div className="bg-[#f3f4f6] p-4 rounded-lg space-y-3 border border-[#002fa7]/15">
-          <p className="text-sm font-semibold text-[#111827]">命名策略</p>
+        <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(255,255,255,0.07)', border: `0.5px solid ${C.line}` }}>
+          <p className="text-sm font-semibold" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>命名策略</p>
           {strategy ? (
             <>
               {strategy.hint && (
-                <p className="text-xs text-[#6b7280] leading-relaxed">{strategy.hint}</p>
+                <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>{strategy.hint}</p>
               )}
               {strategy.principles && strategy.principles.length > 0 && (
                 <ul className="space-y-1.5">
                   {strategy.principles.map((p, i) => (
-                    <li key={`p-${i}`} className="text-xs leading-relaxed flex gap-2 text-[#1f2937]">
-                      <span className="text-[#10b981] shrink-0">✓</span>
+                    <li key={`p-${i}`} className="text-xs leading-relaxed flex gap-2" style={{ color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                      <span className="shrink-0" style={{ color: 'rgba(100,220,160,0.9)' }}>✓</span>
                       <span>{p}</span>
                     </li>
                   ))}
@@ -92,8 +93,8 @@ export function NicknameRecommendSection({
               {strategy.avoidances && strategy.avoidances.length > 0 && (
                 <ul className="space-y-1.5">
                   {strategy.avoidances.map((a, i) => (
-                    <li key={`a-${i}`} className="text-xs leading-relaxed flex gap-2 text-[#6b7280]">
-                      <span className="text-[#781621] shrink-0">✗</span>
+                    <li key={`a-${i}`} className="text-xs leading-relaxed flex gap-2" style={{ color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>
+                      <span className="shrink-0" style={{ color: 'rgba(255,120,120,0.95)' }}>✗</span>
                       <span>{a}</span>
                     </li>
                   ))}
@@ -104,7 +105,8 @@ export function NicknameRecommendSection({
                   {strategy.chips.map((chip) => (
                     <span
                       key={chip}
-                      className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/20 rounded-full px-2.5 py-0.5"
+                      className="inline-block text-xs rounded-full px-2.5 py-0.5"
+                      style={{ background: 'rgba(216,232,255,0.15)', color: C.ikb, border: `0.5px solid rgba(216,232,255,0.3)` }}
                     >
                       {chip}
                     </span>
@@ -112,15 +114,15 @@ export function NicknameRecommendSection({
                 </div>
               )}
               {strategy.note && (
-                <p className="text-[11px] text-[#6b7280] leading-relaxed border-t border-[#e5e7eb]/30 pt-2 mt-1">
+                <p className="text-[11px] leading-relaxed pt-2 mt-1" style={{ color: 'rgba(255,255,255,0.72)', fontFamily: F.cn, borderTop: `0.5px solid ${C.line}`, textShadow: C.textShadow }}>
                   {strategy.note}
                 </p>
               )}
             </>
           ) : (
             <div className="animate-pulse space-y-2">
-              <div className="h-3 bg-[#f3f4f6] rounded w-full" />
-              <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
+              <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+              <div className="h-3 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
             </div>
           )}
         </div>

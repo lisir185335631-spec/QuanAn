@@ -1,3 +1,5 @@
+import { C } from '@/components/home-next/ikb/system';
+
 interface DimensionScore {
   id: string;
   shortLabel: string;
@@ -59,18 +61,14 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
   return (
     <div
       data-testid="ip-radar-chart"
-      className="rounded-xl p-6 flex flex-col items-center justify-center pw-shadow-soft ikb-hovercard"
-      style={{
-        border: '1px solid rgba(22,32,72,0.13)',
-        background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
-      }}
+      className="lg-glass lg-spec rounded-xl p-6 flex flex-col items-center justify-center"
     >
       <svg width="300" height="300" viewBox="0 0 300 300">
         <defs>
           <linearGradient id="dg-radar-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#2B53E6" stopOpacity="0.35" />
-            <stop offset="52%" stopColor="#7A3BE0" stopOpacity="0.20" />
-            <stop offset="100%" stopColor="#EF3E6B" stopOpacity="0.10" />
+            <stop offset="0%" stopColor="#2B53E6" stopOpacity="0.45" />
+            <stop offset="52%" stopColor="#7A3BE0" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#EF3E6B" stopOpacity="0.16" />
           </linearGradient>
         </defs>
         {/* Grid rings */}
@@ -79,7 +77,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
             key={ri}
             points={pts}
             fill="none"
-            stroke="#eef1f6"
+            stroke="rgba(255,255,255,0.10)"
             strokeWidth="1"
           />
         ))}
@@ -91,7 +89,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
               key={i}
               x1={cx} y1={cy}
               x2={outer.x.toFixed(1)} y2={outer.y.toFixed(1)}
-              stroke="#e8ebf2"
+              stroke="rgba(255,255,255,0.08)"
               strokeWidth="1"
             />
           );
@@ -100,7 +98,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
         <polygon
           points={dataPolygon}
           fill="url(#dg-radar-fill)"
-          stroke="#2B53E6"
+          stroke={C.ikb}
           strokeWidth="2"
           strokeLinejoin="round"
         />
@@ -111,7 +109,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
             cx={p.x.toFixed(1)}
             cy={p.y.toFixed(1)}
             r="3.2"
-            fill="#fff"
+            fill="rgba(255,255,255,0.90)"
             stroke={DOT_COLORS[i % DOT_COLORS.length]}
             strokeWidth="2"
           />
@@ -127,7 +125,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="11"
-              fill="#6b7280"
+              fill="rgba(255,255,255,0.70)"
               fontWeight="600"
             >
               {s.radarLabel}
