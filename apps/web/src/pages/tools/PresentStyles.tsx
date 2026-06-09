@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
   PAGE_SUBTITLE,
   PAGE_TITLE,
@@ -243,7 +243,7 @@ function PresentStylesForm({
             >
               {PS_FORM_TITLE}
             </h2>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: 0 }}>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>
               填写文案 + 平台，AI 推荐最匹配形式
             </p>
           </div>
@@ -350,45 +350,35 @@ function PresentStylesForm({
         </div>
 
         {/* CTA */}
-        <button
-          type="button"
-          data-testid="ps-recommend-btn"
-          onClick={onRecommend}
-          disabled={isPending || text.trim().length < PS_TEXT_MIN}
-          style={{
-            marginTop: 8,
-            display: 'flex',
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            borderRadius: 12,
-            padding: '12px 16px',
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: '#0c1a30',
-            background: C.grad,
-            border: 'none',
-            cursor: isPending || text.trim().length < PS_TEXT_MIN ? 'not-allowed' : 'pointer',
-            opacity: isPending || text.trim().length < PS_TEXT_MIN ? 0.55 : 1,
-            transition: 'opacity 0.2s, transform 0.15s',
-            fontFamily: F.mono,
-            boxShadow: '0 6px 20px -6px rgba(120,160,220,0.55)',
-          }}
-          onMouseEnter={(e) => {
-            if (!isPending && text.trim().length >= PS_TEXT_MIN) {
-              (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = '';
-          }}
-        >
-          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
-          {PS_CTA}
-        </button>
+        <Magnetic strength={0.3}>
+          <button
+            type="button"
+            data-testid="ps-recommend-btn"
+            onClick={onRecommend}
+            disabled={isPending || text.trim().length < PS_TEXT_MIN}
+            className="lg-gradbtn"
+            style={{
+              marginTop: 8,
+              display: 'inline-flex',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              borderRadius: 9999,
+              padding: '14px 24px',
+              fontSize: 15,
+              fontWeight: 700,
+              color: '#fff',
+              fontFamily: F.cn,
+              border: 'none',
+              cursor: isPending || text.trim().length < PS_TEXT_MIN ? 'not-allowed' : 'pointer',
+              opacity: isPending || text.trim().length < PS_TEXT_MIN ? 0.55 : 1,
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_awesome</span>
+            {PS_CTA}
+          </button>
+        </Magnetic>
       </div>
     </section>
   );
@@ -421,10 +411,10 @@ function PresentStylesEmptyState() {
           justifyContent: 'center',
           borderRadius: 16,
           background: 'rgba(168,197,224,0.18)',
-          color: C.ikb,
+          color: C.ink,
         }}
       >
-        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36 }}>style</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 36, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>style</span>
       </span>
       <h3
         style={{
@@ -442,7 +432,7 @@ function PresentStylesEmptyState() {
         style={{
           fontSize: 14,
           lineHeight: 1.65,
-          color: 'rgba(255,255,255,0.6)',
+          color: 'rgba(255,255,255,0.84)',
           fontFamily: F.cn,
         }}
       >
@@ -546,8 +536,8 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
         </span>
       </div>
 
-      {/* 推荐形式列表 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="ps-recommended-styles">
+      {/* 推荐形式列表 · 两列卡片网格 */}
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }} data-testid="ps-recommended-styles">
         {recommendedStyles.map((item, idx) => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const accent = ACCENT_CYCLE[idx % 3]!;
@@ -559,159 +549,161 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
           const displayTips = item.tips || staticStyle?.tips || '';
 
           return (
-            <motion.div
-              key={item.id}
-              data-testid={`ps-recommended-item-${item.id}`}
-              className="lg-glass"
-              whileHover={{ y: -3 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              style={{ borderRadius: 16, overflow: 'hidden' }}
-            >
-              {/* Icon tile */}
-              <div
-                style={{
-                  display: 'flex',
-                  height: 56,
-                  width: '100%',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0 20px',
-                  background: accent.tileBg,
-                }}
+            <Item key={item.id} style={{ height: '100%' }}>
+              <motion.div
+                data-testid={`ps-recommended-item-${item.id}`}
+                className="lg-glass"
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                style={{ display: 'flex', flexDirection: 'column', borderRadius: 16, overflow: 'hidden', height: '100%' }}
               >
-                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 26, color: '#fff' }}>
-                  {icon}
-                </span>
-                <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: '0 1px 4px rgba(8,20,48,0.4)' }}>
-                  {displayLabel}
-                </span>
-                {/* matchScore 徽章 */}
-                <span
+                {/* Icon tile */}
+                <div
                   style={{
-                    marginLeft: 'auto',
-                    borderRadius: 9999,
-                    padding: '2px 10px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: '#fff',
-                    background: 'rgba(255,255,255,0.20)',
-                  }}
-                  data-testid={`ps-match-score-${item.id}`}
-                >
-                  匹配度 {item.matchScore}%
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 20 }}>
-                <p
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 1.65,
-                    color: 'rgba(255,255,255,0.80)',
-                    fontFamily: F.cn,
-                    margin: 0,
+                    display: 'flex',
+                    height: 56,
+                    width: '100%',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '0 20px',
+                    background: accent.tileBg,
                   }}
                 >
-                  {displayDescription}
-                </p>
-
-                {/* 推荐理由 */}
-                {item.rationale && (
-                  <div
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 26, color: '#fff' }}>
+                    {icon}
+                  </span>
+                  <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em', color: '#fff', textShadow: '0 1px 4px rgba(8,20,48,0.4)' }}>
+                    {displayLabel}
+                  </span>
+                  {/* matchScore 徽章 */}
+                  <span
                     style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 8,
-                      borderRadius: 10,
-                      border: `0.5px solid ${accent.rawTipsBorder}`,
-                      padding: 12,
-                      background: accent.rawTipsBg,
+                      marginLeft: 'auto',
+                      borderRadius: 9999,
+                      padding: '2px 10px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: '#fff',
+                      background: 'rgba(255,255,255,0.20)',
                     }}
-                    data-testid={`ps-rationale-${item.id}`}
+                    data-testid={`ps-match-score-${item.id}`}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color: accent.rawColor }}
-                      aria-hidden={true}
-                    >
-                      recommend
-                    </span>
-                    <div>
-                      <span
-                        style={{
-                          marginRight: 4,
-                          fontSize: 12,
-                          fontWeight: 800,
-                          color: accent.rawColor,
-                          fontFamily: F.cn,
-                        }}
-                      >
-                        推荐理由
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 13,
-                          lineHeight: 1.6,
-                          color: 'rgba(255,255,255,0.75)',
-                          fontFamily: F.cn,
-                        }}
-                      >
-                        {item.rationale}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                    匹配度 {item.matchScore}%
+                  </span>
+                </div>
 
-                {/* 操作要点 */}
-                {displayTips && (
-                  <div
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, padding: 20 }}>
+                  <p
                     style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 8,
-                      borderRadius: 10,
-                      border: `0.5px solid ${C.line}`,
-                      padding: 12,
-                      background: 'rgba(255,255,255,0.06)',
+                      fontSize: 14,
+                      lineHeight: 1.65,
+                      color: 'rgba(255,255,255,0.80)',
+                      fontFamily: F.cn,
+                      margin: 0,
                     }}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color: 'rgba(255,255,255,0.55)' }}
-                      aria-hidden={true}
+                    {displayDescription}
+                  </p>
+
+                  {/* 推荐理由 */}
+                  {item.rationale && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 8,
+                        borderRadius: 10,
+                        border: `0.5px solid ${accent.rawTipsBorder}`,
+                        padding: 12,
+                        background: accent.rawTipsBg,
+                        marginTop: 'auto',
+                      }}
+                      data-testid={`ps-rationale-${item.id}`}
                     >
-                      lightbulb
-                    </span>
-                    <div>
                       <span
-                        style={{
-                          marginRight: 4,
-                          fontSize: 12,
-                          fontWeight: 800,
-                          color: 'rgba(255,255,255,0.60)',
-                          fontFamily: F.cn,
-                        }}
+                        className="material-symbols-outlined"
+                        style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color: accent.rawColor }}
+                        aria-hidden={true}
                       >
-                        要点
+                        recommend
                       </span>
-                      <span
-                        style={{
-                          fontSize: 13,
-                          lineHeight: 1.6,
-                          color: 'rgba(255,255,255,0.65)',
-                          fontFamily: F.cn,
-                        }}
-                      >
-                        {displayTips}
-                      </span>
+                      <div>
+                        <span
+                          style={{
+                            marginRight: 4,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: accent.rawColor,
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          推荐理由
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 13,
+                            lineHeight: 1.6,
+                            color: 'rgba(255,255,255,0.84)',
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          {item.rationale}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+                  )}
+
+                  {/* 操作要点 */}
+                  {displayTips && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 8,
+                        borderRadius: 10,
+                        border: `0.5px solid ${C.line}`,
+                        padding: 12,
+                        background: 'rgba(255,255,255,0.06)',
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color: 'rgba(255,255,255,0.8)' }}
+                        aria-hidden={true}
+                      >
+                        lightbulb
+                      </span>
+                      <div>
+                        <span
+                          style={{
+                            marginRight: 4,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: 'rgba(255,255,255,0.84)',
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          要点
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 13,
+                            lineHeight: 1.6,
+                            color: 'rgba(255,255,255,0.84)',
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          {displayTips}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </Item>
           );
         })}
-      </div>
+      </RevealGroup>
 
       {/* 反馈 row */}
       <div
@@ -726,7 +718,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
         <p
           style={{
             fontSize: 14,
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.84)',
             fontFamily: F.cn,
             margin: 0,
           }}
@@ -746,7 +738,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             borderRadius: '50%',
             border: `0.5px solid ${C.line}`,
             background: 'transparent',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.8)',
             cursor: 'pointer',
             transition: 'color 0.15s, border-color 0.15s',
           }}
@@ -755,7 +747,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)';
             (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
           }}
         >
@@ -774,7 +766,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             borderRadius: '50%',
             border: `0.5px solid ${C.line}`,
             background: 'transparent',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.8)',
             cursor: 'pointer',
             transition: 'color 0.15s, border-color 0.15s',
           }}
@@ -783,7 +775,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,120,140,0.6)';
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.55)';
+            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)';
             (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
           }}
         >
@@ -910,14 +902,14 @@ export default function PresentStyles() {
       </Reveal>
 
       {/* ── KPI 卡一排(4 卡)──────────────────────────────────────────────── */}
-      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
+      <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 44 }}>
         {/* 呈现形式总数 · 冷蓝 · 环形 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -965,9 +957,9 @@ export default function PresentStyles() {
                   }}
                 >
                   {PRESENT_STYLES.length}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{' '}种</span>
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{' '}种</span>
                 </p>
-                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>
+                <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>
                   呈现形式
                 </p>
               </div>
@@ -991,12 +983,12 @@ export default function PresentStyles() {
         </Item>
 
         {/* 覆盖场景 · 次冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1029,9 +1021,9 @@ export default function PresentStyles() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 6
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{' '}类</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{' '}类</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>
                 覆盖场景
               </p>
             </div>
@@ -1047,12 +1039,12 @@ export default function PresentStyles() {
         </Item>
 
         {/* 上手难度 · accent3 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1085,9 +1077,9 @@ export default function PresentStyles() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 初级
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{' '}起</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{' '}起</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>
                 上手难度
               </p>
             </div>
@@ -1105,12 +1097,12 @@ export default function PresentStyles() {
         </Item>
 
         {/* 适用平台 · 冷蓝 */}
-        <Item>
+        <Item style={{ height: '100%' }}>
           <motion.div
             className="lg-glass lg-spec"
             whileHover={{ y: -5 }}
             transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            style={{ borderRadius: 20, padding: 20 }}
+            style={{ borderRadius: 20, padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
@@ -1143,9 +1135,9 @@ export default function PresentStyles() {
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
                 3
-                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{' '}平台</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{' '}平台</span>
               </p>
-              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, margin: '6px 0 0' }}>
+              <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: '6px 0 0' }}>
                 适用平台
               </p>
             </div>
@@ -1310,7 +1302,7 @@ export default function PresentStyles() {
               paddingLeft: 44,
               fontSize: 14,
               lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(255,255,255,0.84)',
               fontFamily: F.cn,
               margin: 0,
             }}
@@ -1463,7 +1455,7 @@ export default function PresentStyles() {
           >
             数据洞察
           </h2>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>· 内容形式覆盖全景</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 内容形式覆盖全景</span>
           <span
             style={{
               marginLeft: 'auto',
@@ -1513,14 +1505,14 @@ export default function PresentStyles() {
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
                     内容形式适配雷达
                   </h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
                     六维模型评估（示例/参考）
                   </p>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>14</p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>形式总数</p>
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>14</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>形式总数</p>
               </div>
             </div>
             {(() => {
@@ -1606,7 +1598,7 @@ export default function PresentStyles() {
               ].map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{d.value}</span>
                 </div>
               ))}
@@ -1642,7 +1634,7 @@ export default function PresentStyles() {
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
                     各形式流量热度
                   </h3>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn, margin: 0 }}>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn, margin: 0 }}>
                     代表形式综合热度指数（示例/参考）
                   </p>
                 </div>
@@ -1657,7 +1649,7 @@ export default function PresentStyles() {
                       fontSize: 11,
                       fontWeight: 600,
                       background: i === 0 ? C.grad : 'rgba(255,255,255,0.08)',
-                      color: i === 0 ? '#0c1a30' : 'rgba(255,255,255,0.6)',
+                      color: i === 0 ? '#0c1a30' : 'rgba(255,255,255,0.84)',
                       fontFamily: F.cn,
                     }}
                   >
@@ -1687,7 +1679,7 @@ export default function PresentStyles() {
                 <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>
                 最高热度
               </span>
-              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.55)', fontFamily: F.cn }}>
+              <span style={{ marginBottom: 4, fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>
                 当前最主流形式
               </span>
             </div>
@@ -1750,7 +1742,7 @@ export default function PresentStyles() {
                       x={x(i).toFixed(1)}
                       y={(padT + innerH + 14).toFixed(1)}
                       textAnchor="middle"
-                      fill="rgba(255,255,255,0.55)"
+                      fill="rgba(255,255,255,0.8)"
                       fontSize="11"
                     >
                       {labels[i]}
