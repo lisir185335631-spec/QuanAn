@@ -20,7 +20,7 @@ import { ReportFooterActions } from '@/components/diagnosis/ReportFooterActions'
 import { WeeklyTasksSection } from '@/components/diagnosis/WeeklyTasksSection';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
-import { C, F, Item, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
+import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import {
   DIAGNOSIS_H1,
@@ -442,7 +442,7 @@ export default function Diagnosis() {
               <span
                 className="material-symbols-outlined animate-spin"
                 aria-hidden={true}
-                style={{ fontSize: 48, color: C.ikb }}
+                style={{ fontSize: 48, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}
               >
                 progress_activity
               </span>
@@ -509,7 +509,7 @@ export default function Diagnosis() {
                 fontSize: 40,
                 fontWeight: 800,
                 letterSpacing: '-0.02em',
-                marginBottom: 32,
+                marginBottom: 44,
                 background: C.grad,
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
@@ -540,36 +540,38 @@ export default function Diagnosis() {
                 </span>
                 <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,180,180,0.95)', fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>生成报告失败 · 请稍后再试</p>
               </div>
-              <button
-                type="button"
-                onClick={handleRetry}
-                data-testid="retry-button"
-                aria-label="重试"
-                className="lg-gradbtn"
-                style={{
-                  alignSelf: 'flex-start',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 9999,
-                  padding: '10px 24px',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: '#ffffff',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: F.cn,
-                }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  aria-hidden={true}
-                  style={{ fontSize: 18 }}
+              <Magnetic strength={0.3}>
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  data-testid="retry-button"
+                  aria-label="重试"
+                  className="lg-gradbtn"
+                  style={{
+                    alignSelf: 'flex-start',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    padding: '10px 24px',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: F.cn,
+                  }}
                 >
-                  refresh
-                </span>
-                重试
-              </button>
+                  <span
+                    className="material-symbols-outlined"
+                    aria-hidden={true}
+                    style={{ fontSize: 18 }}
+                  >
+                    refresh
+                  </span>
+                  重试
+                </button>
+              </Magnetic>
             </div>
           </FadeInWrapper>
         </div>
@@ -742,7 +744,7 @@ export default function Diagnosis() {
               fontSize: 40,
               fontWeight: 800,
               letterSpacing: '-0.02em',
-              marginBottom: 32,
+              marginBottom: 44,
               fontFamily: F.display,
               background: C.grad,
               WebkitBackgroundClip: 'text',
