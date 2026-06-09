@@ -1155,14 +1155,16 @@ export default function Trending() {
           <span className="material-symbols-outlined" aria-hidden={true} style={{ marginBottom: 12, fontSize: 40, color: 'rgba(255,255,255,0.4)' }}>wifi_off</span>
           <p style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.75)', fontFamily: F.cn }}>加载失败</p>
           <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>网络错误，请稍后重试</p>
-          <button
-            type="button"
-            onClick={() => void refetch()}
-            className="lg-gradbtn"
-            style={{ marginTop: 16, borderRadius: 12, padding: '8px 24px', fontSize: 13, fontWeight: 700, fontFamily: F.mono, cursor: 'pointer' }}
-          >
-            重试
-          </button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="lg-gradbtn"
+              style={{ marginTop: 16, borderRadius: 9999, padding: '8px 24px', fontSize: 13, fontWeight: 700, fontFamily: F.cn, cursor: 'pointer' }}
+            >
+              重试
+            </button>
+          </Magnetic>
         </div>
       )}
 
