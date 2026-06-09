@@ -471,25 +471,25 @@ export default function AcquisitionVideo() {
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>auto_fix_high</span>
             智能优化
           </button>
-          <motion.button
-            type="button"
-            data-testid="av-copy-btn"
-            disabled={!hasResult}
-            onClick={handleCopyPlan}
-            aria-label="复制方案"
-            whileHover={hasResult ? { y: -3 } : {}}
-            transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-            className="lg-gradbtn"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap',
-              borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700,
-              fontFamily: F.mono, cursor: hasResult ? 'pointer' : 'not-allowed',
-              opacity: hasResult ? 1 : 0.4, border: 'none',
-            }}
-          >
-            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
-            复制方案
-          </motion.button>
+          <Magnetic strength={0.3}>
+            <button
+              type="button"
+              data-testid="av-copy-btn"
+              disabled={!hasResult}
+              onClick={handleCopyPlan}
+              aria-label="复制方案"
+              className="lg-gradbtn"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap',
+                borderRadius: 9999, padding: '10px 18px', fontSize: 13, fontWeight: 700,
+                fontFamily: F.mono, cursor: hasResult ? 'pointer' : 'not-allowed',
+                opacity: hasResult ? 1 : 0.4, border: 'none',
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>content_copy</span>
+              复制方案
+            </button>
+          </Magnetic>
         </div>
       </header>
 
@@ -528,17 +528,19 @@ export default function AcquisitionVideo() {
           >
             <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.accent3, flexShrink: 0 }}>error</span>
             生成失败，请检查网络后重试。
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="lg-gradbtn"
-              style={{
-                marginLeft: 'auto', borderRadius: 8, padding: '6px 14px', fontSize: 12,
-                fontWeight: 700, fontFamily: F.mono, border: 'none', cursor: 'pointer',
-              }}
-            >
-              重试
-            </button>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                className="lg-gradbtn"
+                style={{
+                  marginLeft: 'auto', borderRadius: 9999, padding: '6px 14px', fontSize: 12,
+                  fontWeight: 700, fontFamily: F.cn, border: 'none', cursor: 'pointer',
+                }}
+              >
+                重试
+              </button>
+            </Magnetic>
           </div>
         </Reveal>
       )}
