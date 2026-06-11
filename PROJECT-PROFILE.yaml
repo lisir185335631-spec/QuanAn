@@ -1,0 +1,46 @@
+# ===================================================
+# 项目画像表 v1.1 · QuanAn
+# 2026-06-11 用户确认定稿（P11 确认保持"无特殊"）
+# 知识库协议：/Users/return/Desktop/knowledge-base/AGENTS.md
+# ===================================================
+
+project:
+  name: "QuanAn · AI IP 孵化平台"
+  date: "2026-06-11"
+  author: "return"
+
+# --- 核心维度（必填 7 个）---
+
+P1_type: "自定义:AI IP 孵化平台（内容创作+营销增长复合，复刻 aiipznt.vip；参照蓝本组合=02 爆款文案+03 视频剪辑+05.5 Solo营销）"
+P2_tolerance: "创作容错"
+P3_deployment: "公网云"
+P4_team: "Solo"
+P5_input: "含多模态输入"   # STT 语音 / PDF·DOCX 文件上传
+P5_output: "多模态输出"    # 文本 + DALL-E 图片 + TTS 语音
+P6_trigger: "含定时·事件·批量"  # BullMQ：daily-task cron / evolution 飞轮 / file-parser
+P7_human: "有人工复核"     # 9 步用户主导 + admin 审核队列（trending/deep-learn）
+
+# --- 次要维度 ---
+
+P8_concurrency: "低"
+P9_multitenant: "是"       # RLS 双重隔离已建（Postgres RLS + tRPC 中间件）
+P10_agent_count: "多Agent协作"  # 14 Specialist + 3 自治 Agent
+P11_compliance: "无特殊"   # 2026-06-11 用户确认；有 PII mask/免责底线，无等保/GDPR 硬要求
+P12_kb_type: "混合"        # 67 案例+23 公式（结构化常量）+ pgvector RAG
+
+# --- 项目进度游标（L1 状态层）---
+progress:
+  current_phase: 2          # 重构战役从阶段 2（战略评审与方案选型）切入
+  completed_phases: []      # 门禁语义=已过出门清单；阶段 0/1 以门禁债务方式折抵，见 phase_notes
+  next_action: "重构方案（阶段 2 交付物）已提交用户评审，批准后过 02-方案评审清单出阶段"
+  phase_notes:
+    0: "存量折抵：项目已有 18 个 ADR/框架选型（Hono+tRPC+Prisma+BullMQ），未按 00-选型清单逐项核验——记门禁债务，重构批次启动前补扫"
+    1: "重构需求=2026-06-11 四路机制级梳理报告的问题清单（正确性 4 项/文档欠债/工程债/前端债）；AC 随重构方案定义；01-清单待方案批准后补核——门禁债务"
+    2: "2026-06-11 进入。背景：存量项目 30 个 PRD 已完成（Ralph 工程），PRD-35 收官待启；本轮为重构战役，方案制定中"
+  updated: "2026-06-11"
+
+# --- 清单自检状态（kb-run 过清单时勾选）---
+checklist: {}
+
+# --- 复利回流记录 ---
+reflux: []
