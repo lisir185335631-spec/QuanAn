@@ -2,7 +2,7 @@
 # scripts/audit-redlines-admin.sh
 # QuanAn admin 子系统 · 11 LD-A + 6 R-A 一键 grep 检测
 # AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A · PRD-14 US-001: +LD-A9 · PRD-14 US-006: +LD-A10 · PRD-14 US-011: +LD-A11
-# 派生自 AGENTS.md §10.4.1 + §10.4.2
+# 派生自 .claude/rules/admin-subsystem.md §10.4
 
 set -euo pipefail
 

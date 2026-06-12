@@ -234,3 +234,15 @@ AC-z: unit tests for [具体 component 名] → N tests PASS
 ```
 
 admin page 单测：`vi.hoisted` + `adminTrpc mock` + `MemoryRouter` wrap·每 page 3 test minimum（①渲染不崩溃②loading state③onSuccess 数据渲染）。
+
+## §7.11 测试金字塔"经济学"(为什么这样分配)
+
+| 层 | 用例数 | 跑时 | 单用例发现 bug 价值 | 维护成本 |
+|---|:-:|:-:|:-:|:-:|
+| ① 静态 | 0(自动) | 1 min | 极高(类型 / lint) | 0 |
+| ② 单元 | 200+ | 5 min | 高(覆盖最广) | 中 |
+| ③ 集成 | 40-60 | 10 min | 中(组件交互) | 中高 |
+| ④ E2E | 8-10 | 15 min | 高(真实路径) | 高(脆弱) |
+| ⑤ LLM Judge | 100 | 30 min | 中(质量保证) | 中(prompt 改动维护) |
+
+> 加起来 ~1 小时 CI · 跑完才合并 · 是产品质量基线。

@@ -26,6 +26,7 @@ const r = await llmGateway.complete({ model_tier: 'reasoning', ... });
 
 检测：`grep -r "new OpenAI\|new Anthropic\|client\.messages\.create\|openai\.chat\.completions" src/ --exclude-dir=lib/llm-gateway` → 任一命中 reject
 豁免：`src/workers/image-gen / embedding / rag / tts / stt`（非 LLM chat·设计意图）
+豁免范围说明：旧版仅豁免 lib/llm-gateway 单文件；脚本现状额外豁免 image-gen/embedding/rag/tts/stt 五个非 chat worker 目录（2026-05 演化）——如需收紧，改脚本与本文件同步
 
 ---
 

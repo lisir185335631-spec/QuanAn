@@ -95,15 +95,15 @@ BEGIN { RS="--\n"; ORS=""; FS="\n" }
 }' | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" | grep -v "^$" || true)
 if [ -n "$LEAK" ]; then fail "R-5 · Redis/LS 漏 acc_ 命名空间 · LD-009"; echo "$LEAK" | head -10; else pass "R-5 · Redis/LS 命名空间 (helper 函数封装 acc_ 前缀)"; fi
 
-# R-9 · console.log / debugger (AGENTS §6.9 · 用 logger)
+# R-9 · console.log / debugger (.claude/rules/coding-standards.md §6.9 · 用 logger)
 if grep -rn "console\.log\|debugger" \
     apps/api/src/ apps/web/src/ apps/admin/src/ packages/*/src/ \
     --include="*.ts" --include="*.tsx" 2>/dev/null \
     | grep -v "\.test\." | grep -v "\.judge\." \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
     | grep -v "// eslint-disable" ; then
-  fail "AGENTS §6.9 · 生产代码 console.log / debugger · 用 logger"
-else pass "AGENTS §6.9 · 无 console.log / debugger"; fi
+  fail ".claude/rules/coding-standards.md §6.9 · 生产代码 console.log / debugger · 用 logger"
+else pass ".claude/rules/coding-standards.md §6.9 · 无 console.log / debugger"; fi
 
 # R-10 · any 类型兜底 (LD-013)
 # TD-051 fix: awk 识别 eslint-disable-next-line @typescript-eslint/no-explicit-any 注释 · 豁免接下来的 1 行

@@ -101,6 +101,7 @@ done
 
 > **R7 命令对齐比对**（LD-002·R-1 重点核对）：
 > - **LD-002** §8 原文用 `src/server/agents/specialists/*.ts`；audit-ld.sh 实际用 `apps/api/src/specialists/*.ts`。以脚本路径为准（monorepo 结构）。
+> - **LD-003** 旧版主文件用宽 grep（`"Agent\.run\|Agent\.invoke" ... | grep -v "this\."`）；新版主文件改为脚本指针（`bash scripts/audit-ld.sh` LD-003 段），与 LD-004/005 写法一致。脚本实际检测更窄精准：专门检测 specialists 内 Agent 互调模式，排除合法的 this 调用与 re-export。
 > - **R-1** audit-redlines.sh 豁免了 image-gen/embedding/rag/tts/stt 目录（非 LLM chat workers·设计意图）；§5.6 原文未提此豁免。以脚本为准（redlines.sh 第 30-42 行）。
 > - **LD-004** 原文用"文件名匹配"检测；audit-ld.sh TD-052 修复版改为"检测文件内自循环"（不再 grep enqueue）。以脚本为准。
 

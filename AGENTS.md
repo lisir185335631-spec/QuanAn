@@ -1,6 +1,6 @@
 # QuanAn · 代码层约束(AGENTS.md · R7 精简版)
 
-> **版本** · v0.5-r7(2026-06-12 R7 瘦身 · 原 AGENTS.md 3714 行 → 318 行主文件，≤500 达标)
+> **版本** · v1.1-r7(2026-06-12 R7 瘦身 · 原 AGENTS.md 3714 行 → 318 行主文件，≤500 达标)
 > **派生自** · ARCHITECTURE.md v0.4 + ADMIN-ARCHITECTURE.md v0.2
 > **服务对象** · Ralph Agent / Opus Audit / 任何 AI / 工程师在本仓库写代码时遵循
 > **硬约束** · 本文件的 LD / 红线 是**不可绕过**的 — 必须先改本文件再改代码
@@ -88,12 +88,14 @@
 
 **LD-001**·95% Workflow / 5% Agent：3 个 L5 自治 Agent = VoiceChatAgent/EvolutionAgent/DailyTaskAgent；其余全部 Workflow。→ ADR-001/002
 检测：`grep -A30 "execute(" src/server/agents/specialists/*.ts | grep -E "for|while" | grep llm`→0 命中
+例外：无——任何 Specialist 不允许内部多轮 LLM，多轮场景必须走 3 个 L5 之一
 
 **LD-002**·14 能力域 Specialist（按域归并·不按 URL 一对一）→ ADR-003
 检测：`ls src/server/agents/specialists/*.ts | grep -v test | wc -l`≤14
 
 **LD-003**·Specialist 之间 0 直接调用（通过 ContextAssembler / EvolutionAgent 飞轮） → ADR-004
-检测：`grep -rn "Agent\.run\|Agent\.invoke" src/server/agents/specialists/ | grep -v "this\."`→0 命中
+检测：`bash scripts/audit-ld.sh`（LD-003 段）
+例外：DeepLearnAgent 写 EvolutionProfile 合法（写记忆，不是调用 Agent）
 
 ### §3.2 自治+共享（LD-004~005）
 
@@ -109,6 +111,7 @@
 
 **LD-007**·ContextAssembler 是 prompt 注入**唯一入口**·严禁 Specialist 内自拼 systemPrompt → ADR-007
 检测：`grep -rn 'systemPrompt\s*=\s*[` + "`" + `'"]' src/server/agents/specialists/`→0 命中
+例外：单元测试可 mock ContextAssembler，但不能完全绕过
 
 **LD-008**·反馈飞轮 5 阶段（生成→反馈→触发→跑批→注入）·EvolutionProfile 必须是**账号级**（account_id 唯一索引，不允许 user_id 主键） → ADR-008/009
 
@@ -120,6 +123,7 @@
 7 实体不入 LS：DiagnosisReport / EvolutionProfile / EvolutionInsight / FeedbackLog / DeepLearningArchive / KnowledgeFavorite / TrendingItem
 
 **LD-011**·≤30KB 常量直接 import（不入向量库）·RAG 用 pgvector·禁止引入 qdrant/pinecone/weaviate → ADR-012
+例外：数据量 >1M 向量后可重新评估（开新 ADR）
 
 ### §3.5 接口+护栏（LD-012~014）
 
@@ -132,16 +136,19 @@
 
 ### §3.6 视觉（LD-015）
 
-**LD-015**·Aurelian Dark（金 #d4af37/--primary）·弃用赛博青 #00e5ff·DESIGN.md YAML frontmatter 是颜色权威·Lucide 1.5/2px stroke 非 filled → ADR-015
+**LD-015**·Aurelian Dark（金 #d4af37/--primary）·弃用赛博青 #00e5ff·ADR.md ADR-015（颜色权威；原 ui/aurelian_dark/DESIGN.md 已随 34dc2f9 移除）·Lucide 1.5/2px stroke 非 filled → ADR-015
 检测：`grep -rn "#00e5ff\|cyan-\|Orbitron\|Rajdhani" src/ --include="*.ts" --include="*.tsx" --include="*.css"`→0 命中
+例外：Active 状态指示可用 filled 图标，加注释 // active state filled icon
 
 ### §3.7 测试（LD-016）
 
 **LD-016**·单元覆盖率≥80%（核心 agents ≥90%）·集成≥40 用例·E2E≥8 用例·LLM-as-Judge≥4.0/5.0·prompt 改动必跑回归不下降 → ADR-016
+例外：src/lib/utils/ 不要求 LLM Judge，但单元覆盖 100%（高于标准）
 
 ### §3.8 法律+合规（LD-017~018）
 
 **LD-017**·trending 必须走第三方授权（新榜/蝉妈妈/飞瓜 API）·**绝对禁止**自建爬虫（puppeteer/playwright+代理） → ADR-017
+例外：无——即使 dev 环境也不允许自建爬虫
 
 **LD-018**·医疗/法律/金融行业生成内容加免责声明·用户 PII（邮箱/手机/真实姓名）不得入 prompt（替换为占位符） → ADR-018
 
@@ -265,15 +272,15 @@ bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（
 | 写新 Specialist | AGENTS.md §3 LD-002 + §4（切分规则）+ PROMPTS.md |
 | 改 LLM 调用 | AGENTS.md LD-012 + ADR.md ADR-013 + ARCHITECTURE.md §6.5 |
 | 加新表/字段 | DATA-MODEL.md + ARCHITECTURE.md §3.1 + AGENTS.md LD-009 |
-| 改 prompt | PROMPTS.md + §7.6 LLM Judge 跑回归 |
-| 加新 tRPC procedure | AGENTS.md §4.4 + ARCHITECTURE.md §6.2 |
-| 改 UI 颜色/字体 | DESIGN.md YAML（不直接改 src/） |
+| 改 prompt | PROMPTS.md + .claude/rules/testing.md §7.6 LLM Judge 跑回归 |
+| 加新 tRPC procedure | .claude/rules/design-constraints.md §4.4 + ARCHITECTURE.md §6.2 |
+| 改 UI 颜色/字体 | ADR.md ADR-015（颜色权威；原 ui/aurelian_dark/DESIGN.md 已随 34dc2f9 移除） |
 | 加新 admin 功能 | .claude/rules/admin-subsystem.md + ADMIN-ARCHITECTURE.md |
 | 审计（Opus） | AGENTS.md §3+§5+§8 + ADR.md 相关 ADR + audit-playbook.md |
 
-**文档分层**：L1 必读=ARCHITECTURE.md + AGENTS.md·L2 派生=ADR.md+DATA-MODEL.md+PROMPTS.md·L3 参考=aiipznt-spec.md+DESIGN.md·L4 代码=src/
+**文档分层**：L1 必读=ARCHITECTURE.md + AGENTS.md·L2 派生=ADR.md+DATA-MODEL.md+PROMPTS.md·L3 参考=aiipznt-spec.md+ADR.md ADR-015（颜色权威；原 ui/aurelian_dark/DESIGN.md 已随 34dc2f9 移除）·L4 代码=src/
 
-**5 分钟速读路径**（时间紧时）：ARCHITECTURE.md §1.1 → §1.4 → §4.1 → §4.3 → AGENTS.md §3.9 决策矩阵 → §5 红线表 → ARCHITECTURE.md §9.14 MVP 路径
+**5 分钟速读路径**（时间紧时）：ARCHITECTURE.md §1.1 → §1.4 → §4.1 → §4.3 → AGENTS.md §3（18 LD 断言）+ §5 红线表 → ARCHITECTURE.md §9.14 MVP 路径
 
 ---
 
@@ -311,7 +318,7 @@ bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（
 
 ## 修订记录（最近 3 条）
 
-- **2026-06-12 R7** · AGENTS.md 3714→318 行瘦身·下沉 6 rules 文件+1 archive 文件·台账见 `.planning-r7-审定台账.md`
+- **2026-06-12 R7** · AGENTS.md 3714→318 行瘦身·下沉 6 rules 文件+1 archive 文件·台账见 `.planning-r7-审定台账.md`（版本接续 v1.0，旧头部 v0.5 系历史未更新）
 - **2026-05-23 v1.0** · 加 §11.19 PRD-28 evaluation 完整化沉淀（LLM Judge 真闭环·100 金标准·admin evaluation UI·inter-rater Cohen's kappa）
 - **2026-05-20 v0.9** · 加 §11.16 PRD-25 LLM 接入全链路沉淀（8 Specialist 真 LLM·0 reject 首轮通过）
 
