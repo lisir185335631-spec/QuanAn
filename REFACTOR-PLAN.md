@@ -15,7 +15,7 @@
 | R4 Gateway 统一 key/计费 | image-gen/embedding/tts/stt 四 worker 接 SystemConfig key 缓存 + cost_log | admin 改 key 即时生效；cost_log 全覆盖 | Ralph · PRD-39 |
 | R5 视觉基线持久化 + PRD-35 收官 | snapshotDir 迁出 /tmp 入 git；重建基线；执行原 PRD-35（visual audit/Lighthouse/SEO） | CI 有基线；PRD-35 验收 | Ralph · PRD-40 |
 | R6 前端结构债 | CanarySlider 合并入 packages/ui/admin；4 处镜像类型迁 packages/schemas；Step3.tsx 拆分试点；@quanan/ui/base 启动 | 视觉 diff=0 + typecheck + e2e | Ralph · PRD-41 |
-| R7 文档收口 | DATA-MODEL→52 模型实况；SCAFFOLD 路径全替；LD-002/R-1 检测命令对齐 audit 脚本；ARCHITECTURE 路由矩阵 27 | 按文档审计无误报；compound-harness-docs 收口 | 直改 |
+| R7 文档收口 | DATA-MODEL→52 模型实况；SCAFFOLD 路径全替；LD-002/R-1 检测命令对齐 audit 脚本；ARCHITECTURE 路由矩阵 27；**AGENTS.md 瘦身**（§11 回流记录拆分归档，核心约束回 500 行内——04 清单走查发现超标 7 倍） | 按文档审计无误报；compound-harness-docs 收口 | 直改 |
 
 ## 明确不动
 
