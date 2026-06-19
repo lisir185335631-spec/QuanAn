@@ -113,7 +113,7 @@
               │ · 4 层架构(理论/工程/业务/工具)│
               │ · PI Agent 设计哲学 13 篇         │
               │ · 11/01-11.5 双案例对标实战       │
-              │ · 18 ADR + 41 reference 篇        │
+              │ · 22 ADR + 41 reference 篇        │
               └──────────────────────────────────┘
 ```
 
@@ -156,7 +156,7 @@
 | 文档 | 行数 | 角色 | 与 ARCHITECTURE 的关系 | 本 review 引用度 |
 |---|:-:|---|---|:-:|
 | AGENTS.md | 2324 | 代码层 LD / 红线 / audit_commands(Coding 3.0 必读) | "怎么做 / 不能做"(代码侧约束) | ⭐⭐⭐ |
-| ADR.md | 1546 | 18 ADR 完整决策记录 | LD 展开版(架构侧理由) | ⭐⭐⭐ |
+| ADR.md | 1546 | 22 ADR 完整决策记录 | LD 展开版(架构侧理由) | ⭐⭐⭐ |
 | DATA-MODEL.md | 2868 | 18 实体 Prisma schema + RLS + 索引 | §3 数据架构的具体落地 | ⭐⭐⭐(找 admin 时关键)|
 | PROMPTS.md | 2340 | 14 Specialist system prompt 模板 | §4 Agent 编排的具体落地 | ⭐ |
 | SCAFFOLD.md | 242 | src/ 80 文件目录索引 | 工程组织(非设计) | ⭐⭐(找 admin 文件) |
@@ -692,7 +692,7 @@ src/pages/admin/{InviteManage}.tsx     ← 唯一 1 个 admin 页面骨架(AGENT
 
 | 项 | 内容 |
 |---|---|
-| **证据** | knowledge-base ADR-016 Approval Gates 已是知识库标准 · QuanAn ADR.md 18 条 ADR 没采纳这条 · 高风险操作(封禁用户 / 删除账号 / 手动改进化档案 / 强制下架内容)无两人审批机制 |
+| **证据** | knowledge-base ADR-016 Approval Gates 已是知识库标准 · QuanAn ADR.md 22 条 ADR 没采纳这条 · 高风险操作(封禁用户 / 删除账号 / 手动改进化档案 / 强制下架内容)无两人审批机制 |
 | **影响** | 单 admin 误操作 / 恶意操作没有第二道闸 |
 | **修复动作** | ADMIN-ARCHITECTURE 加 "Approval Gates 流程"(对应高风险动作清单)+ ADR.md 加 ADR-020 |
 | **修复参考** | knowledge-base/08-tech-decisions/架构决策记录 ADR-016 |

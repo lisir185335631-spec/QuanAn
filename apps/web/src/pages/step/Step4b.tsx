@@ -14,6 +14,7 @@ import {
   STEP4B_SUBTITLE_REAL,
   STEP4B_THREE_STAGES,
 } from '@/lib/constants/step4b';
+import { trpc } from '@/lib/trpc';
 import { breakSentences } from '@/lib/text';
 
 // ── Legacy adapter types (kept for backward compat with existing tests) ───────
@@ -382,9 +383,59 @@ export default function Step4b() {
   }, [isSaving]);
 
   const [isLocalGenerating, setIsLocalGenerating] = useState(false);
-  const isLoading = isLocalGenerating || isSaving;
+  const [planResult, setPlanResult] = useState<Step4bResult | null>(null);
 
-  const generated: Step4bResult = generateMockResult();
+  const generatePlanMutation = trpc.monetization.generatePlan.useMutation({
+    onSuccess: (row) => {
+      try {
+        const parsed: unknown = JSON.parse(row.content);
+        // 1:1 field mapping — marketAnalysis→marketAnalysis, stages→stages, revenueStructure→revenueStructure, successCases→successCases
+        if (
+          parsed !== null &&
+          typeof parsed === 'object' &&
+          'marketAnalysis' in parsed &&
+          'stages' in parsed &&
+          'revenueStructure' in parsed &&
+          'successCases' in parsed
+        ) {
+          const p = parsed as {
+            marketAnalysis: {
+              industryAnalysis: string;
+              marketScale: string;
+              competition: string;
+              monetizationPotential: string;
+            };
+            stages: Step4bStage[];
+            revenueStructure: Array<{ name: string; percentage: string; desc: string; highlight?: boolean }>;
+            successCases: Array<{ title: string; category: string; journey: string; outcome: string; insight: string }>;
+          };
+          setPlanResult({
+            marketAnalysis: {
+              industryAnalysis: p.marketAnalysis.industryAnalysis,
+              marketScale: p.marketAnalysis.marketScale,
+              competition: p.marketAnalysis.competition,
+              monetizationPotential: p.marketAnalysis.monetizationPotential,
+            },
+            stages: p.stages,
+            revenueStructure: p.revenueStructure,
+            successCases: p.successCases,
+          });
+          toast.success('变现路径已生成');
+        }
+      } catch {
+        toast.error('数据解析失败，请重试');
+      }
+      setIsLocalGenerating(false);
+    },
+    onError: (err) => {
+      toast.error(`生成失败: ${err.message}`);
+      setIsLocalGenerating(false);
+    },
+  });
+
+  const isLoading = isLocalGenerating || isSaving || generatePlanMutation.isPending;
+
+  const generated: Step4bResult = planResult ?? generateMockResult();
   const canBulkActions = !isLoading;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -392,13 +443,25 @@ export default function Step4b() {
     if (!productService.trim() || isLoading) return;
     setIsLocalGenerating(true);
     save({ productService, targetAudience, ipPositioning, currentIncome });
-    setTimeout(() => { setIsLocalGenerating(false); toast.success('生成完成'); }, 1200);
+    generatePlanMutation.mutate({
+      industry,
+      productService,
+      targetAudience,
+      ipPositioning,
+      currentIncome,
+    });
   }
 
   function handleRegenerateAll() {
     if (!isLoading) {
       setIsLocalGenerating(true);
-      setTimeout(() => { setIsLocalGenerating(false); toast.success('已重新生成'); }, 1200);
+      generatePlanMutation.mutate({
+        industry,
+        productService,
+        targetAudience,
+        ipPositioning,
+        currentIncome,
+      });
     }
   }
 

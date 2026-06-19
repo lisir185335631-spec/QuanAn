@@ -1,5 +1,5 @@
 // PRD-13 US-007/008 · PromptsPage · /admin/prompts
-// AC-4: 14 Tab 横向 TabBar
+// AC-4: 13 Tab 横向 TabBar
 // AC-5: URL params · ?specialist=PositioningAgent&mode=default&tab=editor|canary
 // AC-6: 顶部当前版本卡片 · 版本号 / 评分 / 灰度比例
 // AC-7: Monaco 编辑器 80% + Diff 视图 toggle
@@ -19,7 +19,7 @@ import { LlmJudgeCard } from './components/LlmJudgeCard';
 import { DiffMonacoEditor, MonacoEditor } from './components/MonacoEditor';
 import { HistoryTimeline } from './components/HistoryTimeline';
 
-// ── 14 Specialists ────────────────────────────────────────────────────────────
+// ── 13 Specialists ────────────────────────────────────────────────────────────
 
 interface SpecialistDef {
   id: string;
@@ -41,7 +41,6 @@ const SPECIALISTS: SpecialistDef[] = [
   { id: 'PrivateDomainAgent', label: '私域', modes: ['default'] },
   { id: 'DeepLearnAgent', label: '深度学习', modes: ['default'] },
   { id: 'DiagnosisAgent', label: '诊断', modes: ['default'] },
-  { id: 'VoiceChatAgent', label: '语音', modes: ['default'] },
 ];
 
 const VALID_SPECIALIST_IDS = new Set(SPECIALISTS.map((s) => s.id));

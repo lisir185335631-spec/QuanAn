@@ -18,7 +18,6 @@ import Step8 from '@/pages/step/Step8';
 import Generate from '@/pages/tools/Generate';
 import Knowledge from '@/pages/tools/Knowledge';
 import Trending from '@/pages/tools/Trending';
-import VoiceChat from '@/pages/tools/VoiceChat';
 
 // Mock tRPC — pages that call useQuery hooks need this to render without a real provider
 vi.mock('@/lib/trpc', () => ({
@@ -131,25 +130,9 @@ vi.mock('@/lib/trpc', () => ({
       saveStream: { useSubscription: vi.fn() },
       progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
-    stt: {
-      transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },
-    },
-    tts: {
-      synthesize: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ publicUrl: 'http://example.com/audio.mp3', sizeBytes: 1024, costUsd: 0.015 }), isPending: false }) },
-    },
-    voiceChat: {
-      clearSession: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true }), isPending: false }) },
-      start: { useSubscription: vi.fn() },
-    },
   },
   queryClient: {},
-  trpcClient: {
-    voiceChat: {
-      start: {
-        subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
-      },
-    },
-  },
+  trpcClient: {},
 }));
 
 vi.mock('@/hooks/useActiveAccount', () => ({
@@ -299,37 +282,6 @@ describe('IpPlan page (US-010)', () => {
   it('shows 已完成 N／9 步 subtitle in ip-plan-subtitle', () => {
     render(<MemoryRouter><IpPlan /></MemoryRouter>);
     expect(screen.getByTestId('ip-plan-subtitle')).toHaveTextContent(/已完成/);
-  });
-});
-
-describe('VoiceChat page (1:1 复刻 mock-first)', () => {
-  it('chip 标题 "VOICE CHAT" 渲染', () => {
-    render(
-      <MemoryRouter>
-        <VoiceChat />
-      </MemoryRouter>,
-    );
-    expect(screen.getByTestId('voice-chat-chip-title')).toHaveTextContent('VOICE CHAT');
-  });
-
-  it('chip subtitle "语音对话 · 你的专属IP变现顾问" 渲染', () => {
-    render(
-      <MemoryRouter>
-        <VoiceChat />
-      </MemoryRouter>,
-    );
-    expect(screen.getByTestId('voice-chat-chip-subtitle')).toHaveTextContent(
-      '语音对话 · 你的专属IP变现顾问',
-    );
-  });
-
-  it('input placeholder 有什么问题尽管问我...', () => {
-    render(
-      <MemoryRouter>
-        <VoiceChat />
-      </MemoryRouter>,
-    );
-    expect(screen.getByPlaceholderText('有什么问题尽管问我...')).toBeInTheDocument();
   });
 });
 

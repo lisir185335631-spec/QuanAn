@@ -36,10 +36,11 @@ export const presentStylesRouter = router({
   recommend: protectedProcedure
     .input(recommendInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await presentationAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'recommend',
         userInput: { text: input.text, platform: input.platform },
         traceId: traceId ?? undefined,

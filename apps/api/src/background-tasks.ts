@@ -109,6 +109,13 @@ export const BACKGROUND_TASKS: BackgroundTask[] = [
     },
   },
   {
+    name: 'canary_stop_loss_cron',
+    register: async () => {
+      const { scheduleCanaryStopLoss } = await import('./jobs/admin/canary-stop-loss.job');
+      await scheduleCanaryStopLoss();
+    },
+  },
+  {
     name: 'constant_embed_worker',
     register: async () => {
       const { constantEmbedWorker } = await import('./jobs/admin/constant-embed-rebuild.job');

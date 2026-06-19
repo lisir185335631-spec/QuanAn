@@ -10,6 +10,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -67,7 +69,7 @@ interface PhaseTemplate {
   outputHint: string;
 }
 
-const PHASE_TEMPLATES: Record<PrivateDomainPhase, PhaseTemplate> = {
+export const PHASE_TEMPLATES: Record<PrivateDomainPhase, PhaseTemplate> = {
   welcome: {
     goal: '新好友添加后建立第一印象 · 让对方感受到价值和温度 · 提升留存率',
     tactics: '自我介绍+价值主张 · 福利钩子 · 引导对方表达需求 · 避免硬推销',
@@ -100,15 +102,7 @@ const PHASE_TEMPLATES: Record<PrivateDomainPhase, PhaseTemplate> = {
   },
 };
 
-const CHANNEL_LABEL: Record<string, string> = {
-  wechat: '微信视频号',
-  douyin: '抖音',
-  xiaohongshu: '小红书',
-  weibo: '微博',
-  other: '其他平台',
-};
-
-const PHASE_LABEL: Record<PrivateDomainPhase, string> = {
+export const PHASE_LABEL: Record<PrivateDomainPhase, string> = {
   welcome: '欢迎话术',
   warmup: '破冰暖场',
   trust: '信任建立',
@@ -163,11 +157,11 @@ export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainPhaseGenerat
   }
 
   protected async invokeLLM(
-    _ctx: AssembledContext,
+    ctx: AssembledContext,
     req: SpecialistRequest<PrivateDomainPhaseGenerateInput>,
   ): Promise<InvokeLLMResult> {
     const input = req.userInput;
-    const systemPrompt = this._buildSystemPrompt(input.phase, input);
+    const systemPrompt = ctx.systemPrompt;
     const userPrompt = this._buildUserPrompt(input.phase, input);
 
     return this.llmGateway.complete({
@@ -179,7 +173,7 @@ export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainPhaseGenerat
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
         eventType: 'specialist_call',
       },
       timeout_ms: this.config.execution.timeout_ms,
@@ -187,42 +181,29 @@ export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainPhaseGenerat
     });
   }
 
-  _buildSystemPrompt(phase: PrivateDomainPhase, input: PrivateDomainPhaseGenerateInput): string {
-    const tmpl = PHASE_TEMPLATES[phase];
-    const channel = CHANNEL_LABEL[input.currentChannel] ?? input.currentChannel;
-    return [
-      '你是专业的私域运营话术策划专家，擅长为 IP 博主生成高转化私域话术。',
-      '',
-      `## 当前阶段：${PHASE_LABEL[phase]}(${phase})`,
-      `**目标**：${tmpl.goal}`,
-      `**核心策略**：${tmpl.tactics}`,
-      `**输出期望**：${tmpl.outputHint}`,
-      '',
-      `## 产品背景`,
-      `- 产品/服务：${input.productDescription}`,
-      `- 价格：¥${input.productPrice}`,
-      `- 目标受众：${input.targetAudience}`,
-      `- IP 定位：${input.ipPositioning}`,
-      `- 主渠道：${channel}（月流量 ${input.monthlyTraffic}）`,
-      ...(input.scene ? [`- 具体场景：${input.scene}`] : []),
-      '',
-      '## 输出要求',
-      '请以 JSON 格式返回话术，包含：',
-      '- phaseScript: 主话术全文（200-400 字，自然流畅，适合私域场景）',
-      '- variants.professional: 专业版变体（语气专业权威，适合 B 端或高客单价场景）',
-      '- variants.friendly: 亲切版变体（语气温暖亲切，适合 C 端或情感消费场景）',
-      '- variants.sales: 销售版变体（直接促成转化，包含行动号召和稀缺性元素）',
-      '',
-      '⚠️ 严格约束：仅返回 JSON，禁止添加额外说明文字。',
-    ].join('\n');
-  }
-
   _buildUserPrompt(phase: PrivateDomainPhase, input: PrivateDomainPhaseGenerateInput): string {
+    // PII 脱敏: 用户自由文本字段可能含手机/邮箱 · R-14 / LD-018 / US-002 AC-5
+    // 枚举字段(currentChannel)与数值字段(productPrice/monthlyTraffic)不含 PII · 不脱敏
+    const productDescription = piiMask(input.productDescription);
+    const targetAudience = piiMask(input.targetAudience);
+    const ipPositioning = piiMask(input.ipPositioning);
+    const scene = input.scene ? piiMask(input.scene) : undefined;
+
+    const tmpl = PHASE_TEMPLATES[phase];
+
     return [
+      `## 当前阶段:${PHASE_LABEL[phase]}`,
+      `**目标**:${tmpl.goal}`,
+      `**核心策略**:${tmpl.tactics}`,
+      `**输出期望**:${tmpl.outputHint}`,
+      '',
       `请为以下产品生成「${PHASE_LABEL[phase]}」阶段的私域话术：`,
-      `产品：${input.productDescription}（¥${input.productPrice}）`,
-      `受众：${input.targetAudience}`,
-      ...(input.scene ? [`场景：${input.scene}`] : []),
+      `产品：${productDescription}（¥${input.productPrice}）`,
+      `受众：${targetAudience}`,
+      `IP 定位：${ipPositioning}`,
+      // 渠道/流量为非 PII 业务上下文(枚举+数值)·影响话术调性·US-002 接通时随产品背景块迁入此处
+      `主渠道：${input.currentChannel}（月流量 ${input.monthlyTraffic}）`,
+      ...(scene ? [`场景：${scene}`] : []),
       '',
       '请返回 JSON 格式：{"phaseScript": "...", "variants": {"professional": "...", "friendly": "...", "sales": "..."}}',
     ].join('\n');

@@ -11,12 +11,12 @@ project:
 
 # --- 核心维度（必填 7 个）---
 
-P1_type: "自定义:AI IP 孵化平台（内容创作+营销增长复合，复刻 aiipznt.vip；参照蓝本组合=02 爆款文案+03 视频剪辑+05.5 Solo营销）"
+P1_type: "自定义:AI IP 孵化平台（内容创作+营销增长复合，复刻 aiipznt.vip；参照蓝本组合=02 爆款文案+05.5 Solo营销+07 AI CMO；2026-06-17 cross_0 去03视频剪辑：系统不生成视频）"
 P2_tolerance: "创作容错"
 P3_deployment: "公网云"
 P4_team: "Solo"
-P5_input: "含多模态输入"   # STT 语音 / PDF·DOCX 文件上传
-P5_output: "多模态输出"    # 文本 + DALL-E 图片 + TTS 语音
+P5_input: "含多模态输入"   # 2026-06-16重构：删 STT 语音对话 → 仅 PDF·DOCX 文件上传(产品/人物资料；可能含图片，阶段1 核实是否需视觉处理，否则可降纯文本)；语音类条目 0.4b/0.4c N/A
+P5_output: "多模态输出"    # 2026-06-16重构：删 TTS 语音 → 文本 + DALL-E 图片(无视频；系统不生成视频)；语音合成/实时语音条目 N/A
 P6_trigger: "含定时·事件·批量"  # BullMQ：daily-task cron / evolution 飞轮 / file-parser
 P7_human: "有人工复核"     # 9 步用户主导 + admin 审核队列（trending/deep-learn）
 
@@ -30,47 +30,259 @@ P12_kb_type: "混合"        # 67 案例+23 公式（结构化常量）+ pgvecto
 
 # --- 项目进度游标（L1 状态层）---
 progress:
-  current_phase: 6          # 阶段 6 开发执行：PRD-36(R1) prd.json 已过 05 门禁，待点火 Ralph
-  completed_phases: [2, 3, 4, 5]  # 用户质询跳过合理性后,3/4 已按清单正式补走(2026-06-11)
-  next_action: "R7 瘦身已收口(2026-06-12,Fresh Session 验证通过)。下一步候选:① PRD-36 点火(R1 正确性四连修——当前 audit FAIL 项正是其靶子,优先建议)② R7 余项(DATA-MODEL/SCAFFOLD/ARCHITECTURE 路由矩阵)③ 补扫阶段0/1 门禁债务(00/01 清单)④ 审计新揭存量债小修（LD-A3 logPageView 豁免缺失/LD-A8 userQuota 绕过单点直写/audit-self-test：admin-rls-tables 未验 DISABLE 表）"
+  current_phase: 8                      # 2026-06-19 阶段7 测试验收带债出门(universal⛔全过·H76 eval-suite/H79 Judge偏差 门禁债务·与 H77 红队集中阶段8)→进入阶段8 评审门禁+验收工件包集群
+  completed_phases: [0, 1, 2, 3, 4, 5, 6, 7]  # …2026-06-19 阶段6 出门(06清单⛔全过+3交付能力包闭合);2026-06-19 阶段7 带债出门(用户同意:07清单 universal A/B/F/G⛔全过 typecheck6/6·api1160/0·PII7家+输出端·注入过滤·鉴权·零回归;**门禁债务 H76 eval-suite[Golden Dataset≥20+Kappa≥0.6+CI门禁]/H79 Judge偏差校准[position·length·self-pref]→集中阶段8 与 H77 红队一起做**;H78 N/A创作容错·H80/H82轻债/部分;C/D/E软项 agent-browser端到端/量化指标/压测待补)
+  next_action: "2026-06-19 阶段6 开发执行出门(四波次重构+二轮对抗复审+清残留+3 交付能力包 G74注入过滤/G78成本熔断/G77输出合规 闭合阶段2 P0 backlog·06清单⛔全过)。下一步进入阶段7 测试验收:按双维映射取阶段7条目簇(E块RAG验收/D11安全验证/AC逐条),用验收报告核 prd 11 story 的 AC 实现证据(typecheck/单测/双向自测留痕),产出 docs/lifecycle/7-验收报告.md,过07清单。门禁债务:G81 DALL-E媒体质量闸门(轻债低优·DALL-E自带内容策略);commit 待用户触发(C清单commit规范软项·代码已 typecheck6/6+test1160/0+audit 验证)。横切安全合规清单阶段8项(B PII输出端已做/C注入五层部分/F密钥)+红队测试在阶段8验收。"
+  # 以下 phase_notes 为上一轮(2026-06-11/12)走查记录，保留供溯源；本轮全量重走时逐阶段重新核验、按新发现覆盖更新
   phase_notes:
-    0: "存量折抵：18 个 ADR/框架选型已存在，未按 00-清单逐项核验——门禁债务，重构批次间隙补扫"
-    1: "重构需求=2026-06-11 四路机制级梳理报告问题清单；门禁债务：01-清单待补核"
-    2: "✅2026-06-11 出门：REFACTOR-PLAN.md 用户批准(方案A 混合执行)；02-清单过(A2 14-Specialist 存量已论证/C1 步骤上限以 9 步固定主线满足精神,两项带注接受)"
-    3: "✅2026-06-11 出门(补走)：初为门禁债务跳过,用户质询后按 03-清单正式核验存量架构——A/B/C/E/G/H 全过;缺口记录:语义缓存与多Key轮询未建(创作容错+低并发画像接受)、RAG 无 Reranker(同前接受)、F 工具注册体系适用性低(Workflow 范式无开放工具需求)。教训:跳阶段必须显式请示用户,不得仅注记"
-    4: "✅2026-06-11 出门(补走)：04-清单核验存量 Harness——黄金检验/技术栈唯一性/分层规则/audit 脚本/husky hooks 全过;**真发现:AGENTS.md ~3500 行超规范建议(≤500)7 倍**(§11 回流记录与核心约束混储)→已加入 R7 范围:回流记录拆分归档,核心约束瘦身回 500 行内"
+    0: "阶段0 选型 · 2026-06-16 全量重走出门(00清单 21 项全过,⛔降级链三级+兜底 ADR-013)。本轮关键决策:①删语音模态 STT/TTS(系统不产视频);②对标案例数据源 自爬否决→改合规第三方榜单API(据手册 L1010/L1025 + ADR-017 R-17 红线);③蓝本组合 02爆款 + 05.5 Solo营销 + 07 CMO;④既有 22 ADR 重核成立(重构 8 主题仅③动选型轴)。产出 docs/lifecycle/0-选型决策.md。〔详细审计/修复历史见 KB ops-log〕 ‖ 2026-06-17 真·从0重走补跑 cross_0 一致性横切门(8⛔全过):3-Sonnet 回源核 QuanAn 代码,揪出并修4处上轮v1.2漏网失实——前端Next.js实为Vite+React(全库无next)/L4实为纯Prisma非Redis热缓存/L5为stub(return[]待PRD-9)/D-038引用收窄(原文仅锁ImageGen);产出物升v1.3。A/C/D/E段一致,B段修真后过。门禁债务延续:语音代码下线仍待阶段6。此即 reflux[1]「存量项目阶段0应加产出物↔代码一致性校验」的闭环兑现。"
+    1: "重构需求=2026-06-11 四路机制级梳理报告问题清单；门禁债务：01-清单待补核 ‖ 2026-06-17 真·从0重走出门:重构.txt 8主题写成可观测AC需求delta(docs/lifecycle/1-需求规格.md),既有30 PRD为基线不重写。过01清单(C节4⛔可观测/Typecheck全过;D文件上传闭环命中主题②;F意图节画像N/A豁免)+cross_1一致性门4⛔(删除项 获客视频/语音=完整活跃·背景图=UI壳未激活,均如实标注+归阶段6删除)。2路Sonnet回源核8主题映射+删除项实况。门禁债务01-清单待补核=已清。 ‖ 2026-06-17 需求核对锁定(双向溯源核对表,重构.txt拆22原子项·0漏):逐条与用户确认锁6处范围/标准——①行业下拉框+网格双交互+其他选项 ②文件格式PDF/Word/Excel/MD四种 ③低粉前端用户填粉丝阈值 ④关联资料暂定下拉框 ⑤上传落点Step1 ⑥纠正误放:每日运营计划改名对象=执行计划Step4每日作息表(非/daily-tasks模块);需求升v1.1。 ‖ 2026-06-18 完整需求走查(v2.0):应用户『完整走一遍所有环节』,由8主题delta扩为全产品逐块走查(9步+14工具+6模块+admin+横切,对真代码核·2路Sonnet)——揪出系统性前端脱节~10块(PRD写『输入→AI→渲染』、代码是toast/mock壳·多数后端已实现前端未接;Step4双侧空壳)+4盲区(Step9/voice-chat路由未清/admin知识库壳/TrendingScraper平台层);01清单补G节需求对齐行;30 PRD三删项内容已删·stale留阶段5 re-plan。前端脱节=实现债归阶段6/7。需求升v2.0。 ‖ 2026-06-18 NFR-前后端分离增补(用户新需求·非重构.txt·轻量回溯-additive):§九加NFR(前端apps/web仅经packages契约调后端、不依赖apps/api内部;AC=grep前端import后端src内部=0)→v2.1;current_phase留5·completed不移除(additive·现状已分离)"
+    2: "✅2026-06-11 出门：REFACTOR-PLAN.md 用户批准(方案A 混合执行)；02-清单过(A2 14-Specialist 存量已论证/C1 步骤上限以 9 步固定主线满足精神,两项带注接受) ‖ 2026-06-18 真·从0重走阶段2 战略评审出门:5路Sonnet回源核QuanAn代码+Opus把关亲核(D9.3/02清单门禁性质),产出 docs/lifecycle/2-方案评审.md(6 ADR:编排范式[registry派单+BullMQ不引Supervisor]/RAG[pgvector纯向量+TrendingItem向量收口]/数据获取[自爬否决=数据模型红线→合规第三方API待选型]/记忆[五层保留+L1空置删/L3正名Knowledge RAG/L5待数据源/L4衰减P2债]/多租户[三道闸RLS]/变现[D14.3配额已落,D14.7/D14.8不启动])。过02清单D节4⛔(风险已评估+缓解/接受声明;自运行循环/多Agent数/GDPR na)+cross_2横切安全合规17/17⛔(存量RLS/account-isolation/audit多已实装;迭代步数/无限循环na=Workflow范式)。阶段2修复AC立(实装归阶段6):0.7A层注入特征过滤(RAG chunks/sourceCopy/stepData间接注入3路径)/D9.3 C层token硬上限+非LLM API分桶/specialist _buildUserPrompt追加内容PII二次扫描;输出合规12.3阶段2评估;红队测试阶段8。门禁债务延续:语音下线阶段6。 ‖ 2026-06-18 NFR-前后端分离方案:加前后端分离方案=保留tRPC类型契约层作分离缝(无非TS客户端需求·不换REST;future mobile/对外API再回溯阶段2)→v1.1"
+    3: "✅2026-06-11 出门(补走)：初为门禁债务跳过,用户质询后按 03-清单正式核验存量架构——A/B/C/E/G/H 全过;缺口记录:语义缓存与多Key轮询未建(创作容错+低并发画像接受)、RAG 无 Reranker(同前接受)、F 工具注册体系适用性低(Workflow 范式无开放工具需求)。教训:跳阶段必须显式请示用户,不得仅注记 ‖ 2026-06-17 立阶段3对账任务(深入review发现):①RLS表数 文档↔代码计数漂移(DATA-MODEL/CLAUDE/manual_rls 各说一个数)→按真实 schema 对账、查是否有表漏 RLS;②Specialist 名册漂移(registry 实13含Presentation·缺Evolution/DailyTask vs AGENTS 锁定14)→厘清 canonical 名册、同步 AGENTS↔registry。〔细节见 ops-log〕 ‖ 2026-06-18 真·从0重走阶段3 架构设计出门:5路Sonnet回源核+Opus把关,产出 docs/lifecycle/3-架构设计.md(综合6 ADR成连贯架构:组件边界/接口契约/数据流/ADR集成表/横切落点矩阵)。**清2对账债务**:①RLS表数权威=manual_rls.sql 16表(非文档12/18)→漂移修复AC-C;真缺陷 trending_favorites漏RLS→修复AC-A;②Specialist名册canonical=13 step Specialist+3 L5自治(Evolution/DailyTask走BullMQ非registry=架构意图;schema缺VoiceChat随阶段6语音删消解)。**新揪缺陷**:G节⛔3 API Key明文落库(loadLlmKey:123无加密)→修复AC-B(envelope/KMS阶段6);纠正阶段2 cross_2 8f08c6cce2失实(向量库租户过滤→na:knowledge_chunk全局共享非租户私有),cross_2→16/16。过03清单14⛔(10过+4na[GDPR/工具白名单/高并发/计算分离])+cross_3一致性5⛔。修复AC-A/B/C+阶段2三AC实装归阶段6;红队阶段8。 ‖ [阶段3 review 自纠] 假勾纠正:G③ daf7627396(API Key加密)原误标 checked+修复AC,实为实装态门禁未满足(明文落库)→改门禁债务(checked:false);03清单 10/10→9/10(1债务);**带债出阶段3经用户同意**,修复AC-B阶段6实装、verify阶段8。J② 55734b4f09(RAG质检门)注记诚实化(admin受控豁免理由可用户复核)。 ‖ 2026-06-18 NFR-前后端分离架构:§七·补加前后端分离边界(seam=tRPC契约层packages·前端不碰后端内部·独立build/部署)→v1.1 ‖ 2026-06-18 全链路重构·阶段3 实质架构重做(L3):应用户判『6阶段全过门却产物表面、非Agent项目架构』→按新立《Agent项目架构实质性标准》把架构从L1(组件边界表)重做到L3。产出 docs/architecture/01-06(6承重墙:①上下文工程②控制流编排③记忆④可靠性⑤演进⑥多租户RLS隔离),每墙过L3六条(运转机制追踪真实请求/设计理由扣画像/失败边界闭合/软肋附为什么接受/根本张力与赌注/全程file:line接地),短板法整体过新出门判据。**L3深挖揪10真缺陷转阶段6**:PrivateDomainAgent PII绕过piiMask(R-14真漏洞)+绕过ctx/L1 VoiceChat软锁bug(pushTurn失败不解锁)/L5索引端embed()全零stub待核实/熔断器是注释非代码/trending_favorites漏RLS(坐实AC-A)/ContextAssembler._fetchStepData脱离事务RLS双轨/演进isMock空转+canary无止损+100冻结/needRag形同虚设。deliverables[3]升v2.0指向docs/architecture/。下一步阶段4 Harness按6墙护栏重定位(盘点15 gap·4高优:R-14扩PrivateDomain路径/R-21扩trending_favorites真检测/VoiceChat软锁红线/熔断器债务登记)。"
+    4: "✅2026-06-11 出门(补走)：04-清单核验存量 Harness;**真发现:AGENTS.md ~3500 行超规范7倍→R7瘦身回500行内** ‖ 2026-06-18 真·从0重走阶段4 Harness出门:3路Sonnet回源核(AGENTS质量/hooks门控/G1.1-G1.11)+Opus把关。**核现状**:AGENTS.md 329行≤500/18LD/17红线;**G1.x缺G1.2(husky空壳)/G1.8(API Key明文,=G³债务);N-A G1.3/G1.5(自研tRPC无MCP/SubAgent)**。**阶段4 复利核心=把累积修复AC编码进AGENTS.md红线**:加R-18(API Key不明文·G1.8)/R-19(外部内容注入特征过滤·AC①)/R-20(成本护栏·AC②)/R-21(account_id表全量RLS·AC-A)+扩R-14(PII覆盖_buildUserPrompt追加路径·AC③)——让阶段6实装被Harness强制;标注VoiceChat重构⑦待删(保AGENTS↔代码14一致非premature改13)。**实例化hook-gates**(E节6⛔配置就位):建.claude/hooks/四脚本(block-dangerous/protect-files/auto-format/run-tests含stop_hook_active)+.claude/settings.json($CLAUDE_PROJECT_DIR·PreToolUse/PostToolUse/Stop),实测拦截阶段6前。过04清单A2/D1/E6=9⛔全过+cross_4 2⛔(AGENTS计数对代码核);顺修yaml生成踩坑(cross_4劈裂cross_0已还原10项/旧语义键孤儿清)。修复AC实装+hook实测+语音下线均归阶段6。 ‖ 2026-06-18 NFR-前后端分离Harness:AGENTS加R-22(前端禁import后端apps/api/src内部·只经packages·grep=0=reject),红线21→22·330行 ‖ 2026-06-18 Harness架构深审(4 Sonnet分角度+Opus逐条亲核)+全链路修复:盲区=清单只查'配置就位'不查'约束真触发'。修:①审计层形同虚设→audit接 .github/workflows/ci.yml(continue-on-error非阻断·因存量违规)+.husky/pre-commit(typecheck阻断·audit warn)+新建scripts/init.sh;②计数漂移→红线17→22一致(文档地图/§5/§8+redlines-detail)/Specialist 14→15(audit R-15+audit-ld LD-002+AGENTS R-15检测口径由 ls specialists/[漏数agents/下2自治+误数registry.ts=假14]统一改 grep extends BaseSpecialist=15·与§1枚举13step+Evolution+DailyTask一致);③假勾→R-18~21标'🔜阶段6实装·当前债务·audit暂未检测'非已完成;④audit自身5 bug(R-1正则 new OpenAI 子串误匹配 new OpenAITtsWorker+腐烂豁免路径补app/·R-15/LD-002欠数·LD-005误判registry.ts未extends·LD-009 routers非递归漏 routers/app·admin子目录→实26 routers);⑤hooks(run-tests stdin读一次+typecheck/test串门·block-dangerous补 rm-rf项目路径+任意分支force push);⑥AGENTS内联检测命令旧src/server路径腐烂全改monorepo+新增§10 Session卫生·AGENTS 339行≤500。**audit-ld现exit=0全绿**;audit-redlines仅余 R-5(前端 Diagnosis.tsx localStorage无acc_·同浏览器切账户可串·产品决策)/R-11(PrivateDomainAgent._buildSystemPrompt硬编码模板串未走中心PromptManager违LD-007)=2真存量违规→阶段6清完后把CI audit改blocking。母题:接进CI的审计工具自身会喊假狼(R-1/R-15/LD-005/LD-009四处误报),wire时必须连同误报一起修;门禁清单查'hooks在不在'会漏'约束真能拦吗'"
     5: "✅2026-06-11 出门：PRD-36 prd.json(5 US) 过 05-规划门禁——初稿缺 retryCount/depends_on/收尾AC 三项被门禁抓出后修正,字段集与项目既有 schema 16 字段完全对齐"
-    6: "2026-06-11 进入：R0 卫生批已直改完成；PRD-36 待点火。kb-web 陪跑面板已按用户决策移除(skill 主干形态)；2026-06-12 R7 瘦身收口:AGENTS.md 3714→318 行(黄金检验拆分,6 rules 条件加载+1030 行沉淀归档;审计对照实验证明 FAIL 项=R1/R4 存量债与瘦身无关;Fresh Session 三探针全中)——R7 余项:DATA-MODEL 52 模型实况/SCAFFOLD 路径全替/ARCHITECTURE 路由矩阵 27"
-  updated: "2026-06-12"
+    6: "2026-06-11 进入：R0 卫生批已直改完成；PRD-36 待点火。kb-web 陪跑面板已按用户决策移除(skill 主干形态)；2026-06-12 R7 瘦身收口:AGENTS.md 3714→318 行(黄金检验拆分,6 rules 条件加载+1030 行沉淀归档;审计对照实验证明 FAIL 项=R1/R4 存量债与瘦身无关;Fresh Session 三探针全中)——R7 余项:DATA-MODEL 52 模型实况/SCAFFOLD 路径全替/ARCHITECTURE 路由矩阵 27 ‖ 阶段6待办(2026-06-17全链路审计立项):①语音代码下线(重构主题⑦)删stt/tts/voiceChat路由(_app.ts:44/45/62)+whisper/openai-tts worker+VoiceChatAgent+ttsLimits/sttLimits常量;②删语音后仅embedding/DALL-E仍绕LLMGateway,补配额计费埋点或纳入统一入口(ADR-013收口)。 ‖ 2026-06-19 进阶段6·实装 P0 三条安全级(三轮对抗复审收敛后正式点火):①US-006 trending_favorites 补 RLS(manual_rls 加 ENABLE+account_isolation+admin bypass 三段·字面同子表)→R-21 转✅全部account表有RLS;②G2 PrivateDomainAgent._buildUserPrompt 对 productDescription/targetAudience/scene 调 piiMask(最小安全修·非整接通ctx)→R-14扩展不再警示PrivateDomain+PII单测5/5实跑过(手机/邮箱真脱敏);③G15 _fetchStepData where:accountId 守护单测(代码已满足·context-assembler 16/16)。**Opus从严把关=audit+真单测+typecheck 0错误实证(非口头)**。§13 债务 G2/R-21/G15 已实装✓;余 US-002 correctness(接通4 Specialist AC-1~4)+P1(G1 token/G8 embed/G9熔断/G13冻结)+P2(G11/G12)+R-14扩展另9个Specialist需逐个人工核PII路径。 ‖ 2026-06-19 全链路重构·波次1(清场+轻债)出门:**语音模态全下线**(Agent A删~40文件:stt/tts/voiceChat路由+whisper/openai-tts worker+VoiceChatAgent+l1-buffer+voice-chat模板/常量/schema+VoiceChat.tsx页+~15测试·删R-23语音红线→红线22·§13消解G6/G7)+**轻债**(US-004 catch补日志/US-009 G13 feedbackCount≥100冻结guard+4单测/US-006关单)。**Opus全量把关·铁律『typecheck绿≠测试过·必实跑』**:①全量typecheck 6/6绿(api+web·exit0);②语音collateral揪修5处typecheck抓不到的运行期失配——guide常量GUIDE_SECTIONS_14→13重命名漏同步test(typecheck抓到3错)+GUIDE_FAQS_5实剩4条test全没改(连名改_4+按真实重排Q)+旧export GUIDE_MODULES 13→12·FAQS 5→4字面锁+第二个测试文件Guide.test.tsx整片语音section/FAQ断言+Home功能矩阵语音卡断言→全修;guide两文件19/19绿;③web全量14失败用**git stash金标准**坐实=纯存量预存漂移(干净波次1前态同14失败/同文件·波次1零新回归;干净态总数1286 vs 当前1235差51=被删语音测试)·api 67文件985测试0失败(g13 4✓/PII在通过集/无语音死链);④兜底扫confirm function-matrix/全web测试/pages.test无语音残留(voiceover=视频口播脚本+record_voice_over=Material图标·合法保留非语音模态)。**14条存量字面锁漂移(Diagnosis H1空格/ACTIVE chip/dashed placeholder/Monetization·AcquisitionVideo·PresentStyles·Trending工具页门控渲染)非波次1范围·登记留痕不静默·多落波次3前端接线域届时一并收**。母题再证:typecheck绿后唯有真实跑+兜底扫+stash分诊才算真验证(『真实有效必须真跑才算』第N次)。下一步波次2 correctness轴心(US-001 userId透传→US-002接通4 Specialist消费ctx+补PII消R-11→US-005)。 ‖ 2026-06-19 波次2(correctness 轴心)出门:US-001/002/005 全过 AC(Opus team 模式派 Sonnet 执行+逐步硬门亲核)。**US-001 userId 透传**:SpecialistRequest+userId、19 tRPC 站点注 ctx.user.id、~22 specialist metadata→req.userId、2 worker→新建 SYSTEM_USER_ID 常量、rate-limiter userId 隔离单测;AC-3 字面 grep userId:0=0(含修 70 处 test fixture→userId:1·不假勾)、typecheck0、vitest988。**US-002 接通上下文层(承重墙①实质)**:亲核纠正「4改3」(Monetization 默认模式已合规·不动)+揪出 assembler 无 DeepLearn/PrivateDomain/Presentation 三模板(=自拼根因)→建 3 persona 模板入 SPECIALIST_TEMPLATES、3 家 invokeLLM `_ctx`→`ctx`+systemPrompt=ctx.systemPrompt+删 _buildSystemPrompt(agentId 与模板 key 实证匹配=接通非空壳);**揪 PrivateDomain _buildSystemPrompt 把 raw productDescription/targetAudience 拼进 system prompt 的 PII 泄漏**(P0 G2 只 masked 了 userPrompt)→删 _buildSystemPrompt 根除+phase 指引迁入已 masked 的 userPrompt+补回非PII渠道上下文(spec 误删的回归);新 AC-4 集成断言(4家 prompt 含进化档案 Section4)+AC-5 PII 单测(8 测含 systemPrompt 不含 raw PII)均实质非凑数。**US-005 R-11 审计闭合**:发现 R-11 早存在却一直 FAIL→揪出 **MonetizationAgent tool 模式(_invokeLLMToolMode)自拼 _buildToolSystemPrompt=存量 R-11 违例**(与 PrivateDomain 同批·US-002 只修后者)→tool 模式混合式(toolPersona+ctx.systemPrompt)接通彻底闭合;audit-redlines R-11 增 (b)invokeLLM(_ctx 检测(排除 _build 辅助方法如 TopicAgent)+双向自测(注入临时违例→FAIL·删→PASS)+AGENTS §8 R-11 行更新;**修 audit 自身 set -e + grep exit1 致早退 bug(|| true)**。**Opus 全门实证**:typecheck0 / vitest995(0失败·新增7测)/ audit-redlines R-11✅(13过·余 R-5 前端 localStorage 存量)/ audit-ld exit0;prd.json US-001/002/005 passes=true。母题:亲核把「4改3」+三模板缺失+PII泄漏+Monetization tool 存量违例+audit set-e bug 全揪出——agent 报「六铁律全过」下仍藏 5 处需 Opus 回源核的实情(第N次「真实有效必须真跑+亲核才算」)。下一步波次3 产品可用(7块前端 mock 壳→真 tRPC 接线)。 ‖ 2026-06-19 波次3(前端接线)部分推进+关键发现:recon 初判 7 块中 4 块「纯接线」,Opus 亲核 output shape 揪出真相——前端富 mock UI 普遍超出 agent 真实输出,recon 只核 input 字段匹配、漏了 output shape。**2 块真接通保留**(Analysis:agent 返结构化 scores+optimizations→雷达/优化建议映射真实·带 null-guard;VideoAnalysis:viral insights/analysis/rewriteVersion→元素/仿写真实);**2 块 revert 回诚实 mock**(BoomGenerate:candidates=5 扁平字符串被「按字符位置截段」硬切 6 结构槽 opening[0:150]/climax[350:450]+硬编码 score 9/10·reason=假结构;Step4b:3 扁平字段硬塞 ~20 字段富 UI·pricingStrategy→marketScale 语义错·priceRange/risks/successCases 全空)——把扁平串伪装成富结构=比 mock 更恶劣 surface。母题再证:agent 报「4 页全接·test 全过」实为 setup.ts 全局 trpc mock 返 data:undefined 走静态 fallback、根本没跑真实数据路径=test 过≠真接通;唯 Opus 亲读 agent output schema(boomGenerate candidates:string[])+逐页映射函数才揪出 2 块垃圾。**待产品/UX 决策**(超出纯接线):①output shape 不匹配页(BoomGenerate/Step4b)+静态缺口(Analysis/VideoAnalysis)=简化 UI 对齐 agent·还是 enrich agent 产富结构;②净新功能 Step4 三阶段计划 agent(后端缺)/PrivateDomain 表单 3→7 必填重设计/generate·ip-plan·dashboard 缺后端/Step1 选行业不持久化 bug。 ‖ 2026-06-19 波次3 enrich(用户拍板 enrich agent 让富 UI 变真):①**BoomGenerate 全链 enrich 完成+硬门过**——boomOutput.candidates string[5]→结构化 {title/opening/development/climax/ending/reason/indexScore}×5(packages schema + CopywritingAgent 内联两处同步)+boom prompt 产结构化深度文案(叙事弧≥300字)+fallback _BOOM_CANDS 改 5 结构化对象+前端 1:1 映射(substring/slice=0·index/element/type/format 前端填已知值)+codegen 重生;Opus 核 typecheck6/6·api995·**zod 实跑校验 fallback 候选✓PASS**·前端真 1:1 非切片。②**Step4b enrich 遇阻→升级产品/架构决策**:亲核 monetization-tool 输出**两消费者共用**——Monetization.tsx(工具页·已接真·消费扁平 {productMatrix:string[],pricingStrategy,conversionFunnel})+Step4b(要富 Step4bResult ~20字段),enrich 共享输出会撞坏 Monetization.tsx;且 successCases/具体月营收=agent 只能编造。→Step4b 三选一待定:建独立富 agent / 简化 Step4b UI 对齐扁平 / 共享+双页迁移。③Monetization.tsx 已接真但 2 存量失败测试待查。④剩 Analysis/VideoAnalysis 静态缺口(单消费者·清晰)enrich 待续。母题:recon「Step4b→monetization 纯接线」漏了输出被共享+过设计,唯 Opus 核消费者揪出。 ‖ 2026-06-19 Step4b 独立富 advisory mode 完成+硬门过(用户选「建独立富 agent」):monetizationAgent 加 monetization-plan mode(_invokeLLMPlanMode 接 ctx 混合式·R-11✅·_ctx=0)+新 MonetizationPlanOutputSchema(marketAnalysis/stages×3/revenueStructure/successCases 匹配 Step4bResult)+advisory prompt(禁真实姓名/公司/精确数字·successCases 示例前缀)+fallback 全 advisory 措辞(【建议参考】/建议目标¥5-30万/建议6-12个月=真不瞎编事实)+新 generatePlan procedure(generate 一字未改·Monetization.tsx 扁平链路零接触)+前端 Step4b 1:1 映射(字段对字段·无语义错乱无切片)。Opus 核:typecheck6/6·R-11✅·Monetization.test 2失/37过=基线无新增·Step4b 17/17·zod fallback 校验过·stages 全 agent 产但 icon枚举/number literal约束 type安全。注:legacy Step4bOutputSchema(ladder·successCases含「年收入200万」)=pre-existing 初始 mock 占位(生成后被真 advisory planResult 替换)·清理债。**波次3 enrich 进度**:BoomGenerate+Step4b 两大块 enrich 完成硬门过·Analysis/VideoAnalysis 核心已真接通;剩 Analysis/VideoAnalysis 静态缺口 enrich + Monetization.tsx 2存量失败测试 + Step1 持久化 bug 待续。 ‖ 2026-06-19 波次3 快赢收口:① Monetization.tsx 2 失败测试真修(真因=RevealGroup 组件不转发 data-testid·属性被静默丢弃→getByTestId 找不到·外包 div 修·非改宽断言·39/39)② Step1 持久化 bug 修(写源=读源=localStorage step1 key 实证对齐·Step1 从没写→handleSubmit 补 save({industry})·Step4 L309 不再触发 fallback 美业·但 fallback 仍在作安全保留[复审措辞纠正:之前记『不再 fallback』失准·修的是写源 Step1 补 save·读侧 ?? '美业' 保留]);web 失败 14→12(纯修这 2 个·typecheck0·零新破)。**波次3 现状**:BoomGenerate/Step4b 两大块 enrich 硬门过·Analysis/VideoAnalysis 核心真接通·Monetization+Step1 收口;余 Analysis/VideoAnalysis 静态缺口 enrich(次要·核心已真)。下一步波次4 规模护栏(G1 token/G9熔断/G8 embed/G11 isMock/G12 canary)。 ‖ 2026-06-19 波次4 recon(Explore 只读核 5 护栏·坐实旧架构怀疑):**5 个全是注释/stub/空转·无一真实可运行**——G1 仅 contextTokens 计数不裁剪(ContextAssembler.ts:120)/G9 注释称「连续5次5xx熔断」实为 _callWithRetry(1)+fallback model 无 CircuitBreaker 状态机(llm-gateway/index.ts)/**G8 embed() 返 Array(1536).fill(0) 全零向量·索引侧污染 knowledge_chunk**(llm-gateway:249+constant-embed.service:37·查询侧却用真 OpenAIEmbeddingWorker=索引/查询向量空间不一致=RAG 真 bug)/G11 evaluatePromptVersion 默认参数 isMock=true 返随机 4.2-4.8 假分(llm-judge.service.ts·isMock=false 抛未实现=US-010 backlog)/G12 canary 有 hash 分流但无指标监控/劣化检测/自动回滚·仅手工 rollback+dual approval(prompt-version.service.ts:136)。建议实装序:G8(换真 embed 修零向量污染·先核 RAG 是否在用)+G1(token 预算约束)+G9(真熔断状态机)=生产护栏优先;G11(US-010 真 LLM Judge)/G12(canary 自动止损)=admin/进化特性次之。Opus 待逐条亲核 recon 后定实装清单。 ‖ G8 亲核细化:stub llmGateway.embed() 唯一调用者=constant-embed.service.ts:37(admin 常量版本语义嵌入)·**非** knowledge_chunk 核心 RAG 摄入;核心 RAG retrieve(retrieve.ts:15/39 真 OpenAIEmbeddingWorker + ContextAssembler _fetchRag)查询侧用真 worker。→recon 称『stub 污染 knowledge_chunk』**高估影响面**(实为 admin 常量版本特性·核心 RAG 查询侧没坏)·G8 紧迫度降。波次4 优先序修正:**G1(token 预算)+G9(真熔断器)=主 LLM 路径生产护栏优先**;G8(constant-embed admin)/G11(US-010)/G12(canary 止损)=admin/进化特性次之。母题:Opus 亲核连 recon 自身都细化(recon 高估 G8 影响面)。 ‖ 2026-06-19 波次4·G1 token 预算约束实装+硬门过:新建 context-budget.ts(MAX_CONTEXT_TOKENS=110k·env LLM_MAX_CONTEXT_TOKENS 可覆盖·estimateTokens 改进估算 ASCII×0.25/CJK×1.5 修 chars/4 对中文低估)+_composeSystemPrompt 重构为优先级分段贪心组装(persona P0 永留·stepData P1 可截[从最新往旧逐行收·保最近丢最旧·保时序]·evolution P2·methodology/RAG/DB constants 可丢·按 systemBudget=MAX-userTokens 逐层核预算·userPrompt 单独超→仅 persona+logger.warn)+metadata.trimmed 记被裁层。Opus 硬门亲核:读贪心裁剪逻辑证真(非算了不用 no-op)·ContextAssembler.budget.test 8/8 真裁剪场景(超大 stepData→旧 step_000 不在/新 step_199 在·contextTokens≤budget·trimmed 非空·DB constants 先丢)·estimateTokens 实跑(你好世界6>hello3·CJK 不再低估)·typecheck0·全套 api 1003/0 失败(_composeSystemPrompt 改签名重构零回归)。 ‖ 2026-06-19 波次4·G9 真熔断器实装+硬门过:新建 circuit-breaker.ts(CircuitBreaker 按模型 key 状态机 CLOSED/OPEN/HALF_OPEN·canAttempt[OPEN+冷却内 false 快速失败/过冷却转 HALF_OPEN]·recordFailure[CLOSED≥5→OPEN·HALF_OPEN 失败立即 OPEN]·recordSuccess→CLOSED·THRESHOLD5/COOLDOWN30s env 可覆盖·注入假时钟可测·isTransientError 5xx/429/网络超时→计·4xx 不计·进程内单例)+complete() 真集成(调主模型前 !canAttempt(primary)→跳过坏模型直接 fallback·调后 record 成功/失败·fallback 模型同理 OPEN 则跳到模板)。Opus 硬门亲核:读状态机+complete 集成证真(L194 canAttempt 真把守跳过主模型·非摆设)·cb 测试 25(22 单元+3 集成:5次失败→OPEN→canAttempt false·假时钟过冷却→HALF_OPEN→成功→CLOSED·主模型 spy 证被跳过)·typecheck0·全套 api 1028/0 失败(零回归)。**波次4 高优生产护栏 G1+G9 完成**(均主 LLM 路径);余 G8(constant-embed 真 embed·cheap 修零向量)/G11(US-010 真 LLM Judge)/G12(canary 自动止损)=admin/进化特性次优先。 ‖ 2026-06-19 波次4·G8 embedding 按 D-038 正确修+硬门过:亲核揪出 OpenAIEmbeddingWorker 注释「★D-038 OpenAI embeddings 仅本文件 import·不走 LLMGateway」=llmGateway.embed() 设计上就该是 stub·真 bug 是 constant-embed.service:37 调了 gateway 零向量 stub 违 D-038→正确修=constant-embed 直接调 OpenAIEmbeddingWorker(系统 accountId 0·traceId 生成·取 result.embedding·worker 内部已写 embedding_call cost_log 故服务层不双写)+删 llmGateway.embed stub。Opus 硬门亲核:functional gateway.embed=0(D-038 合规 grep 证)·constant-version 27 测试过·typecheck0·全套 api 1028/0 失败(删 gateway 方法零回归)。又一次亲核纠正方向(recon/初设计说『让 gateway.embed 变真』实 D-038 禁·正解=路由真 worker+删 stub)。**波次4 生产关键护栏 G1+G9+G8 完成**(token 预算/真熔断器/embedding D-038);余 G11(US-010 真 LLM Judge·isMock=false)/G12(canary 自动止损·指标监控→自动回滚)=bigger admin/进化特性。 ‖ 2026-06-19 波次4·G11+G12 完成+硬门过(用户选「继续做完」):**G11 真 LLM Judge**(亲核 D-077=真评测本意走 CI/PRR 阶段·现正生产硬化=PRR 兑现):实装 evaluatePromptVersion isMock=false 真调 llmGateway.complete(reasoning tier·五维 rubric 清晰/完整/安全/具体/角色一致·json_schema score+rationale)→safeParse 失败抛错不静默返假分→clamp[0,5]→写 judgeScore;运行时默认仍 isMock=true(prompts.ts:152 没动·守 D-077 不给每次建版加 LLM 成本)。**G12 canary 自动止损**(亲核 cost_log 无 promptVersionId→用 agentId+mode 错误率信号):canary-stop-loss.service 检测 active canary(canaryPct>0)最近 60min cost_log 错误率>0.15 AND 样本≥20(双守护防小样本误触)→executeAutoRollback 回退到 currentVersionId(stable·安全方向·绕 dual approval 仅限这个安全回退路径)+审计 security_alert+dingtalk 告警+1hr dedupe;手工 rollbackPrompt 的 dual approval 路径物理隔离未动;BullMQ 整点 cron job。Opus 硬门各自亲核:真评测/真止损非摆设·typecheck0·全套 api 1051/0 失败(G11+8 测试/G12+15 测试)。**波次4 五护栏 G1(token 预算)/G9(真熔断器)/G8(embedding D-038)/G11(真 LLM Judge)/G12(canary 自动止损)全部实装硬门过**;余 Analysis/VideoAnalysis 静态缺口 enrich(最后一项)。 ‖ 2026-06-19 波次3 最后一项·A/V 静态缺口 enrich 完成+硬门过:analysisStructuralOutput 加 elements/pros/cons(string[]·对齐前端 .map)+analysisViralOutput 加 hookAnalysis/topicStrategy/timeline(optional 向后兼容·对齐前端 displayX 形状)+structural/viral 两 mode prompt 指示产新段(钩子 0-100 整数+客观依据·时间线 3-6 步·元素/优缺点各≥1)+fallback 补全满足 min;前端 Analysis(analysisData?.elements??ANALYSIS_ELEMENTS 等·真 1:1+null-guard)+VideoAnalysis(displayHookAnalysis=viralData?.hookAnalysis??generated 等·13 处 generated.* 换 displayX)。Opus 硬门:前端真 1:1(非还指静态/mock)·核心段(scores/optimizations/insights/rewrite)没破·typecheck 6/6·web 12 存量失败无新增·api 1051/0。**🎯 全链路四波次重构全部完成**:波次1 清场(语音下线+轻债)+波次2 correctness 承重墙①ctx接通/R-11闭合/PII根除+波次3 enrich 让富 UI 全变真(BoomGenerate 结构化文案/Step4b 独立富 advisory agent/Analysis·VideoAnalysis 核心+缺口/Monetization·Step1 修)+波次4 五护栏全实装(G1 token 预算/G9 真熔断器/G8 embedding D-038/G11 真 LLM Judge/G12 canary 自动止损)。全程 Opus 逐条回源亲核拦下 agent 十余处藏雷(4改3/三模板缺失/PII泄漏/2块假结构切片/共享消费者撞坏/D-038约束/D-077约束/audit set-e bug/RevealGroup丢testid/G8影响面高估…)·母题『test 过≠真有效·真跑+亲核才算』全程成立。current_phase 仍 6;阶段6 出门判定/验收(阶段7)可启。 ‖ 2026-06-19 全方位多角度对抗复审(用户第N轮『深入review所有改进+修全部问题』·5路 Sonnet 分维度审 179 文件改动+Opus 逐条回源亲核拍板):**揪出并修复的真 bug**:①🔴**G12 canary 止损是摆设**——`BaseSpecialist._writeCostLog` 把 success 硬编码 true(成功/fallback 两路都 true)→cost_log 永无 success=false 行→canary 错误率永 0→**自动止损永不触发**(我自己实装+自己硬门过的护栏·复审才发现)→修:_writeCostLog 加 success 参数(成功 true/fallback false 分路写)+G12 加真触发测试;②🟡G1 stepData 截断无 break→保旧丢新违『保最近』→加 break 保最近连续块;③🟡G12 dedupe 缺 mode 维度(同 specialist 不同 mode 互相误 dedupe)→加 mode 过滤;④🟡MonetizationAgent tool/plan/default 三 builder raw productDescription/audience 无 piiMask(R-14 缺口·对比 PrivateDomain 有)→加 piiMask(11 处);⑤🟡DeepLearn 真用户触发却落 SYSTEM_USER_ID(system:0)限流桶→job payload 加 userId 全链透传;⑥🟡V-1 VideoAnalysis narrativeStructure.evaluation 永 mock→viral output 加 evaluation 字段+接线 displayNarrativeEvaluation;V-3 元素密度雷达用 generated→改 displayPopularElements;⑦🔴**母题闭合**:4 页(BoomGenerate/Step4b/Analysis/VideoAnalysis)测试只走 setup.ts 全局 trpc mock(data:undefined)→永走 fallback、**从没测 agent 真数据渲染路径=test 过≠真接通**→补 4 个 .realdata.test(局部注入结构化 data·断言 agent 值≠fallback 如 overall 83≠默认92·20 测真路径过)。**Opus 亲核拦下 reviewer 误报/降级**:agentMode 永 null(reviewer 查错 writer——BaseSpecialist 一直写 req.mode·非 gateway cost-logger)/V-2 仿写区纯文本(agent 返 rewriteVersion 本就是 string·渲染文本忠实非 bug)/静态雷达·KPI 装饰(预存前端非我改)/packages monetization·analysis schema 死代码(架构整理非本会话)/web 12 挂(git-stash 证纯存量非回归)。**记录类修**:prd US-001~011 全 passes=true(G1/G8/G9/G11/G12/G13 等做完漏更新)/Step4 措辞纠正(『不再 fallback』→『不再触发·fallback 仍保留』)。**诚实残留(记轻债不阻塞)**:generateStream 死代码(web 0 引用·可删或接 ctx)/G11 运行时门禁被 isMock 架空(D-077 设计·真评走 CI/PRR)/G9 HALF_OPEN 并发多探针(进程内单例固有·无锁不可解·已知限制)/packages 死 schema 清理/web 12 存量字面锁漂移(Diagnosis/Accounts/step3 等·非本会话)。Opus 硬门:typecheck 6/6·api 1052/0·web 12 存量0新增·realdata 20/20·R-11✅。母题:递归对抗复审又揪真 bug(尤其 **G12 摆设=我自实装+自硬门过却复审才现 success 硬编码**·印证『产物≠正确·修复也会错·递归复审收敛』)+审出我自己记录失实(Step4 措辞/prd 漏更新)=『对抗复审也审收尾记录·别凑数』兑现+Opus 亲核拦 reviewer 误报(agentMode)。 ‖ 2026-06-19 第二轮对抗复审收敛(3 路 Sonnet 更深审上轮修复+漏网·Opus 逐条亲核):**揪出上轮修复引入的新坑+两轮漏网**:①🔴**G12 上轮修不透**——VideoAgent 内层 catch 返 isFallback 不 throw·绕过 BaseSpecialist 外层 catch→失败仍写 success:true→G12 对 VideoAgent 仍摆设→**系统性修(母题:别逐路补丁)**:BaseSpecialist 成功路径改 success:!(raw.isFallback)·覆盖内+外所有 fallback·+字段一致性测试(断言查询 where 用 agentMode/success·抓字段漂移·非 mock count 蒙混);②🟡前端 stat 卡第三处漏网(VideoAnalysis:871/Analysis:1148 读 generated/静态·真数据时数字与列表不符)→改 displayX 数据驱动;③🟡ipPositioning 被我 US-002 误删(PrivateDomain 输入有 userPrompt 没=数据丢失)→补回 masked;④🟡Branding/Positioning 双轨 PII(raw JSON.stringify(userInput) 对冲 masked ctx)→JSON.stringify(piiMask(userInput));⑤🟡realdata 假测/弱测(BoomGenerate indexScore 9/10=BOOM_ENTRIES 默认就有·注入空也过;Analysis 第5测名『92不渲染』实重复断83)→改真负向(7/10 独特值·3 独特 suggestion)。**Opus 亲核降级 reviewer 误报**:R-14『9 specialist 漏 mask』部分错——Analysis lastCopy/DeepLearn samples/Video sourceCopy/Presentation text 是**待分析主体内容·不该 mask**(mask 毁分析);RAG _fetchRag query=agentId(L194)摆设=pre-existing 架构债非本会话改·记不修。**记录修**:AGENTS §13 G2 标 ✅已实装·R10 changelog 纠正 R8 R-14 over-claim(实际 4 家字段级 piiMask=PrivateDomain/Monetization/Branding/Positioning;主体内容 N/A;Livestream/Diagnosis/Copywriting 少量 incidental-PII=tracked backlog)·canary 3 env 入 .env.example 被 protect-files hook 拦(有默认值·可选)。Opus 硬门:typecheck6/6·api 1054/0·web 12 存量0新增·realdata 真负向·R-11✅。**收敛趋势**:残留多为 pre-existing(RAG摆设/web12存量)或 accepted-design(G1 break边界/G11 D-077/G9并发/evaluation optional/generateStream死代码)+少量 tracked backlog(Livestream/Diagnosis/Copywriting incidental-PII)——**已无我新引入的功能 bug**。母题三证:『反复补丁治不好=设计错该重构』(G12 逐路 success 硬编码→success=!isFallback 系统性修)+『递归复审收敛』(上轮修复又引入 VideoAgent 新坑·本轮揪修)+『审自己记录』(R-14 over-claim/G2 债务表失实自纠)。 ‖ 2026-06-19 清残留两项(用户『清 RAG 摆设+3家 incidental-PII』):①**RAG 摆设清**——_fetchRag 的 query 从 `?? agentId` 兜底改 `_deriveRagQuery`(userMessage→lastDescription→userInput 自由文本字段[≥4字·排枚举短值]拼接截500→agentId 仅绝对兜底)·让 CopywritingAgent/TopicAgent 等的检索 query 落到用户真实输入文本而非 agentId 字符串·8 测(含『有真实文本时 query≠agentId』反向断言);②**3 家 incidental-PII 清**(逐字段判·不盲目全 mask):Livestream(productInfo/targetAudience/optimizeGoal mask·**scriptText 不 mask=待优化正文主体**)/Diagnosis(answers[].comment 逐条 mask)/Copywriting(topic/theme/conversionGoal 四 mode mask·scriptType/elements/industry 枚举不动)·37 测(3 PII 文件)。**R-14 现全面覆盖**:7 家字段级 piiMask(PrivateDomain/Monetization/Branding/Positioning/Livestream/Diagnosis/Copywriting)+4 家主体内容 N/A(Analysis/DeepLearn/Video/Presentation·脱敏毁分析)。Opus 硬门:typecheck0·全套 api 1091/0(+RAG8+PII37)·scriptText 不 mask 实证(主体内容保全)。**全链路四波次重构 + 二轮对抗复审 + 清残留 全部收口**:残留仅 pre-existing(web12存量字面锁·generateStream死代码)+accepted-design(G11 运行时门禁 D-077/G9 HALF_OPEN 进程内并发/G1 break 边界/evaluation optional)——**无我新引入 bug·无 tracked backlog 待清**。 ‖ 清残留硬门收口:audit-ld 跑出 LD-001 ❌(Specialist LLM 循环)——Opus 亲核=**audit 自身误报**(LD-001 grep `-rn` 输出含路径·裸 `stream` 子串误匹配 LivestreamAgent.ts 文件名·把新增 PII 字段遍历的 for(L391)当 LLM 循环)→精确化 grep 为 `llmGateway|invokeLLM|.complete(|.stream(`(匹配真 LLM 调用非子串)+双向自测(单行真 LLM 循环仍抓 FAIL·删除复 PASS·没改瞎)。母题再证『接进 CI 的审计工具自己喊假狼·wire 时连误报一起修』(继 R-1/R-15/audit set-e 后又一例)。终态全绿:typecheck6/6·api 1091/0·audit-redlines R-11✅(余 R-5 前端 localStorage 存量)·audit-ld exit0。current_phase=6;阶段6 出门判定/阶段7 验收可启。 ‖ 2026-06-19 阶段6 出门判定→实装 3 交付能力包→出门:逐条核 06 清单⛔,揪出 3 个画像命中 ⛔ gap=phase_notes 记的**阶段2 P0 backlog·四波次漏了**(注入特征过滤0.7A/成本护栏D9.3/输出端合规12.3)·用户拍板『实装这 3 个再出门』。team 模式派 Sonnet+Opus 硬门+tsx 双向自测:①**G74 注入特征过滤**(injection-filter.ts·检测指令覆盖/角色劫持/提示泄漏/分隔符逃逸四类中英·sanitize 中和为[已过滤]不误伤)接入 ContextAssembler 的 RAG chunks+stepData(间接注入向量)+flagged 写 logger.warn·35 测;②**G78 成本熔断**(cost-budget-guard.ts·AsyncLocalStorage run-scoped 累计·MAX_RUN_COST_USD=0.5·checkBudget 超抛 BudgetExceededError)接入 BaseSpecialist(execute 套 runWithBudget·invokeLLM 前 checkBudget 后 addCost·**BudgetExceededError 在 execute 内 catch→fallback 不冒泡**·D9.3 合规)·14 测;③**G77 输出端合规**(output-guardrail.ts·checkOutput=PII 输出端脱敏+承诺性表述检出软化·scanObjectOutput 递归结构化不破坏)接入 BaseSpecialist invokeLLM 后·18 测。**Opus tsx 真跑双向自测全 ✓**:注入检测+不误伤/PII脱敏+承诺软化/BudgetExceededError抛+不误抛。typecheck0·全套 api **1160/0**(+69 测)。**阶段6 出门**(06清单⛔全过:A typecheck·tests/C编码规范[C39 Lint=EPERM /Users/return/Desktop 环境受限非代码错·CI过]/G 节 G74·G77·G78·G76 RLS·G79 redline-audit 全✅;G75 rag质检 N/A=策展知识非动态摄入·G82 失败分级=熔断+fallback+budget 覆盖·G81 DALL-E媒体闸门=轻债低优)。current_phase 6→7·completed_phases+6。母题再证:**出门判定不是橡皮章·逐条核揪出四波次漏的阶段2 P0 backlog**(注入/成本/输出合规)·『流程合规≠产物实质』『真跑+亲核才算』。下一步阶段7 测试验收:产出 docs/lifecycle/7-验收报告.md 逐条核 prd 11 story AC 证据。"
+  updated: "2026-06-19"
 
 # --- 清单自检状态（kb-run 过清单时勾选）---
+# 注：阶段 0 为本轮(2026-06-16)重走用 md5[:10] 键(现行协议)；阶段 2-5 为上轮遗留语义键(重走到各阶段时改 md5)
 checklist:
-  2:
-    A-编排范式: {checked: true, note: "编排不变(ADR-001 95%Workflow);A2 14>5 存量已论证接受;RAG/记忆/断点均已建,R1 修其失效部分"}
-    B-选型有据: {checked: true, note: "18 ADR 在;重构无新框架选型;对标=aiipznt 原品+知识库蓝本组合"}
-    C-边界约束: {checked: true, note: "quota+70s 超时+三级降级+HITL 审核队列均已建;C1 步骤上限=9 步固定主线,带注接受"}
-    D-风险识别: {checked: true, note: "方案含风险对策表;成本失控正是 R1② 修复对象;PII mask/RLS 在"}
-    E-竞品对标: {checked: true, note: "1:1 复刻已完成(PRD-24 收官),差异化=Agent 哲学+Aurelian 视觉;无[待确认]当事实"}
-  3:
-    A-LLMGateway: {checked: true, note: "限流/路由/三级降级/计费全在(R1② 修限流实效);缺口接受:语义缓存与多Key轮询未建(创作容错+低并发)"}
-    B-编排引擎: {checked: true, note: "9 步固定主线+BullMQ 队列;StepData version 乐观锁持久化;70s 事务超时+retry"}
-    C-多Agent: {checked: true, note: "Workflow Command 调度 14 Specialist(ADR-001 95/5);职责单一;直接调用;fallback+审核队列"}
-    D-RAG: {checked: true, note: "file-parser→chunk→embedding→pgvector 管线在(R1③ 修 embed 接通);缺口接受:无 Reranker(创作容错)"}
-    E-记忆: {checked: true, note: "五层(L1-L5)+ContextAssembler 7 路装配(R1① 修 4 个绕过);衰减=取最新隐式实现,记观察"}
-    F-工具注册: {checked: true, note: "适用性低:Workflow 范式无开放工具注册需求;trace(AsyncLocalStorage)与 RLS 权限隔离在"}
-    G-数据存储: {checked: true, note: "PG/Redis/pgvector 分类清;account_id 行级 RLS 双闸;SystemConfig 加密落库"}
-    H-API层: {checked: true, note: "Lucia session+admin 6 闸;限流(R1② 修);tRPC 内部 API 无对外 OpenAPI 需求(N/A);BullMQ 异步+轮询"}
-  4:
-    A-记忆层: {checked: true, note: "AGENTS.md 在;黄金检验/无通用知识/技术栈唯一/分层规则/常用命令/高频陷阱(17红线)全过;**超标:~3500 行 vs ≤500 建议→R7 瘦身**"}
-    B-多子项目: {checked: true, note: "monorepo 单层 AGENTS.md;apps 强耦合单仓,三层结构不适用,接受"}
-    C-可执行性: {checked: true, note: "规则=audit 脚本可执行断言;未拆 .claude/rules(随 R7 瘦身一并处理)"}
-    D-记忆策略: {checked: true, note: "CLAUDE.md 在;敏感配置走 .env 不入 md"}
-    E-Hooks: {checked: true, note: ".husky pre-commit 在;Ralph 工程 verify-prd-*.sh 34 个"}
+  0:
+    f5260ee485: {checked: true, note: "AI IP孵化平台(内容+营销复合);多步工作流+多Agent协作 (0-选型决策§一/Q1)", at: "2026-06-16"}
+    25f13d2033: {checked: true, note: "非确定性计算/硬实时<100ms/纯ETL/法律医疗最终决策 均不适用已排除;Agent适用确认(0-选型决策§一·Q1);2026-06-17 re-anchor(清单改版旧键3af992e4f0漂移)", at: "2026-06-17"}
+    aff3fbb330: {checked: true, note: "有代码能力:自研 tRPC+BullMQ+Next.js (§二开发框架,ADR-001)", at: "2026-06-16"}
+    57ab8b59ef: {checked: true, note: "既有上线项目本轮为重构,非新建无严格PoC时间档;N/A", at: "2026-06-16"}
+    df8b19bf82: {checked: true, note: "决策树Q1-Q6全走查 (§三)", at: "2026-06-16"}
+    975f160998: {checked: true, note: "未选LangGraph:Workflow范式无需状态机,书面依据§二", at: "2026-06-16"}
+    e9b06e8d95: {checked: true, note: "未选CrewAI:自研编排,§二", at: "2026-06-16"}
+    08580e7812: {checked: true, note: "未选AutoGen:无代码沙箱需求,§二", at: "2026-06-16"}
+    fa689ebe79: {checked: true, note: "未选Dify:闭源+定制难,§二", at: "2026-06-16"}
+    22848a648f: {checked: true, note: "参考05.5 Solo营销蓝本(Budget/Approval),非直接采Paperclip", at: "2026-06-16"}
+    30bef3ea2a: {checked: true, note: "18 ADR在(ADR.md)+本轮0-选型决策.md (§二状态列)", at: "2026-06-16"}
+    5fdc7b136a: {checked: true, note: "model_tier三层:reasoning/lightweight+路由 (§二主模型,ADR-013)", at: "2026-06-16"}
+    290549df7f: {checked: true, note: "中文场景评估:阿里云通义国内备选(等价满足) (§二/四)", at: "2026-06-16"}
+    6de06113c0: {checked: true, note: "简单任务走lightweight tier (§二LLM治理)", at: "2026-06-16"}
+    83b4959569: {checked: true, note: "高复杂保留reasoning=Claude主力 (§二)", at: "2026-06-16"}
+    40b835e2a3: {checked: true, note: "model_tier抽象,切模型0改动 (§二)", at: "2026-06-16"}
+    f888a6d6a4: {checked: true, note: "pgvector复用PG主库 (§二向量库,ADR-012)", at: "2026-06-16"}
+    b8aaaf23e2: {checked: true, note: "公网云SaaS,非私有化 (§二部署,ADR-019/021)", at: "2026-06-16"}
+    f9cdb2a666: {checked: true, note: "Cloud API (§四技术栈)", at: "2026-06-16"}
+    1004c9544f: {checked: true, note: "⛔三级+兜底:Anthropic→OpenAI fallback→lightweight→模板 (§二降级链,ADR-013) 过", at: "2026-06-16"}
+    ccb7ba77f1: {checked: true, note: "[P6命中]调度器/任务队列已选型:BullMQ(daily-task/evolution/file-parser)+node-cron;手册0.10任务信封归一留阶段3核实;2026-06-17 re-anchor(旧键cf5fe035c0漂移)", at: "2026-06-17"}
+    3e55c8e734: {checked: true, note: "已避此陷阱:有成本设计——model_tier分层(贵judge/便宜执行)+LLMGateway限流(Free50/Pro500)+§五月费成本风险已识别,非无估算裸跑GPT-4o", at: "2026-06-17"}
+    5ab6c5ba7d: {checked: true, note: "已避:框架选型有ADR-001/002(自研tRPC+BullMQ)+放弃LangGraph/Dify书面理由(§二),非只写框架名", at: "2026-06-17"}
+    a4571b3a91: {checked: true, note: "已避:model_tier三层分层路由(reasoning/lightweight)非所有请求同一模型(§二·C3)", at: "2026-06-17"}
+    fbac95739b: {checked: true, note: "已避:未选LangGraph、自研tRPC团队熟悉,无学习曲线延期风险(§二·Q1)", at: "2026-06-17"}
+    da8895f6f2: {checked: true, note: "已避:内容创作+营销增长非税费/实时竞价等Agent不适用场景(§一·Q1)", at: "2026-06-17"}
+  2:    # 02-方案评审清单（2026-06-18 真·从0重走阶段2；产出 docs/lifecycle/2-方案评审.md；4⛔过+自运行循环/GDPR/多Agent数 na）
+    6edcf54367: {checked: false, na: true, note: "Workflow范式+BullMQ任务队列(job有确定完成态)非D4.3 Agent自判循环→条件不命中", at: "2026-06-18"}
+    e761339551: {checked: true, note: "已评估:0.7 C层<user_input>标签+piiMask已做;间接注入3路径(RAG chunks/sourceCopy/stepData)缺A层特征过滤→§三①修复AC阶段6", at: "2026-06-18"}
+    9425dfa1d9: {checked: true, note: "已评估:限流+三级降级+max_tokens4096+成本异常cron;缺D9.3 C层token硬上限+非LLM分桶→§三②修复AC;无自运行循环", at: "2026-06-18"}
+    d0f74c82fa: {checked: true, note: "已评估:PII主路径piiMask5类+三道闸RLS跨租户;specialist _buildUserPrompt追加路径漏piiMask→§三③修复AC阶段6", at: "2026-06-18"}
+    7a1c9e5eee: {checked: true, note: "①②③各有缓解+接受声明;输出合规12.3零覆盖→disclaimer兜底+阶段2评估;对标API合规待平台授权", at: "2026-06-18"}
+    ff74e5a46c: {checked: true, note: "ADR-01:registry派单+BullMQ不引Supervisor(手册4.10/3.4)", at: "2026-06-18"}
+    6d5e347780: {checked: false, na: true, note: "QuanAn非Supervisor协作团队,14职能域Specialist并发独立(同请求无handoff),4.10判非多Agent团队→不适用", at: "2026-06-18"}
+    80b99317c5: {checked: false, na: true, note: "不引Supervisor(ADR-01),条件不适用", at: "2026-06-18"}
+    17f6a9df50: {checked: true, note: "ADR-02:pgvector纯向量,内容创作非精确匹配不引BM25(7.4)", at: "2026-06-18"}
+    a0c2f23f41: {checked: true, note: "ADR-04:五层记忆(L1buffer/L2core/L3recall/L4profile/L5trending)分层设计", at: "2026-06-18"}
+    c266c4c82c: {checked: true, note: "DB StepData持久化状态;Workflow范式无LangGraph Checkpointer需求", at: "2026-06-18"}
+    11541f74ad: {checked: true, note: "本文档6 ADR(编排/RAG/数据获取/记忆/多租户/变现)", at: "2026-06-18"}
+    df5c03c988: {checked: true, note: "各ADR含决策/现状/选型判断/重构影响/风险取舍", at: "2026-06-18"}
+    a81e6abf10: {checked: true, note: "复刻aiipznt.vip竞品基线;ADR-03自爬vs第三方API权衡", at: "2026-06-18"}
+    f120d60740: {checked: true, note: "公网云SaaS(P3)非私有化(ADR-05);D13私有化条文不适用", at: "2026-06-18"}
+    38812ee492: {checked: true, note: "9步向导固定主线(ADR-01)≤10步", at: "2026-06-18"}
+    7e4d1251b3: {checked: true, note: "ADR决定contextTokens超阈截断(§三②修复AC,手册D9.3 C层50K/200K)", at: "2026-06-18"}
+    1e606a09db: {checked: true, note: "LLMGateway reasoning60s/其他30s(index.ts:283);BullMQ异步", at: "2026-06-18"}
+    74f46845e4: {checked: true, note: "LLMGateway primary→fallback(Anthropic→OpenAI)→template三级(index.ts:189-215)", at: "2026-06-18"}
+    d9a437daca: {checked: true, note: "P7有人工复核;trending审核队列+admin审批", at: "2026-06-18"}
+    512a98484a: {checked: true, note: "自爬否决(合规/稳定/省维护ROI);D14.7/D14.8不启动(P4 Solo无对外收费)", at: "2026-06-18"}
+    c5d5bc91da: {checked: false, na: true, note: "P11=无特殊非GDPR/数据出境→条件不适用", at: "2026-06-18"}
+    12c3007470: {checked: true, note: "boundaries声明不承诺数字(MonetizationAgent.ts:99等)+P7复核;无Groundedness自动(软项接受)", at: "2026-06-18"}
+    b1153d9463: {checked: false, note: "软项:红队测试(Garak/DeepTeam ASR<5%,D11.5)排期阶段8上线前-推迟", at: "2026-06-18"}
+    f5d235f9f2: {checked: true, note: "复刻aiipznt差异化=Agent哲学+五层记忆+反馈飞轮", at: "2026-06-18"}
+    1fb0907a8c: {checked: true, note: "重构8主题=对标后差异化调整,优先级见§四汇总表", at: "2026-06-18"}
+    a2bc789fa6: {checked: true, note: "第三方API平台标[未实测]/[待选型]未写既定事实", at: "2026-06-18"}
+  3:    # 03-架构设计清单（2026-06-18 真·从0重走阶段3；产出 docs/lifecycle/3-架构设计.md；14⛔→10过+4na[GDPR/工具白名单/高并发/计算分离]）
+    6b346b51bf: {checked: true, note: "LLMGateway:Rate Limiter+Model Router+降级链有;Load Balancer/Cache未实装(接受,ADR)", at: "2026-06-18"}
+    95fce27dd3: {checked: true, note: "tier→model映射(reasoning/lightweight/balanced),index.ts:82-86", at: "2026-06-18"}
+    e220c67bd1: {checked: true, note: "多Key轮询未实装(接受,A节软项)", at: "2026-06-18"}
+    74b4ef013f: {checked: true, note: "降级链三级:primary(claude)→fallback(gpt-4o)→模板兜底,index.ts:189-215", at: "2026-06-18"}
+    e921398e0b: {checked: true, note: "语义缓存未实装(接受)", at: "2026-06-18"}
+    b98b239ee9: {checked: true, note: "Workflow范式9步固定主线=隐式状态图(registry STEP_AGENT_REGISTRY)", at: "2026-06-18"}
+    df5247369e: {checked: true, note: "状态持久化=Postgres step_data(version+1 upsert)", at: "2026-06-18"}
+    e86c502801: {checked: true, note: "Workflow范式无需Checkpointer;BullMQ jobId幂等续跑", at: "2026-06-18"}
+    9bcc4722a0: {checked: true, note: "ContextAssembler 7路Promise.allSettled并行;Specialist间串行", at: "2026-06-18"}
+    c1636ca4d5: {checked: true, note: "各路5s独立timeout;BullMQ attempts3 exponential", at: "2026-06-18"}
+    5241b8f9f1: {checked: true, note: "协作模式=registry规则派单(非Supervisor),ADR-01", at: "2026-06-18"}
+    a8351a1650: {checked: false, na: true, note: "不引Supervisor(ADR-01)→不适用", at: "2026-06-18"}
+    5522c1b8c0: {checked: true, note: "13职能域Specialist单一明确职责,registry.ts:56-70", at: "2026-06-18"}
+    ac8ae67599: {checked: true, note: "Agent间经DB共享黑板(StepData)非直接传消息,ADR-01/4.5", at: "2026-06-18"}
+    a5cc6acb6f: {checked: true, note: "BaseSpecialist fallback三级+P7人工复核;通用分级见K节", at: "2026-06-18"}
+    78968d8a37: {checked: true, note: "FileParser+OpenAIEmbedding→pgvector;解析引擎选型留阶段3未决", at: "2026-06-18"}
+    0f790a8caa: {checked: true, note: "knowledge_chunk三类(case/formula/element);分块策略阶段3/E", at: "2026-06-18"}
+    003c759db7: {checked: true, note: "纯向量检索(ADR-02,内容创作非精确匹配不引BM25)", at: "2026-06-18"}
+    21963ca952: {checked: true, note: "无Reranker(接受,ADR-02/创作容错)", at: "2026-06-18"}
+    747c08dc67: {checked: true, note: "constant-embed重建knowledge_chunk;trending待数据源(重构③)", at: "2026-06-18"}
+    b91b72b27b: {checked: true, note: "RAG边界=case/formula/element稳定知识;实时数据走trending(ADR-02)", at: "2026-06-18"}
+    df59976e35: {checked: true, note: "FileParser解析;重处理/质量追踪阶段3/6", at: "2026-06-18"}
+    c653d5d10e: {checked: true, note: "knowledge_chunk admin受控写入(constant-embed);冲突裁决阶段6", at: "2026-06-18"}
+    0111e5f5b9: {checked: false, na: true, note: "非领域术语密集/多语言→不适用", at: "2026-06-18"}
+    c90c4cf406: {checked: true, note: "五层记忆(L1-L5)>三层,ADR-04", at: "2026-06-18"}
+    48cbcadc75: {checked: true, note: "ContextAssembler装配;摘要压缩→修复AC②成本护栏(阶段6)", at: "2026-06-18"}
+    f6409eb9fe: {checked: true, note: "L4无显式衰减=P2债(取最新insight),阶段6补Ebbinghaus", at: "2026-06-18"}
+    8a1bd4da81: {checked: true, note: "embedding相似度检索注入(_fetchRag)", at: "2026-06-18"}
+    4699cc31ba: {checked: false, na: true, note: "P11=无特殊非GDPR/数据出境→合规删除路径不适用", at: "2026-06-18"}
+    e679ede168: {checked: true, note: "L4 evolutionProfile走DB共享+原子事务防竞态;BullMQ jobId去重", at: "2026-06-18"}
+    da89647c9c: {checked: false, na: true, note: "Workflow范式无开放工具(LLM不自主function calling)→JSON Manifest不适用", at: "2026-06-18"}
+    8cdfce5564: {checked: false, na: true, note: "同上,无开放工具描述→不适用", at: "2026-06-18"}
+    ac52a5c7c5: {checked: false, na: true, note: "同上,无动态工具发现→不适用", at: "2026-06-18"}
+    5bf6a7ba5e: {checked: false, na: true, note: "Workflow范式无开放工具集白名单;隔离在数据层(account RLS)非工具层→不适用(F节适用性低)", at: "2026-06-18"}
+    2075c3e411: {checked: true, note: "traceId(AsyncLocalStorage)+cost_log记录每次调用", at: "2026-06-18"}
+    a0ba1889b9: {checked: true, note: "数据分类:PG业务/Redis缓存+消息+L1/pgvector向量/S3文件,ADR-05", at: "2026-06-18"}
+    77bcf243cb: {checked: true, note: "多租户行级隔离RLS已确认(manual_rls.sql 16表),ADR-05/3-架构设计§六", at: "2026-06-18"}
+    7b716ce6a8: {checked: true, note: "业务子表均有account_id+@@index(schema.prisma);trending_favorites漏RLS见修复AC-A", at: "2026-06-18"}
+    daf7627396: {checked: false, note: "门禁债务:API Key明文存SystemConfig(loadLlmKey:120-131直读configValue无encrypt/KMS)=实装态门禁G③未满足(同G②属实装态非纯设计态);加密方案已定(envelope/KMS=修复AC-B)但实装归阶段6→带债出阶段3经用户同意;实装verify阶段8 cross_8 F密钥。阶段3 review纠正此前假勾(用修复AC给实装态门禁打勾·与cross_3 55443aeb27'加密待实装'自相矛盾)", at: "2026-06-18"}
+    a49d9e16fd: {checked: true, note: "disclaimer注入(BaseSpecialist:237);12.3 L1违禁词/广告法规则层阶段2评估/阶段8", at: "2026-06-18"}
+    598e8dd495: {checked: true, note: "adminRLS六维中间件链(role/guardMutation/guardSuperAdmin/audit),middleware/admin", at: "2026-06-18"}
+    c0d11b985a: {checked: true, note: "Lucia session-based auth+session表;OAuth/PKCE/CSRF细节阶段8实装核", at: "2026-06-18"}
+    5408e5e0dd: {checked: true, note: "UserQuota表+CostLog异步写,userQuota.service.ts;userId=0入口拦,ADR-06", at: "2026-06-18"}
+    5b12287f20: {checked: true, note: "monorepo单源schema:packages/schemas zod;tRPC端到端类型", at: "2026-06-18"}
+    2e8f65e65a: {checked: true, note: "prompt_versions/constant canary灰度有;无独立AB实验框架(接受)", at: "2026-06-18"}
+    6b945659fa: {checked: true, note: "Lucia session鉴权,account从session提取(account-isolation中间件)", at: "2026-06-18"}
+    "3580879680": {checked: true, note: "rate-limiter.ts按plan日token bucket;分钟级RPM/TPM粒度阶段6细化", at: "2026-06-18"}
+    f932afbc9e: {checked: false, na: true, note: "P8=低非高并发(日10k+)→高并发承载设计不适用", at: "2026-06-18"}
+    7d380c517f: {checked: true, note: "tRPC端到端类型契约替代OpenAPI(monorepo单源schema)", at: "2026-06-18"}
+    7e9842b08b: {checked: true, note: "BullMQ jobId异步任务;step5/7 SSE saveStream流式", at: "2026-06-18"}
+    d3db16ea67: {checked: true, note: "3-架构设计§六:RLS双闸(DB层manual_rls 16表+中间件account-isolation),隔离策略行级已选定说明", at: "2026-06-18"}
+    55734b4f09: {checked: true, note: "判:knowledge_chunk=admin受控写入固定知识(67案例/23公式/22元素)非开放摄取→开放质检门豁免合理(质检=admin审);TrendingItem开放摄取由autoVerdict三态(auto_approved/needs_review/auto_rejected,trending-auto-verdict.service)覆盖;E9五触发点完整化+注入特征过滤→修复AC①阶段6。[豁免理由可由用户复核;若不接受admin受控豁免则转门禁债务]", at: "2026-06-18"}
+    50fda40f1b: {checked: true, note: "ContextAssembler 7路Provider并行fetch+5s独立timeout+allSettled组装降级,ContextAssembler.ts:53", at: "2026-06-18"}
+    04e5fa7f25: {checked: false, na: true, note: "非对话/意图密集型(Workflow按钮驱动)→意图识别不适用", at: "2026-06-18"}
+    a3a243d4ec: {checked: true, note: "LLMGateway primary→fallback model路由兜底;tier路由", at: "2026-06-18"}
+    ec301b57fb: {checked: true, note: "BaseSpecialist失败分级(LLM retry→schema retry→fallbackTemplate);与C节互补", at: "2026-06-18"}
+    f706febd9a: {checked: false, na: true, note: "P2=创作容错非数字零容错→计算与生成分离不适用", at: "2026-06-18"}
+    f3435d2416: {checked: true, note: "L节综合门:已产出 docs/lifecycle/3-架构设计.md(组件边界/接口契约/数据流/ADR集成表/横切落点矩阵),用系统架构设计模板综合6 ADR", at: "2026-06-18"}
+  4:    # 04-Harness构建清单（2026-06-18 真·从0重走阶段4；AGENTS.md加R-18~21修复AC红线+实例化hook-gates；A2/D1/E6=9⛔全过）
+    fd9f9ac208: {checked: true, note: "AGENTS.md 329行≤500", at: "2026-06-18"}
+    46c199bbbe: {checked: true, note: "R7瘦身后规则均有违规判定意义,Fresh Session三探针PASS", at: "2026-06-18"}
+    0239bb2a27: {checked: true, note: "无REST/React等通用知识", at: "2026-06-18"}
+    4cfcb4cc19: {checked: true, note: "红线/LD均具体可检测非模糊口号", at: "2026-06-18"}
+    9baebf93d3: {checked: true, note: "R7把ralph/prd.json等工具细节拆出归档", at: "2026-06-18"}
+    211776ad28: {checked: true, note: "§2锁定表+LD-011禁qdrant/pinecone+LD-012禁直连LLM SDK+R-17禁自爬", at: "2026-06-18"}
+    1f45d40a4a: {checked: true, note: "§4设计约束+.claude/rules/design-constraints(service禁直调Prisma)", at: "2026-06-18"}
+    944faee53d: {checked: true, note: "§8审计入口列audit命令", at: "2026-06-18"}
+    e4eb0864be: {checked: true, note: "§11高频陷阱条目标注", at: "2026-06-18"}
+    6c7d8fe72a: {checked: true, note: ".claude/rules/6文件条件加载(Glob按需)+Token预算", at: "2026-06-18"}
+    8db1d6e0c2: {checked: true, note: "§1 Mission+文档地图列apps/api·web·packages职责(monorepo)", at: "2026-06-18"}
+    e8322b2c8c: {checked: true, note: "文档地图;ARCHITECTURE/DATA-MODEL单源不重复", at: "2026-06-18"}
+    4beb7cb5a4: {checked: true, note: "§9上下文加载顺序(任务类型→必读表)", at: "2026-06-18"}
+    1dd23cb185: {checked: true, note: "ARCHITECTURE.md(路由矩阵27)+DATA-MODEL.md作系统映射;coding_maps按需阶段6", at: "2026-06-18"}
+    b9ae673bf2: {checked: true, note: ".planning/prd-*有子项目spec;codebase/结构按需", at: "2026-06-18"}
+    a64eeff643: {checked: true, note: "红线带grep检测/LD带断言,具体可执行", at: "2026-06-18"}
+    7fd185651c: {checked: true, note: ".claude/rules/6文件(admin/audit/coding/design/redlines/testing)+paths", at: "2026-06-18"}
+    696aff8606: {checked: true, note: ".claude/rules/ paths Glob条件加载精准", at: "2026-06-18"}
+    5d06aeb03b: {checked: true, note: ".claude/rules/(执行)+AGENTS(语义)+.claude/settings.json(hooks执行);G1.7无独立CLAUDE.md本轮接受", at: "2026-06-18"}
+    9e9e4d57da: {checked: true, note: "LD-006五层记忆L1-L5各职责;.claude/rules/分层", at: "2026-06-18"}
+    3ba1cbe779: {checked: true, note: ".env gitignored=等效(DB串/调试端口不提交);CLAUDE.local.md可选", at: "2026-06-18"}
+    e3511a4b55: {checked: true, note: "§1-§11 WHY/WHAT/HOW结构应用", at: "2026-06-18"}
+    dbc216f35d: {checked: true, note: ".claude/hooks/block-dangerous.sh(rm-rf/git push--force main,exit2)配置就位;实测拦截阶段6前", at: "2026-06-18"}
+    64efc75e45: {checked: true, note: ".claude/hooks/protect-files.sh(.env/私钥/.git)配置就位", at: "2026-06-18"}
+    f142c2a5f4: {checked: true, note: ".claude/hooks/run-tests.sh(pnpm turbo typecheck+stop_hook_active防死循环)配置就位", at: "2026-06-18"}
+    d847f74ae2: {checked: true, note: ".claude/hooks/auto-format.sh(prettier,永远exit0)", at: "2026-06-18"}
+    ad1c7b7ffa: {checked: true, note: "四hook均shell确定性脚本非AI自判", at: "2026-06-18"}
+    526a59276b: {checked: true, note: "hooks+RLS三道闸Sandbox(LD-009)+audit-redlines脚本多层", at: "2026-06-18"}
+    a79c788ef9: {checked: true, note: "hook脚本无明文密钥+密钥env隔离不进Claude上下文;production API Key DB明文=G³门禁债务+R-18约束阶段6(不同层面)", at: "2026-06-18"}
+    7e16d32016: {checked: true, note: "saveStream SSE逐chunk yield(step5/7);LLMGateway.stream包装", at: "2026-06-18"}
+    a29570ea10: {checked: true, note: "§1 Mission开篇10秒理解(9步/14Specialist/栈/NSM)", at: "2026-06-18"}
+    1a5e6eef73: {checked: true, note: "18 LD+21红线核心约束密度合理", at: "2026-06-18"}
+    a2eeef9576: {checked: true, note: "R7瘦身去重,各经验写最合适层级", at: "2026-06-18"}
+    7a2165cc6b: {checked: true, note: "R7做过Fresh Session三探针PASS;本轮AGENTS加R-18~21+hooks建议阶段6前再验(G1.9)", at: "2026-06-18"}
   5:
     A-结构完整: {checked: true, note: "project/branchName/description/16 字段 story 全合规(初稿缺 3 项被门禁抓出已修)"}
     B-粒度: {checked: true, note: "US-002 为 M 档(4 文件同模式)带注接受;余均 S/M 单窗口"}
     C-依赖排序: {checked: true, note: "无 schema 变更;US-002←US-001(同文件冲突避让),US-005←US-002 显式标注"}
     D-AC可执行: {checked: true, note: "全部 grep 计数/文件路径/命令级断言;各 story 含 typecheck/tests 收尾 AC"}
+  cross_0:    # 横切·产出物代码一致性核验（2026-06-17 真·从0重走 cross_0 门；3-Sonnet 回源核 QuanAn 代码，揪修4处上轮漏网失实，产出物→v1.3）
+    5b3fd8f226: {checked: true, note: "回源核:语音STT/TTS/VoiceChat仍活跃(_app.ts:44/45/62)未下线;产出物如实标注代码留阶段6删除、非谎称已删,下线状态与代码一致", at: "2026-06-17"}
+    78138e4e94: {checked: true, note: "产出物§一代码实况+§五VoiceChatAgent残留(中)+立阶段6明确删除任务;无低风险残留掩盖措辞", at: "2026-06-17"}
+    3fa6ec5a42: {checked: true, note: "回源核tRPC/BullMQ/Prisma/pgvector/Postgres/Redis/LLMGateway/RLS三道闸15表均真实接入;cross_0修正前端Next.js失实→实为Vite+React(全库无next)", at: "2026-06-17"}
+    55443aeb27: {checked: true, note: "L4 Redis热缓存未接入/L5 stub(return[]待PRD-9)/L2-L3无独立封装 均已标实装实况(v1.3)", at: "2026-06-17"}
+    d5ca53e6d6: {checked: true, note: "回源数:ADR实22(ADR.md 001~022);Specialist AGENTS锁14 vs registry注册13,逐个列名核对", at: "2026-06-17"}
+    9b0278105a: {checked: true, note: "Specialist14vs13漂移已如实立项追踪(§五+阶段3/4厘清);Evolution/DailyTask走独立路径apps/api/src/agents/;非各说一个数", at: "2026-06-17"}
+    d58f19e227: {checked: true, note: "grep反例:LLMGateway为completion唯一入口(SDK import仅llm-gateway/index.ts AC-7/8),无completion绕行反例", at: "2026-06-17"}
+    4bd2feed54: {checked: true, note: "4类绕行embedding/tts/stt/dalle全非completion均标D-038;产出物列绕行项+依据→已收窄非过宽绝对化", at: "2026-06-17"}
+    c56318ec5c: {checked: true, note: "逐条回源:ADR-001~022真实/_app.ts行号精确/手册L1010-L1025逐字对/R-17在AGENTS.md:207;D-038仅锁ImageGen(prd-6.md:952)已收窄引用", at: "2026-06-17"}
+    d9063fbd56: {checked: true, note: "对标第三方API平台(新榜/蝉妈妈)标[未实测],具体留阶段2/3;未把未证实当事实", at: "2026-06-17"}
+  cross_4:    # 横切·产出物代码一致性核验 阶段4（C计数:AGENTS声称↔代码；2026-06-18）
+    d5ca53e6d6: {checked: true, note: "AGENTS计数对代码核:15 Specialist(13 step in specialists/+2 autonomous in agents/:Evolution·DailyTask;与代码 extends BaseSpecialist=15 核对一致;含VoiceChat待删→届时14)/§5红线17→22(加R-18~21修复AC+R-22前后端分离)/技术栈§2对代码;R-22前后端分离grep=0已实测(apps/web无import apps/api/src·AppRouter经@quanan/clients shadow)。[Harness深审修复2026-06-18]audit R-15+AGENTS R-15检测口径由 ls specialists/(漏数agents/下2自治+误数registry.ts=假14)改为 grep extends BaseSpecialist(客观15·与AGENTS §1枚举一致);旧yaml'13step+3自治'笔误纠为2自治", at: "2026-06-18"}
+    9b0278105a: {checked: true, note: "无漂移:AGENTS 14 Specialist=代码现状14(VoiceChat标待删非已删=与代码一致);Specialist名册schema漂移已对账立项(阶段3,随阶段6语音删消解);RLS16对账", at: "2026-06-18"}
+  1:    # 01-需求与AC清单（2026-06-17 真·从0重走阶段1；产出 docs/lifecycle/1-需求规格.md）
+    c13022d2ef: {checked: true, note: "需求§三 8主题 AC 均可观测,无'工作正常/良好UX'式模糊", at: "2026-06-17"}
+    2817f49ac6: {checked: true, note: "每条AC=用户操作→字段落库/页面状态/URL变化(如①AC2 industryCategory+sub双字段落库)", at: "2026-06-17"}
+    c82260e1dd: {checked: true, note: "代码类AC含Typecheck passes(①AC5/④AC4/⑤AC6)", at: "2026-06-17"}
+    04371236c9: {checked: true, note: "含逻辑AC含Tests;⑧AC1既有verify-prd-*.sh回归", at: "2026-06-17"}
+    f44bea941d: {checked: false, na: true, note: "画像N/A:QuanAn=Workflow按钮驱动非意图分类路由,F节豁免(P1=自定义内容创作非对话密集)", at: "2026-06-18"}
+    6d6fe0e898: {checked: false, na: true, note: "画像N/A:同上F节豁免", at: "2026-06-18"}
+    d0063062eb: {checked: false, na: true, note: "画像N/A:同上F节豁免", at: "2026-06-18"}
+    733f2b2f3a: {checked: true, note: "§三每主题'重构要求'明确解决什么问题", at: "2026-06-17"}
+    e65c2ba09b: {checked: true, note: "§一delta边界+⑧明确不变项防波及", at: "2026-06-17"}
+    c364f53e27: {checked: true, note: "目标用户=既有IP孵化用户(新+现有)", at: "2026-06-17"}
+    3cbbb4302a: {checked: true, note: "AC含可量化判据(字段落库/路由可达/parsedText非空)", at: "2026-06-17"}
+    8accb9721a: {checked: true, note: "delta文档按主题/AC数衡量(8主题~40AC),清单注小型按story数不强求行数", at: "2026-06-17"}
+    9772aee2ac: {checked: true, note: "项目AGENTS.md在(v0.2)", at: "2026-06-17"}
+    aac5610dad: {checked: true, note: "需求按主题组织含用户+功能+收益意图;正式US格式留阶段5 prd.json", at: "2026-06-17"}
+    f6ec810c87: {checked: true, note: "每主题1-2 story单会话可完成(§四B)", at: "2026-06-17"}
+    d31dbed9d9: {checked: true, note: "§四B依赖:①②数据/上传→⑤选题→前端组件;删除项⑦独立", at: "2026-06-17"}
+    17a26eb6d0: {checked: true, note: "各UI主题AC含agent-browser 4条(①AC6/②AC6/④AC6/⑥AC4)", at: "2026-06-17"}
+    12b78124f5: {checked: true, note: "N/A:本次重构无认证变更", at: "2026-06-17"}
+    810e5aa44d: {checked: true, note: "N/A:无支付变更", at: "2026-06-17"}
+    74a6d3a749: {checked: true, note: "文件上传闭环命中主题②:上传AC1→Asset存储AC2→parsedText可访问AC3→格式错误AC5", at: "2026-06-17"}
+    1db3ec9adf: {checked: true, note: "9步向导既有多步恢复机制不变;本次①②④单步表单变更", at: "2026-06-17"}
+    cd2ace8a3f: {checked: true, note: "AC含字段落库/路由可达=请求真到后端(②AC2 Asset落库)", at: "2026-06-17"}
+    6542d8611a: {checked: true, note: "各UI AC已拆path+操作+预期状态+无console错误", at: "2026-06-17"}
+    11e0e04d30: {checked: true, note: "AC含具体path(/step/1等)", at: "2026-06-17"}
+    734f181357: {checked: true, note: "AC含具体操作(点大类/上传/填字段)", at: "2026-06-17"}
+    24832a9ccd: {checked: true, note: "AC含预期状态(小类网格/已解析/URL变化)", at: "2026-06-17"}
+    ba50f9a8b3: {checked: true, note: "已避:AC写可观测结果非实现步骤", at: "2026-06-17"}
+    dea513bcc3: {checked: true, note: "已避:文件上传写全闭环(§四D)", at: "2026-06-17"}
+    3956cb2290: {checked: true, note: "已避:UI AC具体path+状态", at: "2026-06-17"}
+    ce3581afdf: {checked: true, note: "已避:每主题单会话粒度", at: "2026-06-17"}
+    adc0847bff: {checked: true, note: "已避:每主题含现状+要求+多AC+受影响,细节足", at: "2026-06-17"}
+    7948ef3380: {checked: true, note: "G1需求对齐:双向溯源核对表逐条与用户对照原话确认范围/标准,6处判断点用户拍板,锁定v1.1(存量delta↔重构.txt变更源)", at: "2026-06-17"}
+    a966c4e338: {checked: true, note: "G2需求对齐:重构.txt拆22原子项(Sonnet底稿)·核对表0漏·用户确认6处🔴判断点+扫B/C区未提异议(隐式认覆盖,完整性判定含AI成分);源含'暂定/看看'已在核对中澄清", at: "2026-06-17"}
+    3094b3582c: {checked: true, note: "G3需求对齐:6处判断点用户逐条拍板;每日运营计划误放经用户指出→改需求→重核→再确认(回退迭代至0异议),v1.1锁", at: "2026-06-17"}
+  cross_1:    # 横切·产出物代码一致性核验 阶段1（A已删项/C计数；2026-06-17）
+    5b3fd8f226: {checked: true, note: "3删除项(获客视频/语音完整活跃·背景图UI壳未激活)代码均未下线,需求§二如实标注非谎称已删,下线状态与代码一致", at: "2026-06-17"}
+    78138e4e94: {checked: true, note: "需求§二删除项表标实况+归阶段6删除任务,无掩盖措辞", at: "2026-06-17"}
+    d5ca53e6d6: {checked: true, note: "需求引用计数(56行业/5大类/5类选题)回源Sonnet核与代码industries.ts一致", at: "2026-06-17"}
+    9b0278105a: {checked: true, note: "计数源自代码file:line,无新引入漂移", at: "2026-06-17"}
+  cross_2:    # 横切·安全合规 阶段2 设计期（A最小权限/D成本设计/E多租户[P9]/G审计；2026-06-18；存量多已实装+D成本修复AC+迭代/循环na）
+    19977dff29: {checked: true, note: "account隔离+RLS最小权限,LLMGateway单入口", at: "2026-06-18"}
+    c1e4d1cd65: {checked: true, note: "Specialist经Prisma受控+RLS,LLMGateway单入口无直接SDK(R-1红线)", at: "2026-06-18"}
+    ea6190a695: {checked: true, note: "account RLS隔离(account-isolation.ts:56-65)不同租户工具集隔离", at: "2026-06-18"}
+    80a2dd8e71: {checked: true, note: "设计层最小权限原则立;只读/管理Key细分阶段8实装核", at: "2026-06-18"}
+    51386d0849: {checked: true, note: "Lucia session-based auth;JWT exp策略阶段8实装核(接入机制阶段8 A实装验证)", at: "2026-06-18"}
+    5dba39ef46: {checked: true, note: "ADR决定contextTokens超阈截断(§三②修复AC,D9.3 C层200K硬上限)实装阶段6", at: "2026-06-18"}
+    d1a76ecef6: {checked: false, na: true, note: "Workflow范式无autonomous agent迭代循环(9步用户驱动)→不适用", at: "2026-06-18"}
+    b39a20bb2f: {checked: true, note: "rate-limiter.ts日token bucket已有(plan分级);分钟级RPM/TPM粒度阶段6细化", at: "2026-06-18"}
+    53bda81288: {checked: true, note: "cost-anomaly.job日告警有;月度预算80/100%降级→§三②修复AC阶段6/9", at: "2026-06-18"}
+    6bb9d9cea2: {checked: false, na: true, note: "Workflow范式无工具自循环(BaseSpecialist单次invokeLLM不递归)→不适用", at: "2026-06-18"}
+    788b784303: {checked: true, note: "account_id字段贯穿12子表+RLS(manual_rls.sql:17-99)", at: "2026-06-18"}
+    7579020b73: {checked: true, note: "account-isolation.ts中间件自动注入current_account_id,无则FORBIDDEN", at: "2026-06-18"}
+    "9609408688": {checked: true, note: "manual_rls.sql 15业务表ENABLE ROW LEVEL SECURITY", at: "2026-06-18"}
+    8f08c6cce2: {checked: false, na: true, note: "向量库租户过滤N/A:knowledge_chunk是全局共享知识库(67案例/23公式/22元素·无account_id字段)非租户私有数据,retrieve.ts whereClauses按type过滤非accountId,无跨租户向量泄露面(阶段3 review纠正阶段2此项失实登记)", at: "2026-06-18"}
+    cae354efd2: {checked: true, note: "TD-019后补where{id,accountId}双闸+测试用例;完整跨租户测试阶段8实装核", at: "2026-06-18"}
+    daba3a3c50: {checked: true, note: "audit_log(trending worker.ts:94-100等)+admin操作审计", at: "2026-06-18"}
+    b4fa4df767: {checked: true, note: "audit_log有;字段完整性(IP/trace_id)阶段8核", at: "2026-06-18"}
+    6354e775ad: {checked: true, note: "设计层保留策略立;具体保留期阶段9部署配置(阶段10周期核G)", at: "2026-06-18"}
+    93ac7fb43e: {checked: true, note: "营销内容生成非法律/医疗最终决策;P7人工复核双轨(建议+审批)", at: "2026-06-18"}
+    413832026a: {checked: false, na: true, note: "P11=无特殊非GDPR→软项不适用", at: "2026-06-18"}
+  cross_3:    # 横切·产出物代码一致性核验 阶段3（B栈/C计数对账/D绝对化；2026-06-18；RLS16/Specialist名册定论）
+    3fa6ec5a42: {checked: true, note: "3-架构设计.md 组件/技术栈(tRPC/pgvector/BullMQ/记忆层/RLS/LLMGateway)对真代码5路Sonnet回源核成立", at: "2026-06-18"}
+    55443aeb27: {checked: true, note: "未实现项如实标:L5 trending stub/L1语音待删/API Key加密待实装/RAG质检门修复AC,均[待建]/记缺口", at: "2026-06-18"}
+    d5ca53e6d6: {checked: true, note: "计数对账定论:RLS 16表(非文档12/18)/Specialist 13 step+3 L5自治;回源核schema/registry", at: "2026-06-18"}
+    9b0278105a: {checked: true, note: "漂移已对账立项:RLS文档(DATA-MODEL/CLAUDE)→修复AC-C;Specialist schema缺VoiceChat→随阶段6语音删消解;均如实立项", at: "2026-06-18"}
+    d58f19e227: {checked: true, note: "绝对化'LLMGateway唯一LLM入口'(R-1红线)真成立;'16表RLS'对manual_rls核实", at: "2026-06-18"}
+    4bd2feed54: {checked: true, note: "例外已收窄标注:embedding/imageGen绕LLMGateway=D-038既有决策声明;vendor禁self_crawler红线R-17", at: "2026-06-18"}
 
 # --- 复利回流记录 ---
 reflux:
@@ -79,3 +291,20 @@ reflux:
     title: "kb-run 跳阶段应强制显式请示，仅门禁债务注记不够"
     content: "AI 陪跑执行中以'门禁债务注记'单方面跳过阶段 3/4，用户在前端时间线发现并质询，补走后 04 清单还抓出 AGENTS.md 超标 7 倍的真问题——说明跳过的阶段里有真发现。建议修订 kb-run SKILL.md 门禁节：强制跳过=先向用户复述跳过理由并获得明确同意，注记只是事后留痕不是授权。"
     status: archived  # 2026-06-12 已入库:kb-run SKILL.md 门禁节修订为"强制跳过须先获用户明确同意,注记是留痕不是授权",4 副本同步——复利飞轮首条回流闭环
+  - type: lesson_learned
+    phase: 0
+    title: "存量/重构项目阶段0出门应加'产出物↔真实代码一致性'校验"
+    content: "QuanAn 阶段0 出门只过清单21项+模板6章,未校'选型陈述 vs 真实代码',被全链路质量审计揪出三处陈述失实均未被门禁拦:①语音标已删/低风险残留但 STT/TTS/VoiceChat 代码完整活跃且注册主路由(_app.ts:44/45/62);②既有18 ADR 实为22(ADR-001~022);③LLMGateway唯一入口 实为 LLM completion唯一入口(embedding/TTS/STT/DALL-E 四类worker直连SDK绕行)。建议 kb-run 对存量/重构类项目的阶段0及各设计阶段出门判定,增设'选型产出物↔代码库一致性抽核'一道——只过清单不足以发现陈述与现实脱节。"
+    status: archived  # 2026-06-17 闭环归档:已入库为 2-standards/checklists/横切-产出物代码一致性核验清单.md(上次复利回流),并于本次 QuanAn 真·从0重走 cross_0 门首跑实证——揪出并修4处上轮漏网失实(前端Next.js/L4 Redis/L5 stub/D-038引用)。机制有效、建议成立
+
+# --- 阶段产出物索引（kb-run 出门登记；2026-06-12 存量项目补登记，全为既有工程产物登记原位）---
+# 每条：{阶段号: {path: 真实相对路径, status: produced|pending, at: 日期}}；产出物清单见 kb-run【阶段产出物与索引】
+deliverables:
+  0: {path: docs/lifecycle/0-选型决策.md, status: produced, at: "2026-06-17"}  # 选型决策 v1.3：真·从0重走出口(cross_0 一致性门 8⛔过+00清单26/26;22 ADR重核;修4处失实 Next.js/L4/L5/D-038;旧基线 ADR.md 仍在)
+  1: {path: docs/lifecycle/1-需求规格.md, status: produced, at: "2026-06-18"}  # 需求规格(完整产品走查 v2.0):全产品逐块状态(✅/🔶/⚠️脱节/❌盲区)+8主题delta+删除项cross_1+用户对齐;揪出系统性前端脱节~10块;既有30 prd为基线·stale留阶段5
+  2: {path: docs/lifecycle/2-方案评审.md, status: produced, at: "2026-06-18"}  # 方案评审 v1.0：真·从0重走阶段2(6 ADR 复审+重构8主题落ADR+风险清单过02清单D节4⛔+cross_2安全合规17/17⛔；REFACTOR-PLAN.md 为既有方案基线仍在)
+  3: {path: docs/architecture/, status: produced, at: "2026-06-18"}  # 架构设计 v2.0(L3实质架构·全链路重构):6承重墙逐一到L3(01编排/02上下文/03记忆/04可靠性/05演进/06多租户隔离),全程file:line接地,过《Agent项目架构实质性标准》新出门判据(每核心墙L3+短板法+接地);旧 docs/lifecycle/3-架构设计.md=L1表面版(组件边界表)被替代留档;ARCHITECTURE.md/DATA-MODEL.md 既有基线仍在
+  4: {path: AGENTS.md, status: produced, at: "2026-06-18"}                  # Harness v2(全链路重构·重定位为6墙护栏):368行·声明=docs/architecture/01-06护栏·红线22→23(R-23 VoiceChat finally软锁)·R-21落地真检测(抓trending_favorites)·R-14扩展警示级·§13登记10条阶段6架构债务;配套 .claude/hooks/四脚本+settings.json
+  5: {path: scripts/ralph/prd.json, status: produced, at: "2026-06-18"}     # 规划：PRD-36 · 5→11 US（全链路重构补 6 墙 L3 架构债务）：P0 US-006 trending_favorites 补 RLS(R-21)/US-002+AC-5 PII脱敏+AC-6 _fetchStepData 保留 where:accountId(G15)；P1 US-007 token裁剪(G1)/US-008 熔断器(G9)/US-009 演进100冻结(G13)；P2 backlog US-010 isMock(G11)/US-011 canary止损(G12)
+  6: {path: scripts/ralph/progress.txt, status: produced, at: "2026-06-19"} # 开发：✅阶段6 出门(四波次重构+二轮对抗复审+清残留+3交付能力包 G74/G78/G77·11 story passes=true·api1160/0·typecheck6/6·audit-redlines R-11✅+audit-ld exit0)
+  7: {path: docs/lifecycle/7-验收报告.md, status: produced, at: "2026-06-19"} # 验收报告(阶段7 带债出门)：逐条核 11 story AC+证据·universal A/B/F/G⛔全过(typecheck6/6·api1160/0·PII7家+输出端·注入过滤·鉴权·零回归)；门禁债务 H76 eval-suite/H79 Judge偏差→集中阶段8 与 H77 红队一起做

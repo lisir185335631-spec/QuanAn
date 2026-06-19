@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { useStepData } from '@/hooks/useStepData';
 import {
   type Industry,
   STEP1_INDUSTRIES_56,
@@ -101,6 +103,9 @@ const S1_HEAT = [92, 85, 88, 78, 83, 90, 72, 86, 80, 94, 75, 88, 82, 76, 89, 84,
 
 export default function Step1() {
   const navigate = useNavigate();
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+  const { save } = useStepData(accountId, 'step1');
   const [activeTabId, setActiveTabId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState<Industry | null>(null);
@@ -140,6 +145,7 @@ export default function Step1() {
 
   function handleSubmit() {
     if (!hasSelection) return;
+    save({ industry: selectedLabel });
     navigate('/step/3');
   }
 

@@ -40,7 +40,6 @@ export const FUNCTION_MATRIX: FunctionGroup[] = [
     title: '智能工具',
     cards: [
       { icon: '🎥', title: '一键生成视频', desc: '文案自动转视频分镜+AI生成', href: '/ai-video' },
-      { icon: '🎙️', title: '语音对话', desc: '语音交互AI智能对话助手', href: '/voice-chat' },
       { icon: '📚', title: '深度学习', desc: '批量添加文案，AI深度分析风格逻辑', href: '/deep-learning' },
       { icon: '📖', title: '方法论知识库', desc: '系统学习全网爆款创作技巧', href: '/knowledge' },
     ],

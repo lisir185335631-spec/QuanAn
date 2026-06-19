@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { generateSpecialistTraceId } from '@/agents/base/types';
 import type { SpecialistId } from '@/agents/base/types';
 import { inferLevel } from '@/lib/constants/evolution';
+import { SYSTEM_USER_ID } from '@/lib/constants/system';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { getDeepLearningSamples } from '@/memory/l4-profile';
@@ -25,6 +26,7 @@ import { DingtalkService } from '@/services/admin/notifications/dingtalk.service
 import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { BaseSpecialist } from '@/specialists/base/BaseSpecialist';
 import { SchemaValidationError, LLMTimeoutError } from '@/specialists/base/errors';
+import { runWithBudget, checkBudget, addCost, estimateCostUsd } from '@/lib/security/cost-budget-guard';
 import type {
   AssembledContext,
   ILLMGateway,
@@ -95,6 +97,9 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
   /**
    * AC-1/AC-3/AC-4/AC-5: 完整执行流 · 覆写 BaseSpecialist.execute()
    * 增加: 原子事务写入 + 累积式 insight 合并 + previousInsight fallback
+   * F-1 fix: wrapped in runWithBudget; LLM calls preceded by checkBudget + followed by addCost;
+   *          final merged result passed through _applyOutputGuardrail (inherited from BaseSpecialist).
+   *          Early-exit paths (emergency stop, g13 freeze) are outside runWithBudget scope — no LLM call.
    */
   override async execute(
     req: SpecialistRequest<EvolutionAgentInput>,
@@ -105,6 +110,7 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
     const startedAt = Date.now();
 
     // PRD-14 US-012 AC-3: emergency kill switch brownfield · not replacing main flow
+    // (no LLM call → no budget scope needed)
     if (await getSystemConfigValue('stop_evolution_agent')) {
       logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.emergency_stopped');
       return {
@@ -117,108 +123,149 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
       };
     }
 
-    // Step 1: 入参校验
-    this.inputSchema.parse(req.userInput);
-
-    // Step 2: ContextAssembler — 同时获取 previousInsight (L4 第 5 路)
-    const ctx = (await contextAssembler.assemble({
-      agentId: this.config.agentId as SpecialistId,
-      accountId: req.accountId,
-      mode: req.mode,
-      userInput: req.userInput,
-      needRag: this.config.knowledge.rag,
-    })) as AssembledContext;
-
-    // previousInsight 来自 ContextAssembler L4 层 (AC-2)
-    const previousInsight: EvolutionOutput | null =
-      (ctx as unknown as { evolutionInsight?: EvolutionOutput | null }).evolutionInsight ?? null;
-
-    // Step 3: invokeLLM (含 recentFeedbacks + samples · 内部 retry 1 次)
-    let raw: InvokeLLMResult;
-    try {
-      raw = await this.invokeLLM(ctx, { ...req, traceId });
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        // AC-5: timeout → 降级用 previousInsight
-        if (previousInsight) {
-          logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.timeout_fallback');
-          return this._buildFallbackResponse(previousInsight, traceId, startedAt);
-        }
-        throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
-      }
-      throw err;
+    // G13: 演进冻结 — feedbackCountTotal ≥ 100 时跳过 LLM 调用，避免过度演进
+    // (no LLM call → no budget scope needed)
+    const evolutionProfile = await prisma.evolutionProfile.findUnique({
+      where: { accountId: req.accountId },
+      select: { feedbackCountTotal: true },
+    });
+    if ((evolutionProfile?.feedbackCountTotal ?? 0) >= 100) {
+      logger.info(
+        { accountId: req.accountId, traceId, feedbackCountTotal: evolutionProfile?.feedbackCountTotal },
+        'evolution.execute.g13_freeze_skipped',
+      );
+      // Return skipped sentinel — no LLM call, no insight write (G13 freeze)
+      return {
+        result: {} as EvolutionOutput,
+        isFallback: true,
+        modelUsed: 'g13-freeze',
+        durationMs: Date.now() - startedAt,
+        tokensUsed: { prompt: 0, completion: 0, total: 0 },
+        traceId,
+        skipped: true,
+      } as unknown as SpecialistResponse<EvolutionOutput>;
     }
 
-    // Step 4: schema 校验 + retry 1 次
-    let parsed = this.outputSchema.safeParse(raw.content);
-    if (!parsed.success) {
-      logger.warn(
-        { agentId: this.config.agentId, traceId, issues: parsed.error.message },
-        'evolution.schema_validation.retry',
-      );
+    // F-1: LLM path — wrap in runWithBudget so checkBudget/addCost share budget scope
+    // EvolutionAgent uses 'reasoning' tier (most expensive) — budget guard is critical here
+    return runWithBudget(async () => {
+      // Step 1: 入参校验
+      this.inputSchema.parse(req.userInput);
+
+      // Step 2: ContextAssembler — 同时获取 previousInsight (L4 第 5 路)
+      const ctx = (await contextAssembler.assemble({
+        agentId: this.config.agentId as SpecialistId,
+        accountId: req.accountId,
+        mode: req.mode,
+        userInput: req.userInput,
+        needRag: this.config.knowledge.rag,
+      })) as AssembledContext;
+
+      // previousInsight 来自 ContextAssembler L4 层 (AC-2)
+      const previousInsight: EvolutionOutput | null =
+        (ctx as unknown as { evolutionInsight?: EvolutionOutput | null }).evolutionInsight ?? null;
+
+      // F-1: conservative pre-call budget estimate (reasoning tier is most expensive)
+      const CONSERVATIVE_MODEL = 'claude-sonnet-4-6';
+      const CONSERVATIVE_COMPLETION = 4096;
+      checkBudget(estimateCostUsd(CONSERVATIVE_MODEL, ctx.metadata?.contextTokens ?? 2000, CONSERVATIVE_COMPLETION));
+
+      // Step 3: invokeLLM (含 recentFeedbacks + samples · 内部 retry 1 次)
+      let raw: InvokeLLMResult;
       try {
         raw = await this.invokeLLM(ctx, { ...req, traceId });
-      } catch (retryErr) {
-        if (retryErr instanceof Error && retryErr.name === 'AbortError') {
+        // F-1: record actual cost
+        addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          // AC-5: timeout → 降级用 previousInsight
+          if (previousInsight) {
+            logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.timeout_fallback');
+            return this._buildFallbackResponse(previousInsight, traceId, startedAt);
+          }
           throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
         }
-        throw retryErr;
+        throw err;
       }
-      parsed = this.outputSchema.safeParse(raw.content);
+
+      // Step 4: schema 校验 + retry 1 次
+      let parsed = this.outputSchema.safeParse(raw.content);
       if (!parsed.success) {
-        // AC-5: schema 二次失败 → previousInsight fallback
-        if (previousInsight) {
-          logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.schema_fallback');
-          return this._buildFallbackResponse(previousInsight, traceId, startedAt);
+        logger.warn(
+          { agentId: this.config.agentId, traceId, issues: parsed.error.message },
+          'evolution.schema_validation.retry',
+        );
+        // F-1: budget check before retry too
+        checkBudget(estimateCostUsd(CONSERVATIVE_MODEL, ctx.metadata?.contextTokens ?? 2000, CONSERVATIVE_COMPLETION));
+        try {
+          raw = await this.invokeLLM(ctx, { ...req, traceId });
+          addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
+        } catch (retryErr) {
+          if (retryErr instanceof Error && retryErr.name === 'AbortError') {
+            throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
+          }
+          throw retryErr;
         }
-        throw new SchemaValidationError(parsed.error, raw.content);
+        parsed = this.outputSchema.safeParse(raw.content);
+        if (!parsed.success) {
+          // AC-5: schema 二次失败 → previousInsight fallback
+          if (previousInsight) {
+            logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.schema_fallback');
+            return this._buildFallbackResponse(previousInsight, traceId, startedAt);
+          }
+          throw new SchemaValidationError(parsed.error, raw.content);
+        }
       }
-    }
 
-    // Step 5: AC-4 累积式 insight 合并 (Rule 3)
-    const mergedResult = this._mergeInsight(parsed.data, previousInsight);
+      // Step 5: AC-4 累积式 insight 合并 (Rule 3)
+      const mergedResult = this._mergeInsight(parsed.data, previousInsight);
 
-    // Step 6: AC-3 原子事务 (profile.update + insight.create)
-    await this._writeEvolutionTransaction({
-      accountId: req.accountId,
-      content: mergedResult,
-      triggerType: req.userInput.triggerType,
-      traceId,
-      model: raw.model,
-      tokensTotal: raw.tokens.total,
-      durationMs: Date.now() - startedAt,
-      previousLevel: null, // fetched inside transaction
-    });
+      // Step 6: AC-3 原子事务 (profile.update + insight.create)
+      await this._writeEvolutionTransaction({
+        accountId: req.accountId,
+        content: mergedResult,
+        triggerType: req.userInput.triggerType,
+        traceId,
+        model: raw.model,
+        tokensTotal: raw.tokens.total,
+        durationMs: Date.now() - startedAt,
+        previousLevel: null, // fetched inside transaction
+      });
 
-    // AC-4: 成功写 evolution_insight 后跑异常检测 · try/catch 防冒泡(不影响主流程)
-    try {
-      const anomalyFlags = await detectEvolutionAnomalies(req.accountId);
-      if (anomalyFlags.length > 0) {
-        const dingtalk = new DingtalkService();
-        await dingtalk.send(
-          `[EvolutionAgent] 飞轮异常 · accountId=${req.accountId} · ${anomalyFlags.length} 条 · types=${anomalyFlags.map((f) => f.anomalyType).join(',')}`,
-        );
-        logger.info(
-          { accountId: req.accountId, traceId, flagCount: anomalyFlags.length },
-          'evolution.anomaly_detection.flags_created',
+      // AC-4: 成功写 evolution_insight 后跑异常检测 · try/catch 防冒泡(不影响主流程)
+      try {
+        const anomalyFlags = await detectEvolutionAnomalies(req.accountId);
+        if (anomalyFlags.length > 0) {
+          const dingtalk = new DingtalkService();
+          await dingtalk.send(
+            `[EvolutionAgent] 飞轮异常 · accountId=${req.accountId} · ${anomalyFlags.length} 条 · types=${anomalyFlags.map((f) => f.anomalyType).join(',')}`,
+          );
+          logger.info(
+            { accountId: req.accountId, traceId, flagCount: anomalyFlags.length },
+            'evolution.anomaly_detection.flags_created',
+          );
+        }
+      } catch (anomalyErr) {
+        logger.error(
+          { accountId: req.accountId, traceId, err: anomalyErr },
+          'evolution.anomaly_detection.error',
         );
       }
-    } catch (anomalyErr) {
-      logger.error(
-        { accountId: req.accountId, traceId, err: anomalyErr },
-        'evolution.anomaly_detection.error',
-      );
-    }
 
-    const durationMs = Date.now() - startedAt;
-    return {
-      result: mergedResult,
-      isFallback: false,
-      durationMs,
-      tokensUsed: raw.tokens,
-      modelUsed: raw.model,
-      traceId,
-    };
+      const durationMs = Date.now() - startedAt;
+
+      // F-1: apply output guardrail on final merged result (PII + over-promise scan)
+      const guardedResult = this._applyOutputGuardrail(mergedResult, traceId);
+
+      return {
+        result: guardedResult,
+        isFallback: false,
+        durationMs,
+        tokensUsed: raw.tokens,
+        modelUsed: raw.model,
+        traceId,
+      };
+    }); // end runWithBudget
   }
 
   /**
@@ -271,7 +318,7 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // worker 上下文 · Upstash 未配置时 rate-limit no-op (local dev)
+        userId: SYSTEM_USER_ID, // worker 上下文 · Upstash 未配置时 rate-limit no-op (local dev)
         eventType: 'l5_agent', // AC-9: D-040 扩展第 4 类
       },
       timeout_ms: this.config.execution.timeout_ms,

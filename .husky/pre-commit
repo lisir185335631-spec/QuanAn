@@ -1,0 +1,2 @@
+pnpm turbo run typecheck || exit 1
+pnpm audit:redlines || echo "⚠️ audit:redlines 有违规(存量 R-1/R-5/R-11 待阶段6清)·本次 commit 不阻断·勿新增违规"

@@ -66,7 +66,6 @@ const ITEM_ICON: Record<string, string> = {
   '/diagnosis': 'monitor_heart',
   '/daily-tasks': 'event_available',
   '/ai-video': 'smart_display',
-  '/voice-chat': 'mic',
   '/deep-learning': 'school',
   '/evolution': 'trending_up',
   '/accounts': 'manage_accounts',

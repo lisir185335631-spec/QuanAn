@@ -6,7 +6,8 @@
 
 import { z } from 'zod';
 
-import { privateDomainAgent, PRIVATE_DOMAIN_PHASE_ENUM } from '@/specialists/PrivateDomainAgent';
+import { privateDomainAgent, PRIVATE_DOMAIN_PHASE_ENUM, PHASE_TEMPLATES, PHASE_LABEL } from '@/specialists/PrivateDomainAgent';
+import { PRIVATE_DOMAIN_TEMPLATE } from '@/services/context-assembler/templates/private-domain';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 import { llmGateway } from '@/workers/llm-gateway';
@@ -42,10 +43,11 @@ export const privateDomainRouter = router({
   generate: protectedProcedure
     .input(generatePrivateDomainInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await privateDomainAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'phase-generate',
         userInput: input,
         traceId: traceId ?? undefined,
@@ -81,8 +83,16 @@ export const privateDomainRouter = router({
   generateStream: protectedProcedure
     .input(generatePrivateDomainInput)
     .subscription(async function* ({ ctx, input }) {
-      const { activeAccountId, traceId } = ctx;
-      const systemPrompt = privateDomainAgent._buildSystemPrompt(input.phase, input);
+      const { activeAccountId, traceId, user } = ctx;
+      const tmpl = PHASE_TEMPLATES[input.phase];
+      const systemPrompt = [
+        PRIVATE_DOMAIN_TEMPLATE.persona,
+        '',
+        `## 当前阶段：${PHASE_LABEL[input.phase]}(${input.phase})`,
+        `**目标**：${tmpl.goal}`,
+        `**核心策略**：${tmpl.tactics}`,
+        `**输出期望**：${tmpl.outputHint}`,
+      ].join('\n');
       const userPrompt = privateDomainAgent._buildUserPrompt(input.phase, input);
 
       let accumulated = '';
@@ -96,7 +106,7 @@ export const privateDomainRouter = router({
             trace_id: traceId ?? '',
             agentId: 'PrivateDomainAgent',
             accountId: activeAccountId!,
-            userId: 0,
+            userId: user!.id,
             eventType: 'specialist_call',
           },
           timeout_ms: 60_000,

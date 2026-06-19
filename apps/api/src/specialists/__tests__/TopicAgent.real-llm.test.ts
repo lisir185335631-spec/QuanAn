@@ -55,7 +55,7 @@ describe.skipIf(skipRealLlm)('TopicAgent SSE real LLM', () => {
       const agent = new TopicAgent();
 
       const chunks: TopicStreamChunk[] = [];
-      for await (const chunk of agent.executeStream({ accountId: TEST_ACCOUNT_ID })) {
+      for await (const chunk of agent.executeStream({ accountId: TEST_ACCOUNT_ID, userId: 1 })) {
         chunks.push(chunk);
       }
 

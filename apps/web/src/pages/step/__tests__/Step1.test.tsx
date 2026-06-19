@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import Step1 from '@/pages/step/Step1';
 
@@ -179,5 +179,30 @@ describe('Step1 · inline link 触发 modal', () => {
     renderStep1();
     fireEvent.click(screen.getByTestId('subtitle-custom-link'));
     expect(screen.getByTestId('custom-industry-input')).toBeInTheDocument();
+  });
+});
+
+// ── 行业选择持久化 ────────────────────────────────────────────────────────────
+// 验证 handleSubmit 在导航前写入 localStorage
+// global setup.ts mock: useActiveAccount → account.id = 1
+// → LS key = aiip_memory_acc_1_step1
+
+describe('Step1 · 行业选择持久化', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('确认并进入下一步 → localStorage 写入 { industry: "美业" }', () => {
+    renderStep1();
+    // 选中美业 card
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // 点击 sticky bar 的确认按钮(需要先出现 sticky bar)
+    const ctaBtns = screen.getAllByText('确认并进入下一步');
+    fireEvent.click(ctaBtns[0]!);
+    // 验证 localStorage 写入正确的 key + 内容
+    const raw = localStorage.getItem('aiip_memory_acc_1_step1');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!) as { industry?: string };
+    expect(parsed.industry).toBe('美业');
   });
 });

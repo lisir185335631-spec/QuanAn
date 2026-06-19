@@ -62,6 +62,7 @@ describe.skipIf(skipRealLlm)('LivestreamAgent real LLM', () => {
 
       const result = await agent.execute({
         accountId: TEST_ACCOUNT_ID,
+      userId: 1,
         mode: 'generate_plan',
         userInput: {
           sub_function: 'generate_plan',
@@ -115,6 +116,7 @@ describe.skipIf(skipRealLlm)('LivestreamAgent real LLM', () => {
 
       const result = await agent.execute({
         accountId: TEST_ACCOUNT_ID,
+      userId: 1,
         mode: 'optimize_script',
         userInput: {
           sub_function: 'optimize_script',

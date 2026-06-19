@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { trpc } from '@/lib/trpc';
+
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
@@ -32,23 +34,76 @@ import {
   ANALYSIS_SUGGESTIONS_TITLE,
 } from '@/lib/constants/analysis';
 
-// ── Radar dims derived from ANALYSIS_DIMENSIONS ───────────────────────────────
-const RADAR_DIMS_AN = [
-  { label: '开头吸引力', value: ANALYSIS_DIMENSIONS[0]!.score, color: C.ikb },
-  { label: '情感张力',   value: ANALYSIS_DIMENSIONS[1]!.score, color: C.yellow },
-  { label: '节奏感',     value: ANALYSIS_DIMENSIONS[2]!.score, color: C.accent3 },
-  { label: '完播率预测', value: ANALYSIS_DIMENSIONS[3]!.score, color: C.ikb },
-  { label: '爆款元素运用', value: ANALYSIS_DIMENSIONS[4]!.score, color: C.yellow },
-  { label: '综合评分',   value: ANALYSIS_OVERALL_SCORE,        color: C.accent3 },
-] as const;
-
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function Analysis() {
   const [copy, setCopy] = useState<string>(ANALYSIS_DEFAULT_COPY);
 
+  const analyzeMutation = trpc.analysis.analyze.useMutation({
+    onSuccess: () => { toast.success('分析完成'); },
+    onError: (err: { message?: string }) => { toast.error(err.message ?? '分析失败，请重试'); },
+  });
+
+  const isPending = analyzeMutation.isPending;
+  const isError = analyzeMutation.isError;
+
+  function parseAnalysisContent(data: typeof analyzeMutation.data) {
+    if (!data) return null;
+    try {
+      const parsed = JSON.parse(data.content) as unknown;
+      if (!parsed || typeof parsed !== 'object') return null;
+      const p = parsed as Record<string, unknown>;
+      if (!p.scores || !Array.isArray(p.optimizations)) return null;
+      return p as {
+        scores: { hook: number; structure: number; emotion: number; specificity: number; cta: number; overall: number };
+        optimizations: Array<{ dimension: string; issue: string; suggestion: string }>;
+        rewriteSnippet: string;
+        elements?: string[];
+        pros?: string[];
+        cons?: string[];
+      };
+    } catch { return null; }
+  }
+
+  const analysisData = parseAnalysisContent(analyzeMutation.data);
+
+  const displayOverall = analysisData?.scores.overall ?? ANALYSIS_OVERALL_SCORE;
+  const displayStructure = analysisData
+    ? analysisData.optimizations.map((o) => ({ stage: o.dimension, score: 0, desc: `${o.issue} → ${o.suggestion}`, type: undefined as string | undefined }))
+    : ANALYSIS_STRUCTURE;
+  const displaySuggestions = analysisData
+    ? analysisData.optimizations.map((o) => o.suggestion)
+    : ANALYSIS_SUGGESTIONS;
+  const displayDimensions = analysisData
+    ? [
+        { label: ANALYSIS_DIMENSIONS[0]!.label, score: analysisData.scores.hook },
+        { label: ANALYSIS_DIMENSIONS[1]!.label, score: analysisData.scores.emotion },
+        { label: ANALYSIS_DIMENSIONS[2]!.label, score: analysisData.scores.structure },
+        { label: ANALYSIS_DIMENSIONS[3]!.label, score: analysisData.scores.specificity },
+        { label: ANALYSIS_DIMENSIONS[4]!.label, score: analysisData.scores.cta },
+      ]
+    : ANALYSIS_DIMENSIONS;
+  const radarDims = analysisData
+    ? [
+        { label: '开头吸引力', value: analysisData.scores.hook, color: C.ikb },
+        { label: '情感张力', value: analysisData.scores.emotion, color: C.yellow },
+        { label: '节奏感', value: analysisData.scores.structure, color: C.accent3 },
+        { label: '完播率预测', value: analysisData.scores.specificity, color: C.ikb },
+        { label: '爆款元素运用', value: analysisData.scores.cta, color: C.yellow },
+        { label: '综合评分', value: analysisData.scores.overall, color: C.accent3 },
+      ]
+    : [
+        { label: '开头吸引力', value: ANALYSIS_DIMENSIONS[0]!.score, color: C.ikb },
+        { label: '情感张力', value: ANALYSIS_DIMENSIONS[1]!.score, color: C.yellow },
+        { label: '节奏感', value: ANALYSIS_DIMENSIONS[2]!.score, color: C.accent3 },
+        { label: '完播率预测', value: ANALYSIS_DIMENSIONS[3]!.score, color: C.ikb },
+        { label: '爆款元素运用', value: ANALYSIS_DIMENSIONS[4]!.score, color: C.yellow },
+        { label: '综合评分', value: ANALYSIS_OVERALL_SCORE, color: C.accent3 },
+      ];
+
   function handleAnalyze() {
-    toast.success('分析完成');
+    if (!copy.trim() || isPending) return;
+    analyzeMutation.mutate({ copy });
   }
 
   function handleFeedbackUp() {
@@ -145,7 +200,7 @@ export default function Analysis() {
                 type="button"
                 aria-label="重新分析"
                 onClick={handleAnalyze}
-                disabled={!copy.trim()}
+                disabled={!copy.trim() || isPending}
                 className="lg-gradbtn"
                 style={{
                   display: 'inline-flex',
@@ -159,7 +214,7 @@ export default function Analysis() {
                   fontFamily: F.cn,
                   cursor: 'pointer',
                   border: 'none',
-                  opacity: copy.trim() ? 1 : 0.4,
+                  opacity: copy.trim() && !isPending ? 1 : 0.4,
                 }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
@@ -190,6 +245,23 @@ export default function Analysis() {
           </p>
         </div>
       </Reveal>
+
+      {isPending && (
+        <Reveal>
+          <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, borderRadius: 14, padding: '14px 20px', background: 'rgba(168,197,224,0.15)', border: `0.5px solid rgba(168,197,224,0.35)` }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb, animation: 'spin 1s linear infinite' }} aria-hidden={true}>progress_activity</span>
+            <p style={{ fontSize: 14, color: C.ikb, fontFamily: F.cn, margin: 0 }}>AI 正在分析中，请稍候…</p>
+          </div>
+        </Reveal>
+      )}
+      {isError && (
+        <Reveal>
+          <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, borderRadius: 14, padding: '14px 20px', background: 'rgba(239,68,68,0.12)', border: `0.5px solid rgba(239,68,68,0.35)` }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#f87171' }} aria-hidden={true}>error</span>
+            <p style={{ fontSize: 14, color: '#f87171', fontFamily: F.cn, margin: 0 }}>分析失败，请重试</p>
+          </div>
+        </Reveal>
+      )}
 
       {/* ── 输入卡 (AnalysisInputCard) ───────────────────────────────────── */}
       <Reveal>
@@ -360,7 +432,7 @@ export default function Analysis() {
               <button
                 type="button"
                 onClick={handleAnalyze}
-                disabled={!copy.trim()}
+                disabled={!copy.trim() || isPending}
                 className="lg-gradbtn"
                 style={{
                   display: 'inline-flex',
@@ -373,7 +445,7 @@ export default function Analysis() {
                   fontFamily: F.cn,
                   cursor: 'pointer',
                   border: 'none',
-                  opacity: copy.trim() ? 1 : 0.4,
+                  opacity: copy.trim() && !isPending ? 1 : 0.4,
                 }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>analytics</span>
@@ -423,7 +495,7 @@ export default function Analysis() {
             </div>
             <div style={{ padding: 24 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {ANALYSIS_STRUCTURE.map((it, idx) => {
+                {displayStructure.map((it, idx) => {
                   const accentColors = [C.ikb, C.yellow, C.accent3, C.ikb] as const;
                   const accent = accentColors[idx % accentColors.length]!;
                   return (
@@ -529,7 +601,7 @@ export default function Analysis() {
             </div>
             <div style={{ padding: 24 }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                {ANALYSIS_ELEMENTS.map((e) => (
+                {(analysisData?.elements ?? ANALYSIS_ELEMENTS).map((e) => (
                   <motion.span
                     key={e}
                     whileHover={{ y: -3 }}
@@ -592,7 +664,7 @@ export default function Analysis() {
               </div>
               <div style={{ padding: 24 }}>
                 <ul style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: 0, padding: 0, listStyle: 'none' }}>
-                  {ANALYSIS_PROS.map((p) => (
+                  {(analysisData?.pros ?? ANALYSIS_PROS).map((p) => (
                     <li key={p} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn }}>
                       <span style={{ marginTop: 2, flexShrink: 0, fontSize: 16, fontWeight: 800, color: '#4ade80' }}>+</span>
                       <span>{p}</span>
@@ -637,7 +709,7 @@ export default function Analysis() {
               </div>
               <div style={{ padding: 24 }}>
                 <ul style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: 0, padding: 0, listStyle: 'none' }}>
-                  {ANALYSIS_CONS.map((c) => (
+                  {(analysisData?.cons ?? ANALYSIS_CONS).map((c) => (
                     <li key={c} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.82)', fontFamily: F.cn }}>
                       <span style={{ marginTop: 2, flexShrink: 0, fontSize: 16, fontWeight: 800, color: '#f87171' }}>−</span>
                       <span>{c}</span>
@@ -684,7 +756,7 @@ export default function Analysis() {
             </div>
             <div style={{ padding: 24 }}>
               <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
-                {ANALYSIS_SUGGESTIONS.map((s, i) => (
+                {displaySuggestions.map((s, i) => (
                   <Item key={s} style={{ height: '100%' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', borderRadius: 12, padding: '12px 14px', background: 'rgba(255,255,255,0.04)', border: `0.5px solid ${C.line}` }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
@@ -794,13 +866,13 @@ export default function Analysis() {
                     color: 'transparent',
                   }}
                 >
-                  {ANALYSIS_OVERALL_SCORE}
+                  {displayOverall}
                 </p>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontFamily: F.mono, margin: 0 }}>{ANALYSIS_OVERALL_LABEL}</p>
               </div>
             </div>
             {(() => {
-              const dims = RADAR_DIMS_AN;
+              const dims = radarDims;
               const cx = 130;
               const cy = 122;
               const R = 88;
@@ -840,7 +912,7 @@ export default function Analysis() {
               );
             })()}
             <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-              {RADAR_DIMS_AN.map((d) => (
+              {radarDims.map((d) => (
                 <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ height: 8, width: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: d.color }} />
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
@@ -901,13 +973,13 @@ export default function Analysis() {
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24 }}>
                 <div>
                   <p style={{ fontSize: 64, fontWeight: 800, lineHeight: 1, margin: 0, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                    {ANALYSIS_OVERALL_SCORE}
+                    {displayOverall}
                     <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>/100</span>
                   </p>
                 </div>
                 {/* 环形进度 */}
                 <div style={{ height: 80, width: 80, flexShrink: 0 }}>
-                  <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`综合评分 ${ANALYSIS_OVERALL_SCORE} 分环形进度`}>
+                  <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} role="img" aria-label={`综合评分 ${displayOverall} 分环形进度`}>
                     <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.2)" strokeWidth="3.5" />
                     <circle
                       cx="18"
@@ -917,14 +989,14 @@ export default function Analysis() {
                       stroke={C.ikb}
                       strokeWidth="3.5"
                       strokeLinecap="round"
-                      strokeDasharray={`${Math.min(100, ANALYSIS_OVERALL_SCORE)} 100`}
+                      strokeDasharray={`${Math.min(100, displayOverall)} 100`}
                     />
                   </svg>
                 </div>
               </div>
               {/* 维度评分 bars */}
               <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {ANALYSIS_DIMENSIONS.map((d) => (
+                {displayDimensions.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ width: 90, flexShrink: 0, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{d.label}</span>
                     <div style={{ height: 6, flex: 1, overflow: 'hidden', borderRadius: 9999, background: 'rgba(168,197,224,0.14)' }}>
@@ -983,7 +1055,7 @@ export default function Analysis() {
                   </span>
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
-                  {ANALYSIS_ELEMENTS.length}
+                  {(analysisData?.elements ?? ANALYSIS_ELEMENTS).length}
                   <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 个</span>
                 </p>
                 <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
@@ -1028,7 +1100,7 @@ export default function Analysis() {
                   </span>
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
-                  {ANALYSIS_PROS.length}
+                  {(analysisData?.pros ?? ANALYSIS_PROS).length}
                   <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 条</span>
                 </p>
                 <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>亮点</p>
@@ -1073,7 +1145,7 @@ export default function Analysis() {
                   </span>
                 </div>
                 <p style={{ marginTop: 14, fontSize: 24, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow, marginBottom: 0 }}>
-                  {ANALYSIS_SUGGESTIONS.length}
+                  {displaySuggestions.length}
                   <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}> 条</span>
                 </p>
                 <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>优化建议</p>

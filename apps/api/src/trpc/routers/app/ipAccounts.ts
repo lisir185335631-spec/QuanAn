@@ -217,9 +217,10 @@ export const ipAccountsRouter = router({
   smartRecommend: protectedProcedure
     .input(z.object({ industry: z.string().min(1).max(64) }))
     .mutation(async ({ ctx, input }) => {
-      const { activeAccountId, traceId } = ctx;
+      const { activeAccountId, traceId, user } = ctx;
       const agentRes = await positioningAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'recommend',
         userInput: { industry: input.industry },
         traceId: traceId ?? undefined,

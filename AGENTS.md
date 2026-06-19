@@ -10,30 +10,41 @@
 
 ## 文档地图
 
+> **Harness = `docs/architecture/01-06` 这 6 根承重墙 L3 架构的护栏**。本文件的 LD / 红线 / audit 脚本，是对以下 6 墙 L3 架构决策的机器可检测护栏（承重墙编号见 KB《Agent项目架构实质性标准》）：
+> - `docs/architecture/01-编排架构.md` — 承重墙② 控制流/编排（三层编排 + 共享记忆松耦合）
+> - `docs/architecture/02-上下文工程.md` — 承重墙① 上下文工程（ContextAssembler 7 路 + 全量注入）
+> - `docs/architecture/03-记忆.md` — 承重墙③ 记忆/状态（五层 · 活跃 vs 声明）
+> - `docs/architecture/04-可靠性.md` — 承重墙④ 可靠性/失败（6 层兜底链）
+> - `docs/architecture/05-演进.md` — 承重墙⑤ 演进/反馈（飞轮 · 单向反哺）
+> - `docs/architecture/06-多租户隔离.md` — 条件承重墙⑥ 多租户/RLS（三道闸 · RLS 失效=Agent 拿到别人的大脑）
+>
+> 以上 6 文件是架构真相源；改代码前必须对齐这 6 墙不可破坏约束（每墙 L3 六条），否则 audit 直接 reject。
+
 | § | 章节 | 一句话 | 详细文档 |
 |:-:|---|---|---|
-| §1 | **Mission** | 9 步 AI 向导 · 14 Specialist · Aurelian Dark 三位一体 | ARCHITECTURE.md §1 |
+| §1 | **Mission** | 9 步 AI 向导 · 14 Specialist(含 PresentationAgent) · Aurelian Dark 三位一体 | ARCHITECTURE.md §1 |
 | §2 | **Tech Stack(锁定)** | Vite+React+tRPC+Postgres+pgvector+Claude Sonnet 4.6 — 锁定 | ADR.md |
 | §3 | **18 LD 锁定决策** | 编排/记忆/数据/接口/视觉/测试/法律 全架构约束 | ADR.md + 下方断言 |
 | §4 | **设计约束** | Workflow/Agent 决策树 · 数据隔离 · 接口契约 | .claude/rules/design-constraints.md |
-| §5 | **红线(17 条)** | 任一触犯 = Opus 直接 reject | .claude/rules/redlines-detail.md |
+| §5 | **红线(22 条)** | 任一触犯 = Opus 直接 reject | .claude/rules/redlines-detail.md |
 | §6 | **编码规范** | 命名 · 错误处理 · 类型 · 注释 · Commit | .claude/rules/coding-standards.md |
 | §7 | **测试要求** | 5 层金字塔 · LLM Judge · 覆盖率门槛 | .claude/rules/testing.md |
 | §8 | **审计入口** | `pnpm audit:redlines` + `bash scripts/audit-ld.sh` | .claude/rules/audit-playbook.md |
 | §9 | **上下文加载** | 任务类型 → 必读文档表 | 下方表格 |
-| §10 | **Admin 子系统** | 11 LD-A · 6 R-A · 6 闸鉴权 | .claude/rules/admin-subsystem.md |
-| §11 | **高频陷阱** | 15 条 PRD 实测教训（已发生的） | docs/harness-archive/实施沉淀-2026H1.md |
-| 历史 | **修订记录** | R7 2026-06-12 · v1.0 2026-05-23 · v0.9 2026-05-20 | docs/harness-archive/实施沉淀-2026H1.md |
+| §10 | **Session 卫生** | 清洁退出五维 · 跨 session 协议 · 初始化 | 下方节 |
+| §11 | **Admin 子系统** | 11 LD-A · 6 R-A · 6 闸鉴权 | .claude/rules/admin-subsystem.md |
+| §12 | **高频陷阱** | 15 条 PRD 实测教训（已发生的） | docs/harness-archive/实施沉淀-2026H1.md |
+| 历史 | **修订记录** | R8 2026-06-18 · R7 2026-06-12 · v1.0 2026-05-23 | docs/harness-archive/实施沉淀-2026H1.md |
 
 ---
 
 ## §1 Mission
 
-> **善用 AI · 你一个人就是千军万马** — 把"做 IP / 上短视频 / 私域成交"全链路拆成 9 步 AI 向导 + 14 个独立工具 · 让个人 IP 起号者 / OPC 创业者 / 传统行业转型者 / MCN 团队 用 AI 替代营销部全职岗。
+> **善用 AI · 你一个人就是千军万马** — 把"做 IP / 上短视频 / 私域成交"全链路拆成 9 步 AI 向导 + 13 个独立工具 · 让个人 IP 起号者 / OPC 创业者 / 传统行业转型者 / MCN 团队 用 AI 替代营销部全职岗。
 
 **9 步主线断言**（Ralph 不允许跳步 · 不允许新增步骤）：Step1 定行业 → Step3 账号包装 → Step3b 人设 → Step4 执行计划 → Step4b 变现 → Step5 选题 → Step6 拍摄 → Step7 文案 → Step8 直播
 
-**14 Specialist**：PositioningAgent · BrandingAgent · MonetizationAgent · TopicAgent · CopywritingAgent · VideoAgent · LivestreamAgent · PrivateDomainAgent · AnalysisAgent · DiagnosisAgent · DeepLearnAgent · VoiceChatAgent · EvolutionAgent · DailyTaskAgent（精确这 14 个 · 数量锁定）
+**14 Specialist**：PositioningAgent · BrandingAgent · MonetizationAgent · TopicAgent · CopywritingAgent · VideoAgent · LivestreamAgent · PrivateDomainAgent · AnalysisAgent · DiagnosisAgent · DeepLearnAgent · EvolutionAgent · DailyTaskAgent · PresentationAgent（精确这 14 个 · 数量锁定；含 PresentationAgent(PRD-27)；VoiceChatAgent 已删除（语音下线））
 
 **北极星 NSM**：7 天内有 ≥1 次 Specialist 调用 + 完成 ≥3/9 步的活跃 IP 账号数
 
@@ -86,12 +97,12 @@
 
 ### §3.1 编排（LD-001~003）
 
-**LD-001**·95% Workflow / 5% Agent：3 个 L5 自治 Agent = VoiceChatAgent/EvolutionAgent/DailyTaskAgent；其余全部 Workflow。→ ADR-001/002
-检测：`grep -A30 "execute(" src/server/agents/specialists/*.ts | grep -E "for|while" | grep llm`→0 命中
+**LD-001**·95% Workflow / 5% Agent：2 个 L5 自治 Agent = EvolutionAgent/DailyTaskAgent（VoiceChatAgent 已删除）；其余全部 Workflow。→ ADR-001/002
+检测：`grep -A30 "execute(" apps/api/src/specialists/*.ts apps/api/src/agents/**/*.ts | grep -E "for|while" | grep llm`→0 命中
 例外：无——任何 Specialist 不允许内部多轮 LLM，多轮场景必须走 3 个 L5 之一
 
-**LD-002**·14 能力域 Specialist（按域归并·不按 URL 一对一）→ ADR-003
-检测：`ls src/server/agents/specialists/*.ts | grep -v test | wc -l`≤14
+**LD-002**·14 能力域 Specialist（含 PresentationAgent(PRD-27)；按域归并·不按 URL 一对一）→ ADR-003
+检测：`grep -rl "extends BaseSpecialist" apps/api/src --include=*.ts | grep -v test | wc -l`=14(12 step+2 autonomous·与 R-15/audit 同口径)
 
 **LD-003**·Specialist 之间 0 直接调用（通过 ContextAssembler / EvolutionAgent 飞轮） → ADR-004
 检测：`bash scripts/audit-ld.sh`（LD-003 段）
@@ -110,7 +121,7 @@
 **LD-006**·5 层记忆：L1 Buffer / L2 Core / L3 Recall / L4 Profile / L5 Trending Cache（不用 Summarizer/Portrait） → ADR-006
 
 **LD-007**·ContextAssembler 是 prompt 注入**唯一入口**·严禁 Specialist 内自拼 systemPrompt → ADR-007
-检测：`grep -rn 'systemPrompt\s*=\s*[` + "`" + `'"]' src/server/agents/specialists/`→0 命中
+检测：`grep -rn 'systemPrompt\s*=\s*[` + "`" + `'"]' apps/api/src/specialists/`→0 命中
 例外：单元测试可 mock ContextAssembler，但不能完全绕过
 
 **LD-008**·反馈飞轮 5 阶段（生成→反馈→触发→跑批→注入）·EvolutionProfile 必须是**账号级**（account_id 唯一索引，不允许 user_id 主键） → ADR-008/009
@@ -137,7 +148,7 @@
 ### §3.6 视觉（LD-015）
 
 **LD-015**·Aurelian Dark（金 #d4af37/--primary）·弃用赛博青 #00e5ff·ADR.md ADR-015（颜色权威；原 ui/aurelian_dark/DESIGN.md 已随 34dc2f9 移除）·Lucide 1.5/2px stroke 非 filled → ADR-015
-检测：`grep -rn "#00e5ff\|cyan-\|Orbitron\|Rajdhani" src/ --include="*.ts" --include="*.tsx" --include="*.css"`→0 命中
+检测：`grep -rn "#00e5ff\|cyan-\|Orbitron\|Rajdhani" apps/web/src apps/api/src --include="*.ts" --include="*.tsx" --include="*.css"`→0 命中
 例外：Active 状态指示可用 filled 图标，加注释 // active state filled icon
 
 ### §3.7 测试（LD-016）
@@ -163,7 +174,7 @@
 - 系统主动（Cron/事件）+ LLM 自主决策多轮 → L5 Agent（仅 3 个）
 - 新功能**默认 L4 Workflow**·想用 L5 必须先开 ADR
 
-**Specialist 切分（派生 LD-002）**：输出物相似→加 mode 分支·输入字段重叠≥70%→加 mode 分支·跨类型（生成/分析/写记忆）→必须独立·新增第 15 个必须先开 ADR
+**Specialist 切分（派生 LD-002）**：输出物相似→加 mode 分支·输入字段重叠≥70%→加 mode 分支·跨类型（生成/分析/写记忆）→必须独立·新增第 16 个必须先开 ADR
 
 **数据隔离 3 道闸（铁律 · 派生 LD-009）**：
 1. 路由层：每个 procedure 必须有 accountIsolation middleware（校验 activeAccountId 归属）
@@ -181,7 +192,7 @@
 
 ---
 
-## §5 红线（17 条 · 任一触犯 = 直接 reject）
+## §5 红线（22 条 · 任一触犯 = 直接 reject）
 
 > 详细代码示例/错误范例见 `.claude/rules/redlines-detail.md`。下方是核心断言+检测指针。
 > 一键检测：`pnpm audit:redlines`（调 `scripts/audit-redlines.sh`）+ `bash scripts/audit-ld.sh`
@@ -189,7 +200,7 @@
 | # | 红线 | 触犯 LD | 快速检测 |
 |---|---|---|---|
 | R-1 | 直接调 LLM SDK 跳过 LLMGateway | LD-012 | `scripts/audit-redlines.sh` R-1 |
-| R-2 | Specialist 之间互相调用 | LD-003 | `grep "Agent\.run\|Agent\.invoke" src/.../specialists/` |
+| R-2 | Specialist 之间互相调用 | LD-003 | `grep "Agent\.run\|Agent\.invoke" apps/api/src/specialists/` |
 | R-3 | Specialist 内多轮 LLM 循环 | LD-001 | `scripts/audit-ld.sh` LD-001 |
 | R-4 | DB 查询漏 account_id | LD-009 | `scripts/audit-redlines.sh` R-4 |
 | R-5 | Redis/LS 命名漏 account_id | LD-009 | `scripts/audit-redlines.sh` R-5 |
@@ -197,14 +208,19 @@
 | R-7 | 编造 ARCHITECTURE/DATA-MODEL 没有的 schema | LD-013+§1.7 | prisma schema diff DATA-MODEL.md |
 | R-8 | 跳过 zod 校验直接 trust LLM 输出 | LD-013 | `scripts/audit-ld.sh` LD-013 |
 | R-9 | 不写 trace_id | LD-013 | DB 表 traceId 字段检查 |
-| R-10 | 用 `any` type 兜底 | LD-013 | `grep ": any" src/ --include="*.ts"` |
-| R-11 | 自己拼 systemPrompt 跳过 ContextAssembler | LD-007 | `grep 'systemPrompt\s*=\s*[` + "`" + `'"]' src/.../specialists/` |
+| R-10 | 用 `any` type 兜底 | LD-013 | `grep ": any" apps/api/src apps/web/src --include="*.ts"` |
+| R-11 | 自己拼 systemPrompt 或 invokeLLM 首参用废弃 `_ctx` 跳过 ContextAssembler | LD-007 | `scripts/audit-redlines.sh` R-11（权威·双 facet：(a) `systemPrompt=` 不走 ctx/assembled + (b) US-005 新增 `grep "_ctx: AssembledContext" specialists/*.ts` 排除 `_build*` 辅助方法） |
 | R-12 | EvolutionAgent 升级+insight 不在同事务 | LD-014 | EvolutionAgent 单测必含 transaction rollback 用例 |
 | R-13 | stepData.save 不带 version（无乐观锁） | LD-014 | stepData mutation 必含 version 参数 |
-| R-14 | 跳过免责声明 / PII 不脱敏 | LD-018 | `src/lib/compliance/disclaimer.ts` + `pii-mask.ts` 必存在 |
-| R-15 | 给每个 URL 写独立 Specialist（超过 14） | LD-002 | `ls src/.../specialists/*.ts | wc -l`≤14 |
-| R-16 | 用赛博青/Orbitron/aiipznt 原版视觉 | LD-015 | `grep -rn "#00e5ff\|Orbitron\|cyan-" src/` |
-| R-17 | trending 自建爬虫 + 技术栈未经 ADR 变更 | LD-017+§2 | `grep "puppeteer" src/server/workers/trending/` |
+| R-14 | 跳过免责声明 / PII 不脱敏（含 specialist _buildUserPrompt 追加路径，非仅 ContextAssembler 主路径·AC③）| LD-018 | `disclaimer.ts`+`pii-mask.ts` 必存在；_buildUserPrompt 追加内容须过 piiMask〔阶段6 补追加路径〕|
+| R-15 | 给每个 URL 写独立 Specialist（超过 14） | LD-002 | 数 `extends BaseSpecialist` 类 ≤14(12 step in specialists/ + 2 autonomous in agents/;精确命令见 audit-redlines.sh R-15) |
+| R-16 | 用赛博青/Orbitron/aiipznt 原版视觉 | LD-015 | `grep -rn "#00e5ff\|Orbitron\|cyan-" apps/web/src apps/api/src/` |
+| R-17 | trending 自建爬虫 + 技术栈未经 ADR 变更 | LD-017+§2 | `grep "puppeteer" apps/api/src/workers/trending-scraper/` |
+| R-18 | LLM API Key/密钥明文落库（SystemConfig.configValue/Redis/LS 明文）| G1.8+AC-B | **🔜阶段6实装·当前债务·audit暂未检测；** loadLlmKey 须解密（envelope AES-256-GCM 或 KMS）或仅 env 注入；取 key 处无解密=reject〔阶段6 实装·当前明文=已登记门禁债务〕|
+| R-19 | 外部来源内容（RAG chunk/sourceCopy/trending rawContent）入 prompt 前未过注入特征过滤（DANGEROUS_TAGS·0.7 A层）| AC① | **🔜阶段6实装·当前债务·audit暂未检测；** ContextAssembler/specialist 拼外部内容前须调 sanitize；`grep` 外部内容入 prompt 处有无过滤〔阶段6 实装〕|
+| R-20 | LLMGateway 调用无 contextTokens 上限截断 / 第三方 API（trending/embedding/imageGen）无独立日预算分桶 | AC②+D9.3 | **🔜阶段6实装·当前债务·audit暂未检测；** ContextAssembler 超阈 graceful trim 不 throw；非 LLM API 分桶限流〔阶段6 实装〕|
+| R-21 | account_id 业务表漏 RLS（R-6 仅查新表→存量遗漏，如 trending_favorites）| AC-A+R-6 | `scripts/audit-redlines.sh` R-21（真检测·已落地）；从 prisma/schema.prisma 提取有 accountId 的业务表 → 与 manual_rls.sql ENABLE RLS 求差 → trending_favorites 应被抓出；阶段6 补 manual_rls.sql |
+| R-22 | 前端 apps/web import 后端 apps/api 内部模块（`apps/api/src/...`）| NFR-前后端分离 | 前端只经 packages/clients（codegen:shadow 生成类型）+packages/schemas（zod 契约）共享；`grep -rn "from ['\"].*apps/api/src" apps/web/src` 应=0；〔直接 import 真 AppRouter 会 api `@/` 自引用 TS2307+实例化上限·trpc.ts:8〕违犯=reject |
 
 ---
 
@@ -234,7 +250,7 @@
 
 **5 层测试金字塔**：①静态（tsc+eslint·1min）→②单元（200+用例·vitest·5min）→③集成（40-60用例·10min）→④E2E（8-10用例·playwright·15min）→⑤LLM Judge（100金标准·夜跑·30min）
 
-**覆盖率门槛（CI 强制）**：整体≥80%·`src/server/agents/`≥90%·`src/lib/`≥95%·`src/hooks/`≥80%
+**覆盖率门槛（CI 强制）**：整体≥80%·`apps/api/src/specialists/`≥90%·`apps/api/src/lib/`≥95%·`apps/web/src/hooks/`≥80%
 
 **LLM Judge**：`judgeModel: 'gpt-4o'`（不同模型 judge·避免自我验证）·passThreshold: 4.0·5 维度（结构/相关性/风格/实用/安全）·每 PR 抽样 20 个·每夜跑全 100 个
 
@@ -254,7 +270,7 @@
 pnpm typecheck && pnpm lint --max-warnings=0   # ① 静态
 pnpm test:unit && pnpm test:integration        # ② 测试
 pnpm schema:diff                               # ③ Schema 一致性
-pnpm audit:redlines                            # ④ 17 条红线（调 scripts/audit-redlines.sh）
+pnpm audit:redlines                            # ④ 22 条红线(R-1~17+R-21~R-22 有 audit 检测·R-18~20 阶段6实装暂未检测)
 bash scripts/audit-ld.sh                       # ⑤ 18 LD 检测
 bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（如涉及 admin）
 ```
@@ -284,7 +300,15 @@ bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（
 
 ---
 
-## §10 Admin 子系统
+## §10 Session 卫生
+
+**每 session 结束前(清洁退出五维)**:① build/typecheck 过 ② 测试过 ③ `scripts/ralph/progress.txt` 更新(本次做了什么/阻塞/下一步)④ 无 stale 产物(临时文件/注释掉的死代码)⑤ 启动路径可用。
+**跨 session**:决策的 why 写进 ADR.md / progress.txt,不只在对话里;下个 session 先读 progress.txt + §9 必读表重建上下文。
+**初始化**:新环境先跑 `bash scripts/init.sh`(装依赖+db:generate+env 校验)。
+
+---
+
+## §11 Admin 子系统
 
 > **动 admin 必读**：`.claude/rules/admin-subsystem.md`（11 LD-A + 6 R-A + 14 类高风险动作 + 6 闸鉴权链 + 测试要求 + audit 命令）
 
@@ -294,7 +318,24 @@ bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（
 
 ---
 
-## §11 高频陷阱（PRD 实测教训·最高 15 条）
+## §13 阶段6 架构债务登记
+
+> 以下为阶段6 实装前已知的架构债务。每条包含：验收标准 / 对应红线 / 陷阱注意。阶段6 开始实装前必读。
+
+| # | 债务项 | 验收标准 | 对应红线/LD | 陷阱注意 |
+|---|---|---|---|---|
+| G1 | **token 裁剪**：LLMGateway 调用无 contextTokens 上限截断 | ContextAssembler 超阈 graceful trim（不 throw）；非 LLM API（trending/embedding/imageGen）独立日预算分桶限流 | R-20 | trim 必须在 assemble 阶段前完成，不能在 LLMGateway 内部静默截断导致输出截断 |
+| G2 | **PrivateDomainAgent PII 绕过**（侦察坐实真漏洞）：`_buildUserPrompt` 直接用 `input.productDescription/targetAudience` 拼 userPrompt，完全绕过 ContextAssembler 的 piiMask | `_buildUserPrompt` 内对用户字段调 piiMask，或改走 `_formatUserPrompt` 统一脱敏；单测覆盖含手机/邮箱输入被脱敏 | R-14·LD-018 | **真漏洞**：用户手机/邮箱原文进 LLM；R-14 扩展 audit 是警示级（grep 无法精确判定泄漏）→ 此条是已确认必修；它还完全忽略 ctx（7 路白跑 + 退出飞轮，承重墙①/⑤ 软肋）·**✅2026-06-19 已实装**：piiMask(productDescription/targetAudience/scene/ipPositioning) + US-002 接通 ctx + PII 单测 5/5|
+| G8 | **embed 真实化**：L5 索引端走 stub（非真 OpenAI embedding）| `apps/api/src/workers/rag/` embed 调用改走真 OpenAI `text-embedding-3-small`；集成测试覆盖 vector 近邻查询 | LD-011 | stub 返回零向量→ pgvector 查询无意义；改真 embedding 后需重跑 seed 数据 |
+| G9 | **熔断器实装**：LD-012 熔断器当前注释占位 | `apps/api/src/workers/llm-gateway/` 内熔断器（circuit-breaker）从注释改为真实 opossum/自研实现；E2E 测试模拟 LLM 超时触发熔断 | LD-012 | 禁止把注释当"已实装"（LD-012 audit 只检测文件存在·不检测 circuit-breaker 真实逻辑）|
+| G11 | **evaluatePromptVersion isMock=false**：LLM Judge 当前 isMock=true | `tests/judge/*.judge.ts` 全部改 `isMock=false`；夜跑 CI 覆盖 100 金标准 passThreshold 4.0 | LD-016 | mock=true 时 judge 永远返回 5.0 满分；开启真实 judge 会暴露实际 prompt 质量问题 |
+| G12 | **canary 接 ab-stop-loss**：canary 部署无自动回滚 | canary worker 接入 ab-stop-loss 钩子；error_rate > 5% 自动触发回滚；监控接入 Datadog/Grafana | LD-019 | 无回滚的 canary 是裸奔；ab-stop-loss 配置必须在 deploy pipeline 中 before-promote 阶段 |
+| G13 | **演进 100 冻结**：EvolutionAgent 冻结点未锁定 | EvolutionProfile.evolutionCount 达 100 时 `canEvolve=false`；单测：count=100 时 EvolutionAgent.execute() 返回 `{skipped: true}` | LD-019 | 无冻结→ 无限 LLM 调用→ 爆成本；冻结逻辑必须在 EvolutionAgent.execute() 最前检查 |
+| G15 | **ContextAssembler._fetchStepData 双轨**：任何重构必须保留 `where:{accountId}` | `_fetchStepData` 内所有 prisma 查询必须包含 `where:{accountId,...}`；**禁止按 stepData.ts 模式去掉 where→否则脱离事务 RLS 跨租户泄漏** | LD-009·R-4 | LD-009 注记（R-4 audit 盲区）：`_fetchStepData` 走 prisma.$transaction 内部，RLS SET LOCAL 在事务提交后失效；accountId where 子句是唯一保证。去掉 where = 跨租户数据泄漏 |
+
+---
+
+## §12 高频陷阱（PRD 实测教训·最高 15 条）
 
 > 完整沉淀（§11.1~§11.19）见 `docs/harness-archive/实施沉淀-2026H1.md`
 
@@ -318,8 +359,11 @@ bash scripts/audit-redlines-admin.sh          # ⑥ admin 专属 6 R-A 红线（
 
 ## 修订记录（最近 3 条）
 
+- **2026-06-19 R11** · 三轮对抗复审收敛+清残留+阶段6/7 出门:清残留(RAG _fetchRag query 改用真实输入非 agentId·3 家 incidental-PII 落地)·**3 安全交付能力包**(G74 注入特征过滤 injection-filter/G78 成本熔断 cost-budget-guard/G77 输出端合规 output-guardrail·接入 BaseSpecialist+ContextAssembler·闭合阶段2 P0 backlog)。三轮复审修真 bug:**EvolutionAgent/DailyTaskAgent override execute 绕过 budget+guardrail→补 runWithBudget+_applyOutputGuardrail**(_applyOutputGuardrail private→protected)/output-guardrail re-parse 失败回退含违规原始→改返 sanitized(安全>schema-min·违规不泄漏)/各 regex 误伤收窄(承诺要量化语境·injection act-as 限角色劫持·全角零宽 NFKC 归一)。**LD-001 例外登记**:`TopicAgent.executeStream` 5-category batch SSE(`this.execute`×5·批量 fan-out 非 agentic 循环·D-197 SHIELD)=接受例外;audit-ld 的 LD-001 grep 只检 llmGateway/invokeLLM/.complete(/.stream(·不检 this.execute 别名(单行启发式既有局限·主向量直调 LLM 循环仍抓)。R-5:Diagnosis.tsx lsKey 来自 getLsKey 真合规(注释文档化让审计相邻行启发式识别·非 gaming)。阶段6 出门→阶段7 带债出门(H76 eval-suite/H79 Judge偏差/H77 红队集中阶段8)。
+- **2026-06-19 R10** · 全链路四波次重构 + 二轮对抗复审收口:波次1 清场 / 波次2 correctness(承重墙①ctx 接通·R-11 闭合·PII 根除) / 波次3 enrich 富 UI 变真 / 波次4 五护栏(G1 token 预算·G9 真熔断器·G8 embedding D-038·G11 真 LLM Judge·G12 canary 自动止损·均实装非 stub)。**§13 债务 G1/G2/G8/G9/G11/G12/G13/G15 全部实装✓**(G6/G7 随语音下线消解)。**R-14 实际覆盖修正(纠正 R8『piiMask 覆盖』over-claim)**:字段级 piiMask = PrivateDomain/Monetization/Branding/Positioning 四家;Analysis/DeepLearn/Video/Presentation 的输入是**待分析主体内容·不脱敏**(脱敏会毁分析);Livestream/Diagnosis/Copywriting 已字段级 piiMask(2026-06-19 清残留落地·incidental 元数据 mask·主体内容如 scriptText 不 mask)→**R-14 实际覆盖 7 家**(PrivateDomain/Monetization/Branding/Positioning/Livestream/Diagnosis/Copywriting)。二轮复审修真 bug:G12 success=!isFallback 系统性修(覆盖 VideoAgent 内层 fallback·别再逐路补丁)/前端 stat 卡改数据驱动/realdata 测试改真负向。详见 PROJECT-PROFILE phase_notes[6]。
+- **2026-06-19 R9** · 语音下线 Wave1：VoiceChatAgent/stt/tts/voiceChat 全栈删除；Specialist 15→14；红线 23→22(删 R-23)；§1/§3/§5/§7/§8/§13 G6G7 全同步；docs/architecture/03-记忆.md L1 更新
+- **2026-06-18 R8** · Harness 重定位：声明 6 墙 L3 架构护栏(docs/architecture/01-06)；红线 22→23(R-23 VoiceChatAgent finally 软锁)；R-21 落地真检测(trending_favorites 抓对)；R-14 扩展(Specialist._buildUserPrompt piiMask 覆盖)；§13 阶段6架构债务登记(G1/G2/G6/G7/G8/G9/G11/G12/G13/G15·G2=PrivateDomain PII 真漏洞)
 - **2026-06-12 R7** · AGENTS.md 3714→318 行瘦身·下沉 6 rules 文件+1 archive 文件·台账见 `.planning-r7-审定台账.md`（版本接续 v1.0，旧头部 v0.5 系历史未更新）
 - **2026-05-23 v1.0** · 加 §11.19 PRD-28 evaluation 完整化沉淀（LLM Judge 真闭环·100 金标准·admin evaluation UI·inter-rater Cohen's kappa）
-- **2026-05-20 v0.9** · 加 §11.16 PRD-25 LLM 接入全链路沉淀（8 Specialist 真 LLM·0 reject 首轮通过）
 
 > 完整修订历史见 `docs/harness-archive/实施沉淀-2026H1.md` 末尾。

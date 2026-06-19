@@ -3,7 +3,7 @@
  * step/* 9 条均已迁移红蓝紫 IKB · 顶层独立路由 · StepLayout 已移除
  * Route groups (chunks):
  *   step/*      → 9 条顶层独立路由(各自内置 IKBLayout 外壳，不挂 RootLayout)
- *   tools/*     → 14 tool pages (lazy individually, shared vite chunk via webpackChunkName)
+ *   tools/*     → 13 tool pages (lazy individually, shared vite chunk via webpackChunkName)
  *   modules/*   → 6 new modules
  *   auxiliary   → /ip-plan, /404 catch-all
  */
@@ -27,7 +27,7 @@ const Step7 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Ste
 const Step8 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step8'));
 // sally aiipznt /step/9 也是 404 · 跳过 step 9 与 sally 一致(catch-all 接管)
 
-// ── Tool pages (14) — shared tools chunk ─────────────────────────────────────
+// ── Tool pages (13) — shared tools chunk ─────────────────────────────────────
 const Trending = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Trending'));
 // sally aiipznt /copywriting 也是 404 · 跳过 · catch-all 接管
 const PresentStyles = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PresentStyles'));
@@ -40,7 +40,6 @@ const VideoAnalysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages
 const VideoProduction = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoProduction'));
 const AcquisitionVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AcquisitionVideo'));
 const AiVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AiVideo'));
-const VoiceChat = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VoiceChat'));
 const DeepLearning = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/DeepLearning'));
 const Knowledge = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Knowledge'));
 
@@ -194,14 +193,6 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div className="min-h-screen bg-white" />}>
         <AiVideo />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/voice-chat',
-    element: (
-      <Suspense fallback={<div className="min-h-screen bg-white" />}>
-        <VoiceChat />
       </Suspense>
     ),
   },

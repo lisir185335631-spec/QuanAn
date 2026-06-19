@@ -2649,7 +2649,7 @@ DenseTable.tsx 真实现 + admin-routes.ts metadata 更新到 PRD-11 + 6 placeho
 **正例 1** · `await Promise.all(users.map(u => prisma.ipAccount.findMany({where: u.id})))` 或 `prisma.user.findMany({include: {ipAccounts}})`。
 **核心反例 2** · `await prisma.user.findMany({})` 100k 行 → OOM。
 **正例 2** · prisma stream + chunk 1000。
-**源** · PRD-3 US-018 reject + PRD-8 US-009 reject。
+**源** · PRD-3 US-018 reject + [重构:PRD-8 语音 US 已删,N+1 反例上下文参考历史]。
 
 ---
 

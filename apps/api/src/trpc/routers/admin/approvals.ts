@@ -319,7 +319,9 @@ export const approvalsRouter = adminTrpcRouter({
           : result.requireDualApproval
             ? { secondDecisionReason: input.decisionReason }
             : { decisionReason: input.decisionReason },
-      }).catch(() => {});
+      }).catch((e) => {
+        logger.warn({ err: e, requestId: input.requestId }, 'approvals.approveRequest.updateReason.failed');
+      });
 
       // Stub notification: logger.info (AC-11 · 真启留 PRR)
       logger.info(`[STUB] Notify requester ${result.requesterAdminId}: request ${input.requestId} approved`);
@@ -376,7 +378,9 @@ export const approvalsRouter = adminTrpcRouter({
         userAgent: ctx.req.headers.get('user-agent') ?? '',
         sessionId: ctx.adminSession?.id ?? 'system',
         success: true,
-      }).catch(() => {});
+      }).catch((e) => {
+        logger.warn({ err: e, requestId: input.requestId }, 'approvals.rejectRequest.auditLog.failed');
+      });
 
       return { ok: true };
     }),
@@ -411,7 +415,9 @@ export const approvalsRouter = adminTrpcRouter({
       await prisma.approvalRequest.update({
         where: { id: input.requestId },
         data: { decisionReason: input.decisionReason },
-      }).catch(() => {});
+      }).catch((e) => {
+        logger.warn({ err: e, requestId: input.requestId }, 'approvals.emergencyApprove.updateReason.failed');
+      });
 
       // Stub notification
       logger.info(`[STUB] Emergency approval ${result.id} notified (isMock=true · D-077)`);

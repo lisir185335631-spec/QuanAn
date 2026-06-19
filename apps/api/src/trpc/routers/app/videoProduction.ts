@@ -72,10 +72,11 @@ export const videoProductionRouter = router({
   generate: protectedProcedure
     .input(videoProductionInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await videoAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'production',
         userInput: input,
         traceId: traceId ?? undefined,

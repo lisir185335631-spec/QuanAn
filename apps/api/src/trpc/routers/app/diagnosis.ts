@@ -57,11 +57,12 @@ export const diagnosisRouter = router({
   generate: protectedProcedure
     .input(generateDiagnosisInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       // AC-3: 真调 diagnosisAgent.execute
       const agentResponse = await diagnosisAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         userInput: { answers: input.answers },
         traceId: traceId ?? undefined,
         stepKey: 'diagnosis',

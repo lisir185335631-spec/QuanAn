@@ -72,7 +72,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
   it('does NOT throw — returns isFallback=true instead', async () => {
     const agent = new VideoAgent();
     await expect(
-      agent.execute({ accountId: TEST_ACCOUNT_ID, mode: 'production', userInput: BASE_USER_INPUT }),
+      agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, mode: 'production', userInput: BASE_USER_INPUT }),
     ).resolves.not.toThrow();
   });
 
@@ -80,6 +80,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -90,6 +91,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -100,6 +102,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -111,6 +114,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -123,6 +127,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -143,6 +148,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -170,6 +176,7 @@ describe('VideoAgent production mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -181,6 +188,7 @@ describe('VideoAgent production mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -209,6 +217,7 @@ describe('VideoAgent production mode fallback — LLM returns invalid content', 
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -219,6 +228,7 @@ describe('VideoAgent production mode fallback — LLM returns invalid content', 
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -263,6 +273,7 @@ describe('VideoAgent shooting mode — fallback NOT triggered on LLM success', (
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'shooting',
       userInput: BASE_USER_INPUT,
     });
@@ -290,7 +301,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
   it('does NOT throw — returns isFallback=true instead', async () => {
     const agent = new VideoAgent();
     await expect(
-      agent.execute({ accountId: TEST_ACCOUNT_ID, mode: 'acquisition', userInput: ACQUISITION_USER_INPUT }),
+      agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, mode: 'acquisition', userInput: ACQUISITION_USER_INPUT }),
     ).resolves.not.toThrow();
   });
 
@@ -298,6 +309,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -308,6 +320,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -318,6 +331,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -329,6 +343,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -343,6 +358,7 @@ describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -373,6 +389,7 @@ describe('VideoAgent acquisition mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -384,6 +401,7 @@ describe('VideoAgent acquisition mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -417,6 +435,7 @@ describe('VideoAgent acquisition mode fallback — LLM returns invalid content',
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });
@@ -427,6 +446,7 @@ describe('VideoAgent acquisition mode fallback — LLM returns invalid content',
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'acquisition',
       userInput: ACQUISITION_USER_INPUT,
     });

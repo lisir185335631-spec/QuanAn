@@ -10,4 +10,3 @@ export { default as PresentStyles } from './PresentStyles';
 export { default as PrivateDomain } from './PrivateDomain';
 export { default as Trending } from './Trending';
 export { default as VideoProduction } from './VideoProduction';
-export { default as VoiceChat } from './VoiceChat';

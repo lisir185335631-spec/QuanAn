@@ -59,6 +59,7 @@ describe.skipIf(skipRealLlm)('VideoAgent real LLM', () => {
 
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'shooting',
       userInput: {
         sourceCopy: '分享健身后生活改变的真实故事，面向25-35岁上班族',
@@ -100,6 +101,7 @@ describe.skipIf(skipRealLlm)('VideoAgent real LLM', () => {
         data: expect.objectContaining({
           agentId: 'VideoAgent',
           accountId: TEST_ACCOUNT_ID,
+      userId: 1,
           isFallback: false,
         }),
       }),

@@ -11,6 +11,7 @@
 import { Worker } from 'bullmq';
 
 import { evolutionAgent } from '@/agents/evolution/EvolutionAgent';
+import { SYSTEM_USER_ID } from '@/lib/constants/system';
 import { logger } from '@/lib/logger';
 import { redis } from '@/lib/redis';
 
@@ -26,6 +27,7 @@ async function processEvolutionJob(payload: EvolutionJobPayload): Promise<void> 
   // EvolutionAgent.execute() 内部处理 LLM 调用 + 原子事务
   await evolutionAgent.execute({
     accountId,
+    userId: SYSTEM_USER_ID,
     userInput: { accountId, triggerType },
     traceId: `evo-worker-${accountId}-${Date.now()}`,
   });

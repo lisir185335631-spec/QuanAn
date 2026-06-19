@@ -93,11 +93,12 @@ export const copywritingRouter = router({
   generate: protectedProcedure
     .input(generateCopywritingInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       // US-009: call CopywritingAgent (step7 mode) with user context
       const agentRes = await copywritingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'step7',
         userInput: input.context ?? {},
         traceId: traceId ?? undefined,
@@ -172,10 +173,11 @@ export const copywritingRouter = router({
   freeGenerate: protectedProcedure
     .input(copywritingFreeGenerateInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await copywritingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'free',
         userInput: input,
         traceId: traceId ?? undefined,
@@ -215,10 +217,11 @@ export const copywritingRouter = router({
   acquisitionGenerate: protectedProcedure
     .input(acquisitionCopywritingInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       let agentRes = await copywritingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'acquisition',
         userInput: { scriptType: input.scriptType, elements: input.elements, conversionGoal: input.conversionGoal, topic: input.topic },
         traceId: traceId ?? undefined,
@@ -230,6 +233,7 @@ export const copywritingRouter = router({
         if (!markdownHasCTA(firstMarkdown)) {
           agentRes = await copywritingAgent.execute({
             accountId: activeAccountId!,
+            userId: user!.id,
             mode: 'acquisition',
             userInput: { scriptType: input.scriptType, elements: input.elements, conversionGoal: input.conversionGoal, topic: input.topic },
             traceId: traceId ?? undefined,

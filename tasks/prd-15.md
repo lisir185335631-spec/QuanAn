@@ -19,7 +19,7 @@
 | `DATA-MODEL.md` | 数据模型 · 主应用 18 表 | §3 ip_account / cost_log / topic / copywriting / etc |
 | `tasks/prd-3.md` | P2 路由 + 首页(主应用骨架 · StepForm 抽象起源)| US-001~005 |
 | `tasks/prd-4.md` | P3 IP 主流程 9 step(BaseSpecialist 14 Agent · StepForm 抽象沉淀)| §11.6 全 |
-| `tasks/prd-5.md` | P4 创作模块(部分工具 page 实现)| Generate / Knowledge / VoiceChat 完整版本起源 |
+| `tasks/prd-5.md` | P4 创作模块(部分工具 page 实现)| Generate / Knowledge / VoiceChat 完整版本起源 [重构删:语音对话已删] |
 | `tasks/prd-6.md` | P5 视频模块(VideoAnalysis / VideoProduction / AcquisitionVideo 简版来源)| 视频域 |
 
 ### §0.2 ui/ 设计稿(17 目录 · 本 PRD 7 个 stub/缺失对应)

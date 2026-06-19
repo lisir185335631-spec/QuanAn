@@ -11,6 +11,7 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -78,6 +79,113 @@ const MonetizationToolBaseSchema = z.object({
 
 export type MonetizationToolOutput = z.infer<typeof MonetizationToolOutputSchema>;
 
+// ── monetization-plan output schema (Step4b rich advisory output) ──────────────
+
+const MonetizationPlanProductItemSchema = z.object({
+  category: z.enum(['引流品', '信任品', '利润品', '后端产品']),
+  name: z.string(),
+  priceRange: z.string(),
+  targetCustomer: z.string(),
+  monthlyTarget: z.string(),
+  monthlyRevenue: z.string(),
+});
+
+const MonetizationPlanStageSchema = z.object({
+  number: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  icon: z.enum(['trending', 'diamond', 'crown']),
+  range: z.string(),
+  title: z.string(),
+  duration: z.string(),
+  coreStrategy: z.string(),
+  productMatrix: z.array(MonetizationPlanProductItemSchema),
+  trafficStrategy: z.string().optional(),
+  conversionFlow: z.array(z.string()).optional(),
+  teamBuilding: z.string().optional(),
+  systemBuilding: z.string().optional(),
+  brandStrategy: z.string().optional(),
+  matrixLayout: z.string().optional(),
+  keyActions: z.array(z.string()),
+  risks: z.array(z.string()),
+});
+
+export const MonetizationPlanOutputSchema = z.object({
+  marketAnalysis: z.object({
+    industryAnalysis: z.string().min(1),
+    marketScale: z.string().min(1),
+    competition: z.string().min(1),
+    monetizationPotential: z.string().min(1),
+  }),
+  stages: z.array(MonetizationPlanStageSchema).length(3),
+  revenueStructure: z.array(
+    z.object({
+      name: z.string(),
+      percentage: z.string(),
+      desc: z.string(),
+      highlight: z.boolean().optional(),
+    }),
+  ).min(1).max(6),
+  successCases: z.array(
+    z.object({
+      title: z.string(),
+      category: z.string(),
+      journey: z.string(),
+      outcome: z.string(),
+      insight: z.string(),
+    }),
+  ).min(1).max(5),
+});
+
+// Base schema (no length constraints, for responseFormat)
+const MonetizationPlanBaseSchema = z.object({
+  marketAnalysis: z.object({
+    industryAnalysis: z.string(),
+    marketScale: z.string(),
+    competition: z.string(),
+    monetizationPotential: z.string(),
+  }),
+  stages: z.array(
+    z.object({
+      number: z.number(),
+      icon: z.string(),
+      range: z.string(),
+      title: z.string(),
+      duration: z.string(),
+      coreStrategy: z.string(),
+      productMatrix: z.array(z.object({
+        category: z.string(),
+        name: z.string(),
+        priceRange: z.string(),
+        targetCustomer: z.string(),
+        monthlyTarget: z.string(),
+        monthlyRevenue: z.string(),
+      })),
+      trafficStrategy: z.string().optional(),
+      conversionFlow: z.array(z.string()).optional(),
+      teamBuilding: z.string().optional(),
+      systemBuilding: z.string().optional(),
+      brandStrategy: z.string().optional(),
+      matrixLayout: z.string().optional(),
+      keyActions: z.array(z.string()),
+      risks: z.array(z.string()),
+    }),
+  ),
+  revenueStructure: z.array(z.object({
+    name: z.string(),
+    percentage: z.string(),
+    desc: z.string(),
+    highlight: z.boolean().optional(),
+  })),
+  successCases: z.array(z.object({
+    title: z.string(),
+    category: z.string(),
+    journey: z.string(),
+    outcome: z.string(),
+    insight: z.string(),
+  })),
+});
+
+export type MonetizationPlanOutput = z.infer<typeof MonetizationPlanOutputSchema>;
+
 // ── input schemas ──────────────────────────────────────────────────────────────
 
 // step4b input (AC-5: currentRevenue optional)
@@ -119,21 +227,24 @@ const MONETIZATION_CONFIG: SpecialistConfig = {
 
 // ── MonetizationAgent ──────────────────────────────────────────────────────────
 
-export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bOutput | MonetizationToolOutput> {
+export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bOutput | MonetizationToolOutput | MonetizationPlanOutput> {
   readonly config: SpecialistConfig = MONETIZATION_CONFIG;
 
   // TD-014 pattern: _mode set in invokeLLM · P3 single-user serial calls safe
-  private _mode: 'default' | 'monetization-tool' = 'default';
+  private _mode: 'default' | 'monetization-tool' | 'monetization-plan' = 'default';
 
   get inputSchema(): z.ZodType<MonetizationInput> {
     return MonetizationInputSchema;
   }
 
-  get outputSchema(): z.ZodType<Step4bOutput | MonetizationToolOutput> {
+  get outputSchema(): z.ZodType<Step4bOutput | MonetizationToolOutput | MonetizationPlanOutput> {
     if (this._mode === 'monetization-tool') {
-      return MonetizationToolOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput>;
+      return MonetizationToolOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput | MonetizationPlanOutput>;
     }
-    return Step4bOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput>;
+    if (this._mode === 'monetization-plan') {
+      return MonetizationPlanOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput | MonetizationPlanOutput>;
+    }
+    return Step4bOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput | MonetizationPlanOutput>;
   }
 
   // US-015 AC-2: fallback template per mode
@@ -190,6 +301,139 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
         '售后跟进 · 促进复购与转介绍',
       ],
     } satisfies MonetizationToolOutput,
+    'monetization-plan': {
+      marketAnalysis: {
+        industryAnalysis: '（系统繁忙，以下为通用建议参考）内容创业与知识经济赛道',
+        marketScale: '【建议参考】知识付费与内容变现市场处于高速增长阶段，个人IP商业化空间巨大，建议结合自身垂直领域评估实际规模。',
+        competition: '【建议参考】市场竞争激烈，但具备差异化定位的垂直IP仍有蓝海空间，核心壁垒在于专业深度与受众信任度。',
+        monetizationPotential: '【建议参考】个人IP变现潜力取决于垂直度、受众规模与产品矩阵完整度，从知识付费起步可快速验证商业模式。',
+      },
+      stages: [
+        {
+          number: 1 as const,
+          icon: 'trending' as const,
+          range: '0→建议目标 ¥5-30万',
+          title: '起步阶段：建立信任与验证商业模式（建议参考）',
+          duration: '建议 6-12 个月',
+          coreStrategy: '【建议】聚焦一个垂直领域，持续输出高质量内容建立权威，用低客单价产品验证付费意愿，积累私域种子用户。',
+          productMatrix: [
+            {
+              category: '引流品' as const,
+              name: '免费干货内容／低价电子资料',
+              priceRange: '0-99元（建议）',
+              targetCustomer: '对该垂直领域感兴趣的潜在用户',
+              monthlyTarget: '建议目标 100-500人',
+              monthlyRevenue: '建议目标 ¥0-5000',
+            },
+            {
+              category: '信任品' as const,
+              name: '初级付费课程／训练营',
+              priceRange: '299-999元（建议）',
+              targetCustomer: '有明确学习需求的目标用户',
+              monthlyTarget: '建议目标 10-50人',
+              monthlyRevenue: '建议目标 ¥3000-5万',
+            },
+          ],
+          keyActions: [
+            '确定垂直赛道，每周稳定输出内容',
+            '建立私域（社群/个人号）积累种子用户',
+            '推出第一个付费产品，收集真实用户反馈',
+          ],
+          risks: [
+            '初期流量积累缓慢，需保持耐心',
+            '商业化过早可能影响内容质量与受众信任',
+          ],
+        },
+        {
+          number: 2 as const,
+          icon: 'diamond' as const,
+          range: '建议目标 ¥30-200万',
+          title: '发展阶段：产品升级与规模扩张（建议参考）',
+          duration: '建议 12-24 个月',
+          coreStrategy: '【建议】在验证商业模式基础上，升级产品矩阵，引入利润品，尝试团队协作，实现关键环节标准化。',
+          productMatrix: [
+            {
+              category: '利润品' as const,
+              name: '进阶课程／私教服务',
+              priceRange: '1980-9800元（建议）',
+              targetCustomer: '有深度学习需求的付费用户',
+              monthlyTarget: '建议目标 5-20人',
+              monthlyRevenue: '建议目标 ¥1-20万',
+            },
+          ],
+          keyActions: [
+            '升级核心产品，提升客单价',
+            '搭建标准化交付流程',
+            '探索内容投流，扩大流量池',
+          ],
+          risks: [
+            '产品升级需同步提升交付质量',
+            '团队扩张带来管理成本',
+          ],
+        },
+        {
+          number: 3 as const,
+          icon: 'crown' as const,
+          range: '建议目标 ¥200万+',
+          title: '规模化阶段：品牌化与生态构建（建议参考）',
+          duration: '建议 24-48 个月',
+          coreStrategy: '【建议】将个人IP升级为品牌，构建产品生态，通过高端定制服务与平台化实现收入天花板突破。',
+          productMatrix: [
+            {
+              category: '后端产品' as const,
+              name: '企业定制服务／高端咨询',
+              priceRange: '5-50万元/项（建议）',
+              targetCustomer: '企业客户与高净值个人',
+              monthlyTarget: '建议目标 0.5-2单',
+              monthlyRevenue: '建议目标 ¥5-100万',
+            },
+          ],
+          keyActions: [
+            '打造品牌，拓展B端市场',
+            '构建分销或合伙人体系',
+            '探索SaaS或平台化变现',
+          ],
+          risks: [
+            '品牌化需要更大资源投入',
+            'B端业务周期长，需储备现金流',
+          ],
+        },
+      ],
+      revenueStructure: [
+        {
+          name: '知识付费（课程/训练营）',
+          percentage: '45%',
+          desc: '【建议配比】可规模化的核心收入来源，边际成本低，建议作为主要变现方式。',
+          highlight: true,
+        },
+        {
+          name: '高端定制服务',
+          percentage: '35%',
+          desc: '【建议配比】客单价高，利润丰厚，随品牌影响力提升可逐步增加比例。',
+        },
+        {
+          name: '品牌合作与其他',
+          percentage: '20%',
+          desc: '【建议配比】辅助收入，待粉丝基础建立后自然增长。',
+        },
+      ],
+      successCases: [
+        {
+          title: '【示例】垂直内容IP成长路径',
+          category: '示意性原型',
+          journey: '典型成长路径（示例）：从垂直领域干货内容起步 → 积累1000核心粉丝 → 推出299元入门课验证付费 → 升级1980元系统课 → 建立私域社群复购体系。',
+          outcome: '【示例参考】典型结果区间：6-18个月从0到月入1-10万，具体因赛道、执行力差异较大。',
+          insight: '【核心启示】垂直度越高、内容越专业、受众越精准，变现转化率越高。先做深，再做宽。',
+        },
+        {
+          title: '【示例】技能服务型IP路径',
+          category: '示意性原型',
+          journey: '典型成长路径（示例）：展示专业技能案例 → 接受低价订单积累口碑 → 涨价筛选优质客户 → 包装成标准化课程 → 建立被动收入体系。',
+          outcome: '【示例参考】技能变现启动快，但规模化依赖产品化程度，建议尽早从"时间换钱"转向"内容换钱"。',
+          insight: '【核心启示】服务变产品是规模化的关键一步，越早标准化，越早突破时间瓶颈。',
+        },
+      ],
+    } satisfies MonetizationPlanOutput,
   };
 
   constructor(gateway?: ILLMGateway) {
@@ -200,10 +444,16 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
     ctx: AssembledContext,
     req: SpecialistRequest<MonetizationInput>,
   ): Promise<InvokeLLMResult> {
-    this._mode = req.mode === 'monetization-tool' ? 'monetization-tool' : 'default';
+    this._mode = req.mode === 'monetization-tool' ? 'monetization-tool'
+      : req.mode === 'monetization-plan' ? 'monetization-plan'
+      : 'default';
 
     if (this._mode === 'monetization-tool') {
-      return this._invokeLLMToolMode(req);
+      return this._invokeLLMToolMode(ctx, req);
+    }
+
+    if (this._mode === 'monetization-plan') {
+      return this._invokeLLMPlanMode(ctx, req);
     }
 
     const userPrompt = this._buildUserPrompt(req.userInput, ctx);
@@ -216,16 +466,17 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
     });
   }
 
-  private _invokeLLMToolMode(req: SpecialistRequest<MonetizationInput>): Promise<InvokeLLMResult> {
+  private _invokeLLMToolMode(ctx: AssembledContext, req: SpecialistRequest<MonetizationInput>): Promise<InvokeLLMResult> {
     const input = req.userInput as Record<string, unknown>;
-    const systemPrompt = this._buildToolSystemPrompt();
+    // R-11/LD-007: tool 模式专属 persona 保留为前缀 · 但拼接 ContextAssembler 的 ctx.systemPrompt(进化档案/step/画像)· 不再纯自拼
+    const systemPrompt = `${this._buildToolSystemPrompt()}\n\n${ctx.systemPrompt}`;
     const userPrompt = this._buildToolUserPrompt(input);
 
     return this.llmGateway.complete({
@@ -237,11 +488,101 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: 30_000,
       retry: 1,
     });
+  }
+
+  private _invokeLLMPlanMode(ctx: AssembledContext, req: SpecialistRequest<MonetizationInput>): Promise<InvokeLLMResult> {
+    const input = req.userInput as Record<string, unknown>;
+    const planPersona = [
+      '你是专业的变现路径顾问，为内容创作者和 IP 博主提供系统性的变现规划建议。',
+      '',
+      '重要原则：',
+      '- 你提供的是「建议性」内容，不是对未来营收的承诺或保证',
+      '- marketAnalysis 提供真实的行业定性分析（可有意义生成，不伪造统计数据）',
+      '- stages 中的 priceRange/monthlyTarget/monthlyRevenue 均为「建议目标区间」，措辞用「建议目标 ¥X-Y」',
+      '- revenueStructure 的比例是「推荐配比」，desc 需说明这是建议',
+      '- successCases 必须是「示意性原型路径」——通用典型路径，格式：「典型成长路径（示例）：...」',
+      '  禁止编造具体真实姓名、真实公司名、虚构精确数字的假案例',
+      '  每个 successCases 的 title 必须包含「【示例】」前缀，outcome 包含「【示例参考】」，insight 包含「【核心启示】」',
+    ].join('\n');
+
+    const userPrompt = this._buildPlanUserPrompt(input, ctx);
+
+    return this.llmGateway.complete({
+      model_tier: 'balanced',
+      systemPrompt: `${planPersona}\n\n${ctx.systemPrompt}`,
+      userPrompt,
+      responseFormat: { type: 'json_schema' as const, schema: MonetizationPlanBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: req.userId,
+      },
+      timeout_ms: 45_000,
+      retry: 1,
+    });
+  }
+
+  private _buildPlanUserPrompt(input: Record<string, unknown>, ctx: AssembledContext): string {
+    // R-14 fix: 自由文本字段(非枚举/数值)调 piiMask 脱敏后再拼 prompt
+    const productService = piiMask(String(input.productService ?? input.productDescription ?? '未填写产品/服务描述'));
+    const targetAudience = piiMask(String(input.targetAudience ?? input.audienceProfile ?? '未指定目标受众'));
+    const ipPositioning = piiMask(String(input.ipPositioning ?? '未指定 IP 定位'));
+    const currentIncome = String(input.currentIncome ?? input.currentRevenue ?? '未填写'); // 数值字段不 mask
+    const industry = String(input.industry ?? '内容创业'); // 枚举字段不 mask
+
+    return [
+      ctx.userPrompt,
+      '',
+      '[变现路径规划任务 · 富结构输出]',
+      `行业: ${industry}`,
+      `产品/服务描述: ${productService}`,
+      `目标受众: ${targetAudience}`,
+      `IP定位: ${ipPositioning}`,
+      `当前收入水平: ${currentIncome}`,
+      '',
+      '请输出完整的变现路径规划 JSON，严格遵循以下要求：',
+      '',
+      '1. marketAnalysis:',
+      '   - industryAnalysis: 行业背景定性分析（50-100字）',
+      '   - marketScale: 市场规模与增长趋势判断（50-150字，可有意义生成，不伪造精确统计数字）',
+      '   - competition: 竞争格局分析（50-100字）',
+      '   - monetizationPotential: 该定位的变现潜力评估（50-100字）',
+      '',
+      '2. stages: 必须正好 3 个阶段，number 分别为 1/2/3，icon 分别为 trending/diamond/crown',
+      '   每个阶段包含:',
+      '   - range: 收入目标区间，格式「建议目标 ¥X-Y万」',
+      '   - title: 阶段标题（包含「建议参考」提示）',
+      '   - duration: 建议时间范围',
+      '   - coreStrategy: 核心策略（开头加「【建议】」）',
+      '   - productMatrix: 2-3个产品/服务，priceRange/monthlyTarget/monthlyRevenue 均加「建议」前缀',
+      '     category 只能是: 引流品/信任品/利润品/后端产品',
+      '   - keyActions: 3-5个关键行动',
+      '   - risks: 2-3个风险提示',
+      '   - 阶段1可选: trafficStrategy(流量策略), conversionFlow(转化流程 string[])',
+      '   - 阶段2可选: teamBuilding(团队建设), systemBuilding(体系化建设)',
+      '   - 阶段3可选: brandStrategy(品牌化策略), matrixLayout(矩阵化布局)',
+      '',
+      '3. revenueStructure: 2-4个收入结构项',
+      '   - percentage: 推荐配比百分比（如「45%」）',
+      '   - desc: 必须包含「【建议配比】」说明',
+      '   - 第一项设 highlight: true',
+      '',
+      '4. successCases: 必须正好 2 个，每个必须是通用示意性原型路径：',
+      '   - title: 包含「【示例】」前缀',
+      '   - category: 「示意性原型」',
+      '   - journey: 格式「典型成长路径（示例）：...」',
+      '   - outcome: 包含「【示例参考】」前缀',
+      '   - insight: 包含「【核心启示】」前缀',
+      '   禁止：编造具体真实人名、真实公司、虚构精确营收数字',
+      '',
+      '⚠️ 严格约束: stages 必须正好 3 个 · successCases 必须正好 2 个',
+    ].join('\n');
   }
 
   private _buildToolSystemPrompt(): string {
@@ -260,10 +601,11 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
   }
 
   private _buildToolUserPrompt(input: Record<string, unknown>): string {
-    const industry = String(input.industryContext ?? input.industry ?? '未指定行业');
-    const productDescription = String(input.productDescription ?? '未填写产品描述');
-    const audience = String(input.audienceProfile ?? input.audience ?? '未指定受众');
-    const ipPositioning = String(input.ipPositioning ?? '未指定 IP 定位');
+    // R-14 fix: 自由文本字段脱敏
+    const industry = String(input.industryContext ?? input.industry ?? '未指定行业'); // 枚举字段不 mask
+    const productDescription = piiMask(String(input.productDescription ?? '未填写产品描述'));
+    const audience = piiMask(String(input.audienceProfile ?? input.audience ?? '未指定受众'));
+    const ipPositioning = piiMask(String(input.ipPositioning ?? '未指定 IP 定位'));
 
     return [
       '请根据以下信息设计变现模型：',
@@ -277,7 +619,13 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
   }
 
   private _buildUserPrompt(userInput: MonetizationInput, ctx: AssembledContext): string {
-    const inputStr = JSON.stringify(userInput);
+    // R-14 fix: piiMask 逐字段 mask 自由文本后再 stringify，避免原文泄漏
+    const maskedInput = {
+      ...userInput,
+      ...(userInput.currentRevenue !== undefined ? { currentRevenue: userInput.currentRevenue } : {}),
+    };
+    // mask 所有 string 字段（piiMask 对非 string 类型安全透传）
+    const inputStr = JSON.stringify(piiMask(maskedInput));
 
     const revenueNote =
       !userInput.currentRevenue

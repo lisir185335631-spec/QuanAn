@@ -41,6 +41,7 @@ export interface SpecialistConfig {
 /** 调用入参(所有 PRD-4 Specialist 共用) */
 export interface SpecialistRequest<TIn> {
   accountId: number;
+  userId: number; // US-001: 当前用户 id,从 tRPC ctx.user.id 透传
   mode?: string;
   userInput: TIn;
   traceId?: string;
@@ -90,7 +91,7 @@ export interface LLMCompleteRequest {
   model_tier: ModelTier;
   systemPrompt: string;
   userPrompt: string;
-  /** US-011 VoiceChatAgent: 5 工具 function calling · 其余 Specialist 不传 */
+  /** function calling 工具（可选） */
   tools?: readonly { name: string; description: string; parameters: Record<string, unknown> }[];
   responseFormat?: { type: 'json_schema'; schema: ZodTypeAny };
   metadata: {

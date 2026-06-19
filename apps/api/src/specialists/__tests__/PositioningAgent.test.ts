@@ -68,6 +68,7 @@ describe('PositioningAgent recommend mode', () => {
     const agent = new PositioningAgent();
     const res = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'recommend',
       userInput: { industry: '企业服务' },
     });
@@ -83,6 +84,7 @@ describe('PositioningAgent recommend mode', () => {
     const agent = new PositioningAgent();
     await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'recommend',
       userInput: { industry: '美妆' },
     });
@@ -99,6 +101,7 @@ describe('PositioningAgent recommend mode', () => {
     await expect(
       agent.execute({
         accountId: TEST_ACCOUNT_ID,
+      userId: 1,
         mode: 'invalid_mode',
         userInput: { industry: '美妆' },
       }),

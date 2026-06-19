@@ -44,10 +44,11 @@ export const acquisitionVideoRouter = router({
   generate: protectedProcedure
     .input(acquisitionVideoInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await videoAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'acquisition',
         userInput: input,
         traceId: traceId ?? undefined,

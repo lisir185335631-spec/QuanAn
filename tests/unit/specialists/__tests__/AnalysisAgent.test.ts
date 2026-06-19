@@ -59,6 +59,20 @@ function makeViralOutput() {
       { element: 'resonance', explanation: '与目标用户日常共鸣', impact: '中' as const },
     ],
     rewriteVersion: rewrite,
+    hookAnalysis: {
+      score: 75,
+      maxScore: 100,
+      type: '提问型',
+      technique: '通过问题引发用户好奇心。',
+      evaluation: '效果良好，可加入数字增强。',
+    },
+    topicStrategy: {
+      category: '内容创作',
+      angle: '爆款文案分析',
+      targetAudience: '内容创作者',
+      evaluation: '选题精准，切入角度新颖。',
+    },
+    timeline: ['开头：钩子引入', '中段：展开论点', '结尾：引导行动'],
   };
 }
 
@@ -79,6 +93,9 @@ function makeStructuralOutput() {
       { dimension: 'cta', issue: 'CTA 不明确', suggestion: '结尾明确指示' },
     ],
     rewriteSnippet: snippet,
+    elements: ['钩子开场', '痛点共鸣'],
+    pros: ['结构清晰，层次分明。'],
+    cons: ['结尾引导不足。'],
   };
 }
 
@@ -234,5 +251,37 @@ describe('AnalysisAgent', () => {
 
     // REJ-004: singleton export is the same class (AC-11)
     expect(analysisAgent).toBeInstanceOf(AnalysisAgent);
+  });
+
+  it('structural happy path: returns elements/pros/cons from agent', async () => {
+    const content = makeStructuralOutput();
+    const agent = new AnalysisAgent(makeCompleteGateway(content));
+    const res = await agent.execute({
+      ...STRUCTURAL_REQ,
+      userInput: { copy: '这是用户自己写的一篇文案，至少十个字符以上。' },
+    });
+
+    expect(res.isFallback).toBe(false);
+    expect(res.result).toMatchObject({
+      elements: expect.arrayContaining(['钩子开场', '痛点共鸣']),
+      pros: expect.arrayContaining(['结构清晰，层次分明。']),
+      cons: expect.arrayContaining(['结尾引导不足。']),
+    });
+  });
+
+  it('viral happy path: returns hookAnalysis/topicStrategy/timeline from agent', async () => {
+    const content = makeViralOutput();
+    const agent = new AnalysisAgent(makeCompleteGateway(content));
+    const res = await agent.execute({
+      ...VIRAL_REQ,
+      userInput: { lastCopy: '这是一篇爆款文案内容，包含了多个心理学元素。', lastTitle: '爆款标题' },
+    });
+
+    expect(res.isFallback).toBe(false);
+    expect(res.result).toMatchObject({
+      hookAnalysis: expect.objectContaining({ score: 75, type: '提问型' }),
+      topicStrategy: expect.objectContaining({ category: '内容创作' }),
+      timeline: expect.arrayContaining(['开头：钩子引入']),
+    });
   });
 });

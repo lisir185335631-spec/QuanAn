@@ -31,11 +31,13 @@ export interface AssembledContext {
   /** L4 最新进化洞察 · PRD-8 US-001 · null = 新用户或 fetch 失败 */
   evolutionInsight?: EvolutionInsightContent | null;
   metadata: {
-    /** 上下文 token 量(本期 chars/4 粗算) */
+    /** 上下文 token 量(裁剪后估算值·改进 CJK 加权) */
     contextTokens: number;
     /** 真实反映哪些层 fetched 成功(给 audit 用) */
     layersUsed: readonly string[];
     /** RAG 命中统计 */
     ragHits: readonly { source: string; count: number }[];
+    /** G1 预算裁剪：被丢弃或截断的层名，如 ['db_constants','rag']；未裁剪时为 [] */
+    trimmed: readonly string[];
   };
 }

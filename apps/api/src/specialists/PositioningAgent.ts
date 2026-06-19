@@ -16,6 +16,7 @@
 import { z } from 'zod';
 
 import { INDUSTRY_KEYS } from '@/lib/constants/industries';
+import { piiMask } from '@/lib/compliance/pii-mask';
 
 import { BaseSpecialist } from './base/BaseSpecialist';
 
@@ -181,7 +182,7 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -225,7 +226,7 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: 15_000,
       retry: 1,
@@ -245,7 +246,9 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     userInput: PositioningInput,
     ctxUserPrompt: string,
   ): string {
-    const inputStr = JSON.stringify(userInput);
+    // LD-018 PII 修: userInput 含自由文本字段(如 niche/product_description 等)可能带 PII →
+    // 先用 piiMask 递归处理整个对象再 stringify · 枚举/数值字段 piiMask 会安全透传
+    const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'industry') {
       return [
         ctxUserPrompt,

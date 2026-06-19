@@ -4,7 +4,6 @@ import {
   DollarSign,
   Film,
   LayoutGrid,
-  Mic,
   Search,
   Shield,
   Sparkles,
@@ -132,17 +131,6 @@ export const GUIDE_MODULES: GuideModule[] = [
     ],
   },
   {
-    icon: '🎙️',
-    title: '语音对话',
-    desc: '多语言语音实时对话交互',
-    steps: [
-      '选择对话场景和语言',
-      '按住录音按钮开始语音输入',
-      'AI实时语音识别和响应',
-      '查看对话历史和建议',
-    ],
-  },
-  {
     icon: '🧠',
     title: '深度学习',
     desc: '个人知识库AI深度学习管理',
@@ -184,10 +172,6 @@ export const FAQS: FAQ[] = [
     a: 'AI生成内容仅供参考，建议根据实际情况修改调整后使用，以确保内容符合您的风格和目标受众需求。直接使用生成内容可能缺乏个人特色，建议二次加工。',
   },
   {
-    q: '语音对话支持哪些语言？',
-    a: '目前支持中文（普通话）语音识别和合成。语音输入会自动转录为文字，AI以文字形式回复并可朗读，适合快速记录创作灵感。',
-  },
-  {
     q: 'AI 视频功能可以直接生成视频吗？',
     a: 'AI视频功能生成的是分镜脚本和拍摄方案，不直接输出视频文件。您需要根据脚本自行拍摄或配合剪辑工具完成最终视频制作。',
   },
@@ -227,7 +211,7 @@ export const GUIDE_FLOW: ReadonlyArray<FlowStep> = [
 // ── search ──────────────────────────────────────────────────────────────────
 export const GUIDE_SEARCH_PLACEHOLDER = '搜索功能说明...' as const;
 
-// ── 14 section ──────────────────────────────────────────────────────────────
+// ── 13 section ──────────────────────────────────────────────────────────────
 export interface SectionStep {
   title: string;
   desc: string;
@@ -242,7 +226,7 @@ export interface GuideSection {
   tips: ReadonlyArray<string>;
 }
 
-export const GUIDE_SECTIONS_14: ReadonlyArray<GuideSection> = [
+export const GUIDE_SECTIONS_13: ReadonlyArray<GuideSection> = [
   {
     id: 'system_overview',
     icon: Shield,
@@ -251,7 +235,7 @@ export const GUIDE_SECTIONS_14: ReadonlyArray<GuideSection> = [
     steps: [
       {
         title: '什么是AIP智能体？',
-        desc: 'AIP智能体是一款专为IP变现设计的AI智能工具，集成了爆款创作、视频制作、语音对话、深度学习等多项AI能力，帮助你快速打造个人IP并实现变现。',
+        desc: 'AIP智能体是一款专为IP变现设计的AI智能工具，集成了爆款创作、视频制作、深度学习等多项AI能力，帮助你快速打造个人IP并实现变现。',
       },
       {
         title: '核心定位',
@@ -461,27 +445,6 @@ export const GUIDE_SECTIONS_14: ReadonlyArray<GuideSection> = [
     tips: ['赛博朋克风格适合科技/潮流类内容', '生成的分镜脚本可以直接交给剪辑师执行'],
   },
   {
-    id: 'voice_chat',
-    icon: Mic,
-    name: '语音对话',
-    sub: 'AI语音智能助手',
-    steps: [
-      {
-        title: '开始对话',
-        desc: '点击麦克风按钮开始语音输入，或直接在输入框中打字。',
-      },
-      {
-        title: '语音交互',
-        desc: 'AI会自动识别你的语音并转为文字，然后给出专业的回答。开启语音播报后，AI的回答会自动朗读。',
-      },
-      {
-        title: '多轮对话',
-        desc: '支持连续多轮对话，AI会记住上下文，提供更精准的建议。',
-      },
-    ],
-    tips: ['语音对话适合碎片化时间学习和咨询', '可以问任何关于IP变现、文案创作的问题'],
-  },
-  {
     id: 'deep_learning',
     icon: Brain,
     name: '深度学习',
@@ -549,14 +512,10 @@ export const GUIDE_SECTIONS_14: ReadonlyArray<GuideSection> = [
 // ── FAQ ─────────────────────────────────────────────────────────────────────
 export const GUIDE_FAQ_TITLE = '常见问题' as const;
 
-export const GUIDE_FAQS_5: ReadonlyArray<FAQ> = [
+export const GUIDE_FAQS_4: ReadonlyArray<FAQ> = [
   {
     q: 'AI生成的内容可以直接使用吗？',
     a: 'AI生成的内容是高质量的初稿，建议根据你的实际情况和个人风格进行适当调整后使用。',
-  },
-  {
-    q: '语音对话支持哪些语言？',
-    a: '目前主要支持中文语音识别和对话，AI回答也以中文为主。',
   },
   {
     q: 'AI视频功能可以直接生成视频吗？',

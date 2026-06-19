@@ -44,6 +44,9 @@ export const analysisStructuralOutput = z.object({
     .min(3)
     .max(5),
   rewriteSnippet: z.string().min(50).max(200),
+  elements: z.array(z.string()).min(1),
+  pros: z.array(z.string()).min(1),
+  cons: z.array(z.string()).min(1),
 });
 
 /** viral mode 输出: 元素拆解 + 洞察 + 仿写版 */
@@ -53,6 +56,7 @@ export const analysisViralOutput = z.object({
     structure: z.string(),
     hookType: z.string(),
     viralFormula: z.string(),
+    evaluation: z.string().optional(),
   }),
   insights: z
     .array(
@@ -64,6 +68,24 @@ export const analysisViralOutput = z.object({
     )
     .min(3),
   rewriteVersion: z.string().min(50),
+  hookAnalysis: z
+    .object({
+      score: z.number().int().min(0).max(100),
+      maxScore: z.number().int().min(1).max(100),
+      type: z.string(),
+      technique: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  topicStrategy: z
+    .object({
+      category: z.string(),
+      angle: z.string(),
+      targetAudience: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  timeline: z.array(z.string()).min(1).optional(),
 });
 
 // ── Type inference ────────────────────────────────────────────────────────────

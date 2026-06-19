@@ -12,6 +12,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -623,7 +625,7 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: TIMEOUT_MS[mode],
       retry: this.config.execution.retry,
@@ -643,7 +645,9 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
     userInput: BrandingInput,
     ctxUserPrompt: string,
   ): string {
-    const inputStr = JSON.stringify(userInput);
+    // LD-018 PII 修: userInput 含自由文本字段(如 niche/pain_points 等)可能带手机/邮箱 →
+    // 先用 piiMask 递归处理整个对象再 stringify · 枚举/数值字段 piiMask 会安全透传
+    const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'packaging') {
       return [
         ctxUserPrompt,

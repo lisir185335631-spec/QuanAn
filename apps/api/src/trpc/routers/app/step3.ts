@@ -83,10 +83,11 @@ export const step3Router = router({
   generatePackage: protectedProcedure
     .input(generatePackageInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await brandingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'packaging',
         userInput: input,
         traceId: traceId ?? undefined,
@@ -114,7 +115,7 @@ export const step3Router = router({
   optimizeSection: protectedProcedure
     .input(optimizeSectionInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const contextSummary = JSON.stringify(input.currentResult).slice(0, 1500);
       const optimizeUserInput = {
@@ -126,6 +127,7 @@ export const step3Router = router({
 
       const agentRes = await brandingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'packaging',
         userInput: optimizeUserInput,
         traceId: traceId ?? undefined,

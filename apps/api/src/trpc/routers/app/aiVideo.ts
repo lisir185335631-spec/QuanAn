@@ -46,7 +46,7 @@ export const aiVideoRouter = router({
   generateStoryboard: protectedProcedure
     .input(aiVideoInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       // AC-4: rate limit check (TOO_MANY_REQUESTS when count > IMAGE_GEN_DAILY_LIMIT_PER_USER)
       await checkImageGenRateLimit(activeAccountId!);
@@ -54,6 +54,7 @@ export const aiVideoRouter = router({
       // AC-2: call VideoAgent storyboard mode
       const agentRes = await videoAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'storyboard',
         userInput: input,
         traceId: traceId ?? undefined,

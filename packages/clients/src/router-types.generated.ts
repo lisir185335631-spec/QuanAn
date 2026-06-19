@@ -62,12 +62,6 @@ const _gen = _t.router({
   progress: _t.procedure.query((): { completed: number; total: 9; completedSteps: Array<"step3" | "step5" | "step7" | "step1" | "step3b" | "step4" | "step4b" | "step6" | "step8"> } => __stub),
   deleteForTest: _t.procedure.input((x: unknown) => x as { stepKeys?: undefined | Array<string> }).mutation((): { ok: boolean } => __stub),
   }),
-  stt: _t.router({
-  transcribe: _t.procedure.input((x: unknown) => x as { audioBase64: string; traceId?: undefined | string; mimeType?: undefined | string }).mutation((): { transcript: string; durationSec: number; costUsd: number } => __stub),
-  }),
-  tts: _t.router({
-  synthesize: _t.procedure.input((x: unknown) => x as { text: string; traceId?: undefined | string; voice?: undefined | string }).mutation((): { publicUrl: string; sizeBytes: number; costUsd: number } => __stub),
-  }),
   copywriting: _t.router({
   generate: _t.procedure.input((x: unknown) => x as { stepKey: string; length?: undefined | "medium" | "short" | "long"; tone?: undefined | string; context?: undefined | Record<string, unknown> }).mutation((): { traceId: null | string; id: number; agentId: string; content: string; createdAt: Date } => __stub),
   optimize: _t.procedure.input((x: unknown) => x as { historyId: number; instruction: string }).mutation((): { traceId: null | string; id: number; agentId: string; content: string; createdAt: Date } => __stub),
@@ -85,10 +79,11 @@ const _gen = _t.router({
   generateSceneImage: _t.procedure.input((x: unknown) => x as { imagePromptEn: string; storyboardHistoryId: number; sceneIndex: number; imageStyle?: undefined | "vivid" | "natural" }).mutation((): { jobId: undefined | string; historyId: number; sceneIndex: number } => __stub),
   }),
   boomGenerate: _t.router({
-  generate: _t.procedure.input((x: unknown) => x as { elements: Array<"list" | "greed" | "fear" | "curiosity" | "contrast" | "resonance" | "empathy" | "social_proof" | "authority" | "leverage" | "worst" | "reveal" | "controversy" | "challenge" | "transformation" | "anger" | "surprise" | "trend" | "scarcity" | "small_big" | "low_cost_high" | "low_cost_unknown">; industry?: undefined | string; theme?: undefined | string }).mutation((): { traceId: null | string; id: number; agentId: string; agentMode: null | string; content: string; contentType: string; scriptType: null | string; elements: Array<string>; tokensUsed: null | number; modelUsed: null | string; durationMs: null | number; isFallback: boolean; createdAt: Date } => __stub),
+  generate: _t.procedure.input((x: unknown) => x as { elements: Array<"list" | "greed" | "fear" | "curiosity" | "contrast" | "resonance" | "empathy" | "social_proof" | "authority" | "leverage" | "worst" | "reveal" | "controversy" | "challenge" | "transformation" | "anger" | "surprise" | "trend" | "scarcity" | "small_big" | "low_cost_high" | "low_cost_unknown">; industry?: undefined | string; theme?: undefined | string }).mutation((): { candidates: Array<{ title: string; reason: string; opening: string; development: string; climax: string; ending: string; indexScore: string }>; traceId: null | string; id: number; agentId: string; agentMode: null | string; content: string; contentType: string; scriptType: null | string; elements: Array<string>; tokensUsed: null | number; modelUsed: null | string; durationMs: null | number; isFallback: boolean; createdAt: Date } => __stub),
   }),
   monetization: _t.router({
   generate: _t.procedure.input((x: unknown) => x as { ipPositioning?: undefined | string; industryContext?: undefined | string; audienceProfile?: undefined | string; productDescription?: undefined | string }).mutation((): { traceId: null | string; id: number; agentId: string; agentMode: null | string; content: string; tokensUsed: null | number; modelUsed: null | string; durationMs: null | number; isFallback: boolean; createdAt: Date } => __stub),
+  generatePlan: _t.procedure.input((x: unknown) => x as { industry?: undefined | string; productService?: undefined | string; targetAudience?: undefined | string; ipPositioning?: undefined | string; currentIncome?: undefined | string }).mutation((): { traceId: null | string; id: number; agentId: string; agentMode: null | string; content: string; tokensUsed: null | number; modelUsed: null | string; durationMs: null | number; isFallback: boolean; createdAt: Date } => __stub),
   }),
   myTopics: _t.router({
   list: _t.procedure.input((x: unknown) => x as { search?: undefined | string; industry?: undefined | string; source?: undefined | "trending" | "step5" | "all" | "manual"; page?: undefined | number; pageSize?: undefined | number }).query((): { items: Array<{ id: string; title: string; source: "trending" | "step5" | "manual"; industry: null | string; platform: null | string; createdAt: string | Date; topicId?: undefined | number; trendingItemId?: undefined | number }>; total: number; page: number; pageSize: number; totalPages: number } => __stub),
@@ -156,10 +151,6 @@ const _gen = _t.router({
   detail: _t.procedure.input((x: unknown) => x as { id: number }).query((): { traceId: null | string; id: number; agentId: string; agentMode: null | string; sourceType: string; inputSummary: string; content: string; contentType: string; scriptType: null | string; elements: Array<string>; isFallback: boolean; createdAt: Date } | { scenes: Array<{ index: number; description: string; imagePromptEn: string; duration: string; status: "pending" | "completed" | "failed"; sceneImageUrl: null | string }>; traceId: null | string; id: number; agentId: string; agentMode: null | string; sourceType: string; inputSummary: string; content: string; contentType: string; scriptType: null | string; elements: Array<string>; isFallback: boolean; createdAt: Date } => __stub),
   delete: _t.procedure.input((x: unknown) => x as { id: number }).mutation((): { ok: true } => __stub),
   stats: _t.procedure.input((x: unknown) => x as { dateRange?: undefined | "custom" | "all" | "today" | "week" | "month"; dateFrom?: undefined | string; dateTo?: undefined | string; tools?: undefined | Array<string> }).query((): { totalCalls: number; failureRate: number; avgDurationMs: number; topTools: Array<{ agentId: string; count: number }>; dailyTrend: Array<{ date: string; count: number }>; durationHistogram: Array<{ label: string; count: number }>; modelDistribution: Array<{ model: string; count: number }> } => __stub),
-  }),
-  voiceChat: _t.router({
-  start: _t.procedure.input((x: unknown) => x as { userMessage: string; traceId?: undefined | string; sessionId?: undefined | string }).subscription((): AsyncGenerator<unknown> => __stub),
-  clearSession: _t.procedure.mutation((): { ok: boolean } => __stub),
   }),
 });
 

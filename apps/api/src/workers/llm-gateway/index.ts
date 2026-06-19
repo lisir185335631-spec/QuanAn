@@ -29,6 +29,7 @@ import {
   parseAnthropicResponse,
   isAnthropicModel,
 } from './anthropic-provider';
+import { llmCircuitBreaker, isTransientError } from './circuit-breaker';
 import { writeCostLog } from './cost-logger';
 import { buildOpenAIPayload, parseOpenAIResponse } from './openai-provider';
 import { checkRateLimit, RateLimitError } from './rate-limiter';
@@ -185,18 +186,58 @@ class LLMGateway {
       if (!key) throw new Error(`ANTHROPIC_API_KEY missing for ${req.model_tier} tier`);
     }
 
-    // 2. Primary call with 1 automatic retry (AC-3)
-    let response: CompleteResponse;
-    try {
-      response = await this._callWithRetry(primary, req, 1);
-    } catch (primaryErr) {
-      logger.warn({ trace_id, model: primary, err: String(primaryErr) }, 'llm.primary_failed_fallback');
+    // 2. Primary call with 1 automatic retry (AC-3) — guarded by circuit breaker (G9)
+    let response: CompleteResponse | undefined;
+    let primarySkipped = false;
+    let primaryFailReason: string | undefined;
 
-      // 3. Fallback model (AC-3)
+    if (!llmCircuitBreaker.canAttempt(primary)) {
+      // Primary circuit is OPEN — skip immediately, proceed to fallback
+      logger.warn({ trace_id, model: primary }, 'llm.circuit_open_skip_primary');
+      primarySkipped = true;
+      primaryFailReason = `circuit_open:${primary}`;
+    } else {
+      try {
+        response = await this._callWithRetry(primary, req, 1);
+        llmCircuitBreaker.recordSuccess(primary);
+      } catch (primaryErr) {
+        if (isTransientError(primaryErr)) {
+          llmCircuitBreaker.recordFailure(primary);
+        }
+        logger.warn({ trace_id, model: primary, err: String(primaryErr) }, 'llm.primary_failed_fallback');
+        primarySkipped = true;
+        primaryFailReason = String(primaryErr);
+      }
+    }
+
+    if (primarySkipped) {
+      // 3. Fallback model (AC-3) — also guarded by circuit breaker (G9)
+      if (!llmCircuitBreaker.canAttempt(fallbackModel)) {
+        // Fallback circuit also OPEN — skip to template immediately
+        logger.error(
+          { trace_id, primary, fallback: fallbackModel },
+          'llm.circuit_open_skip_fallback',
+        );
+        const failedResponse: CompleteResponse = {
+          content: '抱歉，AI 服务暂时不可用，请稍后再试。如问题持续，请联系客服。',
+          tokens: { prompt: 0, completion: 0, total: 0 },
+          model: fallbackModel,
+          duration_ms: Date.now() - startedAt,
+          trace_id,
+          fallback: { from: primary, to: fallbackModel, reason: `circuit_open:${fallbackModel}` },
+        };
+        await writeCostLog({ req, res: failedResponse, success: false, errorCode: 'BOTH_FAILED' });
+        return failedResponse;
+      }
+
       try {
         response = await this._callWithRetry(fallbackModel, req, 0);
-        response.fallback = { from: primary, to: fallbackModel, reason: String(primaryErr) };
+        llmCircuitBreaker.recordSuccess(fallbackModel);
+        response.fallback = { from: primary, to: fallbackModel, reason: primaryFailReason ?? 'primary_failed' };
       } catch (fallbackErr) {
+        if (isTransientError(fallbackErr)) {
+          llmCircuitBreaker.recordFailure(fallbackModel);
+        }
         // 4. Both providers failed — return template (AC-4)
         logger.error(
           { trace_id, primary, fallback: fallbackModel, err: String(fallbackErr) },
@@ -216,13 +257,15 @@ class LLMGateway {
     }
 
     // 5. Write cost_log (AC-6)
+    // response is always defined here: either primary succeeded (!primarySkipped)
+    // or fallback succeeded (primarySkipped branch assigns response or returns early)
     const finalDuration = Date.now() - startedAt;
-    await writeCostLog({ req, res: { ...response, duration_ms: finalDuration }, success: true });
+    await writeCostLog({ req, res: { ...response!, duration_ms: finalDuration }, success: true });
 
-    return { ...response, duration_ms: finalDuration, trace_id };
+    return { ...response!, duration_ms: finalDuration, trace_id };
   }
 
-  /** 流式调用 · CopywritingAgent / VideoAgent / VoiceChatAgent 用 */
+  /** 流式调用 · CopywritingAgent / VideoAgent 用 */
   async *stream(req: CompleteRequest): AsyncIterable<StreamChunk> {
     const { trace_id } = req.metadata;
     const startedAt = Date.now();
@@ -243,13 +286,6 @@ class LLMGateway {
     yield { type: 'delta', trace_id, delta: deltaStr };
 
     yield { type: 'done', trace_id, tokens: res.tokens, duration_ms: Date.now() - startedAt };
-  }
-
-  /** Embedding(用于 RAG · pgvector) */
-  embed(text: string): Promise<number[]> {
-    // TODO P3 · OpenAI text-embedding-3-small · 1536 维
-    void text;
-    return Promise.resolve(new Array<number>(1536).fill(0));
   }
 
   // ============== 私有 ==============

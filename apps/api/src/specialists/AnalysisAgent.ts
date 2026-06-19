@@ -52,6 +52,7 @@ export const analysisViralOutput = z.object({
     structure: z.string(),
     hookType: z.string(),
     viralFormula: z.string(),
+    evaluation: z.string().optional(),
   }),
   insights: z
     .array(
@@ -63,6 +64,24 @@ export const analysisViralOutput = z.object({
     )
     .min(3),
   rewriteVersion: z.string().min(50),
+  hookAnalysis: z
+    .object({
+      score: z.number().int().min(0).max(100),
+      maxScore: z.number().int().min(1).max(100),
+      type: z.string(),
+      technique: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  topicStrategy: z
+    .object({
+      category: z.string(),
+      angle: z.string(),
+      targetAudience: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  timeline: z.array(z.string()).min(1).optional(),
 });
 
 /** structural mode output: 多维度评分 + 优化建议 */
@@ -86,6 +105,9 @@ export const analysisStructuralOutput = z.object({
     .min(3)
     .max(5),
   rewriteSnippet: z.string().min(50).max(200),
+  elements: z.array(z.string()).min(1),
+  pros: z.array(z.string()).min(1),
+  cons: z.array(z.string()).min(1),
 });
 
 export type AnalysisViralInput = z.infer<typeof analysisViralInput>;
@@ -103,6 +125,7 @@ const AnalysisViralBaseSchema = z.object({
     structure: z.string(),
     hookType: z.string(),
     viralFormula: z.string(),
+    evaluation: z.string().optional(),
   }),
   insights: z.array(
     z.object({
@@ -112,6 +135,24 @@ const AnalysisViralBaseSchema = z.object({
     }),
   ),
   rewriteVersion: z.string(),
+  hookAnalysis: z
+    .object({
+      score: z.number(),
+      maxScore: z.number(),
+      type: z.string(),
+      technique: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  topicStrategy: z
+    .object({
+      category: z.string(),
+      angle: z.string(),
+      targetAudience: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  timeline: z.array(z.string()).optional(),
 });
 
 const AnalysisStructuralBaseSchema = z.object({
@@ -131,6 +172,9 @@ const AnalysisStructuralBaseSchema = z.object({
     }),
   ),
   rewriteSnippet: z.string(),
+  elements: z.array(z.string()),
+  pros: z.array(z.string()),
+  cons: z.array(z.string()),
 });
 
 // ── 五层配置 ───────────────────────────────────────────────────────────────────
@@ -231,6 +275,25 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         },
       ],
       rewriteVersion: _VIRAL_REWRITE_BASE.repeat(2),
+      hookAnalysis: {
+        score: 20,
+        maxScore: 100,
+        type: '提问型',
+        technique: '通过问题引发用户好奇心，拉长观看时间。',
+        evaluation: '钩子基础，可加入对比或数字元素增强吸引力。',
+      },
+      topicStrategy: {
+        category: '内容创作',
+        angle: '爆款元素分析与仿写',
+        targetAudience: '内容创作者、短视频从业者',
+        evaluation: '选题聚焦创作痛点，具备一定吸引力，可细化行业定位。',
+      },
+      timeline: [
+        '开头：钩子引入，制造悬念',
+        '发展：展开核心论点',
+        '高潮：案例支撑与情绪共鸣',
+        '结尾：行动引导',
+      ],
     } satisfies AnalysisViralOutput,
 
     structural: {
@@ -260,6 +323,9 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         },
       ],
       rewriteSnippet: _STRUCTURAL_SNIPPET_BASE.repeat(2),
+      elements: ['钩子开场', '痛点共鸣', '行动引导'],
+      pros: ['结构清晰，层次分明。', '开头有一定吸引力。'],
+      cons: ['结尾行动引导不够明确。'],
     } satisfies AnalysisStructuralOutput,
   };
 
@@ -293,7 +359,7 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -316,13 +382,34 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         '    "elements": ["命中的 22 元素 key 列表"],',
         '    "structure": "内容结构(如: 钩子→痛点→案例→CTA)",',
         '    "hookType": "钩子类型",',
-        '    "viralFormula": "爆款公式概括"',
+        '    "viralFormula": "爆款公式概括",',
+        '    "evaluation": "叙事节奏综合评估(30-80字，描述内容起伏与节奏感)"',
         '  },',
         '  "insights": [',
         '    { "element": "元素名", "explanation": "为什么这里用此元素", "impact": "高/中/低" }',
         '    // 至少 3 条',
         '  ],',
-        '  "rewriteVersion": "仿写版(同结构·不同行业·不抄文字·至少 50 字)"',
+        '  "rewriteVersion": "仿写版(同结构·不同行业·不抄文字·至少 50 字)",',
+        '  "hookAnalysis": {',
+        '    "score": 0-100 整数(开头3秒钩子强度),',
+        '    "maxScore": 100,',
+        '    "type": "钩子类型(如: 提问型/悬念型/反差型)",',
+        '    "technique": "具体技法描述(30-80字)",',
+        '    "evaluation": "效果评估(30-80字)"',
+        '  },',
+        '  "topicStrategy": {',
+        '    "category": "内容分类(如: 情感/职场/美妆)",',
+        '    "angle": "切入角度(一句话概括)",',
+        '    "targetAudience": "目标受众描述",',
+        '    "evaluation": "选题策略综合评估(50-100字)"',
+        '  },',
+        '  "timeline": [',
+        '    "步骤1: 开头做了什么",',
+        '    "步骤2: 中段如何推进",',
+        '    "步骤3: 高潮如何构建",',
+        '    "步骤4: 结尾如何收尾"',
+        '    // 3-6 条叙事时间线',
+        '  ]',
         '}',
       ].join('\n');
     }
@@ -332,7 +419,7 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
       '',
       `用户文案: ${String(input['copy'] ?? '')}`,
       '',
-      '请以 JSON 格式返回 6 维评分(各 0-100)+ 优化建议:',
+      '请以 JSON 格式返回 6 维评分(各 0-100)+ 优化建议 + 爆款元素 + 优缺点:',
       '{',
       '  "scores": {',
       '    "hook": 0-100,',
@@ -346,10 +433,14 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
       '    { "dimension": "维度名", "issue": "问题描述", "suggestion": "优化建议" }',
       '    // 3-5 条',
       '  ],',
-      '  "rewriteSnippet": "关键段优化版(50-200 字)"',
+      '  "rewriteSnippet": "关键段优化版(50-200 字)",',
+      '  "elements": ["识别到的爆款元素1", "爆款元素2", ...],',
+      '  "pros": ["优点1", "优点2", ...],',
+      '  "cons": ["不足1", "不足2", ...]',
       '}',
       '',
       '⚠️ 评分必须有客观依据 · 不能全 90+',
+      '⚠️ elements 至少 1 条 · pros 至少 1 条 · cons 至少 1 条',
     ].join('\n');
   }
 }

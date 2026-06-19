@@ -28,8 +28,6 @@ import { presentationAgent } from './PresentationAgent';
 import { privateDomainAgent } from './PrivateDomainAgent';
 import { topicAgent } from './TopicAgent';
 import { videoAgent } from './VideoAgent';
-import { voiceChatAgent } from './VoiceChatAgent';
-
 import type { Prisma, PrismaClient } from '@prisma/client';
 
 /** 每个 Specialist 都满足的最小结构(= SpecialistRequest<Record> → SpecialistResponse<unknown>)。 */
@@ -45,6 +43,7 @@ export interface SpecialistResult {
 export interface SpecialistLike {
   execute(req: {
     accountId: number;
+    userId: number;
     mode?: string;
     userInput: Record<string, unknown>;
     traceId?: string;
@@ -66,7 +65,6 @@ const _specialists = {
   diagnosis: diagnosisAgent,
   presentation: presentationAgent,
   privateDomain: privateDomainAgent,
-  voiceChat: voiceChatAgent,
 };
 
 export type SpecialistId = keyof typeof _specialists;

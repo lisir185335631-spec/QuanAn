@@ -11,7 +11,6 @@ const SPECIALIST_IDS = [
   'MonetizationAgent',
   'AnalysisAgent',
   'PresentationAgent',
-  'VoiceChatAgent',
   'DailyTaskAgent',
   'EvolutionAgent',
   'InsightInjectionAgent',

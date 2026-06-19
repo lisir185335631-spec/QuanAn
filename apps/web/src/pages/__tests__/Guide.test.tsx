@@ -1,6 +1,6 @@
 /**
  * /guide · USER GUIDE · unit tests (sally 1:1 复刻 · mock-first)
- * 断言 chip / 推荐流程 / 14 section / search / 实用技巧 / 常见问题 / 5 FAQ
+ * 断言 chip / 推荐流程 / 13 section / search / 实用技巧 / 常见问题 / 4 FAQ
  */
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -51,7 +51,7 @@ describe('Guide · sally 1:1 复刻', () => {
     );
   });
 
-  it('14 section name 全部渲染', () => {
+  it('13 section name 全部渲染', () => {
     renderGuide();
     const names = [
       '系统概览',
@@ -64,7 +64,6 @@ describe('Guide · sally 1:1 复刻', () => {
       '生成文案',
       '文案分析',
       'AI视频',
-      '语音对话',
       '深度学习',
       '视频制作',
       '获客视频',
@@ -75,10 +74,10 @@ describe('Guide · sally 1:1 复刻', () => {
     });
   });
 
-  it('实用技巧 · 14 个 TipsBox 渲染', () => {
+  it('实用技巧 · 13 个 TipsBox 渲染', () => {
     renderGuide();
     const tipsBoxes = screen.getAllByTestId('tips-box');
-    expect(tipsBoxes).toHaveLength(14);
+    expect(tipsBoxes).toHaveLength(13);
   });
 
   it('常见问题 · section 字面锁', () => {
@@ -87,10 +86,9 @@ describe('Guide · sally 1:1 复刻', () => {
     expect(screen.getByText('常见问题')).toBeInTheDocument();
   });
 
-  it('5 FAQ Q 字面锁', () => {
+  it('4 FAQ Q 字面锁', () => {
     renderGuide();
     expect(screen.getByText('AI生成的内容可以直接使用吗？')).toBeInTheDocument();
-    expect(screen.getByText('语音对话支持哪些语言？')).toBeInTheDocument();
     expect(screen.getByText('AI视频功能可以直接生成视频吗？')).toBeInTheDocument();
     expect(screen.getByText('如何让AI更了解我的风格？')).toBeInTheDocument();
     expect(screen.getByText('数据会被保存吗？')).toBeInTheDocument();

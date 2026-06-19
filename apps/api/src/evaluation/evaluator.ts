@@ -20,7 +20,7 @@ import { presentationAgent } from '@/specialists/PresentationAgent';
 import { privateDomainAgent } from '@/specialists/PrivateDomainAgent';
 import { topicAgent } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
-import { voiceChatAgent } from '@/specialists/VoiceChatAgent';
+import { SYSTEM_USER_ID } from '@/lib/constants/system';
 import { llmGateway } from '@/workers/llm-gateway';
 
 import type { GoldenSample } from '@quanan/schemas';
@@ -43,7 +43,6 @@ const SPECIALIST_REGISTRY: Record<string, { execute: (...args: any[]) => Promise
   PrivateDomainAgent: privateDomainAgent,
   TopicAgent: topicAgent,
   VideoAgent: videoAgent,
-  VoiceChatAgent: voiceChatAgent,
 };
 
 // ── Judge logic (mirrors tests/judge/judge-runner.ts, avoids cross-boundary import) ──
@@ -120,7 +119,7 @@ export async function runJudge(
           trace_id: `eval-judge-${specialistId}-${Date.now()}`,
           agentId: `EvalJudge-${specialistId}`,
           accountId: 0,
-          userId: 0,
+          userId: SYSTEM_USER_ID,
           eventType: 'judge_call',
         },
         timeout_ms: 15_000,

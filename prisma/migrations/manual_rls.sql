@@ -29,6 +29,7 @@ ALTER TABLE knowledge_favorites     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledge_notes         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_tasks             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cost_log                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE trending_favorites      ENABLE ROW LEVEL SECURITY;
 
 -- 全局表 + 运维表显式不启用(invite_codes / trending_items / audit_log)
 -- users は主应用 18 表の一部として RLS 有効化済み(US-005)
@@ -98,6 +99,10 @@ CREATE POLICY cost_log_account_isolation ON cost_log
   FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
   WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
+CREATE POLICY trending_favorites_account_isolation ON trending_favorites
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
+
 -- ============================================================
 -- 4. users 表策略(全局身份表 · auth lookup 需 SELECT open · US-005)
 -- ============================================================
@@ -163,6 +168,9 @@ CREATE POLICY admin_full_access_daily_tasks ON daily_tasks
   FOR ALL USING (current_setting('app.role', true) = 'admin');
 
 CREATE POLICY admin_full_access_cost_log ON cost_log
+  FOR ALL USING (current_setting('app.role', true) = 'admin');
+
+CREATE POLICY admin_full_access_trending_favorites ON trending_favorites
   FOR ALL USING (current_setting('app.role', true) = 'admin');
 
 -- ============================================================

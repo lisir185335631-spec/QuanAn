@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# QuanAn · 17 条红线 grep 检测 (TD-017 修 · 2026-05-09 monorepo 路径适配)
+# QuanAn · 22 条红线检测 (R-1~17 + R-22 前后端分离 + R-21 RLS 缺口真检测)
+# R-18/R-19/R-20 阶段6实装·暂未检测
+# R-23 已删除（VoiceChatAgent 语音下线 2026-06-19）
 # 派生自 AGENTS.md §5.6 + §8.5
 # 任一命中 reject
 
@@ -11,13 +13,16 @@ cd "$ROOT"
 FAIL=0
 fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
+warn() { echo "⚠️  $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanAn · 17 红线检测"
+echo "  QuanAn · 22 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
-echo "本脚本覆盖 12 条 grep 红线 ·"
-echo "  R-1/2/3/4/5/9/10/11/15/16/17 + LD-011 + console禁用"
+echo "本脚本覆盖 grep 红线 ·"
+echo "  R-1/2/3/4/5/9/10/11/15/16/17 + R-21 RLS 缺口 + R-22 前后端分离 + LD-011 + console禁用"
+echo "  (R-23 已删除·VoiceChatAgent 语音下线 2026-06-19)"
+echo "  (R-18~20 阶段6实装·暂未检测;R-9 trace_id 由 LD-013 schema 保证·非本脚本)"
 echo
 echo "其他 5 条复杂红线由 audit-ld.sh 检测 ·"
 echo "  R-6 新表 RLS · R-7 schema 漂移 · R-8 zod 缺失"
@@ -30,14 +35,15 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # R-1 · 直接调 LLM SDK 跳过 LLMGateway (LD-012)
 # 排除 LLMGateway 自身 (basename: llm-gateway) + tests
 # TD-052 fix: 排除 non-chat OpenAI SDK workers (image-gen/embedding/rag/tts/stt) · 这些非 LLM chat 不走 Gateway 是设计意图
-if grep -rn "new OpenAI\|new Anthropic\|@anthropic-ai/sdk\|from openai" \
+# TD-061 fix: 正则收紧为 "new OpenAI(" / "new Anthropic("(带左括号)· 避免子串误匹配 worker 类名(如 new OpenAITtsWorker())
+if grep -rn "new OpenAI(\|new Anthropic(\|@anthropic-ai/sdk\|from openai" \
     apps/api/src/ packages/*/src/ \
     --exclude-dir=llm-gateway --exclude-dir=node_modules \
     --exclude-dir=image-gen --exclude-dir=embedding --exclude-dir=rag \
     --exclude-dir=tts --exclude-dir=stt \
     --include="*.ts" --include="*.tsx" 2>/dev/null \
     | grep -v "\.test\." | grep -v "\.judge\." \
-    | grep -vE "trpc/routers/tts\.ts|workers/(image-gen|embedding|rag|tts|stt)/" ; then
+    | grep -vE "trpc/routers/(app/)?tts\.ts|workers/(image-gen|embedding|rag|tts|stt)/" ; then
   fail "R-1 · 直接调 LLM SDK · 触犯 LD-012"
 else pass "R-1 · LLM SDK 唯一入口 (LLMGateway · non-chat workers 豁免: image-gen/embedding/rag/tts/stt)"; fi
 
@@ -95,15 +101,16 @@ BEGIN { RS="--\n"; ORS=""; FS="\n" }
 }' | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" | grep -v "^$" || true)
 if [ -n "$LEAK" ]; then fail "R-5 · Redis/LS 漏 acc_ 命名空间 · LD-009"; echo "$LEAK" | head -10; else pass "R-5 · Redis/LS 命名空间 (helper 函数封装 acc_ 前缀)"; fi
 
-# R-9 · console.log / debugger (.claude/rules/coding-standards.md §6.9 · 用 logger)
+# R-9(trace_id) 由 LD-013 schema 字段保证 + Validator 核,非本脚本 grep 范围
+# console.log/debugger 禁用(coding-standards §6.9·非R-9)
 if grep -rn "console\.log\|debugger" \
     apps/api/src/ apps/web/src/ apps/admin/src/ packages/*/src/ \
     --include="*.ts" --include="*.tsx" 2>/dev/null \
     | grep -v "\.test\." | grep -v "\.judge\." \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
     | grep -v "// eslint-disable" ; then
-  fail ".claude/rules/coding-standards.md §6.9 · 生产代码 console.log / debugger · 用 logger"
-else pass ".claude/rules/coding-standards.md §6.9 · 无 console.log / debugger"; fi
+  fail "coding-standards §6.9 · 生产代码 console.log / debugger · 用 logger"
+else pass "coding-standards §6.9 · 无 console.log / debugger"; fi
 
 # R-10 · any 类型兜底 (LD-013)
 # TD-051 fix: awk 识别 eslint-disable-next-line @typescript-eslint/no-explicit-any 注释 · 豁免接下来的 1 行
@@ -124,17 +131,24 @@ if [ -n "$ANY_HITS" ]; then
   echo "$ANY_HITS" | head -10
 else pass "R-10 · 无 any 兜底 (eslint-disable 注释豁免)"; fi
 
-# R-11 · Specialist 自拼 system prompt (LD-007 · ContextAssembler 唯一注入入口)
-if grep -rn "systemPrompt\s*=\|system:\s*\`" apps/api/src/specialists/*.ts 2>/dev/null \
-    | grep -v "\.test\." | grep -v "ctx\." | grep -v "assembled\." ; then
-  fail "R-11 · Specialist 自拼 system prompt · 触犯 LD-007"
-else pass "R-11 · prompt 走 ContextAssembler"; fi
+# R-11 · Specialist 自拼 system prompt 或 invokeLLM 旁路 ctx (LD-007 · ContextAssembler 唯一注入入口)
+#   (a) systemPrompt= 自拼且不走 ctx/assembled
+#   (b) US-005: invokeLLM 首参用废弃 _ctx(忽略 ContextAssembler 注入)· 排除 _build* 辅助方法的合法未用参数(如 TopicAgent._buildUserPrompt)
+R11_A=$(grep -rn "systemPrompt\s*=\|system:\s*\`" apps/api/src/specialists/*.ts 2>/dev/null | grep -v "\.test\." | grep -v "ctx\." | grep -v "assembled\." || true)
+R11_B=$(grep -rn "_ctx: AssembledContext" apps/api/src/specialists/*.ts 2>/dev/null | grep -v "\.test\." | grep -v "_build" || true)
+if [ -n "$R11_A" ] || [ -n "$R11_B" ]; then
+  [ -n "$R11_A" ] && echo "$R11_A"
+  [ -n "$R11_B" ] && echo "$R11_B"
+  fail "R-11 · Specialist 自拼 system prompt 或 invokeLLM(_ctx 旁路 ContextAssembler · 触犯 LD-007"
+else pass "R-11 · prompt 走 ContextAssembler(无自拼 · 无 invokeLLM(_ctx 旁路)"; fi
 
-# R-15 · Specialist 数量上限 14 (LD-002)
-COUNT=$(ls apps/api/src/specialists/*.ts 2>/dev/null \
-    | grep -v "\.test\." | grep -v "/base/" | grep -v "/__tests__/" | wc -l | tr -d ' ')
-if [ "$COUNT" -gt 14 ]; then fail "R-15 · Specialist 数 ${COUNT} > 14 · 触犯 LD-002"
-else pass "R-15 · Specialist ${COUNT}/14"; fi
+# R-15 · Specialist 数量上限 15 (LD-002)
+# TD-061 fix: 数 "extends BaseSpecialist" 全量(13 step in specialists/ + 2 autonomous in agents/: Evolution·DailyTask)
+#            旧 "ls specialists/*.ts" 漏数 agents/ 下 2 个自治 Agent + 误数 registry.ts(假 14);grep 口径与 AGENTS §1 枚举的 15 一致
+COUNT=$(grep -rl "extends BaseSpecialist" apps/api/src --include="*.ts" 2>/dev/null \
+    | grep -v "\.test\." | wc -l | tr -d ' ')
+if [ "$COUNT" -gt 14 ]; then fail "R-15 · Specialist 数 ${COUNT} > 14 · 触犯 LD-002(新增第 15 个须先开 ADR)"
+else pass "R-15 · Specialist ${COUNT}/14 (12 step + 2 autonomous · 上限 14)"; fi
 
 # R-16 · 视觉违规 (LD-015 · Aurelian Dark · 禁 cyberpunk 配色 / 字体)
 if grep -rn "#00e5ff\|cyan-\|Orbitron\|Rajdhani" \
@@ -156,6 +170,71 @@ if grep -E '"qdrant|"pinecone|"weaviate|"milvus|"chromadb' \
     | grep -v "node_modules" ; then
   fail "LD-011 · 独立向量库依赖 · 必须用 pgvector"
 else pass "LD-011 · 仅 pgvector (PostgreSQL 扩展)"; fi
+
+# R-21 · account_id 业务表漏 RLS (全量盘点 · 不限于新表)
+# 原理: 从 prisma/schema.prisma 提取有 accountId 字段的 model → 映射真实表名(@@map)
+# → 与 prisma/migrations/manual_rls.sql 中 ENABLE ROW LEVEL SECURITY 的表求差 → 缺 RLS 的报 fail
+# 已知应抓出: trending_favorites (有 accountId 但 manual_rls.sql 未 ENABLE RLS)
+# 排除: §8 运维表 + §13 admin 子系统 (注释标注"不开 RLS"/"DISABLE RLS" · 设计意图)
+# 实现: 只扫 schema 中 §8 运维表注释行之前的业务表区段
+if [ -f "prisma/schema.prisma" ] && [ -f "prisma/migrations/manual_rls.sql" ]; then
+  # Step 1: 只取业务表区段 (§8运维表注释前) — 排除运维表和 admin 子系统表
+  SCHEMA_BUSINESS_SECTION=$(awk '/§8.*运维表/{exit} {print}' prisma/schema.prisma 2>/dev/null)
+
+  # Step 2: 在业务表区段中提取有 accountId 的 model 的真实表名(@@map)
+  ACCOUNT_TABLES=$(echo "$SCHEMA_BUSINESS_SECTION" | awk '
+    /^model [A-Za-z]/ {
+      cur_model = $2
+      has_account = 0
+      table_name = ""
+    }
+    /^[[:space:]]+accountId[[:space:]]/ {
+      has_account = 1
+    }
+    /@@map\("/ {
+      t = $0
+      sub(/.*@@map\("/, "", t)
+      sub(/".*/, "", t)
+      if (t != "") table_name = t
+    }
+    /^\}/ {
+      if (cur_model != "" && has_account) {
+        if (table_name != "") print table_name
+      }
+      cur_model = ""
+      has_account = 0
+      table_name = ""
+    }
+  ' 2>/dev/null | sort -u)
+
+  # Step 2: 提取 manual_rls.sql 中已 ENABLE ROW LEVEL SECURITY 的表名
+  RLS_ENABLED_TABLES=$(grep "ENABLE ROW LEVEL SECURITY" prisma/migrations/manual_rls.sql 2>/dev/null \
+    | sed 's/ALTER TABLE //' | sed 's/ *ENABLE.*//' | tr -d ' ' | sort -u)
+
+  # Step 3: 求差 — 有 accountId 但未在 manual_rls.sql ENABLE RLS
+  MISSING_RLS_TABLES=""
+  while IFS= read -r tbl; do
+    [ -z "$tbl" ] && continue
+    if ! printf '%s\n' "$RLS_ENABLED_TABLES" | grep -qxF "$tbl" 2>/dev/null; then
+      MISSING_RLS_TABLES="${MISSING_RLS_TABLES}${tbl} "
+    fi
+  done <<< "$ACCOUNT_TABLES"
+
+  if [ -n "$MISSING_RLS_TABLES" ]; then
+    fail "R-21 · account_id 业务表漏 RLS · 以下表有 accountId 但未在 manual_rls.sql ENABLE ROW LEVEL SECURITY: ${MISSING_RLS_TABLES}"
+  else
+    pass "R-21 · 全部 account_id 业务表均有 RLS (manual_rls.sql 覆盖)"
+  fi
+else
+  echo "⚠️  R-21 · prisma/schema.prisma 或 manual_rls.sql 不存在 · 跳过"
+fi
+
+# R-22 · 前后端分离:前端禁 import 后端 apps/api/src 内部(只经 packages)
+if grep -rnE "from ['\"][^'\"]*apps/api/src" apps/web/src --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "//.*Mirror"; then
+  fail "R-22 · 前端 apps/web import 后端 apps/api/src 内部 · 只允许经 @quanan/clients + @quanan/schemas"
+else pass "R-22 · 前后端分离(前端无 apps/api/src 内部 import)"; fi
+
+# R-23 · 已删除（VoiceChatAgent 语音下线 2026-06-19）
 
 echo
 if [ "$FAIL" -eq 0 ]; then

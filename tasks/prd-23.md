@@ -3,7 +3,7 @@
 > **版本** · v0.1(2026-05-19 BJT · Opus 4.7 主对话写)
 > **范围** · 跟 aiipznt 1:1 视觉对齐 · 3 件事 ·
 > 1. 3 stub 完整化(/diagnosis 8 步问卷 + 7 维度报告 · /accounts IP 账号管理 + 新建账号 modal · /step/8 直播策划 2 子功能)
-> 2. 4 内容创作工具 stub 完整化(/video-analysis 爆款文案解析 · /analysis 文案结构分析 · /video-production 短视频一键制作 · /acquisition-video 获客型视频)
+> 2. 3 内容创作工具 stub 完整化(/video-analysis 爆款文案解析 · /analysis 文案结构分析 · /video-production 短视频一键制作) [重构删: /acquisition-video 获客型视频]
 > 3. 14 page visual baseline 验证 + TD 修复(PRD-15 沉淀 6 工具 + PRD-22 4 inline 工具 + 8 step page 总 18 page baseline 验证 · 修 TD-092/093)
 > **基线** · PRD-21 + PRD-22 已 ship main(commit `c725cf4 Merge: PRD-21 + PRD-22 视觉对齐 ship`)· 13 visual baseline 建立 · 3 inline picker utility 跨 page 复用 · verify-prd-22.sh 52/52 PASSED
 > **目标** · 7 stub page 完整化(3 模块 + 4 工具)· 18 page visual baseline 总计 · 修复 PRD AC 模板缺陷 · 准备 PRD-24 6 modules + 全 32 page visual diff 收官
@@ -31,10 +31,10 @@
 |---|---|
 | **branchName** | `ralph/prd-23-stubs-and-tools-polish` |
 | **Locked Decisions** | D-226 起延续(PRD-22 收尾在 D-225 · 总 10 D · D-226~D-235) |
-| **风险分档** | high × 3(US-001 /diagnosis 8 步 + US-002 /accounts modal + US-003 /step/8)+ medium × 6(US-004~009)+ 收官 × 1(US-010) |
+| **风险分档** | high × 3(US-001 /diagnosis 8 步 + US-002 /accounts modal + US-003 /step/8)+ medium × 5(US-004~006 + US-008~009)+ 收官 × 1(US-010) |
 | **anti_patterns 注入** | 3 high US 必须从 reject-examples.jsonl 检索 ≤ 3 条注入 · 高频关键词 · "stub 完整化" / "modal" / "8 步向导" / "stepData" / "unit test 同步"(PRD-22 教训) |
 | **依赖前置 PRD** | PRD-15(/copywriting · /trending · /present-styles · /monetization · /private-domain · /my-topics · /history · /deep-learning 8 page 完整化基线) + PRD-16(D1=A + D4=B 设计系统) + PRD-19(8 stub baseline · 含本 PRD 要完整化的 stub) + PRD-21(visual-diff infra · expectVisualMatch helper) + PRD-22(inline picker utility 3 件套 + 13 visual baseline · TD-092/093 模板缺陷) · 严格保留不动 |
-| **下游 PRD** | PRD-24(6 modules 视觉精修 · /daily-tasks · /evolution · /voice-chat 等 + 全 32 page visual diff 收官) |
+| **下游 PRD** | PRD-24(6 modules 视觉精修 · /daily-tasks · /evolution 等 + 全 32 page visual diff 收官) [重构删: /voice-chat] |
 | **baseline 抓取来源** | `/tmp/aiipznt-clone-research/{dump,screenshots}` 32 HTML + 32 PNG fullPage 1440px(2026-05-16 BJT 抓取) |
 | **visual diff 配置** | 复用 PRD-21 D-206 maxDiffPixelRatio 0.05 + D-208 viewport 1440x900 + expectVisualMatch helper |
 | **失败回滚** | `git branch backup/before-prd-23 main` 已建(本会话 21:00)· 任意 US 累计 3 reject 强制 retro + 拆 story |
@@ -67,7 +67,7 @@
 | D-228 | /accounts IP 账号卡片用 `IpAccountCard` 组件 + 新建账号 modal 用 `CreateAccountModal` · 路径 `apps/web/src/components/accounts/` · ACTIVE 标 + 圆形头像首字符 + 行业/平台/粉丝量 + 业务描述 + [删除][编辑] button | spec §8.5.4 line 2518-2531 |
 | D-229 | /step/8 2 子功能用 tabs 切换 · "生成直播方案" / "AI 优化话术" · 用 `<Tabs>` from shadcn · 每子功能独立表单 + CTA | spec §7.9 双子功能架构 |
 | D-230 | /step/8 直播经验 radio 字面锁 · "新手 · 刚开始做直播" / "有经验 · 有一定直播经验" / "资深 · 直播经验丰富" · 完整字面 spec §7.9 line 1762 | D1A 严守 |
-| D-231 | 4 stub 工具(/video-analysis · /analysis · /video-production · /acquisition-video)用 `ToolForm` 抽象(PRD-15 沉淀 · 跟 /generate inline 不同 · 因为这 4 page aiipznt 实测就是简单 form)· 表单字段从 constants import | spec §8.1.2 / §8.3.2-3.4 4 page 都是简单 textarea + CTA 模式 |
+| D-231 | 3 有效 stub 工具(/video-analysis · /analysis · /video-production) [重构删: /acquisition-video]用 `ToolForm` 抽象(PRD-15 沉淀 · 跟 /generate inline 不同 · 因为这 3 page aiipznt 实测就是简单 form)· 表单字段从 constants import | spec §8.1.2 / §8.3.2-3.4 3 page 都是简单 textarea + CTA 模式 |
 | D-232 | 14 page visual baseline 验证矩阵 · prd23-visual-baseline.spec.ts 14 fixture · `/diagnosis` `/accounts` `/step/8` + 4 stub 工具 + 6 PRD-15 沉淀工具 + 1 /step/6(PRD-22 已建) = 14 · baseline 名 prd23-XXX(本 PRD 内部 regression baseline · 不切 aiipznt 实拍 · TD-090 defer) | 继承 PRD-22 visual baseline 模式 · 不切 aiipznt 实拍(Step D 量化数据决策) |
 | D-233 | unit test 同步硬规则 · 每个 US 重写 page/常量时 · 必须同步更新对应 `apps/web/src/pages/**/__tests__/*.test.tsx` 期望对齐新字面 · 不破 vitest 零回归 · PRD-22 TD-093 教训机制化 | 防 PRD-22 US-006/009 同模式 reject 重演 |
 | D-234 | PRD-23 不接 LLM(D-225 同延续) · 4 工具 stub 完整化 = UI 骨架 + 表单 + stub 输出区(用静态示例数据) · LLM 集成留 PRD-25+ | 基于 Step D 数据 · LLM 接入是大工程 · 留独立 PRD |
@@ -100,7 +100,6 @@ PRD-21 + PRD-22 已 ship main(20 US · 55 commits · 13 visual baseline) · 5 in
 | /video-analysis | stub 未触 | 1 H1 + 7 button + 2 input · 简单 textarea | 真表单(视频标题 input + 视频文案 textarea ≥ 10 字)+ "开始深度解析" CTA + stub 输出区(钩子拆解 + 结构分析 + 爆款元素识别 + 评分 + 一键仿写) |
 | /analysis | stub 未触 | 1 H1 + 7 button + 1 input · 简单 textarea | 真表单(文案 textarea ≥ 10 字 + 字符计数 0 字) + "开始分析" CTA + stub 输出区(结构拆解 + 节奏分析 + 爆款元素识别 + 多维评分 + 优化建议) |
 | /video-production | stub 未触 | 1 H1 + 7 button + 1 input · 简单 textarea | 真表单(文案 textarea ≥ 10 字) + "生成制作方案" CTA + stub 输出区(分镜脚本 + 拍摄方案 + 口播提词器 + 剪辑指导) |
-| /acquisition-video | stub 未触 | 1 H1 + 8 button + 2 input · 行业 dropdown + 客户画像 + 卖点 | 真表单(行业 dropdown + 目标客户画像 textarea + 产品/服务卖点 textarea) + "生成获客方案" CTA + stub 输出区(3 个方案 · 每方案含主题角度/钩子/内容结构/CTA) |
 
 ### 1.3 18 page visual baseline 验证(2 medium US)
 
@@ -126,7 +125,6 @@ US-010 收官 · verify-prd-23.sh + /goal-verify §0 codebase 同步 + /prd-retr
 - ✅ /video-analysis 真表单(标题 + 文案) + stub 输出 5 区块 · 跟 spec §8.1.2 1:1
 - ✅ /analysis 真表单(文案 ≥ 10 字 + 字符计数) + stub 输出 5 区块 · 跟 spec §8.3.2 1:1
 - ✅ /video-production 真表单(文案 ≥ 10 字) + stub 输出 4 区块 · 跟 spec §8.3.3 1:1
-- ✅ /acquisition-video 真表单(行业 + 客户画像 + 卖点) + stub 输出 3 方案 · 跟 spec §8.3.4 1:1
 - ✅ 6 PRD-15 沉淀工具 + 4 PRD-22 inline 工具 visual baseline 验证 · 跑通 visual diff 5% threshold
 - ✅ 修复 PRD AC 模板缺陷(TD-092/093) · plan-check 加 unit test 同步规则
 - ✅ 10 US 全部 audit approved(Opus 4 维度 + risk_level 分档) · verify-prd-23.sh 通过 · 25 page visual baseline 建立 · 准备 PRD-24
@@ -505,38 +503,7 @@ US-010 收官 · verify-prd-23.sh + /goal-verify §0 codebase 同步 + /prd-retr
 
 ---
 
-### US-007 medium · /acquisition-video 真表单 + stub 输出(获客型视频)
-
-**风险分档** · 🟡 medium(form 含 dropdown + 2 textarea · stub 输出 3 方案 grid)
-
-**Story 大小** · small-medium(单次 ralph 迭代可完成 · 2 文件 · ~260 LOC)
-
-**前置依赖** · spec §8.3.4 + 现有 industries 常量(PRD-22 PlatformInlineRadio 不适用 · 这里是行业 dropdown 不是 platform)
-
-**用户故事** ·
-作为 QuanAn 用户 · 当我访问 /acquisition-video · 我看到 H1 "获客型视频制作" + 副标 + 真表单(行业 dropdown + 客户画像 textarea + 卖点 textarea) + "生成获客方案" CTA + stub 输出 3 方案 grid(每方案含主题角度/钩子/内容结构/CTA)。
-
-**验收标准** ·
-
-- **AC-1** · H1 字面锁 `获客型视频制作` · 副标题字面锁 `专为获客设计的短视频方案，让精准客户主动找上门`(spec §8.3.4)
-- **AC-2** · 表单字段 ·
-  - dropdown `选择行业` 必填 默认当前账号行业 placeholder `📲 自媒体运营`
-  - textarea `目标客户画像` 必填 placeholder `描述您的理想客户，例如：想要创业的30-45岁宝妈群体，有一定积蓄但缺乏方向...`
-  - textarea `产品/服务卖点` 必填 placeholder `描述您的核心卖点，例如：0基础可学、3个月回本、一对一指导...`
-- **AC-3** · CTA button `生成获客方案`(disabled if !industry || !audience || !sellingPoints)
-- **AC-4** · stub 输出 3 方案 grid · 每方案 glass-card · 含 4 H4 ·
-  - H4 `主题角度`
-  - H4 `钩子`
-  - H4 `内容结构`
-  - H4 `CTA`
-- **AC-5** · D-233 unit test 同步 · ≥ 4 test
-- **AC-6** · TypeScript + vitest 通过(总 ≥ 259)
-- **AC-7** · 新增 e2e tests/e2e/prd23-acquisition-video-flow.spec.ts · ≥ 3 test
-- **AC-8** · visual baseline 加 /acquisition-video · 'prd23-acquisition-video.png' · 阈值 5%
-- **AC-9** · agent-browser 验证(行业 dropdown 默认值取当前账号 · 2 textarea 字面 placeholder · 3 方案 grid stub)
-- **Typecheck passes**
-
-**文件 to modify** · `apps/web/src/pages/tools/AcquisitionVideo.tsx` + 对应 test + e2e
+> ⚠️ US-007 作废(2026-06-18 重构)：**获客视频**(`/acquisition-video` + `VideoAgent` acquisition mode)已删除。原内容见 git 历史。
 
 ---
 
@@ -625,10 +592,9 @@ US-010 收官 · verify-prd-23.sh + /goal-verify §0 codebase 同步 + /prd-retr
   - §4 /video-analysis · grep `爆款文案解析` H1 + 5 H3 输出区
   - §5 /analysis · grep `文案结构分析` H1 + 5 H3 输出区
   - §6 /video-production · grep `短视频一键制作` H1 + 4 H3 输出区
-  - §7 /acquisition-video · grep `获客型视频制作` H1 + 3 方案 + 4 H4
   - §8 跨 page · typecheck 0 errors + vitest ≥ 259 test pass
   - §9 visual baseline · prd23-visual-baseline 14 fixture + prd22 13 fixture 全 pass · 总 28 baseline
-  - §10 unit test 同步规则验证 · D-233 锁 · 7 个 page (`Diagnosis/Accounts/Step8/VideoAnalysis/Analysis/VideoProduction/AcquisitionVideo`) 都有对应 __tests__/*.test.tsx
+  - §10 unit test 同步规则验证 · D-233 锁 · 6 个 page (`Diagnosis/Accounts/Step8/VideoAnalysis/Analysis/VideoProduction`) 都有对应 __tests__/*.test.tsx *(AcquisitionVideo 已删)*
 - **AC-2** · 修复 PRD AC 模板 · 新建 `~/.claude/playbooks/prd-template-unit-test-sync.md` · 写"D-233 unit test 同步硬规则" · 给下次 prd skill 写 PRD 时显式列必加
 - **AC-3** · 更新 `~/.claude/skills/prd/SKILL.md` AC template · 加 "## 必加 unit test 同步 AC"(对应 TD-093 修复)
 - **AC-4** · 更新 `~/.claude/skills/plan-check/SKILL.md` §2.6.X 加 "unit test 同步检测规则" · 对应 page 重写 + __tests__ 文件不同步 · WARN(对应 TD-093 自动 catch)
@@ -670,7 +636,6 @@ US-010 收官 · verify-prd-23.sh + /goal-verify §0 codebase 同步 + /prd-retr
 | /video-analysis | US-004 | 10 | ≥ 4 | 1 H1 + 5 H3 | prd23-video-analysis.png |
 | /analysis | US-005 | 9 | ≥ 3 | 1 H1 + 5 H3 | prd23-analysis.png |
 | /video-production | US-006 | 9 | ≥ 3 | 1 H1 + 4 H3 | prd23-video-production.png |
-| /acquisition-video | US-007 | 9 | ≥ 4 | 1 H1 + 4 H4 × 3 方案 | prd23-acquisition-video.png |
 
 ### §4.2 共享 AC(全 10 US)
 
@@ -758,7 +723,6 @@ US-003 (high) /step/8     ← PRD-22 PlatformInlineRadio + useStepData
 US-004 (medium) /video-analysis  ← 独立 · 简单 form
 US-005 (medium) /analysis        ← 独立 · 简单 form
 US-006 (medium) /video-production ← 独立
-US-007 (medium) /acquisition-video ← 独立
 US-008 (medium) 6 PRD-15 工具 verify ← 不依赖
 US-009 (medium) PRD-22 13 baseline verify ← US-001~007 完成后跑
 US-010 (收官)              ← US-001~009 全部
@@ -766,8 +730,8 @@ US-010 (收官)              ← US-001~009 全部
 
 ### §7.3 下游 PRD
 
-- **PRD-24** · 6 modules 视觉精修(/daily-tasks · /evolution · /my-topics · /history · /voice-chat · /accounts ?) + 全 32 page visual diff 收官
-- **PRD-25+** · LLM 接入(/diagnosis 7 维度真评分 + /step/8 真直播方案 + 4 工具 LLM 输出) · 留独立大 PRD
+- **PRD-24** · 6 modules 视觉精修(/daily-tasks · /evolution · /my-topics · /history · /accounts ?) + 全 32 page visual diff 收官 [重构删: /voice-chat]
+- **PRD-25+** · LLM 接入(/diagnosis 7 维度真评分 + /step/8 真直播方案 + 3 工具 LLM 输出) [重构删: acquisition-video] · 留独立大 PRD
 
 ---
 
@@ -797,11 +761,10 @@ Monitor(command="tail -n 0 -F scripts/ralph/ralph-output.log 2>/dev/null | grep 
 | US-004 medium | 20-30 min | 3.25h |
 | US-005 medium | 20-30 min | 3.75h |
 | US-006 medium | 20-30 min | 4.25h |
-| US-007 medium | 25-35 min(dropdown + 3 方案) | 5h |
-| US-008 medium | 35-45 min(8 baseline 首跑 + Read confirm) | 6h |
-| US-009 medium | 15-25 min(13 baseline verify) | 6.5h |
-| US-010 medium | 35-50 min(verify + retro + skill 更新) | 7.5h |
-| **累计** | **7.5-9h daemon** | + Opus audit 10×3-15min/US ≈ 10-13h wall time |
+| US-008 medium | 35-45 min(8 baseline 首跑 + Read confirm) | 5h |
+| US-009 medium | 15-25 min(13 baseline verify) | 5.5h |
+| US-010 medium | 35-50 min(verify + retro + skill 更新) | 6.5h |
+| **累计** | **6-7.5h daemon** | + Opus audit 10×3-15min/US ≈ 10-13h wall time |
 
 ### §8.3 跨 PRD-23 大门禁
 

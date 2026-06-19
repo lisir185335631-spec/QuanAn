@@ -13,6 +13,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import {
@@ -151,7 +152,9 @@ export async function _toggleFeatureFlagInTx(
     userAgent: 'feature-flag-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {});
+  }).catch((e) => {
+    logger.warn({ err: e, flagKey, adminId }, 'feature-flag.toggleInTx.auditLog.failed');
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -189,7 +192,9 @@ export async function _updateSystemConfigInTx(
     userAgent: 'feature-flag-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {});
+  }).catch((e) => {
+    logger.warn({ err: e, configKey, adminId }, 'feature-flag.updateConfigInTx.auditLog.failed');
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -283,7 +288,9 @@ export async function emergencyToggleSystemConfig(
     userAgent: 'emergency-switch-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {});
+  }).catch((e) => {
+    logger.warn({ err: e, configKey, incidentId, superAdminId }, 'feature-flag.emergencyToggle.auditLog.failed');
+  });
 
   // AC-7: 钉钉告警 D-077 isMock=true 默认
   const dingtalk = new DingtalkService();
@@ -291,7 +298,9 @@ export async function emergencyToggleSystemConfig(
     .send(
       `[紧急开关触发] configKey=${configKey} · incidentId=${incidentId} · adminId=${superAdminId} · approvalRequestId=${approvalReq.id}`,
     )
-    .catch(() => {});
+    .catch((e) => {
+      logger.warn({ err: e, configKey, incidentId }, 'feature-flag.emergencyToggle.dingtalk.failed');
+    });
 
   return { approvalRequestId: approvalReq.id };
 }

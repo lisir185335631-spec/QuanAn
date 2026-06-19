@@ -1,7 +1,7 @@
 # PRD-6 · P5 视频模块(VideoAgent 3 mode + CopywritingAgent acquisition + ImageGen Worker + 3 工具页)
 
 > **版本** · v0.1(2026-05-09 · prd skill assumptions 模式 · Opus 主对话)
-> **PRD** · PRD-6 · 14 stories · 计划 2 周 · risk=high(ImageGen 新领域 + BullMQ 异步队列)
+> **PRD** · PRD-6 · 12 stories · 计划 2 周 · risk=high(ImageGen 新领域 + BullMQ 异步队列)
 > **依赖** · PRD-4(7 Specialist 真接 LLMGateway · 已完成 ✓)+ PRD-5(CopywritingAgent free/boom + AnalysisAgent + 4 工具页 + history · 已完成 ✓)
 > **战略地位** · ARCHITECTURE §9.7 P5 视频模块 · `PRD-1 → PRD-2 → PRD-4 → PRD-5/6/8(任一)→ PRD-12` 关键路径上的下一站
 
@@ -27,7 +27,7 @@
 
 ### §0.2 ARCHITECTURE.md 引用
 
-- §1.4 14 工具页 · 视频域 4 工具(shooting / production / acquisition / storyboard)
+- §1.4 14 工具页 · 视频域 3 工具(shooting / production / storyboard)[重构删 1 项]
 - §6 14 Specialist · §6.6 VideoAgent 4 mode 完整定义
 - §7 ImageGenWorker(异步队列 · DALL-E 3 / 文心一格 调用)
 - §9.7 P5 视频模块 · 2 周计划 · 退出条件 8 项
@@ -41,7 +41,7 @@
 - §6.1 Persona(视频导演 + 拍摄经验)
 - §6.2 13 列分镜表(shooting / storyboard 必含)
 - §6.3 storyboard mode · ImageGen prompt 协同(英文 prompt)
-- §6.4 输入字段(production / acquisition / storyboard)
+- §6.4 输入字段(production / storyboard)[重构删 acquisition]
 
 ### §0.4 DATA-MODEL.md 引用
 
@@ -73,7 +73,7 @@
 
 - 真 user upload video(.mp4 上传 · 留 PRD-9 P8 RAG)
 - 文心一格 / 国内 image API(只做 DALL-E 3 · 留 PRD-9 PRR 申请国内 API key)
-- VoiceChatAgent / EvolutionAgent / DailyTaskAgent(留 PRD-8 P7 智能 · 3 L5 自治)
+- EvolutionAgent / DailyTaskAgent(留 PRD-8 P7 智能 · 2 L5 自治)[重构删:VoiceChatAgent 语音对话已删]
 - admin 任何代码(留 PRD-10~14 admin 子系统)
 - 视频文件渲染(只做分镜 + sceneImage · 不组合成 mp4 · 留 PRD-9+ 第三方剪辑工具集成)
 
@@ -88,9 +88,8 @@
 > **depends_on** · []
 
 **描述** · PRD-6 所有后续 stories 的数据契约前置 · 4 项:
-1. **5 个 zod schema 重写/新建** · `packages/schemas/src/specialist-io/` 下:
+1. **4 个 zod schema 重写/新建** · `packages/schemas/src/specialist-io/` 下[重构删 acquisitionVideo.schema.ts]:
    - `videoProduction.schema.ts`(新建 · production mode input/output)
-   - `acquisitionVideo.schema.ts`(新建 · acquisition mode input/output)
    - `aiVideo.schema.ts`(新建 · storyboard mode input/output · 含 sceneImage url 数组)
    - `acquisitionCopywriting.schema.ts`(新建 · CopywritingAgent acquisition mode 用)
    - `imageGen.schema.ts`(新建 · ImageGen Worker queue payload + result)
@@ -112,7 +111,6 @@
 
 **files_to_create** ·
 - `packages/schemas/src/specialist-io/videoProduction.schema.ts`(~80 行)
-- `packages/schemas/src/specialist-io/acquisitionVideo.schema.ts`(~70 行)
 - `packages/schemas/src/specialist-io/aiVideo.schema.ts`(~90 行)
 - `packages/schemas/src/specialist-io/acquisitionCopywriting.schema.ts`(~50 行)
 - `packages/schemas/src/specialist-io/imageGen.schema.ts`(~40 行)
@@ -140,22 +138,21 @@
 > **depends_on** · [US-001]
 
 **描述** · 4 项:
-1. **VideoAgent 解锁 production / acquisition / storyboard 3 mode** · `apps/api/src/specialists/VideoAgent.ts`:
-   - 移除 `if (mode === 'production' | 'acquisition' | 'storyboard') throw 'PRD-6'`
-   - 加 outputSchema getter 按 _mode 返回(沿用 PRD-5 D-028 模式)· 4 mode → 4 output schema
+1. **VideoAgent 解锁 production / storyboard 2 mode** · `apps/api/src/specialists/VideoAgent.ts`[重构删 acquisition]:
+   - 移除 `if (mode === 'production' | 'storyboard') throw 'PRD-6'`
+   - 加 outputSchema getter 按 _mode 返回(沿用 PRD-5 D-028 模式)· 3 mode → 3 output schema(含已有 shooting)
    - invokeLLM 内 _buildUserPrompt(mode) 按 mode 加 prompt 段(PROMPTS §6.4)
    - storyboard mode 输出含 `scenes: Array<{ index, description, imagePromptEn, duration }>` · 不含 sceneImage url(US-007 入队列后 US-009 worker 写)
 2. **CopywritingAgent acquisition mode 解锁** · `apps/api/src/specialists/CopywritingAgent.ts`:
    - 移除 `if (mode === 'acquisition') throw 'PRD-6'`(D-035 落地)
    - 加 acquisition outputSchema(沿用 free/boom 模式 · markdown 字段)
    - invokeLLM 内 acquisition prompt(PROMPTS §5.4 acquisition · CTA 必含 · 200-500 字 · 转化导向)
-3. **ContextAssembler 3 新模板** · `apps/api/src/services/context-assembler/templates/`:
+3. **ContextAssembler 2 新模板** · `apps/api/src/services/context-assembler/templates/`[重构删 acquisition-video.ts]:
    - `video-production.ts`(production mode persona + 提示词模板)
-   - `acquisition-video.ts`(acquisition mode persona)
    - `ai-video.ts`(storyboard mode persona · 强调 imagePromptEn 必英文)
-   - `index.ts` barrel 加 3 新模板
+   - `index.ts` barrel 加 2 新模板
 4. **VideoAgent + CopywritingAgent unit tests 扩展** · `tests/unit/specialists/`:
-   - VideoAgent.test.ts 加 3 mode × 3 场景 = 9 新 unit
+   - VideoAgent.test.ts 加 2 mode × 3 场景 = 6 新 unit[重构删 acquisition mode 3 unit]
    - CopywritingAgent.test.ts 加 acquisition mode × 3 场景 = 3 新 unit
    - 每个 mode 验证 outputSchema getter + prompt 分支正确
 
@@ -163,14 +160,14 @@
 
 **files_to_create** ·
 - `apps/api/src/services/context-assembler/templates/video-production.ts`(~60 行)
-- `apps/api/src/services/context-assembler/templates/acquisition-video.ts`(~50 行)
 - `apps/api/src/services/context-assembler/templates/ai-video.ts`(~70 行)
+[重构删 acquisition-video.ts]
 
 **files_to_modify** ·
 - `apps/api/src/specialists/VideoAgent.ts`(解锁 3 mode + outputSchema getter + invokeLLM 分支 · ~+200 行)
 - `apps/api/src/specialists/CopywritingAgent.ts`(解锁 acquisition · ~+50 行)
 - `apps/api/src/services/context-assembler/templates/index.ts`(barrel 加 3 入口)
-- `tests/unit/specialists/VideoAgent.test.ts`(+9 unit · ~+150 行)
+- `tests/unit/specialists/VideoAgent.test.ts`(+6 unit · ~+150 行)
 - `tests/unit/specialists/CopywritingAgent.test.ts`(+3 unit · ~+50 行)
 
 **test_command** · `pnpm test tests/unit/specialists/VideoAgent.test.ts tests/unit/specialists/CopywritingAgent.test.ts && pnpm typecheck`
@@ -216,46 +213,6 @@
 - `apps/web/src/components/ToolResult/ToolResult.tsx`(switch case 加 'video-production')
 
 **test_command** · `pnpm test tests/unit/web/pages/VideoProduction.test.tsx && pnpm test:e2e tests/e2e/tool-video-production.spec.ts && pnpm typecheck`
-
----
-
-### **US-005 · Wave 1 · /acquisition-video 后端 · acquisitionVideo.generate procedure**
-
-> **risk_level** · `high`(真 LLM 调用 · 转化导向 prompt)
-> **priority** · 5
-> **depends_on** · [US-002]
-
-**描述** · 新建 `apps/api/src/trpc/routers/acquisitionVideo.ts` 真接 VideoAgent acquisition mode。
-
-**files_to_create** ·
-- `apps/api/src/trpc/routers/acquisitionVideo.ts`(~80 行 · 同 US-003 模式)
-- `tests/unit/api/acquisition-video-router.test.ts`(~80 行 · 4 unit)
-- `tests/integration/api/acquisition-video-llm.test.ts`(~120 行 · nock SDK)
-
-**files_to_modify** ·
-- `apps/api/src/trpc/routers/_app.ts`(注册 acquisitionVideo)
-- `packages/clients/src/router-types.ts`(shadow router)
-
-**test_command** · 同 US-003 模式
-
----
-
-### **US-006 · Wave 1 · /acquisition-video 前端 · AcquisitionVideo.tsx**
-
-> **risk_level** · `medium`
-> **priority** · 6
-> **depends_on** · [US-001, US-005]
-
-**描述** · `apps/web/src/pages/tools/AcquisitionVideo.tsx` 真表单(sourceCopy + 转化目标 + 平台 + duration)+ 渲染获客方案(13 列分镜 + CTA 强调 + 转化路径)。
-
-**files_to_create** ·
-- `apps/web/src/components/ToolResult/AcquisitionVideoResult.tsx`(~110 行)
-- `tests/unit/web/pages/AcquisitionVideo.test.tsx`(~100 行 · 5 unit)
-- `tests/e2e/tool-acquisition-video.spec.ts`(~80 行 · CI mock)
-
-**files_to_modify** ·
-- `apps/web/src/pages/tools/AcquisitionVideo.tsx`(~240 行)
-- `apps/web/src/components/ToolResult/ToolResult.tsx`(switch case 加 'acquisition-video')
 
 ---
 
@@ -417,45 +374,44 @@
 
 > **risk_level** · `medium`(history 5 工具新条目 · sceneImage 列表渲染)
 > **priority** · 13
-> **depends_on** · [US-003, US-005, US-007, US-009, US-012]
+> **depends_on** · [US-003, US-007, US-009, US-012][重构删 US-005:acquisition-video 后端 story 已删]
 
 **描述** · 4 项:
-1. **history.list filter 扩展** · agentMode 加 5 新值('production' / 'acquisition' video / 'storyboard' / 'acquisition' copy)
+1. **history.list filter 扩展** · agentMode 加 4 新值('production' / 'storyboard' / 'acquisition' copy)[重构删 acquisition video]
 2. **history.detail 返回 sceneImageUrls** · storyboard 类型 history 含 scenes 数组(从 Asset 表 join 查)
-3. **History.tsx 渲染** · 5 工具新 badge + 点 storyboard row → 跳 `/ai-video?historyId=N` 预填 + 显示 5-8 镜头网格
-4. **4 工具页 useEffect ?historyId** · production / acquisition / storyboard / acquisition-copy 各加 useEffect 读 detail 预填(沿用 PRD-5 模式)
+3. **History.tsx 渲染** · 4 工具新 badge + 点 storyboard row → 跳 `/ai-video?historyId=N` 预填 + 显示 5-8 镜头网格[重构删 1]
+4. **3 工具页 useEffect ?historyId** · production / storyboard / acquisition-copy 各加 useEffect 读 detail 预填(沿用 PRD-5 模式)[重构删 acquisition video]
 
 **files_to_modify** ·
 - `apps/api/src/trpc/routers/history.ts`(detail 加 scenes join · ~+30 行)
-- `apps/web/src/pages/modules/History.tsx`(5 新 badge + 跳转路由表 · ~+50 行)
-- `apps/web/src/pages/tools/{VideoProduction,AcquisitionVideo,AiVideo}.tsx`(各加 useEffect ?historyId · 各 ~+20 行)
-- `tests/unit/api/history-router.test.ts`(扩展 · 加 5 工具 filter test · ~+40 行)
+- `apps/web/src/pages/modules/History.tsx`(4 新 badge + 跳转路由表 · ~+50 行)[重构删 acquisition video badge]
+- `apps/web/src/pages/tools/{VideoProduction,AiVideo}.tsx`(各加 useEffect ?historyId · 各 ~+20 行)[重构删 AcquisitionVideo.tsx]
+- `tests/unit/api/history-router.test.ts`(扩展 · 加 4 工具 filter test · ~+40 行)[重构删 1]
 
 ---
 
-### **US-014 · 收官 · LLM Judge 4 mode + 4 工具 e2e + lint clean + typecheck + 全套绿灯**
+### **US-014 · 收官 · LLM Judge 3 mode + 3 工具 e2e + lint clean + typecheck + 全套绿灯**[重构删 1 项]
 
 > **risk_level** · `medium`(收官集成 · Judge 套件扩展 · 防 lint debt)
 > **priority** · 14
-> **depends_on** · [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013]
+> **depends_on** · [US-001, US-002, US-003, US-004, US-007, US-008, US-009, US-010, US-011, US-012, US-013]
 
 **描述** · PRD-6 收官 · 4 项:
-1. **LLM Judge 套件扩展 +8 新** · `tests/judge/`:
+1. **LLM Judge 套件扩展 +6 新** · `tests/judge/`[重构删 video-acquisition.judge.ts]:
    - `video-production.judge.ts`(2 golden case: 美妆 + 健身 · 13 列分镜检查)
-   - `video-acquisition.judge.ts`(2 golden case: 理财 + 教育 · CTA 必含)
    - `video-storyboard.judge.ts`(2 golden case: 美食 + 旅游 · 5-8 scenes + imagePromptEn 英文)
    - `copywriting-acquisition.judge.ts`(2 golden case: 育儿 + 医美 · 200-500 字 + CTA)
    - 各调 `runJudge(case_)` · model_tier='lightweight' · cost_log eventType='judge_call'
-   - **累计 30 judge tests**(22 PRD-5 + 8 新)
-2. **4 工具页 e2e 集成** · `tests/e2e/video-tools-integration.spec.ts`(test.describe.serial · 创建账号 → 跑 4 视频工具 generate/acquisition/storyboard 各 1 次 + acquisition copywriting · 看 history 4-5 条 · 跳预填验证 · CI 用 mock LLM + mock ImageGen)
+   - **累计 28 judge tests**(22 PRD-5 + 6 新)[重构删 2]
+2. **3 工具页 e2e 集成** · `tests/e2e/video-tools-integration.spec.ts`(test.describe.serial · 创建账号 → 跑 3 视频工具 generate/storyboard 各 1 次 + acquisition copywriting · 看 history 3-4 条 · 跳预填验证 · CI 用 mock LLM + mock ImageGen)[重构删 acquisition video]
 3. **lint clean** · `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0 · `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
-4. **全套绿灯门禁** · vitest ≥ 620 / 620(563 PRD-5 累计 + ≥ 60 新)· typecheck 6 ws 0 error · playwright ≥ 138 / 138(126 PRD-5 + ≥ 12 新 + 1 新收官 spec)· judge 30/30
+4. **全套绿灯门禁** · vitest ≥ 620 / 620(563 PRD-5 累计 + ≥ 60 新)· typecheck 6 ws 0 error · playwright ≥ 130 / 130(126 PRD-5 + ≥ 4 新)[重构删 2 spec] · judge 28/28
 
 **files_to_create** ·
 - `tests/judge/video-production.judge.ts`(2 golden case · 调 videoAgent mode='production')
-- `tests/judge/video-acquisition.judge.ts`(2 golden case · acquisition video)
 - `tests/judge/video-storyboard.judge.ts`(2 golden case · storyboard + imagePromptEn 英文检查)
 - `tests/judge/copywriting-acquisition.judge.ts`(2 golden case · CopywritingAgent acquisition)
+[重构删 tests/judge/video-acquisition.judge.ts]
 - `tests/e2e/video-tools-integration.spec.ts`(收官集成 e2e · serial · CI mock · ~250 行)
 - `scripts/ralph/verify-artifacts/US-014/manifest.json`(产物 · 同 PRD-5 US-012 manifest 模式)
 
@@ -469,31 +425,30 @@
 
 ## §1.5 跨 Story 协议锁
 
-> **理由** · PRD-6 14 stories 跨 2 Specialist + 4 router + 3 前端工具页 + ImageGen Worker + BullMQ 队列 + history 接入 · 命名歧义会导致 ralph 在不同 story 脑补不同名字。本节预先锁定。
+> **理由** · PRD-6 12 stories 跨 2 Specialist + 4 router + 3 前端工具页 + ImageGen Worker + BullMQ 队列 + history 接入 · 命名歧义会导致 ralph 在不同 story 脑补不同名字。本节预先锁定。
 > **F5 既有代码现状双对账**(防 TD-012 类 · OPUS-AUDIT-CHEATSHEET §F5.1 · 沿用 PRD-5)· 见 §1.5.E。
 
 ### A · 类型 / 方法签名锁
 
 | 命名 | 类型 | 定义 story | 消费 story | 说明 |
 |---|---|---|---|---|
-| `VideoMode = 'shooting' \| 'production' \| 'acquisition' \| 'storyboard'` | type union | US-002(扩) | US-003 + US-005 + US-007 | VideoAgent 4 mode · shooting 已在 PRD-4 |
+| `VideoMode = 'shooting' \| 'production' \| 'storyboard'` | type union | US-002(扩) | US-003 + US-007 | VideoAgent 3 mode · shooting 已在 PRD-4 · [重构删 acquisition] |
 | `CopywritingMode = 'step7' \| 'free' \| 'boom' \| 'acquisition'` | type union | (PRD-5 D-035) | US-012 | acquisition 真接 LLM(PRD-5 throw 'PRD-6' 移除)|
-| `class VideoAgent extends BaseSpecialist<VideoInput, VideoOutput>` | class | (PRD-4 已建)| US-003 + US-005 + US-007 | 单实例 export `videoAgent` · 沿用 PRD-4 |
+| `class VideoAgent extends BaseSpecialist<VideoInput, VideoOutput>` | class | (PRD-4 已建)| US-003 + US-007[重构删 US-005:acquisition-video story 已删] | 单实例 export `videoAgent` · 沿用 PRD-4 |
 | `outputSchema: ZodSchema` (getter) | getter | US-002(VideoAgent + Copywriting) | (BaseSpecialist 内调) | 按 _mode 返回对应 schema(D-028 模式继承)|
-| `videoAgent.execute(req)` | single instance method | (PRD-4 已建)| US-003 + US-005 + US-007 | `req: { accountId, mode: VideoMode, userInput, traceId? }` |
+| `videoAgent.execute(req)` | single instance method | (PRD-4 已建)| US-003 + US-007 | `req: { accountId, mode: VideoMode, userInput, traceId? }` |
 | `aiVideoRouter.generateStoryboard(input)` | tRPC mutation | US-007 | AiVideo.tsx | `input: { sourceCopy, scenesCount: 5\|6\|7\|8, imageStyle: 'vivid'\|'natural' }` |
 | `aiVideoRouter.jobStatus(input)` | tRPC query | US-007 | AiVideo.tsx polling | `input: { historyId: number }` · 返回 { total, completed, pending, failed, scenes } |
 | `IImageGenWorker.generate(payload)` | interface method | US-001 + US-009 | US-010 BullMQ Worker | `payload: { sceneIndex, imagePromptEn, accountId, traceId, historyId, imageStyle }` · returns { sceneImageUrl, costUsd, durationMs } |
 | `imageGenQueue` | BullMQ Queue instance | US-010 | US-007(入栈)| name='image-gen' · concurrency=2 |
 | `checkImageGenRateLimit(accountId)` | function | US-010 | US-007 + US-011 | throws TRPCError if exceeded · 用 Redis sliding window |
 
-### B · Specialist outputSchema 锁(VideoAgent 4 mode + CopywritingAgent acquisition · 5 输出 schema)
+### B · Specialist outputSchema 锁(VideoAgent 3 mode + CopywritingAgent acquisition · 4 输出 schema)[重构删 1 项]
 
 | Specialist · mode | outputSchema(精确 zod) | 定义 story | 消费 story |
 |---|---|---|---|
 | `VideoAgent · shooting` | (PRD-4 US-006 已建)`z.object({ shotList: z.array(13ColumnSchema).min(1), equipment, schedule })` | (PRD-4) | (本期不动) |
 | `VideoAgent · production` | `z.object({ scriptOverview, shotList: z.array(13ColumnSchema).min(1), equipmentList, scheduleTable, totalDuration, productionCostEstimate })` | US-002 | US-003 + US-004(渲染)|
-| `VideoAgent · acquisition` | `z.object({ scriptOverview, shotList: z.array(13ColumnSchema).min(1), ctaScript: z.string().min(20), conversionPath: z.array(z.string()).min(1), equipmentList })` | US-002 | US-005 + US-006(渲染) |
 | `VideoAgent · storyboard` | `z.object({ scenes: z.array(z.object({ index: z.number().int().positive(), description: z.string().min(20), imagePromptEn: z.string().min(20).regex(/^[\\x00-\\x7F]+$/, "must be ASCII English"), duration: z.string() })).min(5).max(8), totalDuration: z.string() })` | US-002 | US-007 + US-008(渲染) |
 | `CopywritingAgent · acquisition` | `z.object({ markdown: z.string().min(200).max(500), metadata: z.object({ scriptType: z.enum(SCRIPT_TYPE_KEYS_20), elements: z.array(z.enum(HOT_ELEMENT_KEYS_22)), ctaPosition: z.enum(['top','middle','end']), conversionGoal: z.string() }) })` post-validate `# ` heading + 末尾 CTA 句 | US-002(扩) | US-012 + Generate.tsx 渲染 |
 
@@ -502,7 +457,7 @@
 | 命名 | 类型 | 定义 story | 说明 |
 |---|---|---|---|
 | `History.agentId` | varchar(64) | (PRD-5 已锁 PascalCase) | `'VideoAgent'` / `'CopywritingAgent'` · 不允许小写(TD-016 教训)|
-| `History.agentMode` | varchar(32) | US-002 + 4 router | `'production'` / `'acquisition'`(video)/ `'storyboard'` / `'acquisition'`(copywriting · 同名但 agentId 区分)|
+| `History.agentMode` | varchar(32) | US-002 + 3 router | `'production'` / `'storyboard'` / `'acquisition'`(copywriting · CopywritingAgent)· [重构删 acquisition video mode] |
 | `History.contentType` | varchar(16) | (PRD-2 已定) | `'json'` for video stories · `'markdown'` for acquisition copywriting |
 | `History.scenes` | jsonb? | US-001(Asset 加 sceneIndex)+ US-007(history.scenes JSON 字段)| 仅 storyboard mode 写 · 含 `[{ index, description, imagePromptEn, sceneImageUrl?, status }]` |
 | `Asset.sceneIndex` | Int? | US-001(prisma migration) | 1-based · null 时不是 scene image · 复合索引 `[accountId, relatedStepKey, sceneIndex]` |
@@ -512,12 +467,11 @@
 | `cost_log.modelUsed` | varchar(64) | US-009 | `'dall-e-3'` for image_gen · 跟 `'claude-haiku-4-5'` 等 LLM model 区分 |
 | `cost_log.provider` | varchar(16) | US-009 | `'openai'` for DALL-E 3 · 跟 `'anthropic'` 区分 |
 
-### D · 4 工具 router · procedure 命名锁(防 D-026 选项混淆)
+### D · 3 工具 router · procedure 命名锁(防 D-026 选项混淆)[重构删 1 项]
 
 | router | procedure | input | output | 定义 story | 备注 |
 |---|---|---|---|---|---|
 | `videoProduction` | `generate`(新建) | `{ sourceCopy: string min 10 max 3000, videoType?, duration?, additionalContext? }` | history row | US-003 | 调 videoAgent mode='production' |
-| `acquisitionVideo` | `generate`(新建) | `{ sourceCopy, conversionGoal: string, platform?, duration? }` | history row | US-005 | 调 videoAgent mode='acquisition' |
 | `aiVideo` | `generateStoryboard`(新建) | `{ sourceCopy, scenesCount: 5\|6\|7\|8 default 5, imageStyle: 'vivid'\|'natural' default 'natural' }` | `{ historyId, jobIds: string[], scenesPlaceholder: 5-8 array }` | US-007 | 调 videoAgent mode='storyboard' + 入 BullMQ 队列 |
 | `aiVideo` | `jobStatus`(新建) | `{ historyId: number }` | `{ total, completed, pending, failed, scenes: [{ index, status, sceneImageUrl?, error? }] }` | US-007 | accountId RLS 自动 |
 | `copywriting` | `acquisitionGenerate`(新建 · 沿用 D-026 命名规则) | `{ scriptType: enum SCRIPT_TYPE_KEYS_20, elements, conversionGoal: string, topic: string }` | history row | US-012 | 调 copywritingAgent mode='acquisition' · ★ 不破坏现有 generate / freeGenerate |
@@ -527,19 +481,19 @@
 
 | 协议锁路径(PRD-6 拟用) | 既有状态(grep 实测) | 处理 |
 |---|---|---|
-| `apps/api/src/specialists/VideoAgent.ts` | 存在(309 行 · PRD-4)· shooting mode + 3 mode throw 'PRD-6' | 改 · 解锁 3 mode · 不破坏 shooting · ★ |
+| `apps/api/src/specialists/VideoAgent.ts` | 存在(309 行 · PRD-4)· shooting mode + 2 mode throw 'PRD-6' | 改 · 解锁 2 mode(production/storyboard)· 不破坏 shooting · ★ · [重构删 acquisition mode] |
 | `apps/api/src/specialists/CopywritingAgent.ts` | 存在(PRD-5 解锁 free/boom)· acquisition throw 'PRD-6' | 改 · 解锁 acquisition · 不破坏现有 4 mode |
-| `apps/api/src/services/context-assembler/templates/{video-production,acquisition-video,ai-video}.ts` | **不存在** | 新建 3 文件 · 无冲突 ✓ |
-| `apps/api/src/trpc/routers/{videoProduction,acquisitionVideo,aiVideo}.ts` | **不存在** | 新建 3 文件 · 无冲突 ✓ |
+| `apps/api/src/services/context-assembler/templates/{video-production,ai-video}.ts` | **不存在** | 新建 2 文件 · 无冲突 ✓ · [重构删 acquisition-video.ts] |
+| `apps/api/src/trpc/routers/{videoProduction,aiVideo}.ts` | **不存在** | 新建 2 文件 · 无冲突 ✓ · [重构删 acquisitionVideo.ts] |
 | `apps/api/src/trpc/routers/copywriting.ts` | 存在(PRD-5)· generate / freeGenerate / optimize / list / delete | 加 `acquisitionGenerate` procedure · 不破坏 |
 | `apps/api/src/workers/image-gen/` | 存在但只有空目录 | 新建 4 文件(index/dall-e-3/queue/worker)· 无冲突 ✓ |
 | `apps/api/src/lib/redis.ts` | **不存在** | 新建 · ioredis 单例 |
 | `apps/api/src/lib/rate-limit/image-gen.ts` | **不存在**(rate-limit/ 目录无)| 新建 |
-| `packages/schemas/src/specialist-io/{videoProduction,acquisitionVideo,aiVideo,acquisitionCopywriting,imageGen}.schema.ts` | **不存在** | 新建 5 文件 · 无冲突 ✓ |
-| `packages/schemas/src/index.ts` | 存在(barrel) | 加 5 export · 不破坏 |
-| `apps/web/src/pages/tools/{VideoProduction,AcquisitionVideo,AiVideo}.tsx` | 存在(PRD-2 占位 · ~50 行 stub) | 重写真表单 + result 渲染(沿用 PRD-5 ToolForm/ToolResult)|
-| `apps/web/src/components/ToolResult/{VideoProductionResult,AcquisitionVideoResult,AiVideoResult}.tsx` | **不存在** | 新建 3 文件 · 无冲突 ✓ |
-| `apps/web/src/components/ToolResult/ToolResult.tsx` | 存在(PRD-5)· switch by toolKey | 加 3 case · 不破坏 |
+| `packages/schemas/src/specialist-io/{videoProduction,aiVideo,acquisitionCopywriting,imageGen}.schema.ts` | **不存在** | 新建 4 文件 · 无冲突 ✓ · [重构删 acquisitionVideo.schema.ts] |
+| `packages/schemas/src/index.ts` | 存在(barrel) | 加 4 export · 不破坏 |
+| `apps/web/src/pages/tools/{VideoProduction,AiVideo}.tsx` | 存在(PRD-2 占位 · ~50 行 stub) | 重写真表单 + result 渲染(沿用 PRD-5 ToolForm/ToolResult)· [重构删 AcquisitionVideo.tsx] |
+| `apps/web/src/components/ToolResult/{VideoProductionResult,AiVideoResult}.tsx` | **不存在** | 新建 2 文件 · 无冲突 ✓ · [重构删 AcquisitionVideoResult.tsx] |
+| `apps/web/src/components/ToolResult/ToolResult.tsx` | 存在(PRD-5)· switch by toolKey | 加 2 case · 不破坏 |
 | `prisma/schema.prisma` Asset model | 存在(PRD-2)· 含 assetType / generationPrompt / generationModel | 加 sceneIndex Int? + 复合索引 · 走 migration · 不破坏 |
 | `apps/api/src/lib/constants/{videoTypes,videoDurations,imageStyles}.ts` | **不存在**(constants/ 目录有别的)| 新建 3 文件 · 无冲突 ✓ |
 | `apps/api/src/index.ts` | 存在(boot)| 加 worker 启动(dev mode)· 不破坏 |
@@ -578,14 +532,13 @@ P · Performance:
 - [ ] 5 schema parse 总耗时 < 50ms(vitest 跑 100 次平均)
 - [ ] migration 跑通 < 5s(本地 PG · 单条 alter table 加字段)
 
-### **AC-002 · Foundation · VideoAgent 解锁 3 mode + Copywriting acquisition + 3 ContextAssembler 模板**(US-002 · foundation)
+### **AC-002 · Foundation · VideoAgent 解锁 2 mode + Copywriting acquisition + 2 ContextAssembler 模板**(US-002 · foundation)[重构删 1]
 
 H · Happy:
 - [ ] VideoAgent mode='production' · invokeLLM 返回 production schema 数据 · outputSchema.parse 通过
-- [ ] VideoAgent mode='acquisition' · 输出含 ctaScript + conversionPath · outputSchema.parse 通过
 - [ ] VideoAgent mode='storyboard' · 输出 5 scenes · 每 scene imagePromptEn 全 ASCII · outputSchema.parse 通过
 - [ ] CopywritingAgent mode='acquisition' · 输出 markdown 200-500 字 + metadata.ctaPosition · outputSchema.parse 通过
-- [ ] ContextAssembler 加 video-production / acquisition-video / ai-video 3 模板 · SPECIALIST_TEMPLATES barrel 含 3 入口
+- [ ] ContextAssembler 加 video-production / ai-video 2 模板 · SPECIALIST_TEMPLATES barrel 含 2 入口[重构删 acquisition-video]
 
 E · Error:
 - [ ] VideoAgent invokeLLM 返回不符 schema(如 storyboard scenes 长度 4)· retry 1 次 · 仍失败 throw SchemaValidationError
@@ -640,25 +593,6 @@ B · Boundary:
 P · Performance:
 - [ ] 13 列分镜表 100+ 行 render < 100ms
 - [ ] 表单 input + LS 写入 < 50ms
-
-### **AC-005 · Wave 1 · /acquisition-video 后端 · acquisitionVideo.generate**(US-005 · high)
-
-(同 AC-003 模式 · acquisition mode 特定字段:conversionGoal + ctaScript)
-
-H · Happy:
-- [ ] `acquisitionVideo.generate({ sourceCopy, conversionGoal: '引流公众号', platform: 'douyin' })` 返回 history row · agentId='VideoAgent' · agentMode='acquisition' · 输出含 ctaScript + conversionPath
-- [ ] CTA 在 ctaScript 字段含明确转化指令(grep "关注 / 私信 / 点击" 任一)
-
-E + B + P · 同 AC-003 模式
-
-### **AC-006 · Wave 1 · /acquisition-video 前端 · AcquisitionVideo.tsx**(US-006 · medium)
-
-(同 AC-004 模式 · 加 conversionGoal + CTA 强调 UI)
-
-H · Happy:
-- [ ] 使用 agent-browser 打开 `/acquisition-video` · 表单 + 提交 · 渲染 13 分镜 + ★ CTA 区高亮 ★ + 转化路径列表
-
-E + B + P · 同 AC-004 模式
 
 ### **AC-007 · Wave 2 · /ai-video 后端 · aiVideo.generateStoryboard + jobStatus**(US-007 · high)
 
@@ -782,35 +716,33 @@ B · Boundary:
 P · Performance:
 - [ ] integration test < 5s
 
-### **AC-013 · Wave 2 · /history 接入扩展 · sceneImage + 5 工具新条目**(US-013 · medium)
+### **AC-013 · Wave 2 · /history 接入扩展 · sceneImage + 4 工具新条目**(US-013 · medium)[重构删 1 项]
 
 H · Happy:
-- [ ] history.list filter agentMode='production' / 'acquisition' / 'storyboard' / acquisition-copy 都正常返回
+- [ ] history.list filter agentMode='production' / 'storyboard' / acquisition-copy 都正常返回
 - [ ] history.detail 含 storyboard 的 row · scenes 数组完整 · 每 scene 含 sceneImageUrl
-- [ ] History.tsx 5 工具新 badge 显示 · 'production' = 蓝 · 'acquisition' = 红 · 'storyboard' = 紫 · 'acquisition'(copy) = 绿
+- [ ] History.tsx 4 工具新 badge 显示 · 'production' = 蓝 · 'storyboard' = 紫 · 'acquisition'(copy) = 绿
 - [ ] 点 storyboard row · 跳 `/ai-video?historyId=N` · 5-8 镜头网格预填渲染
-- [ ] 点 acquisition video row · 跳 `/acquisition-video?historyId=N` · 表单 + 13 分镜 + CTA 区预填
 
 E · Error:
 - [ ] 跨 account 调 detail · accountId RLS 自动 NOT_FOUND
 - [ ] storyboard scenes 含 sceneImageUrl=null(进行中)· UI 显示 skeleton
 
 B · Boundary:
-- [ ] history filter agentMode 5 新 enum · zod 边界
+- [ ] history filter agentMode 4 新 enum · zod 边界
 
 P · Performance:
 - [ ] history.detail 含 scenes JSON 8 镜头 + Asset join · < 200ms
 - [ ] History.tsx Table 100 行 · render < 100ms
 
-### **AC-014 · 收官 · LLM Judge 4 mode + 4 工具 e2e + lint clean + typecheck**(US-014 · medium)
+### **AC-014 · 收官 · LLM Judge 3 mode + 3 工具 e2e + lint clean + typecheck**(US-014 · medium)[重构删 1 项]
 
 H · Happy:
 - [ ] tests/judge/video-production.judge.ts 新建 · 2 golden case(美妆 + 健身 · 13 分镜)pass
-- [ ] tests/judge/video-acquisition.judge.ts 新建 · 2 golden case(理财 + 教育 · CTA 必含)pass
 - [ ] tests/judge/video-storyboard.judge.ts 新建 · 2 golden case(美食 + 旅游 · 5-8 scenes + imagePromptEn 全英文)pass
 - [ ] tests/judge/copywriting-acquisition.judge.ts 新建 · 2 golden case(育儿 + 医美 · 200-500 字 + CTA)pass
-- [ ] `pnpm test:judge` 退出码 0 · **30/30 pass**(22 PRD-5 + 8 新)
-- [ ] tests/e2e/video-tools-integration.spec.ts 新建 · 收官 e2e · serial · 创账号 → 跑 4 视频工具 → history 5 条 → 跳预填 · CI mock LLM + ImageGen
+- [ ] `pnpm test:judge` 退出码 0 · **28/28 pass**(22 PRD-5 + 6 新)[重构删 2 golden case]
+- [ ] tests/e2e/video-tools-integration.spec.ts 新建 · 收官 e2e · serial · 创账号 → 跑 3 视频工具 → history 4 条 → 跳预填 · CI mock LLM + ImageGen [重构删 1 项]
 - [ ] `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0
 - [ ] `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
 - [ ] `pnpm typecheck` 6 ws 0 error
@@ -824,7 +756,7 @@ E · Error + B + P:
 - [ ] judge 30 tests 总耗时 < 5min(lightweight · 串行)
 - [ ] e2e 6 新 spec 总耗时 < 90s(CI mock LLM + ImageGen)
 - [ ] typecheck < 5s 增量 · lint < 5s
-- [ ] **使用 agent-browser 收官验证** · 创建测试账号 → /video-production /acquisition-video /ai-video /generate(acquisition mode)4 工具各跑 1 次 → /history 看到 4 条 → 点任一行 → 预填验证 · 0 控制台错误
+- [ ] **使用 agent-browser 收官验证** · 创建测试账号 → /video-production /ai-video /generate(acquisition mode)3 工具各跑 1 次 → /history 看到 3 条 → 点任一行 → 预填验证 · 0 控制台错误 [重构删 /acquisition-video]
 - [ ] verify-artifacts 完整(同 PRD-5 US-012 模式)
 
 ---
@@ -836,7 +768,7 @@ E · Error + B + P:
 | 1 | 真 user upload video(.mp4 / .mov 上传)| PRD-9 P8 | RAG 入库 / 视频解析需 FileParser Worker · 大文件 + 转码 · 复杂 |
 | 2 | 文心一格 / 国内 image API | PRD-9 P8 PRR | 国内 API key 申请(百度智能云审批 1-2 天)· 留上线前(项目 §7) |
 | 3 | DALL-E 3 HD quality | PRD-9 PRR | HD $0.08/张 是 standard $0.04 的 2x · 现 standard 够用 · 真上线再升级 |
-| 4 | VoiceChatAgent / EvolutionAgent / DailyTaskAgent(3 L5 自治) | PRD-8 P7 智能 | 多轮对话 + 反馈飞轮 + Heartbeat · 复杂 |
+| 4 | EvolutionAgent / DailyTaskAgent(2 L5 自治)[重构删:VoiceChatAgent 语音对话已删] | PRD-8 P7 智能 | 反馈飞轮 + Heartbeat · 复杂 |
 | 5 | RAG 真接 + /knowledge 工具页 | PRD-9 P8 知识库 | pgvector 入库 + 67 案例 + 22 元素 + 23 公式 |
 | 6 | admin 任何代码(13 admin 表 / portal API)| PRD-10~14 | 独立子系统 · 不在主应用 P0-P9 范围 |
 | 7 | 视频文件渲染(组合 sceneImage 成 mp4)| PRD-9+ | 需第三方剪辑工具(剪映 / FFmpeg)集成 · 复杂 · 留 PRR |
@@ -851,7 +783,7 @@ E · Error + B + P:
 | R2 | 5-8 镜头 × 10s = 50-80s 用户等待 · UX 不好 | UI 进度条 + spinner + scene-by-scene 出图 · 用户可关闭页面后台等 · 完成时浏览器通知(可选) |
 | R3 | VideoAgent 多 mode race(继承 TD-014 · 5 mode 共存)| AGENTS §11.6.3 文档化 · 单 user 串行调用安全 · 高并发治理留 PRD-7+ |
 | R4 | DALL-E 3 prompt 必英文 · 中文 prompt 命中率低 | VideoAgent storyboard mode prompt 强制 imagePromptEn 字段 ASCII · zod regex 拦截 · post-validate retry 1 · 用户看到生成中文图就退回 |
-| R5 | ralph daemon 长跑(14 stories)claude CLI hang 风险(继承 PRD-5 RCA-003)| M-2 health check 已部署 · 建议每 5-7 stories 重启 daemon(US-001~007 + US-008~014 拆 2 batch)· daemon hang 时 Opus 路径 B 接管 audit |
+| R5 | ralph daemon 长跑(12 stories)claude CLI hang 风险(继承 PRD-5 RCA-003)| M-2 health check 已部署 · 建议每 5-7 stories 重启 daemon(US-001~007 + US-008~014 拆 2 batch)· daemon hang 时 Opus 路径 B 接管 audit |
 | R6 | history sceneImage 渲染 · 8 镜头 × 1024×1024 = 8 MB 总 size | lazy load(intersection observer)· thumbnails 256×256(★ 留 PRD-9 PRR · 现 1024 直接 lazy)· browser cache CDN |
 | R7 | cost 烧钱 · 没付费体系 · 用户随便点 = 月 $1000+ | env IMAGE_GEN_ENABLED=false 默认 · dev 跑 stub · prod 开前加付费/credit 体系(留 PRD-9 PRR)· daily limit per user 兜底 · cost_log dashboard admin 监控 |
 
@@ -863,81 +795,75 @@ E · Error + B + P:
 
 | 来源 | 数量 |
 |---|:-:|
-| US-001 schemas 验证(5 schema · ImageGen Worker interface · Asset migration)| 8 |
-| US-002 VideoAgent.test.ts 加 9 unit(3 mode × 3 场景)+ CopywritingAgent.test.ts 加 3 unit(acquisition × 3)| 12 |
+| US-001 schemas 验证(4 schema · ImageGen Worker interface · Asset migration)[重构删 acquisitionVideo.schema]| 8 |
+| US-002 VideoAgent.test.ts 加 6 unit(2 mode × 3 场景)+ CopywritingAgent.test.ts 加 3 unit(acquisition × 3)[重构删 3 acquisition video unit]| 9 |
 | US-003 video-production-router.test.ts(happy + zod fail + Specialist throw + agentMode)| 4 |
 | US-004 VideoProduction.test.tsx(表单 + zod + mutation + LS + history 预填)| 5 |
-| US-005 acquisition-video-router.test.ts | 4 |
-| US-006 AcquisitionVideo.test.tsx | 5 |
 | US-007 ai-video-router.test.ts(storyboard + jobIds + queue mock + rate limit + accountId)| 6 |
 | US-008 AiVideo.test.tsx(表单 + 入栈 + polling + scene 完成 + 全完成 + 失败重试 + 跳预填)| 7 |
 | US-009 image-gen-dall-e-3.test.ts(happy + retry + placeholder + cost_log + Asset + history 反写)| 6 |
 | US-010 image-gen-queue.test.ts(8 unit · queue + concurrency + status + rate limit + accountId)| 8 |
 | US-011 rate-limit-image-gen.test.ts(5 unit · 1st/10th/11th + cross-account + day rollover)| 5 |
 | US-012 copywriting-acquisition.test.ts | 4 |
-| US-013 history-router.test.ts 扩展(5 工具 filter)| 4 |
+| US-013 history-router.test.ts 扩展(4 工具 filter)[重构删 1 项]| 4 |
 | US-014(LLM Judge 不算 unit · 算 judge)| 0 |
-| **小计** | **78 新** |
+| **小计** | **66 新** [重构删 12] |
 
 ### §5.2 集成测试配额
 
 | 文件 | 内容 |
 |---|---|
 | `tests/integration/api/video-production-llm.test.ts`(US-003)| nock SDK + 真 DB cost_log + history |
-| `tests/integration/api/acquisition-video-llm.test.ts`(US-005)| nock SDK |
 | `tests/integration/api/ai-video-flow.test.ts`(US-007)| storyboard → 入队列 mock → mock worker 完成 → 查 history 看 sceneImageUrl |
 | `tests/integration/api/image-gen-flow.test.ts`(US-009)| mock OpenAI SDK · 全流程 input → DALL-E mock → Asset → history 反写 |
 | `tests/integration/api/image-gen-bullmq.test.ts`(US-010 · ★ 真 BullMQ + Redis test DB)| 入栈 → 真 worker tick → 完成事件 |
-| **小计 5 新** | |
+| **小计 4 新** [重构删 1] | |
 
 ### §5.3 LLM Judge 测试配额
 
 | 文件 | golden case |
 |---|---|
 | `tests/judge/video-production.judge.ts`(US-014)| 2(美妆 + 健身)|
-| `tests/judge/video-acquisition.judge.ts`(US-014)| 2(理财 + 教育)|
 | `tests/judge/video-storyboard.judge.ts`(US-014)| 2(美食 + 旅游 · imagePromptEn 全英文检查)|
 | `tests/judge/copywriting-acquisition.judge.ts`(US-014)| 2(育儿 + 医美)|
-| **小计 8 新 · 累计 30**(22 PRD-5 + 8 新)| |
+| **小计 6 新 · 累计 28**(22 PRD-5 + 6 新)[重构删 video-acquisition.judge.ts · 2 golden case] | |
 
 ### §5.4 E2E 配额
 
 | 文件 | 路径 |
 |---|---|
 | `tests/e2e/tool-video-production.spec.ts`(US-004)| /video-production 基本路径(CI mock)|
-| `tests/e2e/tool-acquisition-video.spec.ts`(US-006)| /acquisition-video 基本路径 |
 | `tests/e2e/tool-ai-video.spec.ts`(US-008)| /ai-video 基本路径 + polling mock |
 | `tests/e2e/copywriting-acquisition.spec.ts`(US-012)| /generate?mode=acquisition 基本路径(扩展现有)|
 | `tests/e2e/image-gen-rate-limit.spec.ts`(US-011)| 11th call 拦截 + 提示 |
-| `tests/e2e/video-tools-integration.spec.ts`(US-014)| 收官 serial · 创建账号 → 跑 4 视频工具 → 看 history 5 条 → 跳预填 |
-| **小计 6 新 · 累计 ≥ 132**(126 PRD-5 + 6 新)| |
+| `tests/e2e/video-tools-integration.spec.ts`(US-014)| 收官 serial · 创建账号 → 跑 3 视频工具 → 看 history 4 条 → 跳预填 [重构删 1] |
+| **小计 5 新 · 累计 ≥ 130**(126 PRD-5 + 5 新)[重构删 tool-acquisition-video.spec.ts]| |
 
 > 实际目标 138 · 加 mobile project 各 spec 镜像 = 132 × 2 / 2 + 收官 = 138 · 跟 AC-014 一致。
 
 ### §5.5 全套绿灯门禁(US-014 收官硬门禁)
 
 ```
-vitest:        ≥ 620 / ≥ 620 ✓ (563 PRD-5 累计 + ≥ 60 新)
-test:judge:    30 / 30 ✓ (22 PRD-5 + 8 新)
-playwright:    ≥ 138 / ≥ 138 ✓ (126 PRD-5 + 12 新 chromium+mobile)
+vitest:        ≥ 620 / ≥ 620 ✓ (563 PRD-5 累计 + ≥ 60 新)[重构删 US-005/006 约 9 unit]
+test:judge:    28 / 28 ✓ (22 PRD-5 + 6 新)[重构删 2]
+playwright:    ≥ 138 / ≥ 138 ✓ (126 PRD-5 + 12 新 chromium+mobile)[重构删 tool-acquisition-video.spec.ts]
 typecheck:     6 ws · 0 error ✓
 lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 ```
 
 ---
 
-## §6 退出条件(8 项 · 对齐 ARCHITECTURE §9.7)
+## §6 退出条件(7 项 · 对齐 ARCHITECTURE §9.7)[重构删 1 项]
 
 | # | 退出条件 | 验证 |
 |:-:|---|---|
 | 1 | /video-production 工具页跑通(VideoAgent production mode 真接 LLMGateway · 输出 13 分镜 + 设备 + 排期) | tests/e2e/tool-video-production.spec.ts(CI mock)+ tests/integration/api/video-production-llm.test.ts(nock SDK)+ agent-browser 实测 |
-| 2 | /acquisition-video 工具页跑通(VideoAgent acquisition mode · 13 分镜 + CTA 区高亮 + 转化路径) | 同上模式 |
-| 3 | /ai-video 工具页跑通(VideoAgent storyboard mode · 5-8 scenes + imagePromptEn 英文 + ImageGen 异步入栈 + polling 渲染 sceneImage) | tests/e2e/tool-ai-video.spec.ts + tests/integration/api/image-gen-bullmq.test.ts + agent-browser 实测 |
-| 4 | /generate 工具页 acquisition mode 跑通(CopywritingAgent acquisition · markdown 200-500 字 + CTA) | tests/e2e/copywriting-acquisition.spec.ts |
-| 5 | /history 跑通(读 history 表 + 5 工具新 badge + 跳转预填到对应工具页 · 4 工具页 useEffect 读 ?historyId 预填)| tests/e2e/video-tools-integration.spec.ts + agent-browser 实测 |
-| 6 | LLM Judge 套件 30 tests pass(22 既有 + 8 新)· `pnpm test:judge` 退出码 0 | US-014 manifest.json |
-| 7 | ImageGen Worker 跑通(BullMQ + Redis · DALL-E 3 真调 dev mode 1 次 + stub mode default · cost_log image_gen 写入)| tests/integration/api/image-gen-bullmq.test.ts + IMAGE_GEN_ENABLED=true dev test 1 次 |
-| 8 | lint clean(--max-warnings=0)+ typecheck 0(6 ws)+ vitest 620+ + e2e 138+ | US-014 收官 manifest.json |
+| 2 | /ai-video 工具页跑通(VideoAgent storyboard mode · 5-8 scenes + imagePromptEn 英文 + ImageGen 异步入栈 + polling 渲染 sceneImage) | tests/e2e/tool-ai-video.spec.ts + tests/integration/api/image-gen-bullmq.test.ts + agent-browser 实测 |
+| 3 | /generate 工具页 acquisition mode 跑通(CopywritingAgent acquisition · markdown 200-500 字 + CTA) | tests/e2e/copywriting-acquisition.spec.ts |
+| 4 | /history 跑通(读 history 表 + 4 工具新 badge + 跳转预填到对应工具页 · 3 工具页 useEffect 读 ?historyId 预填)[重构删 1 项]| tests/e2e/video-tools-integration.spec.ts + agent-browser 实测 |
+| 5 | LLM Judge 套件 28 tests pass(22 既有 + 6 新)[重构删 2]· `pnpm test:judge` 退出码 0 | US-014 manifest.json |
+| 6 | ImageGen Worker 跑通(BullMQ + Redis · DALL-E 3 真调 dev mode 1 次 + stub mode default · cost_log image_gen 写入)| tests/integration/api/image-gen-bullmq.test.ts + IMAGE_GEN_ENABLED=true dev test 1 次 |
+| 7 | lint clean(--max-warnings=0)+ typecheck 0(6 ws)+ vitest 620+ + e2e 138+ | US-014 收官 manifest.json |
 
 ---
 
@@ -947,8 +873,8 @@ lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 
 | 编号 | 决策 | 理由 | 替代选项(为什么不选)|
 |:-:|---|---|---|
-| **D-036** | VideoAgent 4 mode prompt 模板 inline 在 `_buildUserPrompt(mode)` · 不抽到 `templates/video-{mode}.ts`(只 system persona 段抽到 templates) | 沿用 PRD-5 D-027 · ContextAssembler templates 是 system persona · _buildUserPrompt 是 user prompt 段 · 职责分离 | 抽 4 文件 增加耦合 · prompt 改一处要改 4 文件 |
-| **D-037** | 3 新 router(videoProduction / acquisitionVideo / aiVideo)各自独立文件 · 不合并到 video.ts | 沿用 PRD-5 D-026 · 命名清晰 + 0 破坏 + URL path 一对一(/video-production / /acquisition-video / /ai-video) | 合并 video.ts 含 3 procedure · 命名混淆 + URL 跟 router file 不一致 |
+| **D-036** | VideoAgent 3 mode prompt 模板 inline 在 `_buildUserPrompt(mode)` · 不抽到 `templates/video-{mode}.ts`(只 system persona 段抽到 templates)[重构删 acquisition mode] | 沿用 PRD-5 D-027 · ContextAssembler templates 是 system persona · _buildUserPrompt 是 user prompt 段 · 职责分离 | 抽 3 文件 增加耦合 · prompt 改一处要改 3 文件 |
+| **D-037** | 2 新 router(videoProduction / aiVideo)各自独立文件 · 不合并到 video.ts [重构删 acquisitionVideo] | 沿用 PRD-5 D-026 · 命名清晰 + 0 破坏 + URL path 一对一(/video-production / /ai-video) | 合并 video.ts 含 2 procedure · 命名混淆 + URL 跟 router file 不一致 |
 | **D-038** | ★ ImageGen 不走 LLMGateway · 单独 ImageGenWorker · 因为不是 text completion · 不算 LD-012 范围 | LD-012 锁定的是 LLM(text generation)· image diffusion 是不同 modality · LLMGateway 不该膨胀加 generateImage method · 单独 Worker 职责清晰 | 扩 LLMGateway 加 generateImage(违反 SRP)· 或 BrandingAgent 直调 OpenAI(违反 R-001 不暴露 key)|
 | **D-039** | ImageGen 用 BullMQ 异步队列(★ A10 用户决策完整版)· 不是同步 await | A10 完整版 · UX 好 · 用户立刻返回 jobId · 后台跑 · 5-8 镜头 × 10s = 50-80s 同步 UX 差 · 异步 50-80s 但用户可关闭页面 | 同步 await · UX 差(80s 卡住)· dev 简化但 prod 不接受 |
 | **D-040** | cost_log eventType 第 3 类 = 'image_gen'(D-034 第 2 类是 'judge_call' · 第 1 类是 'specialist_call')| 区分 admin 域 ④ 数据准确 · LLM 调用 vs 测试调用 vs image 调用 3 类独立 stats | 全合并 'specialist_call' · admin 看不出 cost 分布 |
@@ -960,21 +886,21 @@ lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 
 ### §7.1 继承前序 LD(不重复 · 仅引用)
 
-- **继承 D-005**(BaseSpecialist 抽象 + 五层配置)· VideoAgent 4 mode 严格沿用
-- **继承 D-007**(ContextAssembler 唯一 prompt 入口)· 3 新模板沿用
-- **继承 D-009**(IpAccount 多账号隔离 3 道闸)· 4 router 全 protectedProcedure + explicit accountId(LD-009 双层防护 · TD-019 教训)
-- **继承 D-013**(zod schema + trace_id + 无 any 兜底)· 5 新 schema 严格
-- **继承 D-016**(测试金字塔 + LLM Judge + Prompt 回归)· vitest 620+ / judge 30 / e2e 138
+- **继承 D-005**(BaseSpecialist 抽象 + 五层配置)· VideoAgent 3 mode 严格沿用[重构删 acquisition mode]
+- **继承 D-007**(ContextAssembler 唯一 prompt 入口)· 2 新模板沿用[重构删 1]
+- **继承 D-009**(IpAccount 多账号隔离 3 道闸)· 3 router 全 protectedProcedure + explicit accountId(LD-009 双层防护 · TD-019 教训)[重构删 1]
+- **继承 D-013**(zod schema + trace_id + 无 any 兜底)· 4 新 schema 严格[重构删 1]
+- **继承 D-016**(测试金字塔 + LLM Judge + Prompt 回归)· vitest 620+ / judge 28 / e2e 138
 - **继承 D-018**(Specialist 不直调 LLM SDK · REJ-001)· VideoAgent + CopywritingAgent 通过 LLMGateway
 - **继承 D-019**(cost_log.modelUsed 反映 LLMGateway 真选 model · stream meta chunk)· VideoAgent SSE 继承
-- **继承 D-020**(ContextAssembler 4 路并行 + 5s timeout + 降级跑空)· 3 新模板继承
-- **继承 D-023**(cost_log 完整字段 · prompt_tokens/completion_tokens/duration/model/agent_id/trace_id/account_id + target jsonb)· 4 router 调 BaseSpecialist 自动写
+- **继承 D-020**(ContextAssembler 4 路并行 + 5s timeout + 降级跑空)· 2 新模板继承[重构删 1]
+- **继承 D-023**(cost_log 完整字段 · prompt_tokens/completion_tokens/duration/model/agent_id/trace_id/account_id + target jsonb)· 3 router 调 BaseSpecialist 自动写[重构删 1]
 - **继承 D-024**(feedback_log 复用 cost_log + eventType 字段区分)· image_gen 第 3 类
-- **继承 D-026**(procedure 命名规则 · 不破坏现有)· acquisitionGenerate / videoProduction.generate / etc
-- **继承 D-028**(多 mode Specialist `_mode + outputSchema getter`)· VideoAgent 4 mode + Copywriting 4 mode
-- **继承 D-031**(LS namespace `acc_{id}_tool_{tool}_{suffix}`)· 3 新工具页继承
+- **继承 D-026**(procedure 命名规则 · 不破坏现有)· videoProduction.generate / etc[重构删:`acquisitionGenerate` acquisition-video 已删]
+- **继承 D-028**(多 mode Specialist `_mode + outputSchema getter`)· VideoAgent 3 mode + Copywriting 4 mode[重构删 VideoAgent acquisition mode]
+- **继承 D-031**(LS namespace `acc_{id}_tool_{tool}_{suffix}`)· 2 新工具页继承[重构删 1]
 - **继承 D-032**(boom 5 篇候选写 history 1 行)· storyboard 5-8 scenes 写 history 1 行(scenes JSON 字段)
-- **继承 D-035**(acquisition mode throw 'PRD-6')· 本期 US-002 + US-012 落地
+- **继承 D-035**(acquisition mode throw 'PRD-6')· 本期 US-002 + US-012 落地(CopywritingAgent acquisition 仍有效)
 
 ---
 
@@ -1014,9 +940,9 @@ lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 ## §9 修订记录
 
 - **2026-05-09 v0.1** · 初稿(prd skill 写完整版 · 1500+ 行 · 不简化 · 跟 PRD-5 同详细度)· Opus 主对话 · Assumptions 模式 · 用户已 review 19 条 assumptions(A9 简化 + A10/A11 完整版)
-- 章节统计 · §0(60 行) · §1(620 行 · 14 stories)· §1.5(180 行)· §2(380 行 · 14 AC × 4 类)· §3(15 行)· §4(20 行)· §5(70 行)· §6(15 行)· §7(75 行)· §8(40 行)· §9(本节 5 行)= 总 ~1480 行
+- 章节统计 · §0(60 行) · §1(620 行 · 12 stories)· §1.5(180 行)· §2(380 行 · 14 AC × 4 类)· §3(15 行)· §4(20 行)· §5(70 行)· §6(15 行)· §7(75 行)· §8(40 行)· §9(本节 5 行)= 总 ~1480 行
 
 ---
 
 > **本文件由 prd skill 在 Assumptions 模式经用户确认后写出 · 完整版 · 不简化 · 等 ralph skill 转 prd.json + /plan-check 7 项门禁 + SOP §9.1 5 步启 daemon。**
-> **★ ralph daemon 启动建议** · 14 stories 分 2 batch(US-001~007 + US-008~014)· 每 batch 后重启 daemon(防 claude CLI hang · PRD-5 RCA-003 教训)。
+> **★ ralph daemon 启动建议** · 12 stories 分 2 batch(US-001~007 + US-008~014)· 每 batch 后重启 daemon(防 claude CLI hang · PRD-5 RCA-003 教训)。

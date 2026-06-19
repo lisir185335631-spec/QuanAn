@@ -15,11 +15,13 @@ import { z } from 'zod';
 
 import { generateSpecialistTraceId } from '@/agents/base/types';
 import type { SpecialistId } from '@/agents/base/types';
+import { SYSTEM_USER_ID } from '@/lib/constants/system';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { BaseSpecialist } from '@/specialists/base/BaseSpecialist';
 import { LLMTimeoutError, SchemaValidationError } from '@/specialists/base/errors';
+import { runWithBudget, checkBudget, addCost, estimateCostUsd } from '@/lib/security/cost-budget-guard';
 import type {
   AssembledContext,
   ILLMGateway,
@@ -161,8 +163,10 @@ export class DailyTaskAgent extends BaseSpecialist<DailyTaskAgentInput, DailyTas
 
   /**
    * AC-1/AC-2: 覆写 BaseSpecialist.execute()
-   * 1. 冷启动判定 (stepData=0 OR evolutionProfile=null) → 5 模板 tasks
+   * 1. 冷启动判定 (stepData=0 OR evolutionProfile=null) → 5 模板 tasks (no LLM, no budget scope)
    * 2. 非冷启动 → LLMGateway.complete(lightweight, 30s, eventType='l5_agent')
+   * F-1 fix: non-cold-start path wrapped in runWithBudget; LLM calls have checkBudget + addCost;
+   *          final output passed through _applyOutputGuardrail (inherited from BaseSpecialist).
    */
   override async execute(
     req: SpecialistRequest<DailyTaskAgentInput>,
@@ -187,6 +191,7 @@ export class DailyTaskAgent extends BaseSpecialist<DailyTaskAgentInput, DailyTas
     const isColdStart = stepCount === 0 || evolutionProfile === null;
 
     if (isColdStart) {
+      // AC-2: cold start → template tasks · no LLM call · no budget scope needed
       logger.info({ accountId: req.accountId, traceId }, 'daily_task.cold_start');
       const tasks = buildColdStartTasks();
       return {
@@ -199,56 +204,73 @@ export class DailyTaskAgent extends BaseSpecialist<DailyTaskAgentInput, DailyTas
       };
     }
 
-    // Step 3: ContextAssembler
-    const ctx = (await contextAssembler.assemble({
-      agentId: this.config.agentId as SpecialistId,
-      accountId: req.accountId,
-      mode: req.mode,
-      userInput: req.userInput,
-      needRag: this.config.knowledge.rag,
-    })) as AssembledContext;
+    // F-1: LLM path — wrap in runWithBudget so checkBudget/addCost share budget scope
+    return runWithBudget(async () => {
+      // Step 3: ContextAssembler
+      const ctx = (await contextAssembler.assemble({
+        agentId: this.config.agentId as SpecialistId,
+        accountId: req.accountId,
+        mode: req.mode,
+        userInput: req.userInput,
+        needRag: this.config.knowledge.rag,
+      })) as AssembledContext;
 
-    // Step 4: invokeLLM (AC-1: lightweight · 30s · AC-10: l5_agent)
-    let raw: InvokeLLMResult;
-    try {
-      raw = await this.invokeLLM(ctx, { ...req, traceId });
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
-      }
-      throw err;
-    }
+      // F-1: conservative pre-call budget estimate
+      const CONSERVATIVE_MODEL = 'claude-sonnet-4-6';
+      const CONSERVATIVE_COMPLETION = 4096;
+      checkBudget(estimateCostUsd(CONSERVATIVE_MODEL, ctx.metadata?.contextTokens ?? 2000, CONSERVATIVE_COMPLETION));
 
-    // Step 5: schema 校验 + retry 1 次
-    let parsed = this.outputSchema.safeParse(raw.content);
-    if (!parsed.success) {
-      logger.warn(
-        { agentId: this.config.agentId, traceId, issues: parsed.error.message },
-        'daily_task.schema_validation.retry',
-      );
+      // Step 4: invokeLLM (AC-1: lightweight · 30s · AC-10: l5_agent)
+      let raw: InvokeLLMResult;
       try {
         raw = await this.invokeLLM(ctx, { ...req, traceId });
-      } catch (retryErr) {
-        if (retryErr instanceof Error && retryErr.name === 'AbortError') {
+        // F-1: record actual cost
+        addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
           throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
         }
-        throw retryErr;
+        throw err;
       }
-      parsed = this.outputSchema.safeParse(raw.content);
-      if (!parsed.success) {
-        throw new SchemaValidationError(parsed.error, raw.content);
-      }
-    }
 
-    const durationMs = Date.now() - startedAt;
-    return {
-      result: parsed.data,
-      isFallback: false,
-      durationMs,
-      tokensUsed: raw.tokens,
-      modelUsed: raw.model,
-      traceId,
-    };
+      // Step 5: schema 校验 + retry 1 次
+      let parsed = this.outputSchema.safeParse(raw.content);
+      if (!parsed.success) {
+        logger.warn(
+          { agentId: this.config.agentId, traceId, issues: parsed.error.message },
+          'daily_task.schema_validation.retry',
+        );
+        // F-1: budget check before retry
+        checkBudget(estimateCostUsd(CONSERVATIVE_MODEL, ctx.metadata?.contextTokens ?? 2000, CONSERVATIVE_COMPLETION));
+        try {
+          raw = await this.invokeLLM(ctx, { ...req, traceId });
+          addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
+        } catch (retryErr) {
+          if (retryErr instanceof Error && retryErr.name === 'AbortError') {
+            throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
+          }
+          throw retryErr;
+        }
+        parsed = this.outputSchema.safeParse(raw.content);
+        if (!parsed.success) {
+          throw new SchemaValidationError(parsed.error, raw.content);
+        }
+      }
+
+      const durationMs = Date.now() - startedAt;
+
+      // F-1: apply output guardrail (PII + over-promise scan on task text fields)
+      const guardedData = this._applyOutputGuardrail(parsed.data, traceId);
+
+      return {
+        result: guardedData,
+        isFallback: false,
+        durationMs,
+        tokensUsed: raw.tokens,
+        modelUsed: raw.model,
+        traceId,
+      };
+    }); // end runWithBudget
   }
 
   /**
@@ -269,7 +291,7 @@ export class DailyTaskAgent extends BaseSpecialist<DailyTaskAgentInput, DailyTas
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // worker 上下文 · 无用户 session
+        userId: SYSTEM_USER_ID, // worker 上下文 · 无用户 session
         eventType: 'l5_agent', // AC-10: D-040 cost_log 第 4 类
       },
       timeout_ms: this.config.execution.timeout_ms, // AC-1: 30s

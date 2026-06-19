@@ -8,6 +8,7 @@ import { randomBytes } from 'node:crypto';
 
 import { TRPCError } from '@trpc/server';
 
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 
@@ -219,8 +220,9 @@ export async function approveRequest(
     userAgent: 'approval-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {
+  }).catch((e) => {
     // audit log failure never blocks main flow
+    logger.warn({ err: e, requestId, approverAdminId }, 'approvalGate.approveRequest.auditLog.failed');
   });
 
   return result;
@@ -288,7 +290,9 @@ export async function emergencyApprove(
     userAgent: 'approval-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {});
+  }).catch((e) => {
+    logger.warn({ err: e, requestId, superAdminId, incidentId }, 'approvalGate.emergencyApprove.auditLog.failed');
+  });
 
   return updated;
 }
@@ -355,7 +359,9 @@ export async function postReviewApprove(
     userAgent: 'approval-service',
     sessionId: 'system',
     success: true,
-  }).catch(() => {});
+  }).catch((e) => {
+    logger.warn({ err: e, requestId, reviewerAdminId, result }, 'approvalGate.postReviewApprove.auditLog.failed');
+  });
 
   return updated;
 }

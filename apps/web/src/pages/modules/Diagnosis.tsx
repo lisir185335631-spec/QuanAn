@@ -319,7 +319,7 @@ export default function Diagnosis() {
   const [progress, setProgress] = useState<DiagnosisProgress>(() => {
     if (typeof window === 'undefined' || !lsKey) return getInitialProgress();
     try {
-      const saved = localStorage.getItem(lsKey);
+      const saved = localStorage.getItem(lsKey); // lsKey 来自 getLsKey · acc_ 命名空间 · R-5 合规
       if (saved) return JSON.parse(saved) as DiagnosisProgress;
     } catch {
       // ignore
@@ -335,7 +335,7 @@ export default function Diagnosis() {
   useEffect(() => {
     if (!lsKey) return;
     try {
-      localStorage.setItem(lsKey, JSON.stringify(progress));
+      localStorage.setItem(lsKey, JSON.stringify(progress)); // lsKey 来自 getLsKey · acc_ 命名空间 · R-5 合规
     } catch {
       // ignore
     }

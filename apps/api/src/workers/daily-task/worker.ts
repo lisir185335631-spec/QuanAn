@@ -8,6 +8,7 @@
 import { Worker } from 'bullmq';
 
 import { dailyTaskAgent } from '@/agents/specialists/DailyTaskAgent';
+import { SYSTEM_USER_ID } from '@/lib/constants/system';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { redis } from '@/lib/redis';
@@ -26,6 +27,7 @@ async function processDailyTaskJob(payload: DailyTaskJobPayload): Promise<void> 
   // 调 DailyTaskAgent 生成今日任务
   const result = await dailyTaskAgent.execute({
     accountId,
+    userId: SYSTEM_USER_ID,
     userInput: { accountId, taskDate: scheduledDate },
     traceId,
   });

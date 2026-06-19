@@ -215,7 +215,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
     };
@@ -282,6 +282,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
    */
   async *executeStream(baseReq: {
     accountId: number;
+    userId: number;
     userInput?: Record<string, unknown>;
     traceId?: string;
     stepKey?: string;
@@ -291,6 +292,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
     for (const category of TOPIC_CATEGORIES) {
       const res = await this.execute({
         accountId: baseReq.accountId,
+        userId: baseReq.userId,
         userInput: { ...(baseReq.userInput ?? {}), category } as TopicInput,
         traceId: baseReq.traceId,
         stepKey: baseReq.stepKey,

@@ -1,6 +1,6 @@
 /**
  * guide constants · unit tests (sally 1:1 复刻 · 字面锁)
- * 对齐新常量: GUIDE_CHIP_TITLE / GUIDE_FLOW / GUIDE_SECTIONS_14 / GUIDE_FAQS_5 / GUIDE_TIPS_TITLE
+ * 对齐新常量: GUIDE_CHIP_TITLE / GUIDE_FLOW / GUIDE_SECTIONS_13 / GUIDE_FAQS_4 / GUIDE_TIPS_TITLE
  */
 import { describe, expect, it } from 'vitest';
 
@@ -8,13 +8,13 @@ import {
   FAQS,
   GUIDE_CHIP_SUBTITLE,
   GUIDE_CHIP_TITLE,
-  GUIDE_FAQS_5,
+  GUIDE_FAQS_4,
   GUIDE_FAQ_TITLE,
   GUIDE_FLOW,
   GUIDE_FLOW_TITLE,
   GUIDE_MODULES,
   GUIDE_SEARCH_PLACEHOLDER,
-  GUIDE_SECTIONS_14,
+  GUIDE_SECTIONS_13,
   GUIDE_TIPS_TITLE,
 } from '../guide';
 
@@ -43,15 +43,15 @@ describe('guide constants · 字面锁', () => {
     expect(GUIDE_SEARCH_PLACEHOLDER).toBe('搜索功能说明...');
   });
 
-  it('GUIDE_SECTIONS_14 · 14 entries · section[0] = 系统概览', () => {
-    expect(GUIDE_SECTIONS_14).toHaveLength(14);
-    expect(GUIDE_SECTIONS_14[0]!.id).toBe('system_overview');
-    expect(GUIDE_SECTIONS_14[0]!.name).toBe('系统概览');
-    expect(GUIDE_SECTIONS_14[0]!.sub).toBe('了解AIP智能体的核心能力');
+  it('GUIDE_SECTIONS_13 · 13 entries · section[0] = 系统概览', () => {
+    expect(GUIDE_SECTIONS_13).toHaveLength(13);
+    expect(GUIDE_SECTIONS_13[0]!.id).toBe('system_overview');
+    expect(GUIDE_SECTIONS_13[0]!.name).toBe('系统概览');
+    expect(GUIDE_SECTIONS_13[0]!.sub).toBe('了解AIP智能体的核心能力');
   });
 
-  it('GUIDE_SECTIONS_14 · 每 section 有 id / icon / name / sub / steps / tips', () => {
-    GUIDE_SECTIONS_14.forEach((section) => {
+  it('GUIDE_SECTIONS_13 · 每 section 有 id / icon / name / sub / steps / tips', () => {
+    GUIDE_SECTIONS_13.forEach((section) => {
       expect(section).toHaveProperty('id');
       expect(section).toHaveProperty('icon');
       expect(section).toHaveProperty('name');
@@ -61,8 +61,8 @@ describe('guide constants · 字面锁', () => {
     });
   });
 
-  it('GUIDE_SECTIONS_14 · 14 section name 字面锁', () => {
-    const names = GUIDE_SECTIONS_14.map((s) => s.name);
+  it('GUIDE_SECTIONS_13 · 13 section name 字面锁', () => {
+    const names = GUIDE_SECTIONS_13.map((s) => s.name);
     expect(names).toContain('系统概览');
     expect(names).toContain('爆款库');
     expect(names).toContain('爆款解析');
@@ -73,19 +73,17 @@ describe('guide constants · 字面锁', () => {
     expect(names).toContain('生成文案');
     expect(names).toContain('文案分析');
     expect(names).toContain('AI视频');
-    expect(names).toContain('语音对话');
     expect(names).toContain('深度学习');
     expect(names).toContain('视频制作');
     expect(names).toContain('获客视频');
   });
 
-  it('GUIDE_FAQS_5 · 5 entries · Q 字面锁', () => {
-    expect(GUIDE_FAQS_5).toHaveLength(5);
-    expect(GUIDE_FAQS_5[0]!.q).toBe('AI生成的内容可以直接使用吗？');
-    expect(GUIDE_FAQS_5[1]!.q).toBe('语音对话支持哪些语言？');
-    expect(GUIDE_FAQS_5[2]!.q).toBe('AI视频功能可以直接生成视频吗？');
-    expect(GUIDE_FAQS_5[3]!.q).toBe('如何让AI更了解我的风格？');
-    expect(GUIDE_FAQS_5[4]!.q).toBe('数据会被保存吗？');
+  it('GUIDE_FAQS_4 · 4 entries · Q 字面锁', () => {
+    expect(GUIDE_FAQS_4).toHaveLength(4);
+    expect(GUIDE_FAQS_4[0]!.q).toBe('AI生成的内容可以直接使用吗？');
+    expect(GUIDE_FAQS_4[1]!.q).toBe('AI视频功能可以直接生成视频吗？');
+    expect(GUIDE_FAQS_4[2]!.q).toBe('如何让AI更了解我的风格？');
+    expect(GUIDE_FAQS_4[3]!.q).toBe('数据会被保存吗？');
   });
 
   it('GUIDE_FAQ_TITLE + GUIDE_TIPS_TITLE 字面锁', () => {
@@ -93,8 +91,8 @@ describe('guide constants · 字面锁', () => {
     expect(GUIDE_TIPS_TITLE).toBe('实用技巧');
   });
 
-  it('兼容旧 export · GUIDE_MODULES 保留(13) + FAQS 保留(5)', () => {
-    expect(GUIDE_MODULES).toHaveLength(13);
-    expect(FAQS).toHaveLength(5);
+  it('兼容旧 export · GUIDE_MODULES 保留(12) + FAQS 保留(4)', () => {
+    expect(GUIDE_MODULES).toHaveLength(12);
+    expect(FAQS).toHaveLength(4);
   });
 });

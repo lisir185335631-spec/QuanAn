@@ -10,7 +10,6 @@ import {
   Fingerprint,
   Globe,
   LayoutGrid,
-  Mic,
   Radio,
   Search,
   Sparkles,
@@ -193,13 +192,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         title: '一键生成视频',
         desc: '文案自动转视频分镜+AI生成',
         href: '/ai-video',
-      },
-      {
-        icon: Mic,
-        title: '语音对话',
-        desc: '语音交互AI智能对话助手',
-        href: '/voice-chat',
-        arrow: true,
       },
       {
         icon: Brain,

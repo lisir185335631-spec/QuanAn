@@ -334,28 +334,6 @@ export type DailyTaskRow = {
 export type DailyTaskHistoryRow = NonNullable<DailyTaskRow>;
 export type DailyTaskListOutput = DailyTaskHistoryRow[];
 
-// ── Voice Chat types (PRD-8 US-012) ───────────────────────────────────────────
-
-export type VoiceChatStreamChunk =
-  | { type: 'meta'; meta: { model: string } }
-  | { type: 'delta'; delta: string }
-  | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
-  | { type: 'tool_result'; toolName: string; result: string }
-  | { type: 'done'; sessionId: string; modelUsed: string; turns: number; tokensUsed: { prompt: number; completion: number; total: number } }
-  | { type: 'error'; error: string };
-
-export type SttTranscribeOutput = {
-  transcript: string;
-  durationSec: number | null;
-  costUsd: number;
-};
-
-export type TtsSynthesizeOutput = {
-  publicUrl: string;
-  sizeBytes: number;
-  costUsd: number;
-};
-
 export type GenerateStoryboardOutput = {
   historyId: number;
   jobIds: string[];

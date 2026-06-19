@@ -83,7 +83,7 @@ export const stepDataRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const row = await prisma.stepData.upsert({
         where: {
@@ -115,6 +115,7 @@ export const stepDataRouter = router({
           : input.inputs;
         const agentRes = await entry.agent.execute({
           accountId: activeAccountId!,
+          userId: user!.id,
           ...(mode !== undefined ? { mode } : {}),
           userInput,
           traceId: traceId ?? undefined,
@@ -177,7 +178,7 @@ export const stepDataRouter = router({
       ]),
     )
     .subscription(async function* ({ ctx, input }) {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       // yield started immediately → 首 chunk < 3s
       yield { type: 'started' as const, traceId: traceId ?? '' };
@@ -186,6 +187,7 @@ export const stepDataRouter = router({
         if (input.stepKey === 'step5') {
           const agentRes = await topicAgent.execute({
             accountId: activeAccountId!,
+            userId: user!.id,
             userInput: { category: input.category, ...input.inputs },
             traceId: traceId ?? undefined,
             stepKey: input.stepKey,
@@ -228,6 +230,7 @@ export const stepDataRouter = router({
           // input.stepKey === 'step7': US-009 CopywritingAgent
           const agentRes = await copywritingAgent.execute({
             accountId: activeAccountId!,
+            userId: user!.id,
             mode: 'step7',
             userInput: input.inputs,
             traceId: traceId ?? undefined,
