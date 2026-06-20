@@ -219,8 +219,11 @@ export default function Step1() {
   const currentSubIndustries = selectedIndustry?.subIndustries ?? [];
   const hasSubIndustries = currentSubIndustries.length > 0;
 
-  // 实际存储的子行业值(other 时用自定义值)
-  const resolvedSubValue = selectedSubId === 'other' ? subCustomValue : selectedSubId;
+  // 实际存储的子行业值(other 时用自定义值；否则存中文 label 而非英文 id · 让 LLM 收到精准语义)
+  const resolvedSubValue =
+    selectedSubId === 'other'
+      ? subCustomValue
+      : (currentSubIndustries.find((s) => s.id === selectedSubId)?.label ?? selectedSubId);
   const hasSubSelection = hasSubIndustries
     ? (selectedSubId !== '' && (selectedSubId !== 'other' || subCustomValue !== ''))
     : true; // 无 subIndustries 的行业不强求
@@ -291,7 +294,7 @@ export default function Step1() {
       save({
         industry: selectedLabel,
         lastIndustry: selectedLabel,
-        lastIndustryCategory: selectedIndustry?.id ?? '',
+        lastIndustryCategory: selectedIndustry?.label ?? '',
         lastIndustrySub: resolvedSubValue,
         ...(subCustomFlag ? { industrySubCustom: true } : {}),
         productMaterialAssetIds: productFiles.map((f) => f.assetId),
@@ -316,7 +319,7 @@ export default function Step1() {
     save({
       industry: selectedLabel,
       lastIndustry: selectedLabel,
-      lastIndustryCategory: selectedIndustry?.id ?? '',
+      lastIndustryCategory: selectedIndustry?.label ?? '',
       lastIndustrySub: resolvedSubValue,
       ...(subCustomFlag ? { industrySubCustom: true } : {}),
       productMaterialAssetIds: productFiles.map((f) => f.assetId),

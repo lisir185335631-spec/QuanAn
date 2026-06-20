@@ -158,9 +158,10 @@ export const assetRouter = router({
       }
 
       // ── 3. 实际大小校验(不信前端 fileSizeBytes · P1 · R-14) ───────────────────
-      // base64 解码字节数 ≈ base64Length * 0.75 (去除 padding 后精确估算)
-      // 使用 Math.ceil 保守估算(不会低估)；超过 20MB 拒绝。
-      const actualSizeBytes = Math.ceil((pureBase64.length * 3) / 4);
+      // base64 解码字节数 = base64Length * 3/4 - padding 字符数(精确)
+      // (旧 Math.ceil 法过高估 padding · 正好 20MB 文件被误拒 · 第三轮 review 修)
+      const padding = pureBase64.endsWith('==') ? 2 : pureBase64.endsWith('=') ? 1 : 0;
+      const actualSizeBytes = (pureBase64.length * 3) / 4 - padding;
       if (actualSizeBytes > MAX_SIZE_BYTES) {
         throw new TRPCError({
           code: 'BAD_REQUEST',

@@ -208,8 +208,8 @@ describe('Step1 · 行业选择持久化', () => {
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!) as { industry?: string; lastIndustryCategory?: string; lastIndustrySub?: string };
     expect(parsed.industry).toBe('美业');
-    expect(parsed.lastIndustryCategory).toBe('beauty');
-    expect(parsed.lastIndustrySub).toBe('beauty_salon');
+    expect(parsed.lastIndustryCategory).toBe('美业');
+    expect(parsed.lastIndustrySub).toBe('美容院');
   });
 });
 
@@ -282,8 +282,8 @@ describe('Step1 · US-P05 子行业两层选择', () => {
     const raw = localStorage.getItem('aiip_memory_acc_1_step1');
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!) as { lastIndustryCategory?: string; lastIndustrySub?: string };
-    expect(parsed.lastIndustryCategory).toBe('beauty');
-    expect(parsed.lastIndustrySub).toBe('lash');
+    expect(parsed.lastIndustryCategory).toBe('美业');
+    expect(parsed.lastIndustrySub).toBe('美睫');
   });
 
   it('切换大类 → 子行业选择重置', () => {
