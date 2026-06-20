@@ -13,6 +13,7 @@ import { serve } from '@hono/node-server';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import { generateState } from 'arctic';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { cors } from 'hono/cors';
 
@@ -330,6 +331,17 @@ app.get('/auth/logout', async (c) => {
 // ── Admin REST: CSV export (US-008) ───────────────────────────────────────────
 // GET /admin/export/users — streams CSV; auth via admin session cookie
 app.get('/admin/export/users', (c) => handleExportUsersCSV(c.req.raw));
+
+// ── HTTP body size limit (P1 · 防 27MB base64 生产 413) ──────────────────────────
+// 必须在 tRPC 路由前注册；30MB = 文件 20MB + base64 开销 (~33%) + 余量
+// 超限时 Hono bodyLimit 默认返回 HTTP 413 Payload Too Large
+app.use(
+  '/trpc/*',
+  bodyLimit({
+    maxSize: 30 * 1024 * 1024, // 30 MB
+    onError: (c) => c.json({ error: 'Payload Too Large (max 30 MB)' }, 413),
+  }),
+);
 
 // ── Admin tRPC (mounted before main tRPC so /trpc/admin/* routes here first) ──
 

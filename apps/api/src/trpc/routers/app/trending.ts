@@ -10,6 +10,15 @@
  *   - DB select 补 authorFollowers + vendor (classifyItem 低粉分类必须能读到这两个字段)
  *   - DB 为空 fallback 改调 defaultAdapter.fetchTrending → adapter 框架真在请求路径
  *   - buildMockItems 补 vendor 字段 + mock 路径加 vendor 过滤
+ *
+ * 批5④ 修复(2026-06-20) — 第二轮对抗 review 坐实问题:
+ *   P1: adapter 路径 search 过滤缺失 → fetchTrending 不接受 search，
+ *       mapper 后补 in-memory title.toLowerCase().includes(searchLower)
+ *       (list + listWithFavorites 两处 adapter/mock fallback 全覆盖)
+ *   P2: listWithFavorites adapter 路径合成 id(i+1) 查 trendingFavorite 永不匹配 →
+ *       明确 isFavorited=false，跳过无意义 DB 查询
+ *   P3: adapter fetchTrending 只取 limit=pageSize 条，翻页 slice 给空 →
+ *       改传 limit:200(pool 上限)，让 adapter 返回全量，router 端做 slice 分页
  */
 
 import { z } from 'zod';
@@ -160,9 +169,10 @@ export const trendingRouter = router({
 
       if (dbItems.length === 0 && total === 0) {
         // 批5③: DB 为空 — 调 defaultAdapter.fetchTrending 让 adapter 框架真在请求路径
+        // P3修复: 传 limit:200(pool上限) 让 adapter 返回全量，由 router 端做 slice 分页
         const adapterItems = await defaultAdapter.fetchTrending({
           industry,
-          limit: pageSize,
+          limit: 200,
           maxAuthorFollowers,
         });
 
@@ -189,6 +199,11 @@ export const trendingRouter = router({
         if (vendor) {
           adapterMapped = adapterMapped.filter((m) => m.vendor === vendor);
         }
+        // P1修复: adapter 路径 search 过滤 — fetchTrending 不处理 search，这里 in-memory 过滤
+        if (search) {
+          const searchLower = search.toLowerCase();
+          adapterMapped = adapterMapped.filter((m) => m.title.toLowerCase().includes(searchLower));
+        }
 
         if (adapterMapped.length === 0) {
           const mocks = buildMockItems(200);
@@ -200,6 +215,10 @@ export const trendingRouter = router({
           }
           if (vendor) {
             filteredMocks = filteredMocks.filter((m) => m.vendor === vendor);
+          }
+          if (search) {
+            const searchLower = search.toLowerCase();
+            filteredMocks = filteredMocks.filter((m) => m.title.toLowerCase().includes(searchLower));
           }
           const filteredMockTotal = filteredMocks.length;
           const paged = filteredMocks.slice(skip, skip + pageSize);
@@ -266,9 +285,10 @@ export const trendingRouter = router({
       ]);
 
       if (dbItems.length === 0 && total === 0) {
+        // P3修复: 传 limit:200(pool上限) 让 adapter 返回全量，由 router 端做 slice 分页
         const adapterItems = await defaultAdapter.fetchTrending({
           industry,
-          limit: pageSize,
+          limit: 200,
           maxAuthorFollowers,
         });
 
@@ -295,6 +315,11 @@ export const trendingRouter = router({
         if (vendor) {
           adapterMapped = adapterMapped.filter((m) => m.vendor === vendor);
         }
+        // P1修复: adapter 路径 search 过滤 — fetchTrending 不处理 search，这里 in-memory 过滤
+        if (search) {
+          const searchLower = search.toLowerCase();
+          adapterMapped = adapterMapped.filter((m) => m.title.toLowerCase().includes(searchLower));
+        }
 
         if (adapterMapped.length === 0) {
           const mocks = buildMockItems(200);
@@ -307,16 +332,16 @@ export const trendingRouter = router({
           if (vendor) {
             filteredFavMocks = filteredFavMocks.filter((m) => m.vendor === vendor);
           }
+          if (search) {
+            const searchLower = search.toLowerCase();
+            filteredFavMocks = filteredFavMocks.filter((m) => m.title.toLowerCase().includes(searchLower));
+          }
           const filteredFavMockTotal = filteredFavMocks.length;
           const paged = filteredFavMocks.slice(skip, skip + pageSize);
-          const ids = paged.map((m) => m.id);
-          const favs = await prisma.trendingFavorite.findMany({
-            where: { accountId, trendingItemId: { in: ids } },
-            select: { trendingItemId: true },
-          });
-          const favSet = new Set(favs.map((f: { trendingItemId: number }) => f.trendingItemId));
+          // P2修复: mock 路径的 id 是合成整数，不可能存在于 trendingFavorite 表
+          // 明确 isFavorited=false，跳过无意义的 DB 查询
           return {
-            items: paged.map((m, i) => ({ ...m, isFavorited: favSet.has(m.id), rank: skip + i + 1 })),
+            items: paged.map((m, i) => ({ ...m, isFavorited: false, rank: skip + i + 1 })),
             total: filteredFavMockTotal,
             page,
             pageSize,
@@ -326,14 +351,10 @@ export const trendingRouter = router({
 
         const filteredFavTotal = adapterMapped.length;
         const paged = adapterMapped.slice(skip, skip + pageSize);
-        const ids = paged.map((m) => m.id);
-        const favs = await prisma.trendingFavorite.findMany({
-          where: { accountId, trendingItemId: { in: ids } },
-          select: { trendingItemId: true },
-        });
-        const favSet = new Set(favs.map((f: { trendingItemId: number }) => f.trendingItemId));
+        // P2修复: adapter 路径 id 为合成整数(i+1)，不是真实 DB id，查 trendingFavorite 永不匹配
+        // adapter 路径无真实 DB 数据故不可能有收藏，明确设 isFavorited=false
         return {
-          items: paged.map((m, i) => ({ ...m, isFavorited: favSet.has(m.id), rank: skip + i + 1 })),
+          items: paged.map((m, i) => ({ ...m, isFavorited: false, rank: skip + i + 1 })),
           total: filteredFavTotal,
           page,
           pageSize,

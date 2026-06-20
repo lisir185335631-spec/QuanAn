@@ -15,6 +15,8 @@ import { z } from 'zod';
 
 import { fileParserQueue } from '@/workers/file-parser/queue';
 import { logger } from '@/lib/logger';
+import { maskString } from '@/lib/compliance/pii-mask';
+import { checkAssetUploadRateLimit } from '@/lib/rate-limit/asset-upload';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 import type { ILLMGateway } from '@/specialists/base/types';
@@ -41,9 +43,15 @@ const uploadAssetInput = z.object({
   /**
    * Base64-encoded file content (DataURL 或 纯 base64)。
    * 纯 base64: 直接用; DataURL (data:<mime>;base64,<data>): 自动剥头。
+   * .max(28_000_000): 兜底防超大 base64 字符串绕过 body limit (R-14 P1)
    */
-  fileDataUrl: z.string().min(1),
+  fileDataUrl: z.string().min(1).max(28_000_000),
   fileName: z.string().min(1).max(255),
+  /**
+   * SECURITY DEBT (P2 · MIME 客户端可伪造): fileMime 来自前端，无 magic number 验证。
+   * 当前仅做白名单枚举检查(ALLOWED_MIME_TYPES)。
+   * 真实 MIME 校验需在 file-parser worker 侧做 magic number 检测 (track as tech-debt)。
+   */
   fileMime: z.string().min(1).max(100),
   fileSizeBytes: z.number().int().min(1),
   /**
@@ -69,7 +77,9 @@ const summarizeStep1AssetsInput = z.object({
 // ── LLM summary prompt builders ───────────────────────────────────────────────
 
 function buildProductSummaryPrompt(texts: string[]): string {
-  const combined = texts.join('\n\n---\n\n').slice(0, 8000);
+  // PII 脱敏: parsedText 来自用户上传文件，可能含手机/邮箱/身份证等 PII (R-14 · LD-018 · P1)
+  // GDPR 注 (GDPR-DEBT): parsedText 在 Asset 表中保留原文(审核队列需要)；仅在进 LLM 前脱敏。
+  const combined = maskString(texts.join('\n\n---\n\n')).text.slice(0, 8000);
   return [
     '[产品资料梳理任务 · PRD-37 US-P08]',
     '',
@@ -90,7 +100,9 @@ function buildProductSummaryPrompt(texts: string[]): string {
 }
 
 function buildPersonaSummaryPrompt(texts: string[]): string {
-  const combined = texts.join('\n\n---\n\n').slice(0, 8000);
+  // PII 脱敏: parsedText 来自用户上传文件，可能含手机/邮箱/身份证等 PII (R-14 · LD-018 · P1)
+  // GDPR 注 (GDPR-DEBT): parsedText 在 Asset 表中保留原文(审核队列需要)；仅在进 LLM 前脱敏。
+  const combined = maskString(texts.join('\n\n---\n\n')).text.slice(0, 8000);
   return [
     '[人物介绍梳理任务 · PRD-37 US-P08]',
     '',
@@ -127,6 +139,10 @@ export const assetRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, user, traceId } = ctx;
 
+      // ── 0. Rate limit ─────────────────────────────────────────────────────────
+      // 防高频上传堆 BullMQ job (P2 · R-14)
+      await checkAssetUploadRateLimit(activeAccountId!);
+
       // ── 1. MIME 校验 ──────────────────────────────────────────────────────────
       if (!ALLOWED_MIME_TYPES[input.fileMime]) {
         throw new TRPCError({
@@ -135,18 +151,21 @@ export const assetRouter = router({
         });
       }
 
-      // ── 2. 大小校验 ───────────────────────────────────────────────────────────
-      if (input.fileSizeBytes > MAX_SIZE_BYTES) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `文件不能超过 20MB。实际大小: ${(input.fileSizeBytes / 1024 / 1024).toFixed(1)}MB`,
-        });
-      }
-
-      // ── 3. 剥 DataURL 头，取纯 base64 ─────────────────────────────────────────
+      // ── 2. 剥 DataURL 头，取纯 base64 ─────────────────────────────────────────
       let pureBase64 = input.fileDataUrl;
       if (pureBase64.includes(',')) {
         pureBase64 = pureBase64.split(',')[1] ?? pureBase64;
+      }
+
+      // ── 3. 实际大小校验(不信前端 fileSizeBytes · P1 · R-14) ───────────────────
+      // base64 解码字节数 ≈ base64Length * 0.75 (去除 padding 后精确估算)
+      // 使用 Math.ceil 保守估算(不会低估)；超过 20MB 拒绝。
+      const actualSizeBytes = Math.ceil((pureBase64.length * 3) / 4);
+      if (actualSizeBytes > MAX_SIZE_BYTES) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `文件不能超过 20MB。实际大小约: ${(actualSizeBytes / 1024 / 1024).toFixed(1)}MB`,
+        });
       }
 
       // ── 4. 创建 Asset 记录 ────────────────────────────────────────────────────
