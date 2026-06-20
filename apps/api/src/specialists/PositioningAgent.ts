@@ -250,12 +250,25 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     // 先用 piiMask 递归处理整个对象再 stringify · 枚举/数值字段 piiMask 会安全透传
     const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'industry') {
+      // PRD-37 US-P04: 提取子行业上下文，注入 prompt 让市场分析更精准
+      const industryCategory = typeof userInput['industryCategory'] === 'string' ? userInput['industryCategory'] : undefined;
+      const industrySub = typeof userInput['industrySub'] === 'string' ? userInput['industrySub'] : undefined;
+      const subIndustryContext = (industryCategory || industrySub)
+        ? [
+            '',
+            '[子行业上下文]',
+            ...(industryCategory ? [`行业大类: ${industryCategory}`] : []),
+            ...(industrySub ? [`细分子行业: ${industrySub}`] : []),
+            '请在市场分析和定位建议中聚焦该细分子行业的竞争态势与差异化机会',
+          ]
+        : [];
       return [
         ctxUserPrompt,
         '',
         '[行业定位分析任务]',
         `可用行业枚举(${INDUSTRY_KEYS.length} 个): ${INDUSTRY_LIST_STR}`,
         `用户输入: ${inputStr}`,
+        ...subIndustryContext,
         '',
         '请以 JSON 返回: { industry, marketAnalysis, competitionLevel, recommendation }',
         'competitionLevel 必须是 "low" | "medium" | "high" 之一',

@@ -101,12 +101,18 @@ export interface Step3bResult {
 }
 
 // ── PRD-29.8 · Step3bFormData schema ──────────────────────────────────────────
+// PRD-37 US-P06: 新增 productIntro(四品) + companyInfo
 export interface Step3bFormData {
   personalInfo: string;
   personalAdvantage: string;
   personalStory: string;
   platform: string;
   audience: string;
+  drainageProduct?: string;
+  bestsellerProduct?: string;
+  profitProduct?: string;
+  imageProduct?: string;
+  companyInfo?: string;
 }
 
 // ── PRD-29.8 · form 默认值 1:1 sally 真实输入 ────────────────────────────────
@@ -116,6 +122,11 @@ const DEFAULT_FORM: Step3bFormData = {
   personalStory: '2023年，第一次尝试用ai工具制作图片，非常感叹ai工具的厉害，中间也去各种科技展参观考察，思考并判断。这期间慢慢开始关闭自己的实体店。去年自己手工搓出来自己的第一条工作流，又一次感觉普通人也可以利用ai做自己喜欢做的事情，去年年底彻底关闭最后一家实体店铺全身心投入ai，今年龙虾机器人火之前，我就养出来多只龙虾协作办公了，现在给企业和个人定制智能体工作流，月入过万，刚接了个粉丝百万博主的商单，正在最后调优阶段',
   platform: 'douyin',
   audience: '需要定制智能体降本增效的老板和opc创业者',
+  drainageProduct: '',
+  bestsellerProduct: '',
+  profitProduct: '',
+  imageProduct: '',
+  companyInfo: '',
 };
 
 // ── roadmap accent → 液态玻璃三色 ──────────────────────────────────────────
@@ -149,6 +160,7 @@ export default function Step3b() {
   const industry = readOtherStep<{ industry?: string }>(accountId, 'step1')?.industry ?? '美业';
 
   // PRD-29.8 · default form 1:1 复刻 sally 真实输入
+  // PRD-37 US-P06: 新增产品四品 + 公司介绍状态
   const [personalInfo, setPersonalInfo] = useState(breakSentences(DEFAULT_FORM.personalInfo));
   const [personalAdvantage, setPersonalAdvantage] = useState(
     breakSentences(DEFAULT_FORM.personalAdvantage),
@@ -156,6 +168,11 @@ export default function Step3b() {
   const [personalStory, setPersonalStory] = useState(breakSentences(DEFAULT_FORM.personalStory));
   const [platform, setPlatform] = useState(DEFAULT_FORM.platform);
   const [audience, setAudience] = useState(DEFAULT_FORM.audience);
+  const [drainageProduct, setDrainageProduct] = useState(DEFAULT_FORM.drainageProduct ?? '');
+  const [bestsellerProduct, setBestsellerProduct] = useState(DEFAULT_FORM.bestsellerProduct ?? '');
+  const [profitProduct, setProfitProduct] = useState(DEFAULT_FORM.profitProduct ?? '');
+  const [imageProduct, setImageProduct] = useState(DEFAULT_FORM.imageProduct ?? '');
+  const [companyInfo, setCompanyInfo] = useState(DEFAULT_FORM.companyInfo ?? '');
 
   // Restore form from LS on accountId change
   useEffect(() => {
@@ -167,6 +184,11 @@ export default function Step3b() {
       if (saved.personalStory) setPersonalStory(saved.personalStory);
       if (saved.platform) setPlatform(saved.platform);
       if (saved.audience) setAudience(saved.audience);
+      if (saved.drainageProduct !== undefined) setDrainageProduct(saved.drainageProduct);
+      if (saved.bestsellerProduct !== undefined) setBestsellerProduct(saved.bestsellerProduct);
+      if (saved.profitProduct !== undefined) setProfitProduct(saved.profitProduct);
+      if (saved.imageProduct !== undefined) setImageProduct(saved.imageProduct);
+      if (saved.companyInfo !== undefined) setCompanyInfo(saved.companyInfo);
     }
   }, [accountId]);
 
@@ -203,7 +225,11 @@ export default function Step3b() {
     if (!personalInfo.trim() || isLoading) return;
     generateMutation.mutate({
       stepKey: 'step3b',
-      inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+      inputs: {
+        personalInfo, personalAdvantage, personalStory, platform, audience,
+        productIntro: { drainage: drainageProduct, bestseller: bestsellerProduct, profit: profitProduct, image: imageProduct },
+        companyInfo,
+      },
     });
   }
 
@@ -857,6 +883,134 @@ export default function Step3b() {
                 </div>
               </div>
 
+              {/* ── PRD-37 US-P06 · 产品介绍区块 · 四品 ─────────────────────────── */}
+              <div>
+                <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
+                  <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>产品介绍</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: F.cn, textShadow: C.textShadow }}>（人设视角 · 选填）</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 16 }}>
+                  {[
+                    { id: 's3b-drainage', label: '引流品', placeholder: '低价/免费引流产品，如9.9元体验装', value: drainageProduct, onChange: setDrainageProduct },
+                    { id: 's3b-bestseller', label: '畅销品', placeholder: '走量主力产品，销量最高的爆款', value: bestsellerProduct, onChange: setBestsellerProduct },
+                    { id: 's3b-profit', label: '利润品', placeholder: '高利润产品，如高端定制服务', value: profitProduct, onChange: setProfitProduct },
+                    { id: 's3b-image', label: '形象品', placeholder: '品牌形象旗舰产品，代表品牌高度', value: imageProduct, onChange: setImageProduct },
+                  ].map((field) => (
+                    <div key={field.id}>
+                      <label
+                        htmlFor={field.id}
+                        style={{
+                          marginBottom: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: C.ink,
+                          fontFamily: F.cn,
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {field.label}
+                      </label>
+                      <input
+                        id={field.id}
+                        type="text"
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        placeholder={field.placeholder}
+                        style={{
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          borderRadius: 10,
+                          border: `0.5px solid ${C.line}`,
+                          background: 'rgba(255,255,255,0.08)',
+                          padding: '10px 14px',
+                          fontSize: 13,
+                          fontFamily: F.cn,
+                          color: C.ink,
+                          outline: 'none',
+                          transition: 'border-color 0.2s, box-shadow 0.2s',
+                          textShadow: C.textShadow,
+                        }}
+                        onFocus={(e) => {
+                          (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                          (e.currentTarget as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
+                        }}
+                        onBlur={(e) => {
+                          (e.currentTarget as HTMLInputElement).style.borderColor = C.line;
+                          (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── PRD-37 US-P06 · 公司相关介绍 ────────────────────────────────── */}
+              <div>
+                <label
+                  htmlFor="s3b-companyInfo"
+                  style={{
+                    marginBottom: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, borderRadius: 2, flexShrink: 0 }} aria-hidden="true" />
+                  公司相关介绍
+                  <span style={{ marginLeft: 4, fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 400, textShadow: C.textShadow }}>（选填）</span>
+                </label>
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    borderRadius: 12,
+                    border: `0.5px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.08)',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                  }}
+                  onFocusCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(168,197,224,0.8)';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 2px rgba(168,197,224,0.3)';
+                  }}
+                  onBlurCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                  }}
+                >
+                  <textarea
+                    id="s3b-companyInfo"
+                    value={companyInfo}
+                    onChange={(e) => setCompanyInfo(e.target.value)}
+                    rows={3}
+                    placeholder="简述公司背景、规模、主营业务、核心优势等，AI 将在人设方案中体现公司信息。"
+                    style={{
+                      width: '100%',
+                      resize: 'none',
+                      border: 0,
+                      background: 'transparent',
+                      padding: 16,
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      fontFamily: F.cn,
+                      color: C.ink,
+                      outline: 'none',
+                    }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.05)', padding: '8px 16px' }}>
+                    <span style={{ fontSize: 11, fontFamily: F.mono, color: 'rgba(255,255,255,0.9)', textShadow: C.textShadow }}>{companyInfo.length} 字</span>
+                  </div>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Magnetic strength={0.3}>
                   <button
@@ -942,7 +1096,11 @@ export default function Step3b() {
                 onClick={() =>
                   generateMutation.mutate({
                     stepKey: 'step3b',
-                    inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+                    inputs: {
+                      personalInfo, personalAdvantage, personalStory, platform, audience,
+                      productIntro: { drainage: drainageProduct, bestseller: bestsellerProduct, profit: profitProduct, image: imageProduct },
+                      companyInfo,
+                    },
                   })
                 }
                 aria-label="重试重新生成"

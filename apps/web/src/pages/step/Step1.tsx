@@ -112,6 +112,22 @@ export default function Step1() {
   const [customIndustry, setCustomIndustry] = useState<string>('');
   const [customModalOpen, setCustomModalOpen] = useState(false);
 
+  // ── US-P05: 子行业两层选择状态 ───────────────────────────────────────────────
+  const [selectedSubId, setSelectedSubId] = useState<string>('');
+  const [subCustomValue, setSubCustomValue] = useState<string>('');
+  const [subCustomModalOpen, setSubCustomModalOpen] = useState(false);
+  const [subError, setSubError] = useState<string>('');
+
+  // 当前行业的 subIndustries 列表
+  const currentSubIndustries = selectedIndustry?.subIndustries ?? [];
+  const hasSubIndustries = currentSubIndustries.length > 0;
+
+  // 实际存储的子行业值(other 时用自定义值)
+  const resolvedSubValue = selectedSubId === 'other' ? subCustomValue : selectedSubId;
+  const hasSubSelection = hasSubIndustries
+    ? (selectedSubId !== '' && (selectedSubId !== 'other' || subCustomValue !== ''))
+    : true; // 无 subIndustries 的行业不强求
+
   const activeTab = STEP1_TABS.find((t) => t.id === activeTabId) ?? STEP1_TABS[0]!;
   const tabFiltered =
     activeTabId === 'all'
@@ -131,21 +147,56 @@ export default function Step1() {
   function handleSelectIndustry(ind: Industry) {
     setSelectedIndustry(ind);
     setCustomIndustry('');
+    // 切换大类时重置子行业选择
+    setSelectedSubId('');
+    setSubCustomValue('');
+    setSubError('');
+  }
+
+  function handleSubSelect(subId: string) {
+    setSelectedSubId(subId);
+    setSubError('');
+    if (subId === 'other') {
+      setSubCustomModalOpen(true);
+    }
+  }
+
+  function handleSubCustomConfirm(value: string) {
+    setSubCustomValue(value);
+    setSubError('');
   }
 
   function handleCustomConfirm(value: string) {
     setCustomIndustry(value);
     setSelectedIndustry(null);
+    setSelectedSubId('');
+    setSubCustomValue('');
   }
 
   function clearSelection() {
     setSelectedIndustry(null);
     setCustomIndustry('');
+    setSelectedSubId('');
+    setSubCustomValue('');
+    setSubError('');
   }
 
   function handleSubmit() {
     if (!hasSelection) return;
-    save({ industry: selectedLabel });
+    // AC-3: 选了大类但未选子行业 → 提示，不跳转
+    if (selectedIndustry && hasSubIndustries && !hasSubSelection) {
+      setSubError('请选择子行业');
+      return;
+    }
+    // AC-4: 落库 industry / lastIndustry / lastIndustryCategory / lastIndustrySub
+    const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
+    save({
+      industry: selectedLabel,
+      lastIndustry: selectedLabel,
+      lastIndustryCategory: selectedIndustry?.id ?? '',
+      lastIndustrySub: resolvedSubValue,
+      ...(subCustomFlag ? { industrySubCustom: true } : {}),
+    });
     navigate('/step/3');
   }
 
@@ -744,6 +795,341 @@ export default function Step1() {
           </RevealGroup>
         )}
 
+        {/* ── US-P05: 子行业选择区块(大类选中后出现) ──────── */}
+        {selectedIndustry && hasSubIndustries && (
+          <Reveal style={{ marginBottom: 40 }}>
+            <motion.div
+              className="lg-glass lg-spec"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+              style={{ borderRadius: 20, padding: 28 }}
+            >
+              {/* 区块标题 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 10,
+                    background: 'rgba(168,197,224,0.22)',
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                    category
+                  </span>
+                </span>
+                <div>
+                  <h2
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 700,
+                      color: C.ink,
+                      fontFamily: F.cn,
+                      margin: 0,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    选择子行业
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'rgba(255,255,255,0.7)',
+                      fontFamily: F.cn,
+                      margin: 0,
+                    }}
+                  >
+                    {selectedIndustry.label} · 请进一步细化你的赛道
+                  </p>
+                </div>
+                {subError && (
+                  <span
+                    data-testid="sub-industry-error"
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      borderRadius: 999,
+                      background: 'rgba(255,80,80,0.18)',
+                      border: '0.5px solid rgba(255,80,80,0.4)',
+                      padding: '4px 14px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: 'rgba(255,120,120,0.95)',
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      warning
+                    </span>
+                    {subError}
+                  </span>
+                )}
+              </div>
+
+              {/* 入口 1: 下拉框 */}
+              <div style={{ marginBottom: 20 }}>
+                <label
+                  htmlFor="sub-industry-select"
+                  style={{
+                    display: 'block',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: 8,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  下拉选择
+                </label>
+                <div
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 12,
+                    padding: '2px 4px',
+                    border:
+                      selectedSubId !== ''
+                        ? '1px solid rgba(168,197,224,0.6)'
+                        : `0.5px solid ${C.line}`,
+                  }}
+                >
+                  <select
+                    id="sub-industry-select"
+                    data-testid="sub-industry-select"
+                    value={selectedSubId}
+                    onChange={(e) => handleSubSelect(e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 14,
+                      fontFamily: F.cn,
+                      color: selectedSubId !== '' ? C.ink : 'rgba(255,255,255,0.5)',
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                    }}
+                  >
+                    <option value="" disabled style={{ background: '#1a2a4a', color: 'rgba(255,255,255,0.6)' }}>
+                      请选择子行业…
+                    </option>
+                    {currentSubIndustries.map((sub) => (
+                      <option
+                        key={sub.id}
+                        value={sub.id}
+                        style={{ background: '#1a2a4a', color: '#fff' }}
+                      >
+                        {sub.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb, flexShrink: 0, marginRight: 10 }}>
+                    expand_more
+                  </span>
+                </div>
+              </div>
+
+              {/* 分割线 */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginBottom: 20,
+                }}
+              >
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.5)',
+                    fontFamily: F.mono,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  或
+                </span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              </div>
+
+              {/* 入口 2: 网格点选 */}
+              <div>
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: 12,
+                    margin: '0 0 12px',
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  网格点选
+                </p>
+                <div
+                  data-testid="sub-industry-grid"
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                  }}
+                >
+                  {currentSubIndustries.map((sub) => {
+                    const isActive = selectedSubId === sub.id;
+                    return (
+                      <motion.button
+                        key={sub.id}
+                        type="button"
+                        data-testid={`sub-industry-chip-${sub.id}`}
+                        data-state={isActive ? 'active' : 'inactive'}
+                        onClick={() => handleSubSelect(sub.id)}
+                        whileHover={{ y: -2 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        style={{
+                          borderRadius: 9999,
+                          border: isActive
+                            ? '1.5px solid rgba(168,197,224,0.75)'
+                            : `0.5px solid ${C.line}`,
+                          background: isActive
+                            ? 'rgba(168,197,224,0.25)'
+                            : 'rgba(255,255,255,0.07)',
+                          color: isActive ? C.ikb : 'rgba(255,255,255,0.84)',
+                          padding: '8px 18px',
+                          fontSize: 13,
+                          fontWeight: isActive ? 700 : 500,
+                          fontFamily: F.cn,
+                          cursor: 'pointer',
+                          boxShadow: isActive ? '0 2px 12px rgba(168,197,224,0.2)' : 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          transition: 'all 0.2s',
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {isActive && (
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                            check
+                          </span>
+                        )}
+                        {sub.id === 'other' && !isActive && (
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                            edit
+                          </span>
+                        )}
+                        {sub.label}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 子行业已选展示 + 自定义值提示 */}
+              {selectedSubId !== '' && selectedSubId !== 'other' && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.7)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>
+                    check_circle
+                  </span>
+                  <span>已选子行业:</span>
+                  <span
+                    data-testid="sub-industry-selected-label"
+                    style={{ fontWeight: 700, color: C.ikb }}
+                  >
+                    {currentSubIndustries.find((s) => s.id === selectedSubId)?.label ?? selectedSubId}
+                  </span>
+                </div>
+              )}
+              {selectedSubId === 'other' && subCustomValue && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.7)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>
+                    check_circle
+                  </span>
+                  <span>自定义子行业:</span>
+                  <span
+                    data-testid="sub-industry-selected-label"
+                    style={{ fontWeight: 700, color: C.ikb }}
+                  >
+                    {subCustomValue}
+                  </span>
+                </div>
+              )}
+              {selectedSubId === 'other' && !subCustomValue && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,200,80,0.85)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                    info
+                  </span>
+                  <span>请在弹窗中输入自定义子行业名称</span>
+                  <button
+                    type="button"
+                    onClick={() => setSubCustomModalOpen(true)}
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: C.ikb,
+                      textDecoration: 'underline',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: F.cn,
+                      padding: 0,
+                    }}
+                  >
+                    点击输入
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </Reveal>
+        )}
+
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
         <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
@@ -953,6 +1339,7 @@ export default function Step1() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>已选择:</span>
+              {/* 大类 pill */}
               <span
                 style={{
                   display: 'flex',
@@ -989,6 +1376,40 @@ export default function Step1() {
                   <span className="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
               </span>
+              {/* 子行业 pill(已选时显示) */}
+              {resolvedSubValue && (
+                <>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>›</span>
+                  <span
+                    data-testid="sticky-sub-industry-pill"
+                    style={{
+                      borderRadius: 999,
+                      border: `0.5px solid rgba(168,197,224,0.35)`,
+                      background: 'rgba(168,197,224,0.12)',
+                      padding: '4px 12px',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'rgba(168,197,224,0.9)',
+                      fontFamily: F.cn,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    {resolvedSubValue}
+                  </span>
+                </>
+              )}
+              {/* 未选子行业且有子行业列表时 → 提示 */}
+              {selectedIndustry && hasSubIndustries && !resolvedSubValue && (
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: 'rgba(255,200,80,0.8)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  ↑ 请选择子行业
+                </span>
+              )}
             </div>
             <Magnetic strength={0.3}>
               <button
@@ -1022,6 +1443,20 @@ export default function Step1() {
         onOpenChange={setCustomModalOpen}
         hideTrigger
         onConfirm={handleCustomConfirm}
+      />
+
+      {/* US-P05: 子行业自定义 modal(复用 CustomIndustryModal) */}
+      <CustomIndustryModal
+        open={subCustomModalOpen}
+        onOpenChange={(open) => {
+          setSubCustomModalOpen(open);
+          // 用户关闭弹窗但未输入时，重置 other 选中
+          if (!open && !subCustomValue) {
+            setSelectedSubId('');
+          }
+        }}
+        hideTrigger
+        onConfirm={handleSubCustomConfirm}
       />
     </LiquidShell>
   );

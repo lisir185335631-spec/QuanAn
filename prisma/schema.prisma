@@ -156,6 +156,12 @@ model IpAccount {
   userId         Int     @map("user_id")
   name           String  @db.VarChar(100)
   industry       String  @db.VarChar(64)
+  /// PRD-37 US-P04: 两层行业 · 大类(如 beauty / food 等 56 枚举)
+  industryCategory     String? @map("industry_category") @db.VarChar(64)
+  /// PRD-37 US-P04: 子行业(如 beauty_salon / hair 等)
+  industrySub          String? @map("industry_sub") @db.VarChar(64)
+  /// PRD-37 US-P04: 用户自定义子行业(true = industrySub 是自由文本非枚举)
+  industrySubCustom    Boolean @default(false) @map("industry_sub_custom")
   platform       String  @db.VarChar(32)
   stage          String  @default("starter") @db.VarChar(32)
   personalInfo   String? @map("personal_info") @db.Text

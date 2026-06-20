@@ -665,11 +665,32 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
         '⚠️ 严格约束: nickname 必须正好 5 个 · bio 必须正好 6 条 · bio.platform 仅限 5 个枚举值',
       ].join('\n');
     }
+    // PRD-37 US-P06: 提取产品四品 + 公司信息字段，拼入 prompt 提升人设个性化
+    const inp = userInput as Record<string, unknown>;
+    const productIntro = inp.productIntro as { drainage?: string; bestseller?: string; profit?: string; image?: string } | undefined;
+    const companyInfoStr = typeof inp.companyInfo === 'string' ? inp.companyInfo.trim() : '';
+    const hasProductIntro = productIntro && Object.values(productIntro).some((v) => typeof v === 'string' && v.trim());
+    const productLines: string[] = [];
+    if (hasProductIntro) {
+      productLines.push('', '[产品线信息(人设视角 · 请在内容支柱/信任体系/路线图中体现产品矩阵策略)]');
+      if (productIntro!.drainage?.trim()) productLines.push(`- 引流品: ${productIntro!.drainage}`);
+      if (productIntro!.bestseller?.trim()) productLines.push(`- 畅销品: ${productIntro!.bestseller}`);
+      if (productIntro!.profit?.trim()) productLines.push(`- 利润品: ${productIntro!.profit}`);
+      if (productIntro!.image?.trim()) productLines.push(`- 形象品: ${productIntro!.image}`);
+    }
+    const companyLines: string[] = [];
+    if (companyInfoStr) {
+      companyLines.push('', '[公司背景(请在差异化竞争优势/信任背书/路线图中体现公司优势)]');
+      companyLines.push(companyInfoStr);
+    }
+
     return [
       ctxUserPrompt,
       '',
       '[人设定制任务]',
       `用户输入: ${inputStr}`,
+      ...productLines,
+      ...companyLines,
       '',
       '⚠️ 严格约束(违反则输出无效):',
       '- coreIdentity.memoryPoints: 必须正好 3 个',
