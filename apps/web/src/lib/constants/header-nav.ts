@@ -9,29 +9,36 @@ export interface HeaderNavGroup {
 }
 
 export const HEADER_NAV: HeaderNavGroup[] = [
+  // ── 重构.txt 1级/2级导航(严格按文件顺序) ──
   {
-    label: '创作',
-    items: [
-      { label: '爆款选题', href: '/step/5' },
-      { label: '文案生成', href: '/step/7' },
-      { label: '文案解析', href: '/video-analysis' },
-    ],
-  },
-  {
-    label: '策划',
+    label: '商业定位',
     items: [
       { label: '选择行业', href: '/step/1' },
+      { label: '变现路径', href: '/step/4b' },
       { label: '账号包装', href: '/step/3' },
       { label: '人设定制', href: '/step/3b' },
       { label: '执行计划', href: '/step/4' },
-      { label: '变现路径', href: '/step/4b' },
+    ],
+  },
+  {
+    label: '内容创作',
+    items: [
+      { label: '爆款选题', href: '/step/5' },
+      { label: '文案生成', href: '/step/7' },
+      // 呈现形式已集成进拍摄计划(同 Step6)· 用 /present-styles(重定向 step/6)避免与拍摄计划 href 同值致 React key 冲突
+      { label: '呈现形式', href: '/present-styles' },
       { label: '拍摄计划', href: '/step/6' },
+    ],
+  },
+  {
+    label: '变现执行',
+    items: [
       { label: '直播策划', href: '/step/8' },
       { label: '私域成交', href: '/private-domain' },
     ],
   },
   {
-    label: '智能',
+    label: '智能助手',
     items: [
       { label: 'IP诊断', href: '/diagnosis' },
       { label: '每日任务', href: '/daily-tasks' },

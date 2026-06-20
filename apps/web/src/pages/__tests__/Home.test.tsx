@@ -97,7 +97,8 @@ describe('Home page — FUNCTION MATRIX', () => {
   });
   it('group: 内容创作', () => {
     renderHome();
-    expect(screen.getByText('内容创作')).toBeTruthy();
+    // 顶部导航 1 级也有「内容创作」(重构.txt 导航重构)→ 页面两处同名·用 getAllByText 验矩阵该组存在
+    expect(screen.getAllByText('内容创作').length).toBeGreaterThan(0);
   });
   it('group: 智能工具', () => {
     renderHome();
