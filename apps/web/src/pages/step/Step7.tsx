@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep } from '@/hooks/useStepData';
 import { trpc, type RouterOutputs } from '@/lib/trpc';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -37,6 +38,13 @@ export interface CopywritingResult {
   markdown: string;
   structure: string;
   hooks: string[];
+  cta: string;
+}
+
+// PRD-37 US-P10 AC3: viralStructure 形状(来自 AnalysisAgent viral mode 输出)
+interface ViralStructure {
+  hook: string;
+  body: string;
   cta: string;
 }
 
@@ -174,6 +182,42 @@ export default function Step7() {
   const [topic, setTopic] = useState(urlTopic ?? DEFAULT_FORM.topic);
   const [optimizeGoal, setOptimizeGoal] = useState('');
 
+  // ── US-P10 AC3: 爆款解析(viral mode) state ───────────────────────────────────
+  // copyText: 用户输入的对标爆款文案; viralStructure: 拆解结果; viral mutation 三态
+  const [viralCopyText, setViralCopyText] = useState('');
+  const [viralStructure, setViralStructure] = useState<ViralStructure | null>(null);
+  const [viralExpanded, setViralExpanded] = useState(false);
+
+  // ── US-P10 AC4: 从 step5 stepData(LS)读取选题回显 ───────────────────────────
+  const step5Topic: string | null = (() => {
+    const data = readOtherStep<Record<string, unknown>>(accountId, 'step5');
+    if (!data) return null;
+    // step5 存的选题可能在 lastTopic / topic 字段
+    const candidate = (data['lastTopic'] ?? data['topic'] ?? null);
+    return typeof candidate === 'string' && candidate.trim() ? candidate.trim() : null;
+  })();
+
+  // ── viral analysis mutation (trpc.videoAnalysis.analyze) ────────────────────
+  const viralMutation = trpc.videoAnalysis.analyze.useMutation({
+    onSuccess: (row) => {
+      try {
+        const parsed = JSON.parse(row.content) as { viralStructure?: ViralStructure };
+        const vs = parsed?.viralStructure;
+        if (vs && (vs.hook || vs.body || vs.cta)) {
+          setViralStructure(vs);
+          toast.success('爆款结构拆解完成，将自动注入文案生成');
+        } else {
+          toast.info('未能拆解爆款结构，可直接生成文案');
+        }
+      } catch {
+        toast.error('解析爆款结构失败');
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message || '爆款解析失败，请重试');
+    },
+  });
+
   // Sync topic from URL param (e.g. navigate back from Trending)
   useEffect(() => {
     if (urlTopic) setTopic(urlTopic);
@@ -230,8 +274,16 @@ export default function Step7() {
         topic,
         ...(urlSource !== undefined ? { source: urlSource } : {}),
         ...(urlTrendingId !== undefined ? { trendingId: urlTrendingId } : {}),
+        // US-P10 AC3: 注入爆款结构(US-P09 CopywritingAgent step7 链已消费 viralStructure)
+        ...(urlTrendingId !== undefined ? { sourceTrendingId: urlTrendingId } : {}),
+        ...(viralStructure !== null ? { viralStructure } : {}),
       },
     });
+  }
+
+  function handleViralAnalyze() {
+    if (!viralCopyText.trim() || viralMutation.isPending) return;
+    viralMutation.mutate({ lastCopy: viralCopyText });
   }
 
   function handleCopyResult() {
@@ -699,78 +751,59 @@ export default function Step7() {
                 <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn }}>选择适合的内容框架</p>
               </div>
             </div>
-            <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+            {/* US-P10 AC5: 脚本类型卡片横排单行铺开(flex-wrap,去列数上限) */}
+            <div data-testid="step7-script-type-cards" style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
               {SCRIPT_TYPES.map((type) => {
                 const active = selectedScriptTypeId === type.id;
                 return (
-                  <Item key={type.id} style={{ height: '100%' }}>
-                    <motion.button
-                      type="button"
-                      onClick={() => setSelectedScriptTypeId(type.id)}
-                      aria-pressed={active}
-                      whileHover={{ y: -2 }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-                      className="lg-glass"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        width: '100%',
-                        height: '100%',
-                        gap: 8,
-                        overflow: 'hidden',
-                        borderRadius: 14,
-                        padding: 14,
-                        textAlign: 'left',
-                        background: active ? 'rgba(168,197,224,0.22)' : 'transparent',
-                        border: active ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
-                        cursor: 'pointer',
-                        transition: 'background 0.2s, border-color 0.2s',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span
-                          style={{
-                            display: 'flex',
-                            height: 36,
-                            width: 36,
-                            flexShrink: 0,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: 10,
-                            background: active
-                              ? 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))'
-                              : 'rgba(255,255,255,0.08)',
-                            color: active ? '#fff' : 'rgba(255,255,255,0.8)',
-                          }}
-                        >
-                          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>{type.name}</span>
-                        <span
-                          style={{
-                            marginLeft: 'auto',
-                            display: 'flex',
-                            height: 16,
-                            width: 16,
-                            flexShrink: 0,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '50%',
-                            background: active ? C.ikb : 'transparent',
-                            border: active ? 'none' : `1px solid rgba(255,255,255,0.3)`,
-                            color: active ? '#fff' : 'transparent',
-                            transition: 'background 0.2s',
-                          }}
-                        >
-                          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>check</span>
-                        </span>
-                      </div>
-                      <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginTop: 'auto' }}>{type.desc}</span>
-                    </motion.button>
-                  </Item>
+                  <motion.button
+                    key={type.id}
+                    type="button"
+                    onClick={() => setSelectedScriptTypeId(type.id)}
+                    aria-pressed={active}
+                    whileHover={{ y: -2 }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                    className="lg-glass"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      minWidth: 100,
+                      gap: 6,
+                      overflow: 'hidden',
+                      borderRadius: 14,
+                      padding: '10px 14px',
+                      textAlign: 'left',
+                      background: active ? 'rgba(168,197,224,0.22)' : 'transparent',
+                      border: active ? `1px solid rgba(168,197,224,0.6)` : '1px solid rgba(255,255,255,0.08)',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s, border-color 0.2s',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span
+                        style={{
+                          display: 'flex',
+                          height: 32,
+                          width: 32,
+                          flexShrink: 0,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 9,
+                          background: active
+                            ? 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.4))'
+                            : 'rgba(255,255,255,0.08)',
+                          color: active ? '#fff' : 'rgba(255,255,255,0.8)',
+                        }}
+                      >
+                        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>{SCRIPT_TYPE_ICONS[type.id] ?? 'article'}</span>
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow, whiteSpace: 'nowrap' }}>{type.name}</span>
+                    </div>
+                    <span style={{ display: 'block', fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn, lineHeight: 1.4 }}>{type.desc}</span>
+                  </motion.button>
                 );
               })}
-            </RevealGroup>
+            </div>
           </div>
         </Reveal>
 
@@ -951,6 +984,185 @@ export default function Step7() {
           </Reveal>
         </div>
       </div>
+
+      {/* ── US-P10 AC4: 爆款选题回显(来自 step5 stepData LS)─── */}
+      {step5Topic && (
+        <Reveal style={{ marginBottom: 20 }}>
+          <div
+            data-testid="step7-step5-topic-echo"
+            className="lg-glass"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              borderRadius: 16,
+              padding: '14px 20px',
+              border: `1px solid rgba(168,197,224,0.35)`,
+              background: 'rgba(168,197,224,0.08)',
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb, flexShrink: 0 }}>lightbulb</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono, margin: 0, textShadow: C.textShadow }}>来自爆款选题阶段</p>
+              <p
+                data-testid="step7-step5-topic-text"
+                style={{ fontSize: 14, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: '4px 0 0', textShadow: C.textShadow, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              >
+                {step5Topic}
+              </p>
+            </div>
+            <motion.button
+              type="button"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+              onClick={() => setTopic(step5Topic)}
+              className="lg-glass"
+              style={{ flexShrink: 0, borderRadius: 10, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: C.ikb, border: `0.5px solid rgba(168,197,224,0.5)`, background: 'transparent', cursor: 'pointer', fontFamily: F.cn, textShadow: C.textShadow }}
+            >
+              用此选题
+            </motion.button>
+          </div>
+        </Reveal>
+      )}
+
+      {/* ── US-P10 AC3: 爆款解析区(可选·展开/收起)────────────── */}
+      <Reveal style={{ marginBottom: 20 }}>
+        <div className="lg-glass" style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid rgba(168,197,224,0.25)` }}>
+          {/* 折叠头 */}
+          <button
+            type="button"
+            data-testid="step7-viral-toggle"
+            onClick={() => setViralExpanded((v) => !v)}
+            style={{
+              display: 'flex',
+              width: '100%',
+              alignItems: 'center',
+              gap: 10,
+              padding: '14px 20px',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              textAlign: 'left',
+            }}
+          >
+            <span style={{ display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.ikb, flexShrink: 0 }}>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>rocket_launch</span>
+            </span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                可选：集成爆款解析（增强文案质量）
+              </p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn, margin: 0 }}>
+                粘贴对标爆款文案 → AI 拆解 hook/body/cta 结构 → 按爆款结构生成
+              </p>
+            </div>
+            {viralStructure && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, padding: '3px 10px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.22)', color: C.ikb, fontFamily: F.mono, textShadow: C.textShadow, flexShrink: 0 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }}>check_circle</span>
+                已拆解
+              </span>
+            )}
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: 'rgba(255,255,255,0.5)', flexShrink: 0, transform: viralExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>expand_more</span>
+          </button>
+
+          {/* 展开内容 */}
+          {viralExpanded && (
+            <div style={{ borderTop: `1px solid rgba(255,255,255,0.1)`, padding: '16px 20px' }}>
+              <div
+                className="lg-glass"
+                style={{ overflow: 'hidden', borderRadius: 12, border: `1px solid rgba(255,255,255,0.1)`, marginBottom: 12 }}
+                onFocusCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(168,197,224,0.5)'; }}
+                onBlurCapture={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.1)'; }}
+              >
+                <textarea
+                  data-testid="step7-viral-copy-input"
+                  value={viralCopyText}
+                  onChange={(e) => setViralCopyText(e.target.value)}
+                  rows={4}
+                  placeholder="粘贴对标爆款文案（至少10字），AI 将拆解其爆款结构注入文案生成"
+                  style={{
+                    width: '100%',
+                    resize: 'none',
+                    border: 0,
+                    background: 'transparent',
+                    padding: 14,
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    outline: 'none',
+                    fontFamily: F.cn,
+                    color: C.ink,
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  type="button"
+                  data-testid="step7-viral-analyze-btn"
+                  onClick={handleViralAnalyze}
+                  disabled={viralCopyText.trim().length < 10 || viralMutation.isPending}
+                  className="lg-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    borderRadius: 9999,
+                    padding: '8px 20px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#fff',
+                    fontFamily: F.cn,
+                    border: 'none',
+                    cursor: viralCopyText.trim().length < 10 || viralMutation.isPending ? 'not-allowed' : 'pointer',
+                    opacity: viralCopyText.trim().length < 10 || viralMutation.isPending ? 0.45 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>
+                    {viralMutation.isPending ? 'progress_activity' : 'auto_awesome'}
+                  </span>
+                  {viralMutation.isPending ? '拆解中…' : '拆解爆款结构'}
+                </button>
+                {viralStructure && (
+                  <button
+                    type="button"
+                    onClick={() => setViralStructure(null)}
+                    style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.cn }}
+                  >
+                    清除结构
+                  </button>
+                )}
+                <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: F.mono }}>端到端真调待后端 key · UI 已接通</span>
+              </div>
+              {/* 拆解结果展示 */}
+              {viralStructure && (
+                <div
+                  data-testid="step7-viral-structure-result"
+                  style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}
+                >
+                  {viralStructure.hook && (
+                    <div className="lg-glass" style={{ borderRadius: 10, padding: '8px 14px', border: `0.5px solid rgba(168,197,224,0.35)` }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono }}>HOOK · 开场钩子</span>
+                      <p style={{ fontSize: 12, color: C.ink, fontFamily: F.cn, margin: '4px 0 0', textShadow: C.textShadow }}>{viralStructure.hook}</p>
+                    </div>
+                  )}
+                  {viralStructure.body && (
+                    <div className="lg-glass" style={{ borderRadius: 10, padding: '8px 14px', border: `0.5px solid rgba(255,255,255,0.15)` }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.84)', fontFamily: F.mono }}>BODY · 正文结构</span>
+                      <p style={{ fontSize: 12, color: C.ink, fontFamily: F.cn, margin: '4px 0 0', textShadow: C.textShadow }}>{viralStructure.body}</p>
+                    </div>
+                  )}
+                  {viralStructure.cta && (
+                    <div className="lg-glass" style={{ borderRadius: 10, padding: '8px 14px', border: `0.5px solid rgba(168,197,224,0.25)` }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ikb, fontFamily: F.mono }}>CTA · 行动号召</span>
+                      <p style={{ fontSize: 12, color: C.ink, fontFamily: F.cn, margin: '4px 0 0', textShadow: C.textShadow }}>{viralStructure.cta}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Reveal>
 
       {/* ── 空态 (无真实结果 · 非加载中) ───────────────────── */}
       {!hasResult && !generateMutation.isPending && !dbQuery.isLoading && (

@@ -122,6 +122,13 @@ export default function Step1() {
   const [uploadingProduct, setUploadingProduct] = useState(false);
   const [uploadingPersona, setUploadingPersona] = useState(false);
 
+  // ── US-P10 AC1: 生成爆款选题 — 关联资料下拉框 ──────────────────────────────
+  const [topicGenAssetId, setTopicGenAssetId] = useState<string>('');
+  const allUploadedFiles = [
+    ...productFiles.map((f) => ({ ...f, type: '产品资料' })),
+    ...personaFiles.map((f) => ({ ...f, type: '人物介绍' })),
+  ];
+
   const uploadAssetMutation = trpc.asset.uploadAsset.useMutation();
 
   // PRD-37 US-P08: 支持 PDF/Word(.docx)/Excel(.xlsx)/Markdown(.md)
@@ -260,6 +267,26 @@ export default function Step1() {
     setSelectedSubId('');
     setSubCustomValue('');
     setSubError('');
+  }
+
+  // ── US-P10 AC1: 跳转到爆款选题生成(Step5) ──────────────────────────────────
+  function handleGoToTopicGen() {
+    // 先保存当前行业选择(如有)，再跳转到 Step5 带上关联 assetId
+    if (hasSelection && accountId !== null) {
+      const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
+      save({
+        industry: selectedLabel,
+        lastIndustry: selectedLabel,
+        lastIndustryCategory: selectedIndustry?.id ?? '',
+        lastIndustrySub: resolvedSubValue,
+        ...(subCustomFlag ? { industrySubCustom: true } : {}),
+        productMaterialAssetIds: productFiles.map((f) => f.assetId),
+        personaFileAssetIds: personaFiles.map((f) => f.assetId),
+      });
+    }
+    const params = new URLSearchParams();
+    if (topicGenAssetId) params.set('assetId', topicGenAssetId);
+    navigate(`/step/5${params.toString() ? `?${params.toString()}` : ''}`);
   }
 
   function handleSubmit() {
@@ -468,6 +495,79 @@ export default function Step1() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
+            {/* ── US-P10 AC1: 生成爆款选题入口 ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+              {/* 关联资料下拉(暂定 · AC1 规定下拉框形式) */}
+              {allUploadedFiles.length > 0 && (
+                <div
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    padding: '2px 4px',
+                    border: `0.5px solid rgba(168,197,224,0.5)`,
+                    minWidth: 160,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 15, color: C.ikb, flexShrink: 0, marginLeft: 6 }}>attach_file</span>
+                  <select
+                    data-testid="step1-topic-asset-select"
+                    value={topicGenAssetId}
+                    onChange={(e) => setTopicGenAssetId(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 11,
+                      fontFamily: F.cn,
+                      color: topicGenAssetId ? C.ink : 'rgba(255,255,255,0.55)',
+                      padding: '6px 8px',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                    }}
+                  >
+                    <option value="" style={{ background: '#1a2a4a', color: 'rgba(255,255,255,0.6)' }}>关联资料（可选）</option>
+                    {allUploadedFiles.map((f) => (
+                      <option key={f.assetId} value={String(f.assetId)} style={{ background: '#1a2a4a', color: '#fff' }}>
+                        [{f.type}] {f.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <motion.button
+                type="button"
+                data-testid="step1-goto-topic-gen"
+                onClick={handleGoToTopicGen}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-glass ikb-focusring"
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 12,
+                  padding: '10px 16px',
+                  fontFamily: F.cn,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  cursor: 'pointer',
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.12)',
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>local_fire_department</span>
+                生成爆款选题
+              </motion.button>
+            </div>
+
             <motion.button
               type="button"
               onClick={() => setCustomModalOpen(true)}

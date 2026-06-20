@@ -155,6 +155,9 @@ export type Step6Input = z.infer<typeof Step6InputSchema>;
 
 // ── Step 7: 文案生成 ──────────────────────────────────────────────────────────
 
+// PRD-37 US-P09 AC6: 增 sourceTrendingId/viralStructure (optional · 向后兼容)
+// sourceTrendingId: 来源选题 ID(Step5 爆款选题 id·可选)
+// viralStructure: AnalysisAgent viral mode 输出的顶层结构(hook/body/cta·可选)
 export const Step7InputSchema = z.object({
   lastScriptType: z.enum(STEP_SCRIPT_TYPE_KEYS, {
     errorMap: () => ({ message: '请选择脚本类型' }),
@@ -163,6 +166,8 @@ export const Step7InputSchema = z.object({
     z.enum(STEP_HOT_ELEMENT_KEYS, { errorMap: () => ({ message: '无效元素' }) }),
   ).max(5),
   lastTopic: z.string().min(2, { message: '话题至少2字' }).max(200),
+  sourceTrendingId: z.string().optional(),
+  viralStructure: z.unknown().optional(),
 });
 
 export type Step7Input = z.infer<typeof Step7InputSchema>;

@@ -45,7 +45,7 @@ export const analysisStructuralInput = z.object({
   copy: z.string().min(10).max(3000),
 });
 
-/** viral mode output: 元素拆解 + 洞察 + 仿写版 */
+/** viral mode output: 元素拆解 + 洞察 + 仿写版 + 爆款结构(viralStructure) */
 export const analysisViralOutput = z.object({
   analysis: z.object({
     elements: z.array(z.string()),
@@ -53,6 +53,12 @@ export const analysisViralOutput = z.object({
     hookType: z.string(),
     viralFormula: z.string(),
     evaluation: z.string().optional(),
+  }),
+  // PRD-37 US-P09 AC3: 顶层 viralStructure — hook/正文/CTA 结构化拆解
+  viralStructure: z.object({
+    hook: z.string().min(10),      // 开场钩子(≥10字·描述钩子手法+内容)
+    body: z.string().min(10),      // 正文结构(≥10字·描述展开逻辑/叙事节奏)
+    cta: z.string().min(5),        // 行动号召(≥5字·描述 CTA 类型+话术)
   }),
   insights: z
     .array(
@@ -126,6 +132,12 @@ const AnalysisViralBaseSchema = z.object({
     hookType: z.string(),
     viralFormula: z.string(),
     evaluation: z.string().optional(),
+  }),
+  // PRD-37 US-P09 AC3: viralStructure — hook/body/cta 结构化拆解(base schema·无 min 约束)
+  viralStructure: z.object({
+    hook: z.string(),
+    body: z.string(),
+    cta: z.string(),
   }),
   insights: z.array(
     z.object({
@@ -257,6 +269,12 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         hookType: 'opening_5s',
         viralFormula: '好奇 + 反差 → 情绪共鸣 → 行动（系统备用模板）',
       },
+      // PRD-37 US-P09 AC3: viralStructure fallback
+      viralStructure: {
+        hook: '用反差数据/问句瞬间抓住注意力，在 5 秒内触发「这说的就是我」共鸣（系统备用）',
+        body: '痛点展开→案例佐证→解决方案三段推进，情绪逐层递进至共鸣高峰（系统备用）',
+        cta: '关注 / 评论区互动引导，降低行动门槛，促进转发扩散（系统备用）',
+      },
       insights: [
         {
           element: 'curiosity',
@@ -385,6 +403,12 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         '    "viralFormula": "爆款公式概括",',
         '    "evaluation": "叙事节奏综合评估(30-80字，描述内容起伏与节奏感)"',
         '  },',
+        // PRD-37 US-P09 AC3: viralStructure 顶层字段 — hook/body/cta 结构化拆解
+        '  "viralStructure": {',
+        '    "hook": "开场钩子拆解(20-60字)：描述钩子手法+开场具体内容+情绪触发点",',
+        '    "body": "正文结构拆解(20-80字)：描述展开逻辑/叙事节奏/论点推进方式",',
+        '    "cta": "行动号召拆解(10-40字)：描述 CTA 类型+具体话术+转化目标"',
+        '  },',
         '  "insights": [',
         '    { "element": "元素名", "explanation": "为什么这里用此元素", "impact": "高/中/低" }',
         '    // 至少 3 条',
@@ -411,6 +435,8 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
         '    // 3-6 条叙事时间线',
         '  ]',
         '}',
+        '',
+        '⚠️ viralStructure 必须非空，hook/body/cta 三字段均需描述具体内容，不得返回空字符串或占位符。',
       ].join('\n');
     }
 

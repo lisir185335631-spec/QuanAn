@@ -584,6 +584,15 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     // R-14: topic = 用户填写的创作主题(incidental 元数据) → piiMask
     const topic = piiMask(String(input['topic'] ?? '未指定'));
 
+    // PRD-37 US-P09 AC3: 消费 viralStructure(AnalysisAgent viral 输出顶层字段)
+    const viralStructure = input['viralStructure'] as
+      | { hook?: string; body?: string; cta?: string }
+      | undefined;
+    // sourceTrendingId: 来源选题 ID(Step5·incidental 引用·不 mask·为枚举性 ID)
+    const sourceTrendingId = input['sourceTrendingId']
+      ? String(input['sourceTrendingId'])
+      : undefined;
+
     const parts: string[] = [];
 
     // Inject account-level system context (persona · memory · knowledge assembled by BaseSpecialist)
@@ -602,8 +611,29 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       `脚本类型: ${scriptType}`,
       `爆款元素: ${elements}`,
       `文案主题: ${topic}`,
-      '',
-      '请以 JSON 格式返回完整文案方案:',
+    );
+
+    // PRD-37 US-P09 AC3: viralStructure 存在时注入爆款结构，让 LLM 按其结构生成
+    if (viralStructure && (viralStructure.hook || viralStructure.body || viralStructure.cta)) {
+      parts.push('');
+      parts.push('[爆款结构参考 · 基于对标爆款拆解]');
+      if (sourceTrendingId) {
+        parts.push(`来源选题 ID: ${sourceTrendingId}`);
+      }
+      parts.push('请严格按以下爆款结构组织文案:');
+      if (viralStructure.hook) parts.push(`- 开场钩子: ${viralStructure.hook}`);
+      if (viralStructure.body) parts.push(`- 正文结构: ${viralStructure.body}`);
+      if (viralStructure.cta) parts.push(`- 行动号召: ${viralStructure.cta}`);
+      parts.push('');
+      parts.push(
+        '请以 JSON 格式返回完整文案方案(严格遵循上方爆款结构·hook 开场/body 展开/cta 结尾三段逻辑清晰):',
+      );
+    } else {
+      parts.push('');
+      parts.push('请以 JSON 格式返回完整文案方案:');
+    }
+
+    parts.push(
       '{',
       '  "markdown": "# 爆款文案标题\\n\\n第一段正文内容...\\n\\n(必须以 # 标题开头 · 至少 3 段 · 总字数不少于 500 字)",',
       '  "structure": "内容结构说明(如:痛点引入→解决方案→案例佐证→CTA)",',

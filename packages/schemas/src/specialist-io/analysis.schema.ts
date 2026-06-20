@@ -49,7 +49,7 @@ export const analysisStructuralOutput = z.object({
   cons: z.array(z.string()).min(1),
 });
 
-/** viral mode 输出: 元素拆解 + 洞察 + 仿写版 */
+/** viral mode 输出: 元素拆解 + 洞察 + 仿写版 + 爆款结构(viralStructure) */
 export const analysisViralOutput = z.object({
   analysis: z.object({
     elements: z.array(z.enum(HOT_ELEMENT_KEYS_22)),
@@ -57,6 +57,12 @@ export const analysisViralOutput = z.object({
     hookType: z.string(),
     viralFormula: z.string(),
     evaluation: z.string().optional(),
+  }),
+  // PRD-37 US-P09 AC3: 顶层 viralStructure — hook/正文/CTA 结构化拆解
+  viralStructure: z.object({
+    hook: z.string().min(10),      // 开场钩子(≥10字)
+    body: z.string().min(10),      // 正文结构(≥10字)
+    cta: z.string().min(5),        // 行动号召(≥5字)
   }),
   insights: z
     .array(
