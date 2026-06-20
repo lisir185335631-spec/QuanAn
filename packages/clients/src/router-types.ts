@@ -218,6 +218,10 @@ export type TrendingListItem = TrendingItem & {
   collectCount: number;
   isFavorited: boolean;
   rank: number;
+  // 对标数据源重构补:后端 list/listWithFavorites 返回含 vendor/authorFollowers
+  // (AppRouter 由 codegen 自动跟·此手写辅助别名需手动同步·否则与 RouterOutputs 漂移)
+  vendor: string;
+  authorFollowers: number | null;
 };
 
 export type TrendingDetailItem = TrendingItem & {
