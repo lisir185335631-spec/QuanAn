@@ -36,21 +36,37 @@ const PATTERN_INSTRUCTION_OVERRIDE = {
  * 角色劫持: 试图重置 LLM 身份或注入新 system/assistant 块
  * F-4 fix: "act as a/an" narrowed to adversarial/privileged role names only.
  *   Covered roles: admin, administrator, system, developer, root, the assistant,
- *                  DAN, unrestricted, jailbreak, hacker, AI without restrictions, etc.
+ *                  DAN, unrestricted, jailbreak, jailbroken, hacker, AI without restrictions, etc.
  *   Bare "act as a bridge", "act as a connector", "act as a liaison" no longer trigger.
  *   Strategy: enumerate known hijack nouns — more precise than a blocklist.
+ *
+ * RH-09 fix: added |jailbroken to cover irregular past participle "jailbroken"
+ *   ("jailbreak(?:ed)?" only matched jailbreak/jailbreaked, not jailbroken).
  */
 const PATTERN_ROLE_HIJACK = {
   name: 'role-hijack',
-  re: /system\s*[:：]|assistant\s*[:：]|你现在是|从现在起你是|act\s+as\s+(?:a\s+|an\s+)?(?:admin(?:istrator)?|system|developer|root|the\s+assistant|DAN|unrestricted|jailbreak(?:ed)?|hacker|evil|malicious|unfiltered\s+AI|AI\s+without\s+restrictions)|pretend\s+to\s+be|new\s+instructions?\s*[:：]/gi,
+  re: /system\s*[:：]|assistant\s*[:：]|你现在是|从现在起你是|act\s+as\s+(?:a\s+|an\s+)?(?:admin(?:istrator)?|system|developer|root|the\s+assistant|DAN|unrestricted|jailbreak(?:ed)?|jailbroken|hacker|evil|malicious|unfiltered\s+AI|AI\s+without\s+restrictions)|pretend\s+to\s+be|new\s+instructions?\s*[:：]/gi,
 };
 
 /**
  * 提示词泄露: 试图让 LLM 输出自身系统提示
+ *
+ * PL-03 fix: added 告诉我你的(?:所有)?(?:系统)?(?:提示词?|指令) to catch
+ *   "告诉我你的所有系统提示" and similar Chinese "tell me your ..." prompt-leak patterns.
+ *   Object narrowed to 提示词?|指令 only — avoids false-positives on
+ *   "告诉我你的想法/建议/产品" (无注入语义的正常对话).
+ *
+ * Known soft spot (design trade-off, not fixed):
+ *   II-02 "AI系统:" prefix — widening to match 中文 "AI系统:/智能系统:" would
+ *   create false positives on marketing copy like "智能系统:xxx功能介绍".
+ *   This conflicts with injection-filter's "narrowing over false-positives" design
+ *   philosophy (established in F-4/F-5 fixes). The injection-filter operates on
+ *   RAG/stepData middle layer; a single indirect injection blind spot is acceptable
+ *   since LLM-layer defenses provide additional coverage.
  */
 const PATTERN_PROMPT_LEAK = {
   name: 'prompt-leak',
-  re: /repeat\s+(?:the\s+)?(?:above|your)\s+(?:instructions|prompt)|print\s+your\s+(?:system\s+)?prompt|输出你的(?:系统)?(?:提示|指令)/gi,
+  re: /repeat\s+(?:the\s+)?(?:above|your)\s+(?:instructions|prompt)|print\s+your\s+(?:system\s+)?prompt|输出你的(?:系统)?(?:提示|指令)|告诉我你的(?:所有)?(?:系统)?(?:提示词?|指令)/gi,
 };
 
 /**
