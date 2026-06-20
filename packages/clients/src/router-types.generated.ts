@@ -9,6 +9,10 @@ const _gen = _t.router({
   auth: _t.router({
   me: _t.procedure.query((): { ok: false; error: "unauthenticated"; user?: undefined } | { ok: true; user: { id: number; email: string; name: string }; error?: undefined } => __stub),
   }),
+  asset: _t.router({
+  uploadAsset: _t.procedure.input((x: unknown) => x as { fileDataUrl: string; fileName: string; fileMime: string; fileSizeBytes: number; relatedStepKey?: undefined | string; assetSubtype?: undefined | "product_material" | "persona_file" }).mutation((): { ok: true; assetId: number } => __stub),
+  summarizeStep1Assets: _t.procedure.input((x: unknown) => x as { productMaterialAssetIds?: undefined | Array<number>; personaFileAssetIds?: undefined | Array<number> }).mutation((): { ok: true; productSummary: null | string; personaSummary: null | string } => __stub),
+  }),
   acquisitionVideo: _t.router({
   generate: _t.procedure.input((x: unknown) => x as { sourceCopy: string; conversionGoal: string; platform?: undefined | string; duration?: undefined | "15s" | "30s" | "60s" | "180s" }).mutation((): { traceId: null | string; id: number; agentId: string; agentMode: null | string; content: string; contentType: string; scriptType: null | string; elements: Array<string>; tokensUsed: null | number; modelUsed: null | string; durationMs: null | number; isFallback: boolean; createdAt: Date } => __stub),
   }),

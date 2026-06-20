@@ -130,6 +130,11 @@ vi.mock('@/lib/trpc', () => ({
       saveStream: { useSubscription: vi.fn() },
       progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
+    // PRD-37 US-P08: asset router mock
+    asset: {
+      uploadAsset: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ ok: true, assetId: 1 }), isPending: false }) },
+      summarizeStep1Assets: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ ok: true, productSummary: null, personaSummary: null }), isPending: false }) },
+    },
   },
   queryClient: {},
   trpcClient: {},

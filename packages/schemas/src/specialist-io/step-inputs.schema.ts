@@ -56,10 +56,13 @@ export type StepHotElementKey = (typeof STEP_HOT_ELEMENT_KEYS)[number];
 
 // z.string().min(1) allows both enum keys and custom industry strings; rejects empty (AC-14)
 // PRD-37 US-P04: 加两层行业字段(optional · 向后兼容 · 保留 lastIndustry 双写)
+// PRD-37 US-P08: 加文件 Asset ID 列表(optional · 上传前置 Step1 → 前端写入 productMaterialAssetIds/personaFileAssetIds)
 export const Step1InputSchema = z.object({
   lastIndustry: z.string().min(1, { message: '行业必填' }),
   lastIndustryCategory: z.string().optional(),
   lastIndustrySub: z.string().optional(),
+  productMaterialAssetIds: z.array(z.number()).optional(),
+  personaFileAssetIds: z.array(z.number()).optional(),
 });
 
 export type Step1Input = z.infer<typeof Step1InputSchema>;

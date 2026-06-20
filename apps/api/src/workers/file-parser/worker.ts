@@ -20,13 +20,15 @@ import { redis } from '@/lib/redis';
 import { computeDeepLearnAutoVerdict } from '@/services/admin/content-review/deep-learn-auto-verdict.service';
 
 import { FILE_PARSER_QUEUE_NAME } from './queue';
+import { parseFileBuffer } from './parse-engine';
 
 import type { FileParserJobPayload } from './queue';
 import type { Prisma} from '@prisma/client';
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
 
-// AC-5: whitelist — PDF / Word / CSV / MD / TXT
+// AC-5: whitelist — PDF / Word / CSV / MD / TXT / Excel (.xlsx)
+// PRD-37 US-P07: added xlsx MIME types (file:worker.ts:30)
 const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
   'application/msword',
@@ -35,6 +37,9 @@ const ALLOWED_MIME_TYPES = new Set([
   'text/markdown',
   'text/x-markdown',
   'text/plain',
+  // Excel — added for PRD-37 US-P07
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
 ]);
 
 function makePayloadHash(payload: unknown): string {
@@ -71,9 +76,9 @@ async function writeAuditLog(
   });
 }
 
-/** AC-1: process one file upload — validate → scan → write review queue */
+/** AC-1: process one file upload — validate → parse → scan → write review queue + Asset */
 export async function processFileParserJob(payload: FileParserJobPayload): Promise<void> {
-  const { userId, accountId, fileName, fileMime, fileSize, rawText } = payload;
+  const { userId, accountId, fileName, fileMime, fileSize, rawText, assetId, fileBuffer } = payload;
   const traceId = `file-parser-${userId}-${randomBytes(4).toString('hex')}`;
 
   logger.info({ userId, accountId, fileName, fileMime, fileSize, traceId }, 'file_parser_worker.started');
@@ -91,16 +96,54 @@ export async function processFileParserJob(payload: FileParserJobPayload): Promi
   }
 
   // AC-7: S3 stub (D-077 isMock mode)
+  // S3 status: TRUE S3 upload awaiting credentials; currently mock/local only.
   const fileUrl = `mock-s3://bucket/${fileName}`;
 
-  // Detect parse failure (empty content)
-  const parseFailed = !rawText || rawText.trim() === '';
+  // PRD-37 US-P07: Asset parse flow (file:worker.ts)
+  // When fileBuffer (base64) is provided, use the real parse engine.
+  // Otherwise fall back to rawText pre-injected by caller (isMock / legacy path).
+  let extractedText = rawText ?? '';
+  let assetParseFailed = false;
+
+  if (fileBuffer !== undefined && fileBuffer !== '') {
+    try {
+      const buf = Buffer.from(fileBuffer, 'base64');
+      extractedText = await parseFileBuffer(buf, fileMime, fileName);
+      if (!extractedText || extractedText.trim() === '') {
+        assetParseFailed = true;
+        logger.warn({ userId, fileName, traceId }, 'file_parser_worker.engine_empty_result');
+      }
+    } catch (parseErr) {
+      assetParseFailed = true;
+      logger.warn({ userId, fileName, traceId, parseErr }, 'file_parser_worker.engine_error');
+    }
+  }
+
+  // Write Asset.parsedText + parsingStatus after engine run (PRD-37 US-P07)
+  // file:worker.ts — Asset解析流 写入点
+  if (assetId !== undefined) {
+    await prisma.asset.update({
+      where: { id: assetId },
+      data: {
+        parsedText: assetParseFailed ? null : extractedText,
+        parsingStatus: assetParseFailed ? 'failed' : 'completed',
+        parsingError: assetParseFailed ? 'parse_engine_failed' : null,
+      },
+    });
+    logger.info(
+      { userId, assetId, parsingStatus: assetParseFailed ? 'failed' : 'completed', traceId },
+      'file_parser_worker.asset_updated',
+    );
+  }
+
+  // Detect parse failure (empty content) for deepLearn verdict
+  const parseFailed = !extractedText || extractedText.trim() === '';
   if (parseFailed) {
     logger.warn({ userId, fileName, traceId }, 'file_parser_worker.parse_failed');
   }
 
   const { autoVerdict, scanResult, redactedText } = await computeDeepLearnAutoVerdict(
-    rawText ?? '',
+    extractedText,
     { parseFailed },
   );
 

@@ -17,6 +17,18 @@ export interface FileParserJobPayload {
   fileSize: number;
   /** Raw text content — isMock mode (D-077): caller pre-extracts text before enqueue */
   rawText: string;
+  /**
+   * PRD-37 US-P07: Asset DB row id.
+   * When present, worker writes parsedText + parsingStatus='completed'|'failed' after parse.
+   * S3 status: mock/local only — real S3 upload awaiting credentials.
+   */
+  assetId?: number;
+  /**
+   * PRD-37 US-P07: Base64-encoded file bytes for real parse engine.
+   * When present, overrides rawText path and is fed to parse-engine.
+   * S3 status: mock/local only — real S3 upload awaiting credentials.
+   */
+  fileBuffer?: string;
 }
 
 export const fileParserQueue = new Queue<FileParserJobPayload>(FILE_PARSER_QUEUE_NAME, {

@@ -6,7 +6,8 @@
  */
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
@@ -14,6 +15,7 @@ import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-nex
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useStepData } from '@/hooks/useStepData';
+import { trpc } from '@/lib/trpc';
 import {
   type Industry,
   STEP1_INDUSTRIES_56,
@@ -112,6 +114,85 @@ export default function Step1() {
   const [customIndustry, setCustomIndustry] = useState<string>('');
   const [customModalOpen, setCustomModalOpen] = useState(false);
 
+  // ── US-P08: 文件上传状态 ─────────────────────────────────────────────────────
+  const productFileInputRef = useRef<HTMLInputElement>(null);
+  const personaFileInputRef = useRef<HTMLInputElement>(null);
+  const [productFiles, setProductFiles] = useState<Array<{ name: string; assetId: number }>>([]);
+  const [personaFiles, setPersonaFiles] = useState<Array<{ name: string; assetId: number }>>([]);
+  const [uploadingProduct, setUploadingProduct] = useState(false);
+  const [uploadingPersona, setUploadingPersona] = useState(false);
+
+  const uploadAssetMutation = trpc.asset.uploadAsset.useMutation();
+
+  // PRD-37 US-P08: 支持 PDF/Word(.docx)/Excel(.xlsx)/Markdown(.md)
+  const STEP1_FILE_ACCEPT = '.pdf,.doc,.docx,.xlsx,.xls,.md,.markdown';
+  const STEP1_FILE_ACCEPT_LABEL = 'PDF / Word / Excel / Markdown';
+
+  function readFileAsBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve((e.target?.result as string) ?? '');
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleProductFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploadingProduct(true);
+    try {
+      const newEntries: Array<{ name: string; assetId: number }> = [];
+      for (const file of files) {
+        const dataUrl = await readFileAsBase64(file);
+        const result = await uploadAssetMutation.mutateAsync({
+          fileDataUrl: dataUrl,
+          fileName: file.name,
+          fileMime: file.type || 'application/octet-stream',
+          fileSizeBytes: file.size,
+          relatedStepKey: 'step1',
+          assetSubtype: 'product_material',
+        });
+        newEntries.push({ name: file.name, assetId: result.assetId });
+      }
+      setProductFiles((prev) => [...prev, ...newEntries]);
+      toast.success(`已上传 ${newEntries.length} 个产品资料，解析中…`);
+    } catch {
+      toast.error('上传失败，请重试');
+    } finally {
+      setUploadingProduct(false);
+      if (productFileInputRef.current) productFileInputRef.current.value = '';
+    }
+  }
+
+  async function handlePersonaFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploadingPersona(true);
+    try {
+      const newEntries: Array<{ name: string; assetId: number }> = [];
+      for (const file of files) {
+        const dataUrl = await readFileAsBase64(file);
+        const result = await uploadAssetMutation.mutateAsync({
+          fileDataUrl: dataUrl,
+          fileName: file.name,
+          fileMime: file.type || 'application/octet-stream',
+          fileSizeBytes: file.size,
+          relatedStepKey: 'step1',
+          assetSubtype: 'persona_file',
+        });
+        newEntries.push({ name: file.name, assetId: result.assetId });
+      }
+      setPersonaFiles((prev) => [...prev, ...newEntries]);
+      toast.success(`已上传 ${newEntries.length} 个人物介绍，解析中…`);
+    } catch {
+      toast.error('上传失败，请重试');
+    } finally {
+      setUploadingPersona(false);
+      if (personaFileInputRef.current) personaFileInputRef.current.value = '';
+    }
+  }
+
   // ── US-P05: 子行业两层选择状态 ───────────────────────────────────────────────
   const [selectedSubId, setSelectedSubId] = useState<string>('');
   const [subCustomValue, setSubCustomValue] = useState<string>('');
@@ -189,6 +270,7 @@ export default function Step1() {
       return;
     }
     // AC-4: 落库 industry / lastIndustry / lastIndustryCategory / lastIndustrySub
+    // PRD-37 US-P08: 同时存 productMaterialAssetIds / personaFileAssetIds
     const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
     save({
       industry: selectedLabel,
@@ -196,6 +278,8 @@ export default function Step1() {
       lastIndustryCategory: selectedIndustry?.id ?? '',
       lastIndustrySub: resolvedSubValue,
       ...(subCustomFlag ? { industrySubCustom: true } : {}),
+      productMaterialAssetIds: productFiles.map((f) => f.assetId),
+      personaFileAssetIds: personaFiles.map((f) => f.assetId),
     });
     navigate('/step/3');
   }
@@ -1129,6 +1213,243 @@ export default function Step1() {
             </motion.div>
           </Reveal>
         )}
+
+        {/* ── US-P08: 文件上传(产品资料 + 人物介绍) ─────────── */}
+        <Reveal style={{ marginBottom: 44 }}>
+          <motion.div
+            className="lg-glass lg-spec"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+            style={{ borderRadius: 20, padding: 28 }}
+          >
+            {/* 区块标题 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>upload_file</span>
+              </span>
+              <div>
+                <h2 style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                  信息采集（可选）
+                </h2>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn, margin: 0 }}>
+                  上传产品资料 · AI 将自动梳理产品卖点与人物背景
+                </p>
+              </div>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  borderRadius: 999,
+                  background: 'rgba(168,197,224,0.15)',
+                  padding: '4px 12px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                支持 {STEP1_FILE_ACCEPT_LABEL}
+              </span>
+            </div>
+
+            {/* 两个上传区 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              {/* 产品资料 dropzone */}
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10, textShadow: C.textShadow }}>
+                  产品资料
+                </p>
+                <motion.button
+                  type="button"
+                  aria-label="上传产品资料"
+                  data-testid="step1-upload-product"
+                  onClick={() => productFileInputRef.current?.click()}
+                  disabled={uploadingProduct}
+                  whileHover={uploadingProduct ? {} : { y: -4 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    width: '100%',
+                    cursor: uploadingProduct ? 'not-allowed' : 'pointer',
+                    borderRadius: 16,
+                    borderStyle: 'dashed',
+                    borderWidth: 1,
+                    borderColor: 'rgba(168,197,224,0.4)',
+                    padding: '28px 16px',
+                    textAlign: 'center',
+                    background: 'rgba(168,197,224,0.06)',
+                    opacity: uploadingProduct ? 0.6 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 28, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
+                    {uploadingProduct ? 'progress_activity' : 'description'}
+                  </span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {uploadingProduct ? '上传中…' : '上传产品资料'}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>
+                    产品介绍、卖点、价格体系、客户案例等
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                    仅支持 PDF / Word / Excel / Markdown
+                  </p>
+                </motion.button>
+                <input
+                  ref={productFileInputRef}
+                  type="file"
+                  accept={STEP1_FILE_ACCEPT}
+                  multiple
+                  onChange={handleProductFilesChange}
+                  className="sr-only"
+                  data-testid="step1-product-file-input"
+                />
+                {/* 已上传文件列表 */}
+                {productFiles.length > 0 && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {productFiles.map((f, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          borderRadius: 8,
+                          background: 'rgba(168,197,224,0.12)',
+                          border: '0.5px solid rgba(168,197,224,0.3)',
+                          padding: '6px 10px',
+                          fontSize: 12,
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>check_circle</span>
+                        <span style={{ flex: 1, color: C.ink, fontFamily: F.cn, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textShadow: C.textShadow }}>
+                          {f.name}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.ikb, fontFamily: F.mono }}>解析中</span>
+                        <button
+                          type="button"
+                          aria-label={`删除 ${f.name}`}
+                          onClick={() => setProductFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: 0, display: 'flex' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 人物介绍 dropzone */}
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10, textShadow: C.textShadow }}>
+                  人物介绍
+                </p>
+                <motion.button
+                  type="button"
+                  aria-label="上传人物介绍"
+                  data-testid="step1-upload-persona"
+                  onClick={() => personaFileInputRef.current?.click()}
+                  disabled={uploadingPersona}
+                  whileHover={uploadingPersona ? {} : { y: -4 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    width: '100%',
+                    cursor: uploadingPersona ? 'not-allowed' : 'pointer',
+                    borderRadius: 16,
+                    borderStyle: 'dashed',
+                    borderWidth: 1,
+                    borderColor: 'rgba(168,197,224,0.4)',
+                    padding: '28px 16px',
+                    textAlign: 'center',
+                    background: 'rgba(168,197,224,0.06)',
+                    opacity: uploadingPersona ? 0.6 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 28, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
+                    {uploadingPersona ? 'progress_activity' : 'person'}
+                  </span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {uploadingPersona ? '上传中…' : '上传人物介绍'}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>
+                    个人经历、行业背景、专业资质、从业故事等
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                    仅支持 PDF / Word / Excel / Markdown
+                  </p>
+                </motion.button>
+                <input
+                  ref={personaFileInputRef}
+                  type="file"
+                  accept={STEP1_FILE_ACCEPT}
+                  multiple
+                  onChange={handlePersonaFilesChange}
+                  className="sr-only"
+                  data-testid="step1-persona-file-input"
+                />
+                {/* 已上传文件列表 */}
+                {personaFiles.length > 0 && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {personaFiles.map((f, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          borderRadius: 8,
+                          background: 'rgba(168,197,224,0.12)',
+                          border: '0.5px solid rgba(168,197,224,0.3)',
+                          padding: '6px 10px',
+                          fontSize: 12,
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>check_circle</span>
+                        <span style={{ flex: 1, color: C.ink, fontFamily: F.cn, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textShadow: C.textShadow }}>
+                          {f.name}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.ikb, fontFamily: F.mono }}>解析中</span>
+                        <button
+                          type="button"
+                          aria-label={`删除 ${f.name}`}
+                          onClick={() => setPersonaFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: 0, display: 'flex' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </Reveal>
 
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
         <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>

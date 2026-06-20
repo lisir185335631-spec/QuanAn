@@ -4,6 +4,7 @@
  */
 
 import { aiVideoRouter } from '@/trpc/routers/app/aiVideo';
+import { assetRouter } from '@/trpc/routers/app/asset';
 import { analysisRouter } from '@/trpc/routers/app/analysis';
 import { authRouter } from '@/trpc/routers/app/auth';
 import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
@@ -30,6 +31,7 @@ import { router } from '@/trpc/trpc';
 
 export const appRouter = router({
   auth: authRouter,
+  asset: assetRouter,
   aiVideo: aiVideoRouter,
   dailyTasks: dailyTasksRouter,
   evolution: evolutionRouter,
