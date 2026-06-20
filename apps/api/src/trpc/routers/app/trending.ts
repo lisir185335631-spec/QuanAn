@@ -1,14 +1,16 @@
 /**
- * trending router — PRD-15 US-006
+ * trending router — PRD-15 US-006 / PRD-37 US-P11 AC-③
  * AC-10: trpc.trending.{list,listWithFavorites,favorite,detail,kpiStats} procedures
  * AC-5: trending 走全局表(LD-009 例外) · globalProcedure skips RLS
  * AC-7: favorite uses protectedProcedure (per-account RLS) · writes trending_favorites
+ * US-P11: vendor enum 应用层校验(xinbang/cmm/official_douyin) + authorFollowers 阈值过滤
  * Legacy: fetch/listByIndustry/listByStyle preserved for backwards-compat
  */
 
 import { z } from 'zod';
 
 import { prisma } from '@/lib/prisma';
+import { VALID_VENDORS } from '@/workers/trending-scraper/adapters';
 import { globalProcedure, protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -16,6 +18,13 @@ import type { Prisma } from '@prisma/client';
 
 const PLATFORMS = ['douyin', 'xiaohongshu', 'bilibili', 'kuaishou', 'shipinhao', 'weibo'] as const;
 type Platform = (typeof PLATFORMS)[number];
+
+/**
+ * vendor 应用层校验: ∈ {xinbang, cmm, official_douyin}
+ * 禁止 self_crawler (ADR-017 R-17)
+ * 真实第三方 API 待凭证 — 当前 mock vendor 占位
+ */
+const VENDOR_ENUM = z.enum(VALID_VENDORS);
 
 const listInput = z.object({
   platforms: z.array(z.enum(PLATFORMS)).optional(),
@@ -25,6 +34,16 @@ const listInput = z.object({
   search: z.string().max(200).optional(),
   page: z.number().int().min(1).default(1),
   pageSize: z.number().int().min(1).max(100).default(20),
+  /**
+   * 粉丝数上限阈值(可选) — 仅返回 authorFollowers < maxAuthorFollowers 的内容(低粉爆款)
+   * PRD-37 US-P11 AC-③
+   */
+  maxAuthorFollowers: z.number().int().positive().optional(),
+  /**
+   * vendor 过滤(可选) — ∈ {xinbang, cmm, official_douyin}
+   * 真实第三方 API 待凭证 · ADR-017 R-17 禁止 self_crawler
+   */
+  vendor: VENDOR_ENUM.optional(),
 });
 
 const favoriteInput = z.object({
@@ -78,6 +97,10 @@ function buildMockItems(count: number) {
   const platforms: Platform[] = ['douyin', 'xiaohongshu', 'bilibili', 'kuaishou', 'shipinhao', 'weibo'];
   const industries = ['美妆个护', '服饰穿搭', '科技数码', '美食餐饮', '健身运动', '生活方式', '情感社交'];
 
+  // authorFollowers 分层: 低粉(<10w) / 中粉(10w-50w) / 高粉(>50w) 按 i 分布
+  // 用于支持粉丝阈值过滤(maxAuthorFollowers)
+  const followerTiers = [5000, 15000, 45000, 8000, 120000, 25000, 380000, 9500, 62000, 210000];
+
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     platform: platforms[i % platforms.length] as Platform,
@@ -86,6 +109,8 @@ function buildMockItems(count: number) {
     contentText: `这是第${i + 1}条爆款内容的完整文案。原文内容展示在详情页，用户可复制后直接跳转到 Step 7 进行文案创作。这条内容之所以爆火，在于它精准切中了受众痛点，结合了热点话题和实用信息，带动了大量互动。`,
     industry: industries[i % industries.length]!,
     presentStyle: null as string | null,
+    // PRD-37 US-P11: authorFollowers 分层(支持粉丝阈值过滤)
+    authorFollowers: followerTiers[i % followerTiers.length]!,
     likeCount: Math.floor((Math.sin(i * 2.3) + 1) * 250000) + 10000,
     commentCount: Math.floor((Math.cos(i * 1.7) + 1) * 25000) + 1000,
     shareCount: Math.floor((Math.sin(i * 1.1) + 1) * 50000) + 5000,
@@ -99,7 +124,7 @@ export const trendingRouter = router({
   list: globalProcedure
     .input(listInput)
     .query(async ({ input }) => {
-      const { platforms, industry, timeRange, sort, search, page, pageSize } = input;
+      const { platforms, industry, timeRange, sort, search, page, pageSize, maxAuthorFollowers, vendor } = input;
       const cutoff = timeRangeCutoff(timeRange);
       const skip = (page - 1) * pageSize;
 
@@ -107,6 +132,10 @@ export const trendingRouter = router({
       if (platforms && platforms.length > 0) where.platform = { in: platforms };
       if (industry) where.industry = { contains: industry, mode: 'insensitive' };
       if (search) where.title = { contains: search, mode: 'insensitive' };
+      // PRD-37 US-P11: 粉丝阈值过滤 — authorFollowers < maxAuthorFollowers (低粉爆款)
+      if (maxAuthorFollowers !== undefined) where.authorFollowers = { lt: maxAuthorFollowers };
+      // PRD-37 US-P11: vendor 应用层过滤 — ∈ {xinbang, cmm, official_douyin}
+      if (vendor) where.vendor = vendor;
 
       const sortField = sort === 'collectCount' ? 'likeCount' : (sort as 'likeCount' | 'commentCount' | 'shareCount');
 
@@ -124,16 +153,21 @@ export const trendingRouter = router({
 
       if (dbItems.length === 0 && total === 0) {
         const mocks = buildMockItems(200);
-        const filtered = platforms && platforms.length > 0
+        let filteredMocks = platforms && platforms.length > 0
           ? mocks.filter((m) => platforms.includes(m.platform))
           : mocks;
-        const paged = filtered.slice(skip, skip + pageSize);
+        // PRD-37 US-P11: 粉丝阈值过滤 (mock fallback 路径同步应用)
+        if (maxAuthorFollowers !== undefined) {
+          filteredMocks = filteredMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+        }
+        const filteredMockTotal = filteredMocks.length;
+        const paged = filteredMocks.slice(skip, skip + pageSize);
         return {
           items: paged.map((m, i) => ({ ...m, isFavorited: false, rank: skip + i + 1 })),
-          total: 200,
+          total: filteredMockTotal,
           page,
           pageSize,
-          totalPages: Math.ceil(200 / pageSize),
+          totalPages: Math.ceil(filteredMockTotal / pageSize),
         };
       }
 
@@ -150,7 +184,7 @@ export const trendingRouter = router({
   listWithFavorites: protectedProcedure
     .input(listInput)
     .query(async ({ input, ctx }) => {
-      const { platforms, industry, timeRange, sort, search, page, pageSize } = input;
+      const { platforms, industry, timeRange, sort, search, page, pageSize, maxAuthorFollowers, vendor } = input;
       const cutoff = timeRangeCutoff(timeRange);
       const skip = (page - 1) * pageSize;
       const accountId = ctx.activeAccountId!;
@@ -159,6 +193,10 @@ export const trendingRouter = router({
       if (platforms && platforms.length > 0) where.platform = { in: platforms };
       if (industry) where.industry = { contains: industry, mode: 'insensitive' };
       if (search) where.title = { contains: search, mode: 'insensitive' };
+      // PRD-37 US-P11: 粉丝阈值过滤 — authorFollowers < maxAuthorFollowers (低粉爆款)
+      if (maxAuthorFollowers !== undefined) where.authorFollowers = { lt: maxAuthorFollowers };
+      // PRD-37 US-P11: vendor 应用层过滤 — ∈ {xinbang, cmm, official_douyin}
+      if (vendor) where.vendor = vendor;
 
       const sortField = sort === 'collectCount' ? 'likeCount' : (sort as 'likeCount' | 'commentCount' | 'shareCount');
 
@@ -176,10 +214,15 @@ export const trendingRouter = router({
 
       if (dbItems.length === 0 && total === 0) {
         const mocks = buildMockItems(200);
-        const filtered = platforms && platforms.length > 0
+        let filteredFavMocks = platforms && platforms.length > 0
           ? mocks.filter((m) => platforms.includes(m.platform))
           : mocks;
-        const paged = filtered.slice(skip, skip + pageSize);
+        // PRD-37 US-P11: 粉丝阈值过滤 (mock fallback 路径同步应用)
+        if (maxAuthorFollowers !== undefined) {
+          filteredFavMocks = filteredFavMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+        }
+        const filteredFavMockTotal = filteredFavMocks.length;
+        const paged = filteredFavMocks.slice(skip, skip + pageSize);
         const ids = paged.map((m) => m.id);
         const favs = await prisma.trendingFavorite.findMany({
           where: { accountId, trendingItemId: { in: ids } },
@@ -188,10 +231,10 @@ export const trendingRouter = router({
         const favSet = new Set(favs.map((f: { trendingItemId: number }) => f.trendingItemId));
         return {
           items: paged.map((m, i) => ({ ...m, isFavorited: favSet.has(m.id), rank: skip + i + 1 })),
-          total: 200,
+          total: filteredFavMockTotal,
           page,
           pageSize,
-          totalPages: Math.ceil(200 / pageSize),
+          totalPages: Math.ceil(filteredFavMockTotal / pageSize),
         };
       }
 

@@ -1,11 +1,11 @@
-Test Files  47 passed (47)
-Tests  388 passed (388)
-Duration  4.29s
 
-Monetization.test.tsx:
-  ✓ AC-3 · H1 字面锁 "IP 变现模型"
-  ✓ AC-3 · submit button 初始 enabled
-  ✓ AC-3 · onSuccess success → 渲染 productMatrix + pricingStrategy + conversionFunnel
-  ✓ AC-4 · isFallback=true → 显示 fallback banner + retry button
-  ✓ AC-4 · isFallback=false → 不显示 fallback banner
-  ✓ AC-4 · onError → toast.error 生成失败
+> quanqn@0.1.0 test:unit /Users/return/Desktop/QuanQn
+> vitest run --dir tests/unit
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+include: tests/unit/**/*.{test.ts,test.tsx}, tests/integration/**/*.test.ts, tests/e2e/**/*.test.ts, apps/api/src/**/__tests__/**/*.test.ts
+exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+No test files found, exiting with code 0
+

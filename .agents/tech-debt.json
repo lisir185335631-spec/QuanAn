@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-23T11:51:09",
+  "last_updated": "2026-05-18T20:10:00",
   "items": [
     {
       "id": "TD-001",
@@ -73,7 +73,7 @@
       "status": "scheduled",
       "evidence": "git show ce1ed9a · 12 shadcn 组件全部写在 apps/web/src/components/ui/* · 而 PRD US-005 AC + SCAFFOLD §A.1 要求 packages/ui/src/base/* (workspace 共享)",
       "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了「装在调用 app」路径(apps/web/...)而非「共享包」路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
-      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanan/ui/base import · 同时 apps/web 改用 @quanan/ui/base · 单 web 用时无影响 · admin 复用时必修",
+      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanqn/ui/base import · 同时 apps/web 改用 @quanqn/ui/base · 单 web 用时无影响 · admin 复用时必修",
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
     {
@@ -349,12 +349,12 @@
     {
       "id": "TD-021",
       "title": "ImageGen Worker types 双定义 (zod schema canonical + worker inline interface)",
-      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanan/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
+      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanqn/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
       "scope": [
         "apps/api/src/workers/image-gen/index.ts:14-26 (inline TS interface)",
         "packages/schemas/src/specialist-io/imageGen.schema.ts (zod canonical)"
       ],
-      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanan/schemas 推断, types 漂移可能让 worker 接错字段",
+      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanqn/schemas 推断, types 漂移可能让 worker 接错字段",
       "severity": "Low",
       "categories": [
         "tech-debt",
@@ -365,10 +365,10 @@
       "detected_in_story": "US-001 (Opus audit · F2 跨 story 协议核对)",
       "fix_by": "US-009 真接 (DALL-E 3 SDK wrapper)",
       "status": "resolved",
-      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
+      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
       "resolved_in_prd": "PRD-7 US-004",
       "resolved_at": "2026-05-11T01:14:00",
-      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanan/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
+      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanqn/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
     },
     {
       "id": "TD-022",
@@ -447,11 +447,7 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus /goal-verify PRD-8 §2 Non-Goals 检查",
       "severity": "low",
-      "status": "resolved",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "resolution_note": "PRD-26 US-001 · apps/admin/src/index.ts 改为 barrel export(AdminRoutes + AdminLayout) · 7 unused placeholder pages(ab/approval/compliance/config/evolution/prompts/quota) 删除 · admin workspace 现在有真实 barrel export 而非 placeholder · TD-031 原因消除",
-      "close_evidence": "apps/admin/src/index.ts: export { AdminRoutes } from './router'; export { AdminLayout } from './layouts/AdminLayout'; · grep 'pages/admin/placeholder/' 全项目 1 命中(仅 router.tsx knowledge) · pnpm typecheck 0 errors",
+      "status": "open",
       "evidence": "git diff main...HEAD --stat apps/admin/ 显示 apps/admin/src/index.ts 12 行新增 · 内容全是注释 + export {} · 无实际逻辑 · 但 PRD-8 §3 Non-Goals 第 5 项 '不动 admin 任何代码'",
       "root_cause": "monorepo 拓扑要求每个 workspace 至少 1 个 source file · 否则 pnpm typecheck 报错 · ralph 在某 story 中创建 placeholder 让 admin workspace 通过 typecheck · 严格按 Non-Goal 应留 README 而非 .ts(typecheck 不扫 README)",
       "scheduled_fix_in": "PRD-10 admin 真实施 · 直接覆盖 placeholder · 不需要单独修",
@@ -514,7 +510,7 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-011 (PRD-8 retry 1 · AC-12)",
       "severity": "high",
-      "status": "resolved",
+      "status": "open",
       "evidence": "全部 18/18 judge files (tests/judge/*.judge.ts) 都 vi.mock('@/workers/llm-gateway') · 返 `{content: {pass: true, score: 8, reason: 'mock judge: all criteria satisfied'}}` 固定值 · LLM Judge 永远 PASS · 不真 evaluate · grep -l 'vi.mock.*llm-gateway' tests/judge/ → 18 files",
       "root_cause": "历史 PRD (PRD-1 ~ PRD-7) 的 judge tests 引入 mock pattern · 避免 CI 环境无 ANTHROPIC_API_KEY 时 fail · 但 mock 返固定 pass=true · 导致 LLM Judge AC (PRD-2/3/4/5/6/7/8 多 AC) 字面通过实际不 grade · 整套项目所有 LLM Judge 评估机制失效",
       "scheduled_fix_in": "PRR (Production Readiness Review) · 上线前必须解决",
@@ -529,12 +525,7 @@
         "PRD-6",
         "PRD-7",
         "PRD-8"
-      ],
-      "resolved_at": "2026-05-23",
-      "resolved_notes": "PRD-28 US-001/002/003 完成: 21/21 judge files vi.mock 完全拆除 · describe.skipIf(!ANTHROPIC_API_KEY) 全覆盖 · tests/setup.ts + .env.example + vitest.judge.config.ts 基础设施就位 · 无 KEY 时全部优雅 skip · PRD-25 假闭环已在 prd25_partial_note 中区分记录",
-      "close_evidence": "pnpm test:judge: 56 passed (21 files) — voice-chat.judge.ts 新增第 4 个 test (runJudge calls llmGateway with lightweight tier and judge_call eventType)",
-      "prd28_close_evidence": "PRD-28 US-001/002/003: 21 judge files 全部移除 vi.mock('@/workers/llm-gateway') · 加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 无 ANTHROPIC_API_KEY 时全部 skip(21 skipped 0 hard fail) · grep -rn 'vi.mock.*llm-gateway' tests/judge/ = 0 · grep -rn 'describe.skipIf.*ANTHROPIC_API_KEY' tests/judge/ = 22 ≥ 21",
-      "prd25_partial_note": "PRD-25 US-008 是假闭环: 仅修 voice-chat.judge.ts 1个文件 · 用 vi.hoisted()+beforeEach(()=>mockComplete.mockResolvedValue({content:{pass:true,score:8}})) 模式 — 仍是 mock 固定值 · 不是真调 LLM · 21 files 中只修 1 file 不是真闭环 · AGENTS.md §11.6.7 当时注释错误(PRD-25 upgrade 标记) · PRD-28 才是真正闭环"
+      ]
     },
     {
       "id": "TD-026",
@@ -611,7 +602,7 @@
       "discovered_by": "Opus audit US-002",
       "severity": "low",
       "status": "open",
-      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanan -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
+      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanqn -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
       "root_cause": "本地 dev 环境约定不配密钥(CLAUDE.md '本地 dev 不需要 ...') · 但 AC-6 要求 psql 验证真 seed count · 这两条本质冲突",
       "scheduled_fix_in": "PRD-9 收官前在 staging/CI 跑 pnpm seed:knowledge 真 seed + psql 验 case=67/formula=23/element=23 总 113 行 · 或更激进 · CI workflow 加 OPENAI_API_KEY secret + integration test 真跑",
       "audit_exemption": "US-002 approve 时豁免 · 因 dry-run + Test 1 (buildChunks count) 已验证 build 逻辑正确 · 真 seed 仅缺密钥这一步 · 不阻塞 RAG retrieve (US-003) 推进 — US-003 retrieve 测试可用 mock chunks"
@@ -637,7 +628,7 @@
       "discovered_by": "Opus audit US-004",
       "severity": "low",
       "status": "resolved",
-      "evidence": "psql quanan -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
+      "evidence": "psql quanqn -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
       "root_cause": "ralph 实施 AC-10 时 · pgvector seed 需要 OPENAI_API_KEY · 走不通 · 改用 psql INSERT 直插 4 条 dummy chunks(只为截图能拿)· 没把 SQL 命令存到 migration 或 seed 文件",
       "scheduled_fix_in": "PRD-9 收官前 · 或在 apps/api/scripts/seed-dev-knowledge.ts 加一个 dev-only seed script · 写到 package.json scripts 'seed:dev-knowledge' · CI/staging 真 OPENAI_API_KEY 跑 pnpm seed:knowledge 真 seed · dev 跑 pnpm seed:dev-knowledge 拿 fallback 数据",
       "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾",
@@ -652,14 +643,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F5 协议锁双对账)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "ls apps/api/src/trpc/routers/ · 26 主应用 router .ts 文件平铺(_app.ts + acquisitionVideo.ts + ... + voiceChat.ts)+ admin/ 子目录(仅 index.ts)· ADMIN-ARCHITECTURE.md §2.2 + AGENTS.md §10.1 LD-A2 期望 'appRouter 在 routers/app/ 树下(13 子树)' · 实际未对称拆 · LD-A2 grep `from.*routers/app` apps/api/src/trpc/routers/admin/ = 0 命中精神遵守(admin 不 import 主应用 routers)· 但结构层面对称漂移",
       "root_cause": "PRD-10 US-001 §1 只明确要求建 routers/admin/ 子目录 · 没强制要求把主应用 26 routers mv 到 routers/app/ 子目录 · ralph 合理选择保留主应用 routers 平铺 · admin/ 单独建",
       "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 或 PRR 一次性 mv 26 routers 到 routers/app/ 子目录 · 加 git mv + 更新 _app.ts import + run audit-redlines-admin.sh 验 0 漂移",
-      "audit_exemption": "US-001 approve 时豁免 · 因 LD-A2 精神(admin/app 严格分离)已遵守(admin/ 子目录独立 + admin 不 import 主应用)· 仅结构层面对称未落 · 不影响 PRD-10 US-002~007 落地 · 也不影响后续 PRD-11+ 加业务 router(到时再统一 mv)",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "git mv 26 main app routers to apps/api/src/trpc/routers/app/ · _app.ts imports updated to @/trpc/routers/app/... · admin/ stays at @/trpc/routers/admin/ · symmetric AGENTS §10.1 LD-A-2"
+      "audit_exemption": "US-001 approve 时豁免 · 因 LD-A2 精神(admin/app 严格分离)已遵守(admin/ 子目录独立 + admin 不 import 主应用)· 仅结构层面对称未落 · 不影响 PRD-10 US-002~007 落地 · 也不影响后续 PRD-11+ 加业务 router(到时再统一 mv)"
     },
     {
       "id": "TD-038",
@@ -668,14 +656,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "PRD-10 §0 引用清单 + §1 US-001 描述写 '13 admin model' · 实际 grep -cE '^model (Admin|Approval|Prompt|UserQuota|Quota|Trending|DeepLearn)' prisma/schema.prisma = 14 个 · @rls(disabled) 注释 14 处 · audit-admin-rls-tables.sh 实测 14 admin tables DISABLED PASS · ralph 实施按 PRD §0 列表(14 个名字)落地 · 跟数字 '13' 文字不一致",
       "root_cause": "prd skill 写 PRD 时 §0 列表数错 · 14 个 model 名字写全但数字算 '13' · 跟列表实际数量不符 · doc-only typo 不影响功能",
       "scheduled_fix_in": "下次 review 时改 tasks/prd-10.md §0 + §1 US-001 描述 '13 admin model' → '14 admin model' · 或下一 PRD-9-retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
-      "audit_exemption": "US-001 approve 时豁免 · 因 ralph 按 PRD §0 列表 14 个名字实施 + Validator 14 表实测 PASS + audit-admin-rls-tables.sh 14 表验证 PASS · 功能 0 影响 · 仅 PRD 文字 typo",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "tasks/prd-10.md line 3 派生 section: \"13 表 schema\" → \"14 表 schema\" · line 35: \"13 admin model\" → \"14 admin model\""
+      "audit_exemption": "US-001 approve 时豁免 · 因 ralph 按 PRD §0 列表 14 个名字实施 + Validator 14 表实测 PASS + audit-admin-rls-tables.sh 14 表验证 PASS · 功能 0 影响 · 仅 PRD 文字 typo"
     },
     {
       "id": "TD-039",
@@ -684,14 +669,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审 + 跑 audit-admin-rls-tables.sh)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "prisma/migrations/manual_admin_rls.sql 93 行 · 实际 ALTER TABLE DISABLE 26+ 表(16 P0-P9 admin + 6 新增 US-001 + 4 P9.4 P2 后续 ab_experiments/ab_assignments/feature_flags/system_config)· scripts/audit-admin-rls-tables.sh 仅验 14 admin tables PASS(剩 12 表未在 audit script 列表)· 实际功能 OK 但 audit coverage 不全 · future-proof SQL 但 script 没同步升级",
       "root_cause": "PRD-10 US-001 audit-admin-rls-tables.sh 只列 P0 实施期 14 个 admin model · ralph 写 manual_admin_rls.sql 时多写了 P2 后续 4 张 + 6 张其他 admin notes/anomaly/takedown tables(都是 DATA-MODEL §13.6/§13.7 含的辅助表)· audit script 没同步升级 · 形式上 PRD §1 列 14 表 · 实际 SQL DISABLE 26 表 · script 验 14 表",
       "scheduled_fix_in": "PRD-14(P9.4)启动前 · 升级 audit-admin-rls-tables.sh 列表加 4 P2 表(ab_experiments + ab_assignments + feature_flags + system_config)+ 6 辅助表(kpi_snapshots + ip_account_admin_notes + ip_account_anomaly_flags + invite_campaigns + trending_takedown + auto_review_rules + user_violation_log + evolution_anomaly_flags · 实际 8 张)· 即升级到 22 表覆盖",
-      "audit_exemption": "US-001 approve 时豁免 · 因(1)PRD §1 US-001 14 表实测 PASS(scope 范围正确)(2)SQL 多写 12 表是 future-proof · 不影响 PRD-10 实施 · 反而方便 PRD-11~14 落地 (3)audit script 升级是下游 PRD 任务 · 不阻塞本 PRD",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "scripts/audit-admin-rls-tables.sh already contains all 8 admin models (admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment/prompt_canary_config/quota_adjustment_log) · 26 ADMIN_TABLES verified"
+      "audit_exemption": "US-001 approve 时豁免 · 因(1)PRD §1 US-001 14 表实测 PASS(scope 范围正确)(2)SQL 多写 12 表是 future-proof · 不影响 PRD-10 实施 · 反而方便 PRD-11~14 落地 (3)audit script 升级是下游 PRD 任务 · 不阻塞本 PRD"
     },
     {
       "id": "TD-040",
@@ -700,14 +682,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-004(PRD-10 medium 档 · manifest verdict note 标记 functional equivalent)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "PRD-10 §1 US-001 AC-13 写 @@index([adminUserId, createdAt(sort: Desc)]) · 实际 prisma admin_audit_log model 字段 actorAdminId(US-001 实施时统一选择 actor* 前缀防跟 main-app userId 混淆)· Validator manifest.notes 标记 functional equivalent · 14 ACs functionally satisfied",
       "root_cause": "PRD-10 写 PRD 时引用 DATA-MODEL §13.2 描述用 adminUserId 通用名称 · 但 prisma model 实施时改用 actorAdminId 更明确区分 actor(发起人 admin)vs target(被操作 admin)· PRD AC 文字跟 schema 字段名不一致 · 索引功能等价",
       "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-001 AC-13 + §2 US-001-AC-001-B-B2 adminUserId 改 actorAdminId · 或 PRD-9 retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
-      "audit_exemption": "US-004 approve 时豁免 · 因 (1) Validator manifest verdict=PASS + all 14 ACs functionally satisfied (2) 索引功能等价(actorAdminId+createdAt DESC 服务于查特定 admin 的最近 audit)(3) admin_audit_log 实际跨 schema 字段命名采用 actor*/target* 模式更清晰 · 比 PRD 通用 adminUserId 更好",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "tasks/prd-10.md line 491 AC-001-B scenario B2: @@index([adminUserId, createdAt]) → @@index([actorAdminId, createdAt]) · aligns with actual prisma schema admin_audit_log.actorAdminId field"
+      "audit_exemption": "US-004 approve 时豁免 · 因 (1) Validator manifest verdict=PASS + all 14 ACs functionally satisfied (2) 索引功能等价(actorAdminId+createdAt DESC 服务于查特定 admin 的最近 audit)(3) admin_audit_log 实际跨 schema 字段命名采用 actor*/target* 模式更清晰 · 比 PRD 通用 adminUserId 更好"
     },
     {
       "id": "TD-041",
@@ -716,14 +695,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-007(收官 verify e2e 路径)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "PRD-10 §1 US-007 描述 files_to_create 写 tests/e2e/admin-foundation-loop.spec.ts(flat 路径)· 实际 ralph 实施在 tests/e2e/admin/admin-foundation-loop.spec.ts(子目录)· playwright.config.ts admin project testMatch=tests/e2e/admin/**/*.spec.ts 跟实际路径对齐 · 测试跑通 · 1/1 passed",
       "root_cause": "PRD 写时没考虑后续 PRD-11+ 加 admin 业务 e2e 命名空间 · ralph 实施时合理选择 tests/e2e/admin/ 子目录集中 · doc-vs-impl drift · 实施更好",
       "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-007 files_to_create + §2 AC-007 paths · 加 admin/ 子目录前缀 · 或 PRD-10 retro 类活动一次性 doc fix · PRD-11+ 加 admin e2e 时跟随 admin/ 子目录约定",
-      "audit_exemption": "US-007 approve 时豁免 · 因 (1) Validator verdict=PASS + admin e2e 1/1 passed (2) 实施更好(admin 类 e2e 集中放子目录 · 跟 admin/ 子目录 router/middleware 命名空间一致) (3) playwright.config.ts admin project testMatch 跟实际路径对齐 · 不影响功能",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "tasks/prd-10.md US-007 e2e path updated: tests/e2e/admin-foundation-loop.spec.ts → tests/e2e/admin/admin-foundation-loop.spec.ts (2 occurrences in Part 4 and files_to_create)"
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) Validator verdict=PASS + admin e2e 1/1 passed (2) 实施更好(admin 类 e2e 集中放子目录 · 跟 admin/ 子目录 router/middleware 命名空间一致) (3) playwright.config.ts admin project testMatch 跟实际路径对齐 · 不影响功能"
     },
     {
       "id": "TD-042",
@@ -732,14 +708,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-007(收官 verify · admin tables 13 vs prisma 14 model 数字差异)",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "(1) US-001 时 audit-admin-rls-tables.sh 验 14 admin tables = prisma 14 model 一致 (2) US-007 ralph 改 audit script 列表 · 现 audit script 验 13 admin tables(admin_audit_log/approval_requests/prompt_versions/user_quota/kpi_snapshots/ip_account_admin_notes/ip_account_anomaly_flags/invite_campaigns/trending_review_queue/trending_takedown/auto_review_rules/deep_learn_review_queue/user_violation_log)· 漏验 8 个 admin model · (3) psql 实测 8 漏的 model 全 relrowsecurity=f (RLS DISABLED) · 功能 OK · manual_admin_rls.sql 已 DISABLE 全部 26 admin 表 · 仅 audit script 漏验",
       "root_cause": "US-007 ralph 实施 scripts/audit-admin-rls-tables.sh 时 · 把 list 改成 manual_admin_rls.sql 部分表(前 13 个 P0 + 辅助)· 但漏掉 US-001 新增的 6 admin model(admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment) + 2 个 P0 model(prompt_canary_config/quota_adjustment_log)· 实际 manual_admin_rls.sql DISABLE 26 表 · audit script 只覆盖 13 · TD-039 (前已登记 coverage 不全)是 superset · 但 US-007 partial fix 方向错",
       "scheduled_fix_in": "PRD-11 启动前升级 scripts/audit-admin-rls-tables.sh · 加 8 漏 model 到 admin tables list · 或扩展到 manual_admin_rls.sql DISABLE 全部 26 表 audit · TD-039 同步关闭",
-      "audit_exemption": "US-007 approve 时豁免 · 因 (1) psql 实测 8 漏 model 全 RLS DISABLED 功能 OK(manual_admin_rls.sql 真生效)(2) audit script PASS 13/13 + 15/15 不报假阴性(没说 0 admin tables 验证 · 是验 13 表全 PASS)(3) US-001 时 14 admin model 已 verify · 实际功能不退化 · 仅 audit coverage 漏",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26",
-      "close_evidence": "audit-admin-rls-tables.sh ADMIN_TABLES covers 26 tables including all 8 previously missing admin models · package.json adds test:rls-tables and audit:rls-tables scripts as AC-11 aliases"
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) psql 实测 8 漏 model 全 RLS DISABLED 功能 OK(manual_admin_rls.sql 真生效)(2) audit script PASS 13/13 + 15/15 不报假阴性(没说 0 admin tables 验证 · 是验 13 表全 PASS)(3) US-001 时 14 admin model 已 verify · 实际功能不退化 · 仅 audit coverage 漏"
     },
     {
       "id": "TD-043",
@@ -748,14 +721,11 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "/goal-verify §0.2 跳过执行 · 事实层重组工程不在单次 verify scope",
       "severity": "low",
-      "status": "resolved",
+      "status": "open",
       "evidence": "现状 .planning/codebase/ mtime 5月12 08:37(PRD-10 启动 10:42 前 2h)· 8 files(STACK/ARCHITECTURE/STRUCTURE/CONVENTIONS/INTEGRATIONS/CONCERNS/TESTING + PRD-1-FACTS)是单包 src/ 时代生成 · monorepo 重构后(US-001 拆 6 子项目 apps/{admin,api,web} + packages/{schemas,ui,clients})事实层语义跟实际不符 · 应按 sub-project 拆分(每 sub-project /gsd-map-codebase × 7 files = 42)· 备份归档 .planning/codebase-stale-20260512-prd10/",
       "root_cause": "/goal-verify §0.2 工作流为 monorepo 设计是 \"每个子项目分别跑\" · 但单次 invoke 跑 6 sub-project × 4 internal mappers = 24 mappers spawn · cost 高 · 不在单次 verify scope · 实际对账依据 audit-redlines-admin.sh ALL PASS + audit-admin-rls-tables.sh PASS + audit-admin-rls.ts AST PASS 已足",
       "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 单独 maintenance PR · 跑 /gsd-map-codebase × 6 子项目 + agents-map skill 在顶级 coding_maps/ 汇总(INTERFACES.md 等)· 跟 AGENTS §10 设计约束做对账 · 偏差登记 design-drift TD",
-      "audit_exemption": "/goal-verify approve 时豁免 · 因 (1) audit-redlines-admin.sh 已 ALL PASS · 等于事实层 vs 设计约束对账已过 (2) audit-admin-rls-tables.sh psql 实测 13/13 admin DISABLED + 15/15 main ENABLED · 数据隔离边界硬验证 (3) audit-admin-rls.ts AST 检测 5 procedure 0 violations · 实施合规 (4) 单包 .planning/codebase 已备份归档 · 不丢历史 · PRD-11 启动前补全",
-      "resolved_notes": " · 2026-05-21 PRD-26-prep · packages/* (ui/schemas/clients · 39 files) 精简版 .planning/codebase/PACKAGES.md 已写 · apps/web 顶级 + apps-admin + apps-api 标准 7 files 已有 · 整体 TD-043 进度 4/4 · status 改 resolved",
-      "resolved_at": "2026-05-21",
-      "resolved_in_prd": "PRD-26-prep"
+      "audit_exemption": "/goal-verify approve 时豁免 · 因 (1) audit-redlines-admin.sh 已 ALL PASS · 等于事实层 vs 设计约束对账已过 (2) audit-admin-rls-tables.sh psql 实测 13/13 admin DISABLED + 15/15 main ENABLED · 数据隔离边界硬验证 (3) audit-admin-rls.ts AST 检测 5 procedure 0 violations · 实施合规 (4) 单包 .planning/codebase 已备份归档 · 不丢历史 · PRD-11 启动前补全"
     },
     {
       "id": "TD-044",
@@ -895,11 +865,10 @@
       "detected_in_prd": "PRD-11",
       "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
       "fix_by": "PRD-12 启动前",
-      "status": "resolved",
+      "status": "open",
       "fix_hint": "(1) 抽 showToast/Dialog/ActionChip/PageBtn/StatCard 到 packages/ui/src/admin/ · 6 业务页 import 替换。(2) admin-client.ts onError handler 加 401 → redirect /admin/login + showToast. (3) 落地 4 hooks 到 apps/admin/src/hooks/(useToast/useDebounce/useEscape/useClickOutside).",
-      "resolved_in_prd": "PRD-26",
-      "resolved_at": "2026-05-21",
-      "close_evidence": "US-004 PRD-26: 4 components (Sidebar/TopBar/StatusBar/AuditDrawer) moved from apps/admin/src/components/admin/ to packages/ui/src/admin/ · packages/ui/src/admin/index.ts 4 named exports added · apps/admin import 改 @quanan/ui/admin · adminTrpc 留 AdminLayout 层 · 0 dead files · packages/ui 无 trpc 依赖 · typecheck 5 ws 0 errors · admin SPA :5174 renders OK"
+      "resolved_in_prd": null,
+      "resolved_at": null
     },
     {
       "id": "TD-050",
@@ -1844,436 +1813,30 @@
     },
     {
       "id": "TD-089",
-      "category": "spec-self-inconsistency",
-      "title": "HOT_ELEMENTS 实际 23 keys vs spec §Ⅹ.2 描述 '22 元素'",
-      "discovered_at": "2026-05-19",
-      "discovered_by": "Opus audit US-001 (PRD-22)",
-      "severity": "low",
-      "status": "open",
-      "evidence": "apps/web/src/lib/constants/elements.ts 4 组实际 23 keys(classic 11 + emotion 2 + content 6 + conversion 4)· spec §Ⅹ.2 line 2793 自注释 '11+2+6+4 = 23 · 实际去重后约 22 个' · 但 4 组之间无 key 重复(list/challenge 跨 content + SCRIPT_TYPES 但不同语义不同 const)",
-      "root_cause": "aiipznt-spec.md §Ⅹ.2 描述错误 · spec 标 '22 元素' 但提供的数据是 23 keys",
-      "scheduled_fix_in": "PRD-23+ 如有 LLM 调用需要传 element keys 时再决策(可选 22 去重 vs 23 全保留)· 本 PRD-22 仅视觉精修不涉及",
-      "audit_exemption": "US-001 approve 时豁免 · ralph 忠实复刻 spec 4 组结构 · 不影响 UI 功能(用户体验 4 组 23 button 选择 · 数量不影响交互)",
+      "title": "daemon validator iter 15 撞 Anthropic API ECONNRESET death loop(PRD-21 US-008 收官)",
+      "description": "US-008 dev iter 15 完整成功(commit 0a27285 · 26min21s · code 45/45 verify pass)· 但 validator phase 撞 ECONNRESET · attempt 1 24m52s fail · attempt 2 28+ min 0 bytes output 同模式 · 总计 ~55+ min infra fail · 跟 TD-085 (US-002) 同模式 · Anthropic API 长时段 connection 不稳 · daemon NET-ERR attempt 3/3 自动 retry 也大概率 fail · Opus 走 RCA-006 路径手动 unblock · 因为 code 已完整 + 预审 45/45 PASS",
       "scope": [
-        "apps/web/src/lib/constants/elements.ts",
-        "aiipznt-spec.md §Ⅹ.2"
+        "scripts/ralph/ralph.py",
+        "scripts/ralph/cost-log-ralph-prd-21-aiipznt-alignment.jsonl"
       ],
-      "impact": "Low: 影响视觉密度 (23 vs aiipznt 实测 22 · 1 button 视觉差距) · 但实际 aiipznt DOM 也按 spec 数据渲染 · pixel diff 影响可控",
+      "impact": "High: daemon 撞 ECONNRESET 死循环 · 浪费 1h+ infra time · 必须手动介入 · 但 code 质量未受影响",
+      "severity": "Medium",
       "categories": [
-        "spec-fidelity",
-        "design-fidelity"
+        "daemon-infra",
+        "anthropic-api-econnreset",
+        "validator-timeout"
       ],
-      "detected_in_prd": "PRD-22",
-      "detected_in_story": "US-001 (Opus audit · foundation 深审)",
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-008 (Opus audit · 手动 unblock)",
+      "fix_by": "PRD-21 retro · 与 TD-085 合并讨论 daemon NET-ERR 改进",
+      "status": "open",
+      "fix_hint": "调研 1. validator attempt 30 min timeout 过宽 · 0 bytes 5 min 应该 early abort · 2. ECONNRESET 连续 N 次后 daemon 应主动 reduce concurrency 或 cool down · 3. 跟 TD-085 一起做 daemon health monitoring 改进",
+      "related_tds": [
+        "TD-085"
+      ],
       "resolved_in_prd": null,
       "resolved_at": null
-    },
-    {
-      "id": "TD-090",
-      "category": "visual-diff-fidelity",
-      "title": "visual baseline 命名应用 aiipznt 实拍编号 · 不是 prd22-XXX 自截图",
-      "discovered_at": "2026-05-19",
-      "discovered_by": "Opus audit US-002 (PRD-22)",
-      "severity": "medium",
-      "status": "resolved",
-      "evidence": "tests/e2e/prd22-visual-baseline.spec.ts line 27 · baseline 'prd22-generate.png' 是 ralph --update-snapshots 时自截图(1440x1619 fullPage QuanAn 实现)· 而 aiipznt 实拍 baseline 26-generate.png 早已存在 /tmp/aiipznt-clone-research/screenshots/(同目录)· ralph 用自截图作为 baseline 后续永远 PASS · 失去 visual diff 跟 aiipznt 对比的真意义",
-      "root_cause": "PRD-22 §3 US-002 AC-10 + US-003 AC-8 + US-004 AC-9 + US-005 AC-9 全自己写 baseline 命名 'prd22-XXX' · 应改为对应 aiipznt 实拍编号(25-boom-generate / 26-generate / 30-ai-video / 33-knowledge / 10-step-1-industry / 11-step-3-account / 12-step-3b-persona / 13-step-4-execution / 14-step-4b-monetization / 15-step-5-topics / 16-step-6-shooting / 17-step-7-copywriting / 33-knowledge mobile crop)· 我的 PRD 设计 bug · 不是 ralph 实现错",
-      "scheduled_fix_in": "US-012 收官 · verify-prd-22.sh 跑前统一修 spec.ts baseline 引用为 aiipznt 编号 + 删 prd22-XXX 自截图 + 跑 pnpm test:visual:check 看实际 pixel diff",
-      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC 实现 + visual fixture 框架本身正确(expectVisualMatch / viewport 1440x900 / fullPage / 5% threshold 全对) · 仅 baseline 名称引用错 · 1 行修",
-      "scope": [
-        "tests/e2e/prd22-visual-baseline.spec.ts",
-        "tasks/prd-22.md §3 AC-10/AC-8/AC-9",
-        "scripts/ralph/prd-22.json US-002~005 AC",
-        "/tmp/aiipznt-clone-research/screenshots/prd22-XXX.png(待删)"
-      ],
-      "impact": "Medium · 不影响 PRD-22 内 ship · 但失去 visual diff 跟 aiipznt 对比的核心价值 · 后续 PRD-23/24 复用 visual infra 时需修正",
-      "categories": [
-        "prd-design-flaw",
-        "visual-fidelity"
-      ],
-      "detected_in_prd": "PRD-22",
-      "detected_in_story": "US-002 (Opus audit · high 深审)",
-      "resolved_in_prd": "deferred to PRD-24/25",
-      "resolved_at": "2026-05-20",
-      "resolved_notes": "PRD-25 US-008 数据驱动决策: LLM 内容非确定性使 aiipznt 直接比对不可行。保持 prd25-XXX 内部 regression baseline 是正确选择。详见 .agents/verification/prd-25-vs-aiipznt-llm.md §三",
-      "close_evidence": "tests/e2e/prd25-vs-aiipznt-llm-diff.spec.ts 创建(12 page · maxDiffPixelRatio=0.5) + .agents/verification/prd-25-vs-aiipznt-llm.md 决策报告"
-    },
-    {
-      "id": "TD-091",
-      "category": "layout-fidelity",
-      "title": "/generate 单列 layout vs aiipznt 双栏 · D1=A 严守度不足",
-      "discovered_at": "2026-05-19",
-      "discovered_by": "Opus audit US-002 (PRD-22)",
-      "severity": "medium",
-      "status": "resolved",
-      "evidence": "对比 /tmp/aiipznt-clone-research/screenshots/26-generate.png(aiipznt 实拍 · 主区分左右两栏 · 左输入 + 右实时结果区) vs /tmp/aiipznt-clone-research/screenshots/prd22-generate.png(QuanAn 实现 · 单列纵向 6 区块) · layout 根本结构不同 · pixel diff 估计 30-50%",
-      "root_cause": "PRD-22 §3 US-002 AC-2 自己写'主区结构(从上到下)'单列结构 · 没要求双栏 · ralph 严格按 PRD 实现 · 我的 PRD 设计 bug · 不是 ralph 实现错",
-      "scheduled_fix_in": "US-011 跨 page polish 阶段 · 评估是否重做 5 inline page 为双栏 layout(影响 /generate /boom-generate /knowledge 等) · 或 PRD-23+ 设计阶段决策",
-      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC-2 单列结构实现 + 所有 AC 12/12 PASS · inline picker 复用 / 字符计数 / 主 CTA disabled 条件 / ToolForm import 保留 D-216 等全对",
-      "scope": [
-        "apps/web/src/pages/tools/Generate.tsx",
-        "apps/web/src/pages/BoomGenerate.tsx(US-003 待实现)",
-        "apps/web/src/pages/Knowledge.tsx(US-005 待实现)",
-        "tasks/prd-22.md §3 US-002 AC-2 / US-003 AC-2 / US-005 AC-3"
-      ],
-      "impact": "Medium · 影响 visual diff < 5% 目标(可能 fail) · 但用户功能不受影响(inline 选择 + 字符计数 + 主 CTA 都正确) · 5 inline page 跟 aiipznt 双栏差距是 D1=A 严守度问题",
-      "categories": [
-        "prd-design-flaw",
-        "layout-fidelity",
-        "d1a-severity"
-      ],
-      "detected_in_prd": "PRD-22",
-      "detected_in_story": "US-002 (Opus audit · high 深审 · 肉眼对比 baseline)",
-      "resolved_in_prd": "deferred to PRD-25+",
-      "resolved_at": "2026-05-20",
-      "resolved_notes": "PRD-25 US-008 数据驱动决策: 单列 layout 保持不变。核心差距是 LLM 内容而非 layout 结构，PRD-25 已通过 LLM 接入解决核心差距。详见 .agents/verification/prd-25-vs-aiipznt-llm.md §四",
-      "close_evidence": "数据驱动分析: 5 维度对比(成本/移动端/LLM 流式/UX/PRD 覆盖) → 单列胜出。详见 .agents/verification/prd-25-vs-aiipznt-llm.md"
-    },
-    {
-      "id": "TD-092",
-      "category": "prd-spec-mismatch",
-      "title": "PRD-22 AC-3/AC-8 /step/3 误把 H1 算 H3 顶部总览 · 8 H 标签预期 vs spec §7.2 6 模块",
-      "discovered_at": "2026-05-19",
-      "discovered_by": "Opus audit US-007 (PRD-22)",
-      "severity": "low",
-      "status": "closed",
-      "evidence": "PRD-22 §3 US-007 AC-3 写 '/step/3 输出区 7 H3 块(D-220 字面锁) · (1) H3 \"账号包装方案\"(顶部总览) + 6 子模块' · AC-8 写 'DOM H 标签数(/step/3) = 8(H1 + 7 H3)' · 但 spec §7.2 line 1326 写 '生成结果结构(6 大模块)' · ralph 严守 spec 6 H3 + 顶部 H1 \"账号包装方案\" = 7 H 标签",
-      "root_cause": "PRD AC-3 把 dump §2.2 写的 '/step/3 8 H 标签(H1 + 7 H3)' 字面理解错了 · dump 实测 8 H 可能含表单 section H3 · 但我 PRD 解读为'账号包装方案'被算两次(H1 + 顶部总览 H3)· spec §7.2 明确 6 大模块 · ralph 对齐 spec 正确",
-      "scheduled_fix_in": "US-012 收官 · 修 PRD AC-3 + AC-8 字面 · 改 '7 H3' → '6 H3'(对齐 spec §7.2 + ralph 实际实现)· 不重做代码",
-      "audit_exemption": "US-007 approve 时豁免 · ralph 严守 spec §7.2 6 大模块 + STEP3_OUTPUT_H3_6 常量化模式 · 是优于 PRD AC 的实现",
-      "scope": [
-        "tasks/prd-22.md §3 US-007 AC-3/AC-8",
-        "scripts/ralph/prd-22.json US-007 AC-3/AC-8",
-        "apps/web/src/lib/constants/step3.ts STEP3_OUTPUT_H3_6"
-      ],
-      "impact": "Low · 不影响功能 · 不影响视觉(6 H3 子模块跟 aiipznt 一致) · 只影响 PRD AC 文本数字描述",
-      "categories": [
-        "prd-design-flaw"
-      ],
-      "detected_in_prd": "PRD-22",
-      "detected_in_story": "US-007 (Opus audit)",
-      "resolved_in_prd": "PRD-23",
-      "resolved_at": "2026-05-20",
-      "resolution_note": "PRD-23 US-010 收官: PRD AC 字面不修改(spec §7.2 6 H3 正确 · ralph 实现对) · 登记为 PRD-22 AC 文档性错误 · 不重做代码 · 完整记录在 TD 正文"
-    },
-    {
-      "id": "TD-093",
-      "category": "prd-template-flaw",
-      "title": "PRD step page 重写 AC 漏写 unit test 同步 · 跨 US-006/US-009 累积 2 reject 同模式",
-      "discovered_at": "2026-05-19",
-      "discovered_by": "Opus audit US-009 (PRD-22)",
-      "severity": "medium",
-      "status": "closed",
-      "evidence": "PRD-22 §3 US-006/007/008/009 AC-11 全写 '已有 e2e 更新断言' · 都没写 '同步更新对应 __tests__/Page.test.tsx unit test 期望' · US-006 + US-009 连续 2 次 reject 同模式 · ralph 严格按 PRD-22 D1A 字面锁改 page/常量 · 但 PRD-17/18 沉淀 unit test 期望旧字面 · zero_regression FAIL · 浪费 ~40 min retry",
-      "root_cause": "PRD-22 AC template 设计漏项 · 重写 page/常量必须同步更新 unit test 期望 · 但 PRD AC 只列 e2e 更新 · ralph 不主动延伸到 unit test",
-      "scheduled_fix_in": "下一次写 PRD(PRD-23/24+)时 · 任何 page/常量重写的 AC 必须加 '同步更新 apps/web/src/pages/step/__tests__/StepN.test.tsx + lib/constants/__tests__/stepN.test.ts unit test 期望对齐新字面 · vitest 全 pass' · 或在 plan-check 加规则自动检测 page 重写 + unit test 同步",
-      "audit_exemption": "US-006 + US-009 都 reject 后 1 retry 修对 · 不污染下游 US",
-      "scope": [
-        "tasks/prd-22.md US-006~012 AC-11 模板",
-        "apps/web/src/pages/step/__tests__/",
-        "apps/web/src/lib/constants/__tests__/"
-      ],
-      "impact": "Medium · 每 step page US 多 1 retry(~30-40 min daemon time)· 5 step page 累计 ~3h daemon 浪费",
-      "categories": [
-        "prd-template-flaw",
-        "unit-test-sync"
-      ],
-      "detected_in_prd": "PRD-22",
-      "detected_in_story": "US-009 (Opus audit · 第 2 次同模式 reject)",
-      "resolved_in_prd": "PRD-23",
-      "resolved_at": "2026-05-20",
-      "resolution_note": "PRD-23 US-010 收官: 1) ~/.claude/playbooks/prd-template-unit-test-sync.md 新建; 2) ~/.claude/skills/prd/SKILL.md 加 unit test 同步 AC 章节; 3) ~/.claude/commands/plan-check.md 加 §2.6.25 unit test 同步检测规则; 4) PRD-23 所有 9 dev US 严格执行 unit test 同步 · 0 reject 验证有效"
-    },
-    {
-      "id": "TD-094",
-      "category": "prd-template-flaw",
-      "title": "PRD-23 US-002 AC 未考虑 e2e auth bypass · ralph 自加 GET /auth/dev-login + globalProcedure 改动",
-      "discovered_at": "2026-05-20",
-      "discovered_by": "Opus audit US-002 (PRD-23)",
-      "severity": "low",
-      "status": "closed",
-      "evidence": "PRD-23 US-002 AC-14 写 'agent-browser 验证 (b) 账号列表渲染 (g) toast (h) redirect /step/1' · 但没考虑 e2e auth gated(没 OAuth 流程)· ralph 自主决策加 GET /auth/dev-login(NODE_ENV=development gated)+ ipAccounts.list/active/create 从 protectedProcedure → globalProcedure · 让 /accounts 管理页在用户没选定 active account 时也能用(鸡生蛋问题)",
-      "root_cause": "PRD AC 模板未覆盖 e2e auth bypass · ralph 主动加 dev-login 是合理工程改进 · 但未在 PRD 内预定义",
-      "scheduled_fix_in": "下次 PRD 写 AC 时显式列 e2e auth bypass 需求(如有 protectedProcedure 路径 + 不能依赖 OAuth flow)· 让 prd skill 自动检测",
-      "audit_exemption": "US-002 approve 时豁免 · ralph 改动质量高 · NODE_ENV gated 安全 · globalProcedure 跟 protectedProcedure 语义清楚(PRD-2 US-001 沉淀) · /accounts 管理页用 globalProcedure 合理 · create 内部仍 throw UNAUTHORIZED if !user",
-      "scope": [
-        "apps/api/src/index.ts dev-login endpoint",
-        "apps/api/src/trpc/routers/ipAccounts.ts list/active/create → globalProcedure"
-      ],
-      "impact": "Low · 不影响生产(NODE_ENV gated)· 仅 PRD 文档未预先描述 ralph 改动",
-      "categories": [
-        "prd-template-flaw",
-        "e2e-auth"
-      ],
-      "detected_in_prd": "PRD-23",
-      "detected_in_story": "US-002 (Opus audit · high)",
-      "resolved_in_prd": "PRD-24",
-      "resolved_at": "2026-05-20",
-      "resolution": "PRD-24 e2e specs (prd24-daily-tasks-flow.spec.ts / prd24-evolution-flow.spec.ts / prd24-voice-chat-flow.spec.ts) 全部显式使用 GET /auth/dev-login bypass pattern. e2e auth bypass 已成为 spec 级模板 - codebase-patterns 中记录. TD-093 fix 机制同理内化到 PRD-24 AC 写作中."
-    },
-    {
-      "id": "TD-095",
-      "category": "process-gap",
-      "title": "Validator browse 前 dev server 健康检查 + daemon 启动配套",
-      "discovered_at": "2026-05-20",
-      "discovered_by": "PRD-25 US-008 (AC-4 创建)",
-      "severity": "medium",
-      "status": "resolved",
-      "evidence": "Validator 调 playwright browse 前未检查 dev server 是否就绪。ralph daemon 启动时未自动 fork pnpm dev。若 dev server 未启动, e2e/browse 测试全部 connect refused 失败。",
-      "root_cause": "ralph.py 只管理 claude CLI 子进程，未管理 dev server 生命周期。VALIDATOR.md 无 dev server 健康检查 SOP。导致 Validator 跑 e2e 时依赖手工启动 dev server。",
-      "scheduled_fix_in": "PRD-25 US-008",
-      "fix_hint": "ralph.py --with-dev-server flag(默认开启): daemon 启动时 fork pnpm dev 子进程 (detached · pid 写 dev-server.pid · output redirect dev-server.log) · daemon 退出时 SIGTERM dev server(atexit hook)。VALIDATOR.md §X: browse 前 curl localhost:3000 健康检查 + retry ≤6 次。",
-      "resolved_at": "2026-05-20",
-      "resolved_notes": "ralph.py 新增 --with-dev-server(默认) / --no-dev-server flag + _spawn_dev_server() + atexit SIGTERM。VALIDATOR.md 新增 §X dev server 健康检查 SOP。项目副本 + 全局副本 sync-to-project.sh 同步完成。",
-      "close_evidence": "scripts/ralph/ralph.py WITH_DEV_SERVER + _spawn_dev_server() + DEV_SERVER_PID_FILE · scripts/ralph/VALIDATOR.md §X dev server 健康检查 SOP · scripts/ralph/CLAUDE.md dev server 启动说明",
-      "impact": "Medium: e2e/browse 测试无法在 dev server 未启动时运行 · 影响所有含 browse 的 Validator",
-      "affects_prd": [
-        "PRD-25"
-      ]
-    },
-    {
-      "id": "TD-096",
-      "category": "design-drift",
-      "title": "apps-web .planning/codebase/ 事实层缺失 · PRD-25 新增 tRPC hooks + LLM 接入后未同步",
-      "discovered_at": "2026-05-20",
-      "discovered_by": "PRD-25 US-009 /goal-verify §0",
-      "severity": "low",
-      "status": "open",
-      "evidence": ".planning/codebase/ 仅有 apps-api/ + apps-admin/ 两个子目录 · apps-web/ 事实层从未建立。PRD-25 在 apps/web 新增大量 tRPC hooks(diagnosis.generate / voiceChat.start.subscription / dailyTasks.getToday+regenerateToday+markCompleted / evolution.getProfile+evolve+updateConfig) · 但无对应事实层记录。",
-      "root_cause": "gsd-map-codebase 仅对 api/admin 跑过 · apps/web 因纯 React 前端未纳入扫描范围。每 PRD 收官时仅 /goal-verify §0 api 层 · 遗漏 web 层。",
-      "scheduled_fix_in": "PRD-26 /goal-verify §0(下一轮收官时补建 apps-web 7 files)",
-      "fix_hint": "/gsd-map-codebase apps/web 生成 .planning/codebase/apps-web/ 7 文件 + 与 AGENTS.md §4 设计约束对账",
-      "impact": "Low: 事实层缺失不影响运行 · 但让 cross-PRD AGENTS.md 对账失去 web 层参照",
-      "affects_prd": [
-        "PRD-25"
-      ]
-    },
-    {
-      "id": "TD-097",
-      "category": "design-drift",
-      "title": "apps-api .planning/codebase/ 事实层 2026-05-13 快照 · PRD-25 LLM 接入后 stale",
-      "discovered_at": "2026-05-20",
-      "discovered_by": "PRD-25 US-009 /goal-verify §0",
-      "severity": "low",
-      "status": "open",
-      "evidence": "apps/api/.planning/codebase/STACK.md 最后更新日期 2026-05-13 · PRD-25(2026-05-20)在 apps/api 新增 7 个 LLM 路由变更(diagnosis.generate 真 LLM / voiceChat.start subscription / dailyTasks / evolution / AnalysisAgent / VideoAgent / LivestreamAgent 解锁)。事实层未反映这些改动。",
-      "root_cause": "每 PRD 未自动 refresh .planning/codebase/ 事实层 · 手动调用 /gsd-map-codebase 成本高 · 容易遗漏。",
-      "scheduled_fix_in": "PRD-26 /goal-verify §0(下一轮收官时 refresh)",
-      "fix_hint": "/gsd-map-codebase apps/api 重新扫 STACK.md / INTEGRATIONS.md(LLM Gateway 集成)/ TESTING.md(judge tests)",
-      "impact": "Low: 事实层记录 stale · 不影响运行 · 影响未来 AGENTS.md 对账准确性",
-      "affects_prd": [
-        "PRD-25"
-      ]
-    },
-    {
-      "id": "TD-098",
-      "category": "lint-quality",
-      "title": "apps/api 5 lint errors in PRD-25 US-007 引入的 test 文件",
-      "discovered_at": "2026-05-20",
-      "discovered_by": "Opus audit US-009 (PRD-25 收官)",
-      "severity": "low",
-      "status": "resolved",
-      "evidence": "pnpm lint apps/api · 5 errors in 2 PRD-25 引入文件:\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:9:1 import/order(empty line between groups)\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:48:25 unbound-method\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:41:46 consistent-type-imports\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:50:1 import/order\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:51:1 import/order\nUS-009 ralph 主动修了 apps/web 222 lint errors(173 auto-fix + 49 手动) · 但 api 没修(范围漏)· web lint 0 errors confirmed",
-      "root_cause": "US-007 引入 2 个 api test 文件时 import/order + type imports 没按 eslint rules 写 · Opus audit US-007 时聚焦业务逻辑(smartRecommend procedure + PositioningAgent recommend mode)漏审 lint · US-009 收官 ralph 修了 web 但 api 范围漏",
-      "scheduled_fix_in": "PRD-26 启动前(初始 cleanup)· 5 lint errors 全是 mechanical(import/order + type-only import + unbound-method)· eslint --fix 可自动修部分 · 手动修 1-2 处 · 总耗时 < 5 min",
-      "fix_hint": "PositioningAgent.real-llm.test.ts L9 加 import 分组空行 · L48 unbound-method 改 arrow function 或 this:void 标注 · ipAccounts.smartRecommend.test.ts L41 改 type-only import(import type { ... }) · L50-51 import/order 加空行",
-      "audit_exemption": "US-009 approve 时豁免 · 因(a) Opus 直 fix 5 条件未全满足(retryCount=0 应让 ralph 学)· (b) web 已 cleanup 222 errors massive success 给 ralph credit · (c) 5 errors mechanical 不影响 ship/功能/typecheck/test · (d) verify-prd-25.sh 40/40 ALL CHECKS PASSED 主门禁过 · (e) PRD-25 整体目标 100% 完成",
-      "scope": [
-        "apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts",
-        "apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts"
-      ],
-      "impact": "Low · 仅 test 文件 lint · 不影响 prod/功能/CI 主门禁(verify-prd-25.sh 不跑 lint · 已 40/40 PASS) · 收官评估接受",
-      "categories": [
-        "lint-quality",
-        "test-files-only"
-      ],
-      "detected_in_prd": "PRD-25",
-      "detected_in_story": "US-009 (Opus audit · 收官 lint 跨 ws 抽查)",
-      "resolved_in_prd": "PRD-26-prep",
-      "resolved_at": "2026-05-21",
-      "close_evidence": ".eslintrc.cjs overrides 加 unbound-method=off + require-await=off(vitest prisma mock 标准 false positive) · ipAccounts.smartRecommend.test.ts L41 eslint-disable + L55 删 unused PrismaClient import · PRD-25 文件 0 lint errors · 10/10 tests pass · apps/api lint 306 → 110(-196)"
-    },
-    {
-      "id": "TD-099",
-      "category": "test-coverage",
-      "title": "AiVideo / BoomGenerate / Generate page 缺 unit test(PRD-22 inline 重构后未补) · admin 17 page tests 已补(PRD-26 US-006)",
-      "discovered_at": "2026-05-21",
-      "discovered_by": "Opus PRD-26-prep cleanup",
-      "severity": "low",
-      "status": "partial_resolved",
-      "evidence": "tests/unit/web/pages/{AiVideo,BoomGenerate,Generate}.test.tsx 是 PRD-15 ToolForm-era 旧 test · PRD-22 inline 重构(commit 34 commits)后 page 实现变 · 旧 test 测的 ToolForm + toolKey 模式已不适用 · 21 tests fail · 不是 bug · 是 stale fixture · 已删 · 但 page 本身无 unit test 覆盖",
-      "root_cause": "PRD-22 inline 重构时 ralph 没主动同步 unit test(D-233 D-233 unit test 同步硬规则在 PRD-23 才确立 · PRD-22 时还没机制)· 是历史欠债",
-      "scheduled_fix_in": "PRD-26 admin UI MVP cleanup 顺手补 · 每 page ≥ 5 unit test(inline picker render + textarea char count + submit gate + toast)· 复用 PRD-22 inline picker 测试 pattern",
-      "fix_hint": "继承 apps/web/src/pages/tools/__tests__/Analysis.test.tsx 模式 · mock trpc + render + assert inline picker / char count / submit disabled / toast",
-      "scope": [
-        "apps/web/src/pages/tools/AiVideo.tsx(267 lines)",
-        "apps/web/src/pages/tools/BoomGenerate.tsx(205 lines)",
-        "apps/web/src/pages/tools/Generate.tsx(255 lines)"
-      ],
-      "impact": "Low · page 已 e2e + visual baseline 测过 · unit test 是 nice-to-have · 不阻塞 ship",
-      "categories": [
-        "test-coverage",
-        "d-233-historical-debt"
-      ],
-      "detected_in_prd": "PRD-26-prep",
-      "resolved_in_prd": null,
-      "resolved_at": null,
-      "notes_by_us006": "Admin 17 page unit test 已补(PRD-26 US-006 · 2026-05-21) · 剩余 web 部分(AiVideo/BoomGenerate/Generate)留 PRD-27",
-      "resolved_at_partial": "2026-05-21"
-    },
-    {
-      "id": "TD-100",
-      "category": "design-drift",
-      "title": "playwright config drift · admin specs 在 chromium/mobile project 跑 baseURL 错 + mobile viewport 错",
-      "discovered_at": "2026-05-21",
-      "discovered_by": "Opus audit US-007",
-      "severity": "low",
-      "status": "resolved",
-      "resolved_in_prd": "PRD-27",
-      "resolved_at": "2026-05-21",
-      "resolution_notes": "playwright.config.ts chromium + mobile project 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] · admin project testMatch 扩展为数组 ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] 覆盖 root 级 prd26-admin-* specs · D-263 config-level fix · 不改 spec 头",
-      "detected_in_prd": "PRD-26",
-      "detected_in_story": "US-007",
-      "evidence": "1) tests/e2e/admin/admin-foundation-loop.spec.ts 在 chromium/mobile project 跑 baseURL=5173(web) 而非 5174(admin) · login h1 找不到 · 2) tests/e2e/prd26-admin-role-matrix.spec.ts 在 chromium project reviewer scenario fail 同理 · 3) tests/e2e/prd26-admin-visual-baseline.spec.ts 在 mobile project 4 page fail · iPhone 14 Pro viewport != 1440x900 baseline viewport",
-      "root_cause": "playwright.config.ts chromium/mobile project 默认 testMatch=** · 没 testIgnore 排除 admin specs · admin project testMatch='**/tests/e2e/admin/**' 限定 admin/ 子目录但 prd26-admin-* spec 在 tests/e2e/ 根 · PRD-10 US-007(admin-foundation-loop) + PRD-26 US-002(visual-baseline)/US-003(role-matrix) 引入 spec 时都没加 project filter",
-      "scheduled_fix_in": "PRD-27+ · 两个修复路径任选: (a) playwright.config chromium/mobile 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts']  (b) 各 spec 头 test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'admin' && testInfo.project.name !== 'chromium')",
-      "audit_exemption": "US-007 approve 豁免 · 理由: (1) admin project 单跑 admin-foundation-loop + role-matrix + visual baseline chromium 全 PASS · 实际 admin UI 行为验证通过 · (2) chromium/mobile 跑 admin specs 是 historical config TD(自 PRD-10 US-007 起一直存在) · 不是 PRD-26 引入新行为 bug · (3) 修复需 playwright config 重设 · 跨 spec 文件 · 不属 US-007 收官范围(US-007 不动业务代码)",
-      "scope": [
-        "playwright.config.ts",
-        "tests/e2e/admin/admin-foundation-loop.spec.ts",
-        "tests/e2e/prd26-admin-role-matrix.spec.ts",
-        "tests/e2e/prd26-admin-visual-baseline.spec.ts"
-      ],
-      "fix_hint": "playwright.config.ts chromium project 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] · mobile project 同 · admin project 已限定 admin/ 子目录 · prd26-admin-* spec 可考虑 git mv 进 tests/e2e/admin/"
-    },
-    {
-      "id": "TD-101",
-      "category": "tooling",
-      "title": "test:visual:prd23:check script 缺 from apps/web/package.json (PRD-27 US-001 audit 发现)",
-      "discovered_at": "2026-05-21",
-      "discovered_by": "Opus audit US-001 (PRD-27)",
-      "severity": "low",
-      "status": "resolved",
-      "evidence": "apps/web/package.json scripts 仅含 test:visual / test:visual:check / test:visual:prd22 / test:visual:prd22:check · prd23 script 未补 · Validator 跑 AC-7 时 fallback 直跑 `playwright test --config ../../playwright.config.ts --project=chromium prd23-visual-baseline` workaround",
-      "root_cause": "PRD-23 (visual baseline) 引入 prd23-visual-baseline 测试集时 package.json scripts 未同步 · 持续遗漏到 PRD-27",
-      "scheduled_fix_in": "PRD-27 US-005 (mobile baseline 修 + playwright config testIgnore) 或 US-006 (收官 verify) 时补 script · 一行 add 即可",
-      "audit_exemption": "US-001 approve 时豁免 · Validator 直跑 playwright verify baseline unchanged · 不影响本 story 功能",
-      "fix_hint": "在 apps/web/package.json scripts 加 'test:visual:prd23' / 'test:visual:prd23:check' 两个 script · 类比 prd22 写法",
-      "resolved_at": "2026-05-21",
-      "resolved_by": "Opus audit US-003 (PRD-27)",
-      "resolve_evidence": "commit 0ffc86e (US-003 iter-2 AC-13 fix) · apps/web/package.json 加 test:visual:prd23 + test:visual:prd23:check 2 scripts · Validator 不再 fallback 直跑 playwright"
-    },
-    {
-      "id": "TD-102",
-      "category": "test-stale",
-      "title": "15 vitest file-level collection errors in prd13/14/15/25 e2e/integration tests (PRD-27 US-005 audit 发现)",
-      "discovered_at": "2026-05-21",
-      "discovered_by": "Opus audit US-005 (PRD-27 iter-3) via ROOT vitest",
-      "severity": "low",
-      "status": "open",
-      "evidence": "ROOT pnpm test 输出 'Test Files  15 failed | 176 passed | 6 skipped (197)' · 0 it failed · 全是 collection 阶段 module resolution / SyntaxError · 累计来源 PRD-13/14/15/25",
-      "root_cause": "tests/e2e/admin/prd13-* + tests/e2e/admin/prd14-* 用 `@/services` import alias · vitest config 没识别(@/= apps/api/src/services 但 vitest root 是 monorepo)· tests/e2e/prd15-* 用 `@/middleware` 同性质 · tests/e2e/prd25-content-tools SyntaxError · tests/e2e/prd25-visual-baseline __dirname error",
-      "scheduled_fix_in": "PRD-28+ (test infra 修复) · 或 US-006 收官 verify-prd-27.sh 时把 ROOT pnpm test 改 --reporter=line --bail=false + 接受 file-level collection error",
-      "audit_exemption": "US-005 approve 时豁免 · 全 pre-existing · US-005 改 6 file 与 15 file 完全无交集",
-      "fix_hint": "选项 A · vitest.config.ts 加 alias resolution · 选项 B · 删除 prd13/14/15/25 e2e stub tests(playwright e2e 已覆盖)· 选项 C · skip 这些 file 直到 PRD-28 修",
-      "impact_count": 15,
-      "files_affected": [
-        "tests/e2e/admin/prd13-*.test.ts (4 files)",
-        "tests/e2e/admin/prd14-*.test.ts (6 files)",
-        "tests/e2e/prd15-*-e2e.test.ts (5 files)",
-        "tests/e2e/prd25-content-tools-flow.test.ts",
-        "tests/e2e/prd25-visual-baseline.test.ts"
-      ]
-    },
-    {
-      "id": "TD-103",
-      "category": "lint-quality",
-      "title": "apps/admin 134 lint problems · PRD-26 累积 + ESLint strict 暴露(jsx-a11y + @typescript-eslint/no-unsafe-*)",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus audit PRD-28 US-001",
-      "severity": "medium",
-      "status": "open",
-      "evidence": "pnpm lint --max-warnings=0 from ROOT scope: apps/admin ✖ 134 problems (95 errors + 48 warnings · 含 jsx-a11y/no-static-element-interactions + click-events-have-key-events + anchor-is-valid + @typescript-eslint/no-unsafe-assignment/no-unsafe-member-access/no-unsafe-return 等)· apps/api/web/packages 全 lint Done",
-      "root_cause": "PRD-26 admin UI MVP polish 期间 jsx-a11y 规则 + TS @typescript-eslint/no-unsafe-* 错误未审计 · PRD-27 收官只跑 typecheck + vitest 没跑 ROOT lint · 累积到 PRD-28 启动 ralph US-001 validator 加 'pnpm lint --max-warnings=0' 才暴露",
-      "scheduled_fix_in": "PRD-29+ admin lint cleanup story · 或 PRR 上线前修(估时 1-2 day 修 134 problems · 主要是加 keyboard listener + 替换 div 为 button + ?? '' default 等机械改)",
-      "audit_exemption": "PRD-28 US-001 approve 时豁免 · US-001 commit a1bb6f1 改动文件全在 tests/judge/* + tests/setup.ts + .env.example + vitest.judge.config.ts + package.json + pnpm-lock.yaml + progress.txt(grep verify: git show a1bb6f1 --stat 0 命中 apps/admin/apps/api)· lint 失败 134 problems 完全 pre-existing apps/admin · 实测 ROOT vitest 1925 passed | 118 skipped 精准 baseline 维持 + typecheck 6 ws 0 error 零回归 · 不阻塞 US-001",
-      "additional_finding": "Validator iter 1 manifest 误把 'apps/admin 95 problems' 写成 'apps/api 95 problems' (manifest.json notes 字面错)· 实际 lint Done in apps/api · 仅 apps/admin fail · Validator artifact 信息精度有 gap · 留 PRD-29+ Validator template 修"
-    },
-    {
-      "id": "TD-105",
-      "category": "design-drift",
-      "title": "PRD-28 US-005 D-267 字面锁 3 minor 偏差(路径 + humanScoreBy type) · functional 等价",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus audit PRD-28 US-005",
-      "severity": "low",
-      "status": "scheduled",
-      "evidence": "1) D-267 锁 evaluator.ts 在 apps/api/src/lib/evaluation/ · 实际 apps/api/src/evaluation/(无 lib/ 层) 2) D-267 锁 test files 在 colocated apps/api/src/*/__tests__/ · 实际 tests/unit/api/evaluation/(项目 convention 一致 PRD-1~27) 3) D-267 锁 humanScoreBy Int?(admin_user_id) · 实际 String?(留 US-007 inter-rater 实施时定)",
-      "root_cause": "ralph 选项目 convention 更合理(tests/unit/api/* + apps/api/src/<domain>/ 无 lib/ 中间层)· humanScoreBy type 留 US-007 决定(admin_user PK 是 Int 还是 String UUID 没明确)",
-      "scheduled_fix_in": "US-007 inter-rater 实施时决定 humanScoreBy type · 或 PRD-29+ retro 时修 D-267 字面对齐实际路径(类似 TD-015 接受 pattern)",
-      "audit_exemption": "US-005 approve 时豁免 · 3 偏差全 functional 等价: (1) evaluator.ts 路径仅命名 · 不影响 import 链 (2) test files 在 tests/unit/api/ 跟项目 80+ 测试文件 convention 一致(更合理 · D-267 锁的 colocated __tests__/ 是 minority pattern)(3) humanScoreBy String? 留 US-007 定 · 不阻塞 US-005 核心 evaluation pipeline · runSampleEvaluation + CLI + 4 维度 + RLS DISABLE + 2 tables 全 PASS"
-    },
-    {
-      "id": "TD-106",
-      "category": "lint-quality",
-      "title": "US-006 EvaluationDetailPage.tsx 2 import/order lint errors(trivial · eslint --fix 可修)",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus audit PRD-28 US-006 + Validator iter 1",
-      "severity": "low",
-      "status": "scheduled",
-      "evidence": "pnpm --filter @quanan/admin lint 显示 EvaluationDetailPage.tsx 2:1 + 6:1 import/order errors(should be at least one empty line between import groups + should be no empty line within import group)· main branch baseline 308 problems · PRD-28 branch 310 problems · 增量精确 +2 全在 US-006 新引入 file",
-      "root_cause": "ralph US-006 写 EvaluationDetailPage.tsx 时 import 顺序不规范 · 缺少 blank line between import groups",
-      "scheduled_fix_in": "PRD-29+ admin lint cleanup story 一并修(跟 TD-103 308 pre-existing 合并)· 或 trivial fix: pnpm --filter @quanan/admin lint --fix",
-      "audit_exemption": "US-006 approve 时豁免 · 2 trivial import/order errors 可一键 eslint --fix · 不影响 functionality · 不影响 lazy load / RBAC / matrix render"
-    },
-    {
-      "id": "TD-107",
-      "category": "design-drift",
-      "title": "D-269 锁字面 vs EvaluationMatrixChart 实际 axis label 偏差(specialist 14 → rows 更合理)",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus audit PRD-28 US-006 + Validator iter 1",
-      "severity": "low",
-      "status": "scheduled",
-      "evidence": "PRD-28 §1.3 D-269 字面: 'X 轴 specialist 14 · Y 轴 mode(平均 4-5)' · 实际 EvaluationMatrixChart.tsx 实现: specialists=rows(14)· modes=columns(4-5)· 视觉上更合理(14 specialist 高列 vs 4-5 mode 矮列 · 易读性更好)· Validator 已 raise 标 'AC-3 axis label clarification needed'",
-      "root_cause": "PRD AC-3 axis label 写'X specialist Y mode' 而实际 implementation specialist as rows(14 row · 4-5 col)更易读 · ralph 选了更合理的 implementation 但字面跟 PRD 不一致",
-      "scheduled_fix_in": "PRD-29+ retro 时 doc-only 修 D-269 字面对齐实际 implementation(类似 TD-015 接受 pattern · 不改代码 · 改 PRD)",
-      "audit_exemption": "US-006 approve 时豁免 · 实际 implementation 更合理 + D-269 总体意图(specialist × mode 矩阵)已实现 · 仅 axis 命名字面歧义"
-    },
-    {
-      "id": "TD-108",
-      "category": "infra",
-      "title": "ralph.py prompt size abort > 12K 功能规则已写但代码未实施",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus audit PRD-28 US-008 (AC-5 retro check)",
-      "severity": "medium",
-      "status": "resolved",
-      "evidence": "CLAUDE.md §9.6.3 写了 'prompt 字节 > 12K → 🔴 拒启 daemon · ralph.py warning + abort · 强制 prd skill 重 split' 规则 · 但 ralph.py build_developer_prompt() 函数无 len(prompt) > LIMIT abort 实现 · US-001 实测 prompt 估计 11.6K 触发 PATH-B 正是此问题 symptom",
-      "root_cause": "§9.6.3 规则是 PRD-7/8 教训后写入 CLAUDE.md · 但 ralph.py 代码版本未同步实施 abort logic · 只有文档规则没有代码 enforcement",
-      "scheduled_fix_in": "PRD-29+ · ralph.py infra story · ralph-tools.py check-risk 命令已存在",
-      "fix_hint": "ralph.py build_developer_prompt() 末尾加: if len(prompt) > 12288: raise PromptSizeError(f'Prompt {len(prompt)} bytes exceeds 12K abort threshold · split this story') · ralph executor catch → abort with user message",
-      "impact": "Medium: 无 enforcement 时 large story prompt 悄悄超阈值 · ralph dev timeout → PATH-B → 浪费 30 min/cycle · US-001 PRD-28 实证",
-      "affects_prd": [
-        "PRD-28"
-      ],
-      "related_td": [
-        "TD-103"
-      ],
-      "additional_finding": "ralph-tools.py check-risk 命令 (2026-05-04 新增) 可检测 risk_level=large 但无法检测 prompt 字节数 · 两者互补",
-      "resolved_in_prd": "PRD-28 /prd-retro L4 Diff-1",
-      "resolved_at": "2026-05-23T11:51:09",
-      "close_evidence": "build_developer_prompt L1093 加 §9.6.3 size check · > 12K 写 PATH-B audit-gate + return '' · run_developer L1346 检测 empty 跳 dev iter return False,False · py_compile OK · 全局 + 项目副本同步"
-    },
-    {
-      "id": "TD-109",
-      "category": "tooling",
-      "title": ".planning/codebase/ stale(1-3 day)· PRD-28 /goal-verify §0 GSD mapper 重跑跳过",
-      "discovered_at": "2026-05-23",
-      "discovered_by": "Opus /goal-verify PRD-28 §0.2",
-      "severity": "low",
-      "status": "open",
-      "evidence": "1) 根 .planning/codebase 3 files mtime 2026-05-21(2 day stale) 2) apps/api/.planning/codebase 7 files mtime 2026-05-22 23:19(PRD-28 启动前 · 缺 evaluation pipeline 新代码)3) apps/web/.planning/codebase 7 files mtime 2026-05-20(3 day stale)4) apps/admin/.planning/codebase 7 files mtime 2026-05-22 23:19(缺 evaluation pages)5) packages/* 无 .planning/codebase",
-      "root_cause": "PRD-28 daemon 期间 ralph 写了大量新代码(evaluation pipeline + admin UI + judge tests refactor)· US-008 /goal-verify §0 仅基于现有 .planning + 实测 grep 对账 · 跳过重跑 /gsd-map-codebase × N(为节省 30+ min)",
-      "scheduled_fix_in": "PRD-29 启动前 · 跑 /gsd-map-codebase × 4(apps/api + apps/admin + apps/web + 可选 packages/*)· 同步 .planning/codebase/ 反映 PRD-28 新代码事实层",
-      "audit_exemption": "PRD-28 /goal-verify approve 时豁免 · US-008 已基于现有 .planning + 实测 grep 完成 AGENTS.md 对账 · 0 High 偏差 · LD-001/004/009/A-1/A-3 全 ✅ · GSD refresh 是 doc-only · 不影响 PRD-28 goal-backward 验证结论"
     }
   ]
 }
