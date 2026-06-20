@@ -73,6 +73,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -86,6 +87,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -98,6 +100,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -110,6 +113,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -122,6 +126,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -132,6 +137,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     mockComplete.mockRejectedValue(new Error());
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -144,6 +150,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -157,6 +164,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     );
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -174,6 +182,7 @@ describe('BaseSpecialist.isFallbackable fix — VideoAgent production mode', () 
     });
     const result = await makeVideoAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_VIDEO_INPUT,
     });
@@ -197,6 +206,7 @@ describe('BaseSpecialist.isFallbackable fix — BrandingAgent persona mode', () 
     );
     const result = await makeBrandingAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -210,6 +220,7 @@ describe('BaseSpecialist.isFallbackable fix — BrandingAgent persona mode', () 
     );
     const result = await makeBrandingAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -222,6 +233,7 @@ describe('BaseSpecialist.isFallbackable fix — BrandingAgent persona mode', () 
     );
     const result = await makeBrandingAgent().execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'packaging',
       userInput: {},
     });
@@ -239,9 +251,59 @@ describe('BaseSpecialist.isFallbackable fix — BrandingAgent persona mode', () 
     await expect(
       makeBrandingAgent().execute({
         accountId: TEST_ACCOUNT_ID,
+      userId: 1,
         mode: 'bad_mode',
         userInput: {},
       }),
     ).rejects.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// G12 fix: fallback path 写 success=false 到 cost_log — canary 错误率真感知
+// ---------------------------------------------------------------------------
+
+describe('G12 fix: fallback path writes success=false to cost_log', () => {
+  beforeEach(() => {
+    // 使用 clearAllMocks(仅清 call history) 而非 resetAllMocks(会清 implementation)
+    vi.clearAllMocks();
+    mockStepDataFindMany.mockResolvedValue([]);
+    mockCostLogCreate.mockResolvedValue({ id: 1 });
+    mockGetLatestInsight.mockResolvedValue(null);
+  });
+
+  it('G12 fix: BaseSpecialist fallback path 写 success=false (BrandingAgent persona)', async () => {
+    // VideoAgent.production 有自己的内部 catch(不走 BaseSpecialist outer catch)，
+    // 用 BrandingAgent.persona 来测试 BaseSpecialist.execute() 的 catch block。
+    // 429 → BrandingAgent.invokeLLM throw → BaseSpecialist outer catch → fallback path → cost_log.success=false
+    mockComplete.mockRejectedValue(
+      new Error('429 {"type":"rate_limit_error","message":"rate limit exceeded"}'),
+    );
+
+    // spy on costLog.create at the prisma mock level — capture actual args
+    const capturedArgs: Array<{ data: Record<string, unknown> }> = [];
+    mockCostLogCreate.mockImplementation(async (arg: { data: Record<string, unknown> }) => {
+      capturedArgs.push(arg);
+      return { id: 42 };
+    });
+
+    const result = await makeBrandingAgent().execute({
+      accountId: TEST_ACCOUNT_ID,
+      userId: 1,
+      mode: 'persona',
+      userInput: {},
+    });
+
+    // 确认确实走了 BaseSpecialist outer catch 的 fallback
+    expect(result.isFallback).toBe(true);
+    expect(result.modelUsed).toBe('fallback');
+
+    // G12 核心断言: BaseSpecialist.execute() catch path 的 cost_log 写 success=false
+    // 这保证 canary 止损统计的 costLog.count({ success:false }) 能感知到真实失败
+    expect(capturedArgs).toHaveLength(1);
+    const written = capturedArgs[0]!.data;
+    expect(written['success']).toBe(false);
+    expect(written['isFallback']).toBe(true);
+    expect(written['modelUsed']).toBe('fallback');
   });
 });

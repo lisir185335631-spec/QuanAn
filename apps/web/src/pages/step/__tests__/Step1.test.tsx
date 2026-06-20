@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import Step1 from '@/pages/step/Step1';
 
@@ -179,5 +179,124 @@ describe('Step1 · inline link 触发 modal', () => {
     renderStep1();
     fireEvent.click(screen.getByTestId('subtitle-custom-link'));
     expect(screen.getByTestId('custom-industry-input')).toBeInTheDocument();
+  });
+});
+
+// ── 行业选择持久化 ────────────────────────────────────────────────────────────
+// 验证 handleSubmit 在导航前写入 localStorage
+// global setup.ts mock: useActiveAccount → account.id = 1
+// → LS key = aiip_memory_acc_1_step1
+// US-P05: 美业有 subIndustries → 必须先选子行业才能提交
+
+describe('Step1 · 行业选择持久化', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('确认并进入下一步 → localStorage 写入 industry + lastIndustryCategory + lastIndustrySub', () => {
+    renderStep1();
+    // 选中美业 card
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // US-P05: 必须先选子行业才能提交(美业有 subIndustries)
+    // 通过网格点选子行业 beauty_salon(美容院)
+    fireEvent.click(screen.getByTestId('sub-industry-chip-beauty_salon'));
+    // 点击 sticky bar 的确认按钮
+    const ctaBtns = screen.getAllByText('确认并进入下一步');
+    fireEvent.click(ctaBtns[0]!);
+    // 验证 localStorage 写入正确的 key + 内容
+    const raw = localStorage.getItem('aiip_memory_acc_1_step1');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!) as { industry?: string; lastIndustryCategory?: string; lastIndustrySub?: string };
+    expect(parsed.industry).toBe('美业');
+    expect(parsed.lastIndustryCategory).toBe('美业');
+    expect(parsed.lastIndustrySub).toBe('美容院');
+  });
+});
+
+// ── US-P05: 子行业两层选择 ────────────────────────────────────────────────────
+
+describe('Step1 · US-P05 子行业两层选择', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('AC-1: 选美业 → 子行业区块出现(含下拉框 + 网格)', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // 下拉框存在
+    expect(screen.getByTestId('sub-industry-select')).toBeInTheDocument();
+    // 网格存在
+    expect(screen.getByTestId('sub-industry-grid')).toBeInTheDocument();
+  });
+
+  it('AC-1: 子行业网格含 ≥3 个选项', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    const grid = screen.getByTestId('sub-industry-grid');
+    const chips = grid.querySelectorAll('button');
+    expect(chips.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('AC-1: 下拉框含目标 option', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    const select = screen.getByTestId('sub-industry-select') as HTMLSelectElement;
+    const options = Array.from(select.options).map((o) => o.value);
+    expect(options).toContain('beauty_salon');
+    expect(options).toContain('hair');
+    expect(options).toContain('other');
+  });
+
+  it('AC-1: 网格点选子行业 → data-state active', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    fireEvent.click(screen.getByTestId('sub-industry-chip-hair'));
+    expect(screen.getByTestId('sub-industry-chip-hair')).toHaveAttribute('data-state', 'active');
+  });
+
+  it('AC-1: 下拉框选择子行业 → 网格对应项 active', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    fireEvent.change(screen.getByTestId('sub-industry-select'), { target: { value: 'nail' } });
+    expect(screen.getByTestId('sub-industry-chip-nail')).toHaveAttribute('data-state', 'active');
+  });
+
+  it('AC-3: 只选大类未选子行业点下一步 → 提示"请选择子行业"', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // 不选子行业，直接点提交
+    const ctaBtns = screen.getAllByText('确认并进入下一步');
+    fireEvent.click(ctaBtns[0]!);
+    // 错误提示出现
+    expect(screen.getByTestId('sub-industry-error')).toHaveTextContent('请选择子行业');
+    // localStorage 未写入
+    expect(localStorage.getItem('aiip_memory_acc_1_step1')).toBeNull();
+  });
+
+  it('AC-4: 选大类+子行业后提交 → localStorage 含 lastIndustryCategory + lastIndustrySub', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    fireEvent.click(screen.getByTestId('sub-industry-chip-lash'));
+    const ctaBtns = screen.getAllByText('确认并进入下一步');
+    fireEvent.click(ctaBtns[0]!);
+    const raw = localStorage.getItem('aiip_memory_acc_1_step1');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!) as { lastIndustryCategory?: string; lastIndustrySub?: string };
+    expect(parsed.lastIndustryCategory).toBe('美业');
+    expect(parsed.lastIndustrySub).toBe('美睫');
+  });
+
+  it('切换大类 → 子行业选择重置', () => {
+    renderStep1();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    fireEvent.click(screen.getByTestId('sub-industry-chip-hair'));
+    // 切换到餐饮美食
+    fireEvent.click(screen.getByTestId('industry-card-餐饮美食'));
+    // 新行业的子行业区块出现
+    expect(screen.getByTestId('sub-industry-grid')).toBeInTheDocument();
+    // 没有上一个行业的子行业网格
+    expect(screen.queryByTestId('sub-industry-chip-hair')).not.toBeInTheDocument();
+    // 美业子行业 chip 不在
+    expect(screen.queryByTestId('sub-industry-chip-beauty_salon')).not.toBeInTheDocument();
   });
 });

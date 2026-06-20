@@ -83,7 +83,7 @@ describe('DiagnosisAgent', () => {
   // (a) prompt 含 7 维度定义关键字
   it('(a) invokeLLM 调用时 userPrompt 含 7 维度关键字', async () => {
     const agent = new DiagnosisAgent();
-    await agent.execute({ accountId: TEST_ACCOUNT_ID, userInput: { answers: VALID_ANSWERS } });
+    await agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, userInput: { answers: VALID_ANSWERS } });
 
     expect(mockComplete).toHaveBeenCalledOnce();
     const callArg = mockComplete.mock.calls[0]?.[0] as { userPrompt: string; systemPrompt: string };
@@ -107,7 +107,7 @@ describe('DiagnosisAgent', () => {
   // (b) outputSchema 严守
   it('(b) LLM 返回数据通过 outputSchema.safeParse · schema-conformant', async () => {
     const agent = new DiagnosisAgent();
-    const result = await agent.execute({ accountId: TEST_ACCOUNT_ID, userInput: { answers: VALID_ANSWERS } });
+    const result = await agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, userInput: { answers: VALID_ANSWERS } });
 
     // outputSchema 严守 — 7 维度都存在
     const parsed = diagnosisOutput.safeParse(result.result);
@@ -123,7 +123,7 @@ describe('DiagnosisAgent', () => {
   // (c) responseFormat='json' + model_tier 不硬编码
   it('(c) invokeLLM 使用 responseFormat json_schema + model_tier from config (不硬编码)', async () => {
     const agent = new DiagnosisAgent();
-    await agent.execute({ accountId: TEST_ACCOUNT_ID, userInput: { answers: VALID_ANSWERS } });
+    await agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, userInput: { answers: VALID_ANSWERS } });
 
     const callArg = mockComplete.mock.calls[0]?.[0] as {
       responseFormat: { type: string; schema: unknown };
@@ -141,7 +141,7 @@ describe('DiagnosisAgent', () => {
   // (d) isFallback=false on success path
   it('(d) isFallback=false · modelUsed from gateway · tokensUsed > 0', async () => {
     const agent = new DiagnosisAgent();
-    const result = await agent.execute({ accountId: TEST_ACCOUNT_ID, userInput: { answers: VALID_ANSWERS } });
+    const result = await agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, userInput: { answers: VALID_ANSWERS } });
 
     expect(result.isFallback).toBe(false);
     expect(result.modelUsed).toBe('claude-sonnet-4-6');

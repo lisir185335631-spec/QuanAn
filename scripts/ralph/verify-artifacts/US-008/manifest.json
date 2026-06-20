@@ -1,16 +1,16 @@
 {
   "story_id": "US-008",
   "validator_start_ts": "2026-05-19T09:15:00",
-  "validator_end_ts": "2026-05-19T10:45:00",
-  "test_command": "bash scripts/verify-prd-21.sh (45 checks) + pnpm test:visual:check (4 visual) + pnpm test (181 vitest) + pnpm typecheck + 16 prd21 e2e + prd16 20/20 + routes-34 33/33 + browser 5 pages",
+  "validator_end_ts": "2026-05-19T10:20:00",
+  "test_command": "bash scripts/verify-prd-21.sh (45 checks) + pnpm test:visual:check (4 visual) + pnpm test (181 vitest) + pnpm typecheck + 16 prd21 e2e + prd16 20 e2e + routes-34 33 e2e + browser 5 pages",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "PRD-21 US-008 PASS. Frontend-only project (apps/web, now quanan). pytest-full.xml is vitest JUnit proxy (181 tests, 0 failures). verify-prd-21.sh 45/45 checks. visual baseline 4/4 pass. AC-6: PRD-21 e2e 16/16 pass, prd16 20/20 pass, routes-34 33/33 pass. header.spec.ts 3/7 pre-existing failures confirmed in main branch (not introduced by PRD-21). AC-7: .planning/codebase/ 7 files + TD-087+TD-088 logged. AC-11: browser 5 screenshots, 6/6 sub-checks pass. Project renamed QuanQn→QuanAn during validation session.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt"
-  ]
+  ],
+  "notes": "PRD-21 US-008 PASS. Frontend-only project (apps/web). pytest-full.xml is vitest JUnit proxy (181 tests, 0 failures). verify-prd-21.sh 45/45 checks. visual baseline 4/4 pass. AC-6: PRD-21 e2e 16/16 pass, prd16 20/20 pass, routes-34 33/33 pass. header.spec.ts 3/7 pre-existing failures confirmed in main branch (header-user-trigger/account-trigger/tools-trigger never existed) — not introduced by PRD-21. AC-7: .planning/codebase/ 7 files + TD-087+TD-088 logged. AC-11: browser 5 screenshots, 6/6 sub-checks pass."
 }

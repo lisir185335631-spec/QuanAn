@@ -354,7 +354,8 @@ function InterRaterSection({ runId }: { runId: string }) {
             <span style={{ color: 'var(--text-dim)' }}>κ: </span>
             <span
               style={{
-                color: agreement.kappa >= 0.4 ? '#86efac' : '#fca5a5',
+                /* PRD-28 历史 0.4 → 对齐 KB eval-suite gate 0.6 */
+                color: agreement.kappa >= 0.6 ? '#86efac' : '#fca5a5',
                 fontWeight: 700,
               }}
             >

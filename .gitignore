@@ -95,3 +95,8 @@ apps/scripts/ralph/
 
 # turbo 本地缓存
 .turbo/
+
+# R7(2026-06-12): rules 是版本化的 harness 约束文档,豁免忽略
+!.claude/
+.claude/*
+!.claude/rules/

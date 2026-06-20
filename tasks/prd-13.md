@@ -776,7 +776,8 @@ PRD-12 retro §13 已 apply 1 Skill 升级 Diff 到全局 ~/.claude:
     'EvolutionAgent', 'DailyTaskAgent', 'PositioningAgent', 'BrandingAgent',
     'TopicAgent', 'CopywritingAgent', 'VideoAgent', 'AnalysisAgent',
     'LivestreamAgent', 'MonetizationAgent', 'PrivateDomainAgent',
-    'DeepLearnAgent', 'DiagnosisAgent', 'VoiceChatAgent',
+    'DeepLearnAgent', 'DiagnosisAgent',
+    // [重构删:VoiceChatAgent 语音对话已删]
   ];
   ```
 - [ ] Tab URL params 持久化 · `?specialist=PositioningAgent&mode=default`

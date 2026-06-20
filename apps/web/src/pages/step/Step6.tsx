@@ -1,5 +1,7 @@
 // PRD-29.11 · Step6 拍摄计划 — 液态玻璃 iOS26 重构
 // Phase2 Step6: 接真后端 · trpc.stepData.save/get · shooting mode → ShootingOutput
+// PRD-37·批1·⑥ US-P03: 呈现形式并入 Step6 (trpc.presentStyles.recommend)
+import { PRESENTATION_STYLE_IDS } from '@quanan/schemas/specialist-io';
 import { motion } from 'framer-motion';
 import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -8,7 +10,16 @@ import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { trpc } from '@/lib/trpc';
+import {
+  PLATFORM_OPTIONS,
+  PRESENT_STYLES_MAP,
+  PS_CTA,
+  PS_DEFAULT_PLATFORM,
+  PS_DEFAULT_TEXT,
+  PS_TEXT_MIN,
+  PS_TEXT_MIN_MSG,
+} from '@/lib/constants/present-styles';
+import { trpc, type RouterOutputs } from '@/lib/trpc';
 
 // ─── VideoAgent shooting mode output shape ────────────────────────────────────
 // Mirrors ShootingOutput from apps/api/src/specialists/VideoAgent.ts
@@ -54,6 +65,68 @@ function isShootingOutput(x: unknown): x is ShootingOutput {
   return true;
 }
 
+// ─── 呈现形式 types & helpers (US-P03 迁入) ──────────────────────────────────────
+
+type PresentRecommendRow = RouterOutputs['presentStyles']['recommend'];
+
+interface RecommendedStyleItem {
+  id: string;
+  label: string;
+  description: string;
+  tips: string;
+  matchScore: number;
+  rationale: string;
+}
+
+interface PresentationResult {
+  recommendedStyles: RecommendedStyleItem[];
+}
+
+function parsePresentContent(row: PresentRecommendRow | undefined): PresentationResult | undefined {
+  if (!row) return undefined;
+  try {
+    const parsed = JSON.parse(row.content) as unknown;
+    if (
+      parsed === null ||
+      typeof parsed !== 'object' ||
+      !('recommendedStyles' in parsed) ||
+      !Array.isArray((parsed as PresentationResult).recommendedStyles) ||
+      (parsed as PresentationResult).recommendedStyles.length < 1
+    ) {
+      return undefined;
+    }
+    const p = parsed as PresentationResult;
+    const valid = p.recommendedStyles.every(
+      (s) => typeof s === 'object' && s !== null && typeof s.id === 'string' && typeof s.matchScore === 'number',
+    );
+    if (!valid) return undefined;
+    const filtered = p.recommendedStyles.filter(
+      (s) => (PRESENTATION_STYLE_IDS as readonly string[]).includes(s.id),
+    );
+    if (filtered.length < 1) return undefined;
+    return { recommendedStyles: filtered };
+  } catch {
+    return undefined;
+  }
+}
+
+const STYLE_ICON_S6: Record<string, string> = {
+  talking_head: 'record_voice_over',
+  drama: 'movie',
+  tutorial: 'school',
+  vlog: 'videocam',
+  street_interview: 'forum',
+  comparison: 'compare',
+  list_style: 'format_list_numbered',
+  mashup: 'video_library',
+  screen_record: 'screen_record',
+  animation: 'animation',
+  reaction: 'emoji_emotions',
+  before_after: 'compare_arrows',
+  pov: 'panorama_photosphere',
+  qa: 'quiz',
+};
+
 // ─── Form data ────────────────────────────────────────────────────────────────
 
 export interface Step6FormData {
@@ -97,6 +170,32 @@ export default function Step6() {
     const saved = readOtherStep<Step6FormData>(accountId, 'step6');
     if (saved?.content) setContent(saved.content);
   }, [accountId]);
+
+  // ── 呈现形式 state (US-P03) ──────────────────────────────────────────────────
+  const [psText, setPsText] = useState<string>(PS_DEFAULT_TEXT);
+  const [psPlatform, setPsPlatform] = useState<string>(PS_DEFAULT_PLATFORM);
+  const [psTextError, setPsTextError] = useState<string | null>(null);
+
+  const presentMutation = trpc.presentStyles.recommend.useMutation({
+    onSuccess: () => { toast.success('呈现形式推荐已生成'); },
+    onError: (err) => { toast.error(err.message || '推荐失败，请重试'); },
+  });
+
+  const psIsPending = presentMutation.isPending;
+  const psHistoryRow: PresentRecommendRow | undefined = presentMutation.data;
+  const presentationResult = parsePresentContent(psHistoryRow);
+  const psHasResult = presentationResult !== undefined;
+  const psIsFallback = psHistoryRow?.isFallback ?? false;
+
+  function handlePsRecommend() {
+    if (psIsPending) return;
+    if (psText.trim().length < PS_TEXT_MIN) {
+      setPsTextError(PS_TEXT_MIN_MSG);
+      return;
+    }
+    setPsTextError(null);
+    presentMutation.mutate({ text: psText.trim(), platform: psPlatform });
+  }
 
   // ── 真 mutation: trpc.stepData.save 接真后端 · 单写路径 ──────────────────────
   const generateMutation = trpc.stepData.save.useMutation({
@@ -1607,6 +1706,151 @@ export default function Step6() {
           </div>
         </>
       )}
+
+      {/* ── 呈现形式 (US-P03 · trpc.presentStyles.recommend) ────────────────── */}
+      <Reveal style={{ marginTop: 44 }}>
+        <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">tune</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>呈现形式</h2>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· AI 推荐最适合你文案的内容形式</span>
+        </div>
+      </Reveal>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 44 }}>
+        {/* 左：输入表单 */}
+        <div className="lg-glass lg-spec" style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, padding: 24 }}>
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: C.grad, color: '#fff' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_note</span>
+              </span>
+              输入文案 + 平台
+            </h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label htmlFor="s6-ps-text" style={{ display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                文案内容 <span style={{ color: 'rgba(255,120,140,0.9)' }}>*</span>
+              </label>
+              <div style={{ overflow: 'hidden', borderRadius: 10, border: `0.5px solid ${psTextError ? 'rgba(255,120,140,0.6)' : C.line}`, background: 'rgba(255,255,255,0.06)' }}>
+                <textarea
+                  id="s6-ps-text"
+                  value={psText}
+                  onChange={(e) => setPsText(e.target.value)}
+                  rows={5}
+                  placeholder={`请输入你的文案内容（至少 ${PS_TEXT_MIN} 字）`}
+                  style={{ width: '100%', resize: 'vertical', border: 0, background: 'transparent', padding: 12, fontSize: 13, lineHeight: 1.65, color: C.ink, fontFamily: F.cn, outline: 'none' }}
+                />
+              </div>
+              {psTextError && (
+                <p style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,120,140,0.9)', fontFamily: F.cn }}>{psTextError}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="s6-ps-platform" style={{ display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>
+                目标平台
+              </label>
+              <select
+                id="s6-ps-platform"
+                value={psPlatform}
+                onChange={(e) => setPsPlatform(e.target.value)}
+                style={{ width: '100%', borderRadius: 10, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.08)', padding: '10px 14px', fontSize: 13, color: C.ink, fontFamily: F.cn, outline: 'none', cursor: 'pointer', appearance: 'auto' }}
+              >
+                {PLATFORM_OPTIONS.map((p) => (
+                  <option key={p.value} value={p.value} style={{ background: '#1a2d56', color: '#fff' }}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+            <Magnetic strength={0.3}>
+              <button
+                type="button"
+                onClick={handlePsRecommend}
+                disabled={psIsPending || psText.trim().length < PS_TEXT_MIN}
+                className="lg-gradbtn"
+                style={{ display: 'inline-flex', width: '100%', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 9999, padding: '12px 20px', fontSize: 14, fontWeight: 700, color: '#fff', fontFamily: F.cn, border: 'none', cursor: psIsPending || psText.trim().length < PS_TEXT_MIN ? 'not-allowed' : 'pointer', opacity: psIsPending || psText.trim().length < PS_TEXT_MIN ? 0.55 : 1 }}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>auto_awesome</span>
+                {PS_CTA}
+              </button>
+            </Magnetic>
+          </div>
+        </div>
+
+        {/* 右：推荐结果 / 空态 */}
+        <div>
+          {psIsPending && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 14, border: `0.5px solid rgba(168,197,224,0.35)`, padding: '14px 20px', fontSize: 14, background: 'rgba(168,197,224,0.10)', color: C.ink, marginBottom: 16 }}>
+              <svg style={{ height: 20, width: 20, animation: 'spin 1s linear infinite' }} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+              AI 正在分析文案，推荐最适合的呈现形式…
+            </div>
+          )}
+          {!psHasResult && !psIsPending && (
+            <div className="lg-glass" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 20, padding: 48, textAlign: 'center', border: `0.5px dashed ${C.line}`, height: '100%' }}>
+              <span style={{ marginBottom: 12, display: 'flex', height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 14, background: 'rgba(168,197,224,0.18)', color: C.ink }}>
+                <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 32 }}>style</span>
+              </span>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, margin: 0 }}>
+                填写左侧文案 + 平台，点击「{PS_CTA}」<br />AI 将为你推荐最适合的呈现形式
+              </p>
+            </div>
+          )}
+          {psHasResult && presentationResult && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {psIsFallback && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderRadius: 10, border: `0.5px solid rgba(168,197,224,0.35)`, padding: '10px 14px', fontSize: 13, background: 'rgba(168,197,224,0.10)', color: 'rgba(255,255,255,0.88)' }}>
+                  <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16, color: C.ikb }}>warning</span>
+                  AI 繁忙，已返回备用推荐，建议稍后重试。
+                </div>
+              )}
+              <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12 }}>
+                {presentationResult.recommendedStyles.map((item) => {
+                  const icon = STYLE_ICON_S6[item.id] ?? 'play_circle';
+                  const staticStyle = PRESENT_STYLES_MAP[item.id];
+                  const displayLabel = item.label || staticStyle?.label || item.id;
+                  const displayDescription = item.description || staticStyle?.description || '';
+                  const displayTips = item.tips || staticStyle?.tips || '';
+                  return (
+                    <Item key={item.id} style={{ height: '100%' }}>
+                      <motion.div
+                        className="lg-glass"
+                        whileHover={{ y: -3 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        style={{ display: 'flex', flexDirection: 'column', borderRadius: 14, overflow: 'hidden', height: '100%' }}
+                      >
+                        <div style={{ display: 'flex', height: 48, alignItems: 'center', gap: 10, padding: '0 16px', background: 'linear-gradient(135deg, rgba(168,197,224,0.55), rgba(120,160,220,0.38))' }}>
+                          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 22, color: '#fff' }}>{icon}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', textShadow: C.textShadow }}>{displayLabel}</span>
+                          <span style={{ marginLeft: 'auto', borderRadius: 9999, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: '#fff', background: 'rgba(255,255,255,0.20)' }}>
+                            {item.matchScore}%
+                          </span>
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, padding: 14 }}>
+                          <p style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.80)', fontFamily: F.cn, margin: 0 }}>{displayDescription}</p>
+                          {item.rationale && (
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, borderRadius: 8, border: `0.5px solid rgba(168,197,224,0.32)`, padding: 10, background: 'rgba(168,197,224,0.12)' }}>
+                              <span className="material-symbols-outlined" style={{ marginTop: 1, flexShrink: 0, fontSize: 14, color: C.ikb }} aria-hidden="true">recommend</span>
+                              <span style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{item.rationale}</span>
+                            </div>
+                          )}
+                          {displayTips && (
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, borderRadius: 8, border: `0.5px solid ${C.line}`, padding: 10, background: 'rgba(255,255,255,0.06)' }}>
+                              <span className="material-symbols-outlined" style={{ marginTop: 1, flexShrink: 0, fontSize: 14, color: 'rgba(255,255,255,0.8)' }} aria-hidden="true">lightbulb</span>
+                              <span style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>{displayTips}</span>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </Item>
+                  );
+                })}
+              </RevealGroup>
+            </div>
+          )}
+        </div>
+      </div>
     </LiquidShell>
   );
 }

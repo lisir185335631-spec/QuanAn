@@ -38,11 +38,11 @@
 | **下游 PRD** | PRD-29+ · 多用户压测 · 移动端 polish · 海外版 · OAuth 流式 · PRR |
 | **失败回滚** | `git branch backup/before-prd-28 main` 待建(daemon 启动前必跑) |
 | **dev server 配套** | TD-095 已在 PRD-25 落地 · ralph.py `--daemon` 自动 fork pnpm dev · admin 测试 e2e 自动健康检查继承 |
-| **TD-027 当前状态** | tech-debt.json status='resolved'(2026-05-20 PRD-25 US-008)· 实际 grep 验证 21/21 judge file 仍 `vi.mock('@/workers/llm-gateway')` · 仅 voice-chat.judge.ts 改用 `vi.hoisted()+beforeEach` 模式(可控 mock · 仍非真调)· PRD-28 重开 status='open' + 真闭环修复 |
-| **21 judge file 清单** | analysis-structural · analysis-viral · branding · copywriting · copywriting-acquisition · copywriting-boom · copywriting-free · daily-task-agent · evolution-agent · feedback-evolution-loop · insight-injection · livestream · monetization · positioning · rag-injection · topic · video · video-acquisition · video-production · video-storyboard · voice-chat(共 21 · judge-runner.ts 不计)|
+| **TD-027 当前状态** | tech-debt.json status='resolved'(2026-05-20 PRD-25 US-008)· 实际 grep 验证 19/19 有效 judge file 仍 `vi.mock('@/workers/llm-gateway')` *(voice-chat + video-acquisition 已删 · 不计入)* · PRD-28 重开 status='open' + 真闭环修复(19 有效 file) [重构删: voice-chat.judge.ts vi.hoisted()+beforeEach 模式] |
+| **21 judge file 清单** (本轮重构删 voice-chat + video-acquisition · 实际改造 19 file) | analysis-structural · analysis-viral · branding · copywriting · copywriting-acquisition · copywriting-boom · copywriting-free · daily-task-agent · evolution-agent · feedback-evolution-loop · insight-injection · livestream · monetization · positioning · rag-injection · topic · video · video-production · video-storyboard(共 19 有效 · judge-runner.ts 不计) [重构删: video-acquisition · voice-chat]|
 | **100 金标准来源(双轨)** | 轨 1 sally 实测样本 30(/tmp/aiipznt-clone-research/api/api-probe-results.json 等抓自 sally step3/3b/4b/5/7)· 轨 2 自造 70(团队人工写覆盖 14 specialist · 每 specialist ~5 条) |
 | **CLI 跑批策略** | `pnpm eval:run --specialist=all --samples=100`(新增 script)· 走 LLMGateway lightweight tier · 写 prisma evaluation_runs + evaluation_samples · 单次跑 ≈ 20-30 min · cost ≈ $0.5-1 |
-| **inter-rater agreement** | 30 sample subset · 用户在 admin /admin/evaluation/inter-rater 页面手工评 0-10 分 · 跟 LLM Judge 同 sample 评分对比 · 计算 Cohen's kappa + Pearson correlation · 阈值 kappa ≥ 0.4(moderate agreement) |
+| **inter-rater agreement** | 30 sample subset · 用户在 admin /admin/evaluation/inter-rater 页面手工评 0-10 分 · 跟 LLM Judge 同 sample 评分对比 · 计算 Cohen's kappa + Pearson correlation · 阈值 κ≥0.6(2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史) |
 | **PRD-MASTER §4.4 补做定位** | PRD-MASTER C 项原写"PRD-13 启动前 · 100 条全部跑完" · 实际 PRD-13 跑完时未做 · PRD-28 是补做 · 不算流程违规 · 是延迟交付 |
 
 ### §0.3 evaluation 定调(D-265 · 真闭环锁)
@@ -78,7 +78,7 @@
 PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judge 从 "永远 pass 的 fake test" 转 "真调 LLM grade output" · 同时补做 PRD-MASTER §4.4 规定的 100 金标准数据集 + admin /admin/evaluation UI + /goal-verify 集成。
 
 **核心交付**:
-1. **21 judge file mock 拆除 + 真闭环**(US-001 foundation · 21 file `vi.mock('@/workers/llm-gateway')` 全部移除 · 加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 优雅 skip · ANTHROPIC_API_KEY 注入路径建立)
+1. **19 有效 judge file mock 拆除 + 真闭环** *(21→19 · voice-chat + video-acquisition 已删 · 不改造)*(US-001 foundation · 19 file `vi.mock('@/workers/llm-gateway')` 全部移除 · 加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 优雅 skip · ANTHROPIC_API_KEY 注入路径建立)
 2. **100 金标准数据集准备**(US-002 medium · tests/fixtures/judge-goldens/sally-30.json + custom-70.json · 双轨制 sally 30 + 自造 70 · 14 specialist 配额按 PRD-MASTER §4.4-B)
 3. **evaluation pipeline + prisma schema + CLI 跑批**(US-003 high · 新增 evaluation_runs + evaluation_samples 表 + `pnpm eval:run` CLI · 跑 100 sample 真调 · 写 4 维度评分 · 结构 zod schema 验证 + 内容 LLM Judge 评分 + 通过率统计)
 4. **admin /admin/evaluation UI**(US-004 medium · 评分历史列表 + 多 specialist × 场景对比矩阵 + drill-down 单 sample 详情)
@@ -102,14 +102,14 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 | Decision | 内容 | 反例 |
 |:-:|---|---|
-| **D-265** | **TD-027 真闭环锁** · 21 judge file `vi.mock('@/workers/llm-gateway')` + mockComplete 全部移除 · judge-runner.ts 直接调真 LLMGateway · `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 无 KEY 优雅 skip · 有 KEY 真调 claude-haiku-4-5 lightweight tier · pnpm test:judge 真 grade(0 KEY 时 skip 21 file · 有 KEY 时跑 21 file × N case ≈ 56 sample · cost ≈ $0.1-0.2/run · time ≈ 5-8 min) | ralph 误把 mock 改成 `mockResolvedValue({pass:true})` 但用 `vi.hoisted()`(像 voice-chat.judge.ts 那样)· 仍是 fake-pass · 必须**完全移除 vi.mock 调用**(0 命中 grep `vi.mock.*llm-gateway` in tests/judge/)·  |
+| **D-265** | **TD-027 真闭环锁** · 19 有效 judge file `vi.mock('@/workers/llm-gateway')` + mockComplete 全部移除 *(21→19 · voice-chat + video-acquisition 已删 · 不改造这两个文件)* · judge-runner.ts 直接调真 LLMGateway · `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 无 KEY 优雅 skip · 有 KEY 真调 claude-haiku-4-5 lightweight tier · pnpm test:judge 真 grade(0 KEY 时 skip 19 file · 有 KEY 时跑 19 file × N case · cost ≈ $0.1-0.2/run · time ≈ 5-8 min) | ralph 误把 mock 改成 `mockResolvedValue({pass:true})` 但用 `vi.hoisted()`(像 voice-chat.judge.ts 那样)· 仍是 fake-pass · 必须**完全移除 vi.mock 调用**(0 命中 grep `vi.mock.*llm-gateway` in tests/judge/ 有效 19 file)·  |
 | **D-266** | **100 金标准 dataset 锁** · `tests/fixtures/judge-goldens/sally-30.json`(轨 1 · 30 条 · 从 /tmp/aiipznt-clone-research/api/api-probe-results.json + knowledge-cases-full.json 抓取 sally step3/3b/4b/5/7 实测样本)+ `custom-70.json`(轨 2 · 自造 70 条覆盖 14 specialist · 配额按 PRD-MASTER §4.4-B: CopywritingAgent 12 + BrandingAgent 10 + TopicAgent 8 + PositioningAgent 6 + MonetizationAgent 6 + VideoAgent 8 + AnalysisAgent 6 + 其他 7 specialist 44 · 总 100)· schema: `{id: 'sally-001' \| 'custom-001', specialistId, mode?, input: object, expectedOutputPattern: object \| null(LLM 自由生成时 null), criteria: string[], expectedKeyFields: string[], source: 'sally' \| 'custom', tags?: string[]}` | ralph 误把 sally 实测当"标准答案" · 实际是参考基线(spec §4.4-A "不是答案 · LLM Judge 用来理解原版输出风格")· criteria 字段是核心 · expectedOutputPattern 可以 null(LLM 自由生成时不锁 output) |
 | **D-267** | **evaluation_runs + evaluation_samples 表 schema 锁(prisma 新增 · LD-009 双层防护)** · `model EvaluationRun { id, runId(UUID), startedAt, finishedAt?, totalSamples, passedSamples, failedSamples, skippedSamples, avgScore Decimal, modelTier, model String, totalTokens, totalCostUsd Decimal, status: 'running' \| 'completed' \| 'failed', metadata Json? }` · `model EvaluationSample { id, runId(FK), goldenId, specialistId, mode?, input Json, actualOutput Json, judgeScore Int(0-10), judgePass Boolean, judgeReason String, structurePass Boolean(zod schema check), durationMs Int, tokensUsed Int, costUsd Decimal, createdAt }` · 系统级表 · 不挂 accountId · RLS DISABLE(走 admin RBAC) · index: runId / specialistId / createdAt(sort DESC) | ralph 误加 `accountId` 字段 · evaluation 是系统级评估 · 不是用户数据 · RLS DISABLE; 同样误加 `userId` 字段 · 不需要 |
 | **D-268** | **eval-run.ts CLI 跑批锁** · `apps/api/src/scripts/eval-run.ts` 新建 · 命令 `pnpm --filter @quanan/api eval:run [--specialist=<all\|id>] [--samples=<N>] [--source=<all\|sally\|custom>]` · 流程: (1) 读 fixtures → (2) 创建 evaluation_runs row · status='running' → (3) 对每 sample · 跑 specialist.execute(LLM 真调)· 拿 actualOutput → (4) 跑 specialist.outputSchema.safeParse(actualOutput) · 取 structurePass → (5) 跑 runJudge({specialistId, input, actualOutput, criteria, expectedKeyFields}) · 拿 judgeScore/judgePass/reason → (6) 写 evaluation_samples row → (7) 更新 evaluation_runs aggregate(totalSamples + passedSamples + avgScore + totalTokens + totalCostUsd)→ status='completed' / 'failed' · console.log 进度 + 最终摘要 | ralph 误把 eval-run.ts 写在 apps/api/src/lib/ · 必须在 scripts/(独立 CLI · 不进 worker / router)· script 内部走 prisma 直连(无 RLS ctx)· 不能假设有 trpc ctx |
 | **D-269** | **admin /admin/evaluation UI 路由锁** · `apps/admin/src/pages/evaluation/` 新建目录 · `EvaluationPage.tsx`(评分历史列表 + 跨 specialist × 场景对比矩阵)+ `EvaluationDetailPage.tsx`(单 run drill-down · 100 sample 详情 + score 分布柱状图)· router 加 `<Route path="/evaluation" element={<EvaluationPage />} />` + `/evaluation/:runId` · admin nav 加 evaluation entry · admin trpc router 加 `admin.evaluation.{listRuns, getRun, listSamples}` 3 procedures · 全部 require role=ops 或 admin(走 PRD-13 RBAC) | ralph 误把 evaluation UI 写在 apps/web · 必须在 apps/admin(LD-A-1 admin/web 严格隔离 · R-001 不暴露内部数据)· UI 走 packages/ui/admin 共享组件(Table / Card / Chart)· 不重写 |
 | **D-270** | **inter-rater agreement subset 锁(30 sample)** · `evaluation_runs.inter_rater_subset_id String?` 字段 + `EvaluationSample.humanScore Int?(0-10) + humanScoreBy Int?(admin_user_id) + humanScoredAt DateTime?` · admin /admin/evaluation/inter-rater/:runId 页面 · 列 30 sample(从 evaluation_samples 按 runId 随机取 30 条 · seed 固定为 runId hash · 保证 reproducible)· 每 sample 显示 input + actualOutput + criteria + LLM Judge score · 用户点 0-10 评分 + 注释 · 提交后写 humanScore · 30 sample 全评完后自动计算 Cohen's kappa(LLM Judge score 转 categorical 0-5 fail / 6-10 pass · vs humanScore 转同)+ Pearson correlation(continuous 0-10 vs 0-10) · 显示在 /admin/evaluation/:runId 页面 | ralph 误把 inter-rater UI 写在 apps/web · 必须在 apps/admin · 同 D-269; 同样误把 Cohen's kappa 公式写错 · 用 simple-statistics npm package 或手写 · 公式: κ = (Po - Pe) / (1 - Pe) · Po=observed agreement · Pe=expected by chance · 阈值 κ ≥ 0.4 moderate / ≥ 0.6 substantial / ≥ 0.8 almost perfect |
 | **D-271** | **/goal-verify §evaluation 集成锁** · `~/.claude/commands/goal-verify.md` 加 §evaluation 维度(可选 · Step 7 收官时跑)· 流程: (1) 检测 evaluation_runs 表是否有 status='completed' run → (2) 若有 · 读最新 run → (3) 取 4 维度: total/pass/avgScore/inter_rater_kappa → (4) 阈值: avgScore ≥ 6.0 + passRate ≥ 70% + kappa ≥ 0.4 → (5) 写入 .agents/verification/prd-N-goal-backward.md §evaluation 段 · 全 PASS / 部分 PASS / 不 PASS · /goal-verify 报告 evaluation 摘要 · 不阻塞 verification PASS(evaluation 仅是辅助维度)| ralph 误把 evaluation 维度作为 verify 阻塞条件 · 必须仅是辅助维度(不达标 WARN 不 FAIL) · /goal-verify §1+ Goal-backward 仍是主链路 |
-| **D-272** | **PRD-28 收官达 TD-027 真闭环 + 100 金标准就位 + admin /admin/evaluation UI MVP 验证锁** · verify-prd-28.sh 7 sections: §1 21 judge file mock 拆除 grep 验证(vi.mock.*llm-gateway 在 tests/judge/ 必须 0 命中) · §2 100 金标准 fixtures 文件存在 + count=100 · §3 evaluation_runs/evaluation_samples 表存在(prisma db pull)· §4 eval-run.ts CLI 可跑(`pnpm --filter @quanan/api eval:run --samples=5` smoke test)· §5 admin /admin/evaluation 3 路由(/evaluation + /:runId + /inter-rater/:runId)visual baseline 存在 · §6 prisma migration 已 apply · §7 /goal-verify §evaluation 集成 + retro · ≥ 25 checks · 全 PASS | ralph 误把 verify-prd-28.sh §1 grep 写成 `tests/judge/ vi.mock` 不带 quote · 必须 quote 防 shell expand · 同样 §4 smoke test 不该跑真 LLM(无 KEY 时会 hard fail · 应该用 --skip-llm 或者只验证 CLI 加载不报错) |
+| **D-272** | **PRD-28 收官达 TD-027 真闭环 + 100 金标准就位 + admin /admin/evaluation UI MVP 验证锁** · verify-prd-28.sh 7 sections: §1 19 有效 judge file mock 拆除 grep 验证 *(21→19 · voice-chat + video-acquisition 已删)*(vi.mock.*llm-gateway 在 tests/judge/ 必须 0 命中) · §2 100 金标准 fixtures 文件存在 + count=100 · §3 evaluation_runs/evaluation_samples 表存在(prisma db pull)· §4 eval-run.ts CLI 可跑(`pnpm --filter @quanan/api eval:run --samples=5` smoke test)· §5 admin /admin/evaluation 3 路由(/evaluation + /:runId + /inter-rater/:runId)visual baseline 存在 · §6 prisma migration 已 apply · §7 /goal-verify §evaluation 集成 + retro · ≥ 25 checks · 全 PASS | ralph 误把 verify-prd-28.sh §1 grep 写成 `tests/judge/ vi.mock` 不带 quote · 必须 quote 防 shell expand · 同样 §4 smoke test 不该跑真 LLM(无 KEY 时会 hard fail · 应该用 --skip-llm 或者只验证 CLI 加载不报错) |
 
 ---
 
@@ -123,19 +123,19 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 | 指标 | 当前 | 目标 |
 |---|:-:|:-:|
-| 21 judge file mock 拆除 | 21/21 仍 vi.mock | **0/21 vi.mock**(grep `vi.mock.*llm-gateway` in tests/judge/ 命中 0)|
+| 19 有效 judge file mock 拆除 *(21→19 · voice-chat + video-acquisition 已删)* | 19/19 仍 vi.mock | **0/19 vi.mock**(grep `vi.mock.*llm-gateway` in tests/judge/ 命中 0)|
 | 100 金标准 dataset 准备 | 0/100 | **100/100**(30 sally + 70 custom)|
 | evaluation_runs / evaluation_samples 表 | 不存在 | 存在 · prisma migration applied |
 | eval-run.ts CLI 跑批可跑 | 不存在 | **可跑 + 写库**(实测 5 sample smoke test) |
 | admin /admin/evaluation UI 3 路由 | 不存在 | **存在 + visual baseline**(/evaluation · /:runId · /inter-rater/:runId)|
-| inter-rater Cohen's kappa 计算 | 不存在 | **可计算 + 阈值 ≥ 0.4**(LLM Judge vs human 30 sample subset)|
+| inter-rater Cohen's kappa 计算 | 不存在 | **可计算 + 阈值 ≥ 0.6**(LLM Judge vs human 30 sample subset；κ≥0.6 2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史)|
 | /goal-verify §evaluation 集成 | 不存在 | **集成 + verify-prd-28.sh § 25 checks** |
 | pnpm test:judge 真闭环 | mock 永远 pass | **真 grade · skipIf 优雅**(无 KEY skip · 有 KEY 跑 56 sample) |
 | TD-027 status | 'resolved'(假)| **'resolved'(真闭环)**(2026-05-22 PRD-28 重新关闭)|
 
 ### §2.3 验收锚点(Goal-Backward 验证 · /goal-verify §1+ 必查)
 
-1. ✅ `grep -rn "vi.mock.*llm-gateway" tests/judge/` 命中 0(21 file 全拆除)
+1. ✅ `grep -rn "vi.mock.*llm-gateway" tests/judge/` 命中 0(19 有效 file 全拆除 · voice-chat + video-acquisition 已删不计)
 2. ✅ tests/fixtures/judge-goldens/sally-30.json + custom-70.json 存在 · count 验证 30 + 70 = 100
 3. ✅ prisma migration 加 evaluation_runs + evaluation_samples 表 · `prisma db pull` 验证 schema
 4. ✅ `pnpm --filter @quanan/api eval:run --samples=5` 可跑 · 写库验证 5 row in evaluation_samples
@@ -153,13 +153,13 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 > **总计** · 6 US · 1 foundation(US-001)+ 1 high(US-003)+ 4 medium
 
-### US-001 foundation · 21 judge file mock 拆除 + describe.skipIf + ANTHROPIC_API_KEY 注入(D-265 字面锁)
+### US-001 foundation · 19 有效 judge file mock 拆除 + describe.skipIf + ANTHROPIC_API_KEY 注入(D-265 字面锁)
 
-**As** Coding 3.0 项目 · **I want** 21 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway')` + 加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` + tests/setup.ts 加 dotenv 注入 · **so that** `pnpm test:judge` 在无 KEY 时优雅 skip(21 file 全 skipped)· 有 KEY 时真调 claude-haiku-4-5 grade(56 sample · 5-8 min · cost ≈ $0.1-0.2)· TD-027 真闭环 · 不再 fake-pass。
+**As** Coding 3.0 项目 · **I want** 19 有效 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway')` + 加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` + tests/setup.ts 加 dotenv 注入 · **so that** `pnpm test:judge` 在无 KEY 时优雅 skip(19 file 全 skipped)· 有 KEY 时真调 claude-haiku-4-5 grade(56 sample · 5-8 min · cost ≈ $0.1-0.2)· TD-027 真闭环 · 不再 fake-pass。[重构删:voice-chat + video-acquisition 已删,21→19 有效 file]
 
 **risk_level** · **foundation**(downstream count=5 · 被 US-002 dataset + US-003 evaluation pipeline + US-004 admin UI + US-005 inter-rater + US-006 收官全部依赖 · 升档 foundation)
 
-**size_hint** · medium(21 file 改造但模式重复 · 单 file ~5 分钟 · 总 ~30 分钟 · 加 tests/setup.ts + .env.example + plan-check 校验 · 估时 4-6h dev iter · 1 round 可完成)
+**size_hint** · medium(19 有效 file 改造但模式重复 *(21→19 · voice-chat + video-acquisition 已删)* · 单 file ~5 分钟 · 总 ~30 分钟 · 加 tests/setup.ts + .env.example + plan-check 校验 · 估时 4-6h dev iter · 1 round 可完成)
 
 **files_to_modify**:
 - `tests/judge/analysis-structural.judge.ts` (移除 vi.mock + 加 describe.skipIf)
@@ -178,11 +178,9 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 - `tests/judge/positioning.judge.ts` (同)
 - `tests/judge/rag-injection.judge.ts` (同)
 - `tests/judge/topic.judge.ts` (同)
-- `tests/judge/video-acquisition.judge.ts` (同)
 - `tests/judge/video-production.judge.ts` (同)
 - `tests/judge/video-storyboard.judge.ts` (同)
 - `tests/judge/video.judge.ts` (同)
-- `tests/judge/voice-chat.judge.ts` (同)
 - `tests/judge/judge-runner.ts` (不动 · 真调路径已就位)
 - `tests/setup.ts` (新建或修改 · 加 `import * as dotenv from 'dotenv'; dotenv.config({path: '.env'});`)
 - `.env.example` (加 `ANTHROPIC_API_KEY=REDACTED key for pnpm test:judge real-call mode)`)
@@ -190,14 +188,14 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 - `package.json` (确认 test:judge script 不动)
 
 **Acceptance Criteria**:
-- AC-1 · 21 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway', () => (...))` 调用 · grep 验证: `grep -rn "vi.mock.*llm-gateway" tests/judge/` 命中 **0**
-- AC-2 · 21 tests/judge/*.judge.ts 全部移除 `mockComplete`/`mockResolvedValue` 等 mock 助手 · grep 验证: `grep -rn "mockComplete\|mockResolvedValue.*pass" tests/judge/` 命中 **0**
-- AC-3 · 21 tests/judge/*.judge.ts 全部在 describe 最外层加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 限定: `describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {...})` · grep 验证: `grep -rn "describe.skipIf.*ANTHROPIC_API_KEY" tests/judge/ | wc -l` ≥ 21
+- AC-1 · 19 有效 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway', () => (...))` 调用 *(voice-chat.judge.ts + video-acquisition.judge.ts 不改造 · 已删功能)* · grep 验证: `grep -rn "vi.mock.*llm-gateway" tests/judge/` 命中 **0**
+- AC-2 · 19 有效 tests/judge/*.judge.ts 全部移除 `mockComplete`/`mockResolvedValue` 等 mock 助手 · grep 验证: `grep -rn "mockComplete\|mockResolvedValue.*pass" tests/judge/` 命中 **0**
+- AC-3 · 19 有效 tests/judge/*.judge.ts 全部在 describe 最外层加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 限定: `describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {...})` · grep 验证: `grep -rn "describe.skipIf.*ANTHROPIC_API_KEY" tests/judge/ | wc -l` ≥ 19 *(voice-chat + video-acquisition 已删 · 不计入)*
 - AC-4 · tests/setup.ts 存在 · 内含 `import * as dotenv from 'dotenv'; dotenv.config();` 或等价 ESM import · 验证: `head -10 tests/setup.ts` 含 dotenv
 - AC-5 · .env.example 加 `ANTHROPIC_API_KEY=REDACTED 行(带注释 "# PRD-28 LLM Judge real-call mode") · 验证: `grep "ANTHROPIC_API_KEY" .env.example` 命中
 - AC-6 · vitest.judge.config.ts setupFiles 含 'tests/setup.ts'(若已含 PASS · 若无加)· 验证: `grep "setupFiles" vitest.judge.config.ts` 含 setup.ts
-- AC-7 · 在**无 ANTHROPIC_API_KEY env**条件下 · `pnpm test:judge` 输出全部 21 file `skipped`(无 hard fail · 0 test 跑)· 验证: `unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10` 含 "21 skipped" 或等价
-- AC-8 · 在**有 ANTHROPIC_API_KEY env**条件下(用户 export 真 KEY)· `pnpm test:judge` 跑 21 file 真调 LLM · 56 test 全 pass(score ≥ 6 + JSON schema valid) · 验证: `pnpm test:judge 2>&1 | tail -20` 含 "21 passed" + 时长 ≥ 60s(真 LLM call latency)
+- AC-7 · 在**无 ANTHROPIC_API_KEY env**条件下 · `pnpm test:judge` 输出 19 有效 file `skipped`(无 hard fail · 0 test 跑 · voice-chat + video-acquisition 已删不计)· 验证: `unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10` 含 "19 skipped" 或等价
+- AC-8 · 在**有 ANTHROPIC_API_KEY env**条件下(用户 export 真 KEY)· `pnpm test:judge` 跑 19 有效 file 真调 LLM · 全 pass(score ≥ 6 + JSON schema valid) · 验证: `pnpm test:judge 2>&1 | tail -20` 含 "19 passed" + 时长 ≥ 60s(真 LLM call latency) *(voice-chat + video-acquisition 已删 · 21→19)*
 - AC-9 · ROOT scope `pnpm test`(不是 apps/api scope)· 零回归 · 1925 passed + 118 skipped(baseline 2026-05-22)· 验证: `pnpm test 2>&1 | tail -10` 含 "1925 passed | 118 skipped"(±5 容忍)· 注意必须 ROOT 跑(M-2 PRD-27 US-005 60 min 救火教训 · 类比扩展到 vitest)
 - AC-10 · `pnpm typecheck` 6 workspace 全 Done · 0 error · 验证 `pnpm typecheck 2>&1 | tail -5` 含 "Done" × 6
 - AC-11 · `pnpm lint --max-warnings=0` 0 warning · 验证 lint clean
@@ -221,7 +219,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 **files_to_create**:
 - `tests/fixtures/judge-goldens/sally-30.json` (新建 · 30 条 · 从 /tmp/aiipznt-clone-research/api/api-probe-results.json + api-probe-v3.json + api-probe-v4.json + knowledge-cases-full.json 抓 sally 实测 step3/3b/4b/5/7 样本 · 每步 5-7 条 · 总 30)
-- `tests/fixtures/judge-goldens/custom-70.json` (新建 · 70 条 · 自造 · 14 specialist 配额: CopywritingAgent 12 + BrandingAgent 10 + TopicAgent 8 + PositioningAgent 6 + MonetizationAgent 6 + VideoAgent 8 + AnalysisAgent 6 + DiagnosisAgent 4 + LivestreamAgent 4 + EvolutionAgent 4 + DailyTaskAgent 4 + PrivateDomainAgent 4 + PresentationAgent 4 + DeepLearnAgent 4 + VoiceChatAgent 0(已有 voice-chat.judge.ts 3 case · 不重复) · 总 70)
+- `tests/fixtures/judge-goldens/custom-70.json` (新建 · 70 条 · 自造 · 14 specialist 配额: CopywritingAgent 12 + BrandingAgent 10 + TopicAgent 8 + PositioningAgent 6 + MonetizationAgent 6 + VideoAgent 8 *(仅 video-production mode · acquisition mode 已删)* + AnalysisAgent 6 + DiagnosisAgent 4 + LivestreamAgent 4 + EvolutionAgent 4 + DailyTaskAgent 4 + PrivateDomainAgent 4 + PresentationAgent 4 + DeepLearnAgent 4 · 总 70) [重构删: VoiceChatAgent · 语音对话已删 · voice-chat.judge.ts 不改造]
 - `tests/fixtures/judge-goldens/SCHEMA.md` (新建 · 含 dataset entry schema 文档 · TypeScript interface + JSON example · ~50 行)
 - `tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts` (新建 · 验证 schema · count · specialistId 合法 · ≥ 4 tests)
 - `packages/schemas/src/judge-golden.schema.ts` (新建 · zod schema · GoldenSample · GoldenDataset)
@@ -338,7 +336,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 ### US-005 medium · inter-rater agreement subset(30 sample)· 用户 spot-check 评分 UI + Cohen's kappa(D-270 字面锁)
 
-**As** ops/admin · **I want** /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(从 evaluation_samples 按 runId hash seed 固定取 30)· 提交后自动计算 Cohen's kappa + Pearson correlation · **so that** 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 kappa ≥ 0.4 moderate agreement · 通过 → LLM Judge 可信。
+**As** ops/admin · **I want** /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(从 evaluation_samples 按 runId hash seed 固定取 30)· 提交后自动计算 Cohen's kappa + Pearson correlation · **so that** 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 κ≥0.6(2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史) · 通过 → LLM Judge 可信。
 
 **risk_level** · medium
 
@@ -392,7 +390,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 **Acceptance Criteria**:
 - AC-1 · `scripts/verify-prd-28.sh` chmod +x · 7 sections · ≥ 25 checks:
-  - §1 21 judge file mock 拆除验证(grep `vi.mock.*llm-gateway` tests/judge/ 命中 0)· ≥ 3 checks
+  - §1 19 有效 judge file mock 拆除验证 *(21→19 · voice-chat + video-acquisition 已删)*(grep `vi.mock.*llm-gateway` tests/judge/ 命中 0)· ≥ 3 checks
   - §2 100 金标准 fixtures 文件 + count(sally-30.json count=30 · custom-70.json count=70 · SCHEMA.md 存在)· ≥ 4 checks
   - §3 prisma evaluation_runs + evaluation_samples 表存在(psql \dt)· RLS DISABLE 验证 · ≥ 3 checks
   - §4 eval-run.ts CLI 可加载(node -e "require('./apps/api/src/scripts/eval-run.ts')" smoke · 无 LLM 调)· ≥ 3 checks
@@ -421,13 +419,13 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 ## §4 Functional Requirements
 
-- **FR-1** · 21 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway')` · 走真 LLMGateway · grep 验证 0 命中
+- **FR-1** · 19 有效 tests/judge/*.judge.ts 全部移除 `vi.mock('@/workers/llm-gateway')` *(21→19 · voice-chat + video-acquisition 已删 · 不改造)* · 走真 LLMGateway · grep 验证 0 命中
 - **FR-2** · `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 必须存在每个 judge file · 无 KEY 优雅 skip · 有 KEY 真调
 - **FR-3** · tests/setup.ts 加 dotenv config · 自动加载 .env · ANTHROPIC_API_KEY 可从 .env 注入
 - **FR-4** · tests/fixtures/judge-goldens/sally-30.json + custom-70.json 总 100 条 · schema 严守 GoldenSample · 14 specialist 配额按 PRD-MASTER §4.4-B
 - **FR-5** · prisma 新增 evaluation_runs + evaluation_samples 表 · RLS DISABLE · 索引按 D-267
 - **FR-6** · `pnpm --filter @quanan/api eval:run` CLI 可跑 100 sample 真调 · 写库 + 4 维度评分(结构 zod + 内容 LLM Judge + duration + cost)
-- **FR-7** · 4 维度评分阈值 · avgScore ≥ 6.0(LLM Judge) + passRate ≥ 70% + Cohen's kappa ≥ 0.4(inter-rater)
+- **FR-7** · 4 维度评分阈值 · avgScore ≥ 6.0(LLM Judge) + passRate ≥ 70% + Cohen's kappa ≥ 0.6(inter-rater；κ≥0.6 2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史)
 - **FR-8** · admin /admin/evaluation 3 路由(/evaluation + /:runId + /inter-rater/:runId)RBAC role=ops/admin 限制
 - **FR-9** · inter-rater 30 sample subset · seeded random by runId hash · reproducible · Cohen's kappa + Pearson 计算
 - **FR-10** · /goal-verify §evaluation 维度集成 · 阈值不达标 WARN 不 FAIL(仅辅助维度)
@@ -534,7 +532,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 ## §8 Success Metrics
 
-- **21 judge file mock 拆除率** · 100%(grep `vi.mock.*llm-gateway` in tests/judge/ 命中 0)
+- **19 有效 judge file mock 拆除率** *(21→19 · voice-chat + video-acquisition 已删)* · 100%(grep `vi.mock.*llm-gateway` in tests/judge/ 命中 0)
 - **100 金标准 dataset 准备率** · 100%(30 sally + 70 custom = 100)
 - **evaluation_runs / evaluation_samples 表存在率** · 100%(prisma db pull 命中)
 - **eval-run.ts CLI 可跑率** · 100%(smoke 5 sample 写库验证)

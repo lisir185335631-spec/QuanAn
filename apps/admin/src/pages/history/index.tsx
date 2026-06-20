@@ -42,7 +42,6 @@ const AGENT_ID_OPTIONS = [
   'PresentStylesAgent',
   'DeepLearningAgent',
   'KnowledgeAgent',
-  'VoiceChatAgent',
 ];
 
 const SCRIPT_TYPE_OPTIONS = [

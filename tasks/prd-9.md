@@ -413,7 +413,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 - **OpenAI text-embedding-3-small** · 1536 dim · cost $0.00002/1K tokens · 比 ada-002 便宜 5×
 - **HNSW index** · pgvector 0.5.0+ 支持 · cosine vector_cosine_ops · build params m=16 ef_construction=64(default)
 - **严守 LD-001**(95/5 RAG retrieve 不允许循环)· **LD-007**(ContextAssembler 唯一入口)· **LD-011**(不引独立向量库)· **R-12**(原子事务)
-- 测试 RAG 时 · 必须 mock OpenAI embedding API(nock pattern 沿用 PRD-8 US-009/010)
+- 测试 RAG 时 · 必须 mock OpenAI embedding API(nock pattern [重构:PRD-8 US-009/010 语音组已删,此 embedding nock pattern 参考其历史实现])
 - pgvector 测试 dev `quanan` + test `quanan_test` 都需启用 extension
 - 67 案例 / 23 公式 / 23 元素 数据源:**优先**从 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`(PRD-5 引入)· 若不存在 · 从 `references/05-vertical/02-爆款文案` 重写为 TS const(PRD-5 应该做了但需验证)
 - AC-12 grep 例外白名单 · EvolutionAgent + DailyTaskAgent 双路径(per AGENTS §11.6.8)· 但本 PRD 不动 L5 自治 Agent

@@ -2,8 +2,8 @@
 
 > **版本** · v0.1(2026-05-20 BJT · Opus 4.7 主对话写)
 > **范围** · 跟 aiipznt 1:1 视觉对齐 · 3 件事 ·
-> 1. 3 modules 完整化(/daily-tasks 今日任务 + /evolution 智能体进化中心 + /voice-chat 语音对话)
-> 2. 全 32 page visual diff 收官(PRD-22+23 累计 29 baseline + PRD-24 新 3 = 32)
+> 1. 2 modules 完整化(/daily-tasks 今日任务 + /evolution 智能体进化中心) [重构删: /voice-chat 语音对话]
+> 2. 全 31 page visual diff 收官(PRD-22+23 累计 29 baseline + PRD-24 新 2 = 31 · voice-chat 已删)
 > 3. 反哺全局 skill 模板 · PRD-21~24 4 PRD 视觉对齐征程跨 PRD 复盘(严格通过率 / baseline 增长曲线 / 反例库统计)
 > **基线** · PRD-21+22+23 已 ship main(commit `f99631b Merge: PRD-23`)· 29 visual baseline 累计 · D-233 unit test 同步硬规则机制化(PRD-23 实证 100% 1st pass)· 7 stub page 完整化(PRD-23 sweep)· `~/.claude/playbooks/prd-template-unit-test-sync.md` 全局反哺已就位
 > **目标** · 32 page 全 visual baseline · 0 stub 剩余 · 收官 1:1 视觉复刻 · 准备 PRR(production readiness review) · LLM 接入留 PRD-25+
@@ -32,10 +32,10 @@
 |---|---|
 | **branchName** | `ralph/prd-24-modules-final-polish` |
 | **Locked Decisions** | D-236 起延续(PRD-23 收尾在 D-235 · 总 6 D · D-236~D-241) |
-| **风险分档** | high × 3(US-001 /daily-tasks + US-002 /evolution + US-003 /voice-chat 都涉及 stub 重写 + ls-namespace 集成 + 字面密度高)+ medium × 1(US-004 全 32 baseline 验证)+ 收官 × 1(US-005) |
+| **风险分档** | high × 2(US-001 /daily-tasks + US-002 /evolution 都涉及 stub 重写 + ls-namespace 集成 + 字面密度高) [重构删: US-003 /voice-chat]+ medium × 1(US-004 全 31 baseline 验证 · voice-chat 已删)+ 收官 × 1(US-005) |
 | **anti_patterns 注入** | 3 high US 必须从 reject-examples.jsonl 检索 ≤ 3 条 · 关键词 "stub 完整化" / "localStorage 多账号隔离" / "5 级系统字面锁" / "quick prompts" / "unit test 同步"(PRD-23 教训) / "EmptyState 空态" / "字面常量字面锁" |
 | **依赖前置 PRD** | PRD-15(8 page 完整化基线) + PRD-16(设计系统) + PRD-17~20(9 step page + 14 工具基础) + PRD-21(visual-diff infra + expectVisualMatch helper) + PRD-22(3 inline picker utility + 13 visual baseline + glass-card.tsx + FadeInWrapper polish) + PRD-23(7 stub 完整化 + 16 visual baseline + DiagnosisStepCard pattern + ls-namespace helper + dev-login + globalProcedure) · 严格保留不动 |
-| **下游 PRD** | PRD-25+ · LLM 接入(/voice-chat 真聊天 streaming + /daily-tasks AI 任务生成 + /evolution AI 洞察生成 + 7 PRD-23 完整化 page 真 LLM + /diagnosis 7 维度真评分) |
+| **下游 PRD** | PRD-25+ · LLM 接入(/daily-tasks AI 任务生成 + /evolution AI 洞察生成 + 7 PRD-23 完整化 page 真 LLM + /diagnosis 7 维度真评分) [重构删: /voice-chat 真聊天 streaming] |
 | **baseline 抓取来源** | `/tmp/aiipznt-clone-research/{dump,screenshots}` 32 HTML + 32 PNG fullPage 1440px |
 | **visual diff 配置** | 复用 PRD-21 D-206 maxDiffPixelRatio 0.05 + D-208 viewport 1440x900 + expectVisualMatch helper |
 | **失败回滚** | `git branch backup/before-prd-24 main` 已建(本会话 08:18) |
@@ -66,8 +66,8 @@
 | D-236 | /daily-tasks · 3-5 stub 任务卡 grid + "AI 老师正在为你制定今日任务..." loading 状态 + 无 active account 时显示 EmptyState + "添加账号" button → 跳 /accounts · "智能" 菜单分类 | spec §8.5.2 "AI 根据当前 IP 账号的状态生成 3-5 个建议任务" + "实测当前账号下还在 loading 中" + "无活跃账号时显示添加账号 button" |
 | D-237 | /evolution · 5 级进化系统字面锁 · `'🌱 L1 初始化'` (0-4 反馈) / `'📚 L2 学习中'` (5-19 反馈) / `'🌿 L3 成长期'` (20-49 反馈) / `'🌳 L4 成熟期'` (50-99 反馈) / `'👑 L5 大师级'` (100+ 反馈) + 4 指标仪表盘(好评数/待改进/学习档案/满意率) + 5 H3 模块(进化等级/进化洞察/最近反馈/深度学习档案/进化设置) | spec §8.5.3 line 2460-2486 完整字面锁 |
 | D-238 | /evolution 进化方向 4 选 1 字面锁 · `综合优化（积累反馈后自动生成）` / `创意性优先` / `转化率优先` / `真实感优先` · ls-namespace `acc_{accountId}_evolution_settings` 存储进化方向选择 · LD-009 多账号隔离 | spec §8.5.3 line 2489-2492 + PRD-15 TD-70 LocalStorage acc_ 前缀反例机制化 |
-| D-239 | /voice-chat · H1 `VOICE CHAT`(Orbitron uppercase) + 副标 `语音对话 · 你的专属 IP 变现顾问` + 模块标题 H3 `你的专属 IP 变现顾问` + 自我介绍文案字面锁 + 6 quick prompts 字面锁 + input + 历史 localStorage(`acc_{accountId}_voice_chat_history` 前缀) | spec §8.4.2 line 2180-2202 完整字面锁 |
-| D-240 | 全 32 page visual baseline 覆盖矩阵 · PRD-22 13 + PRD-23 16 + PRD-24 新 3 = 32 baseline · prd24-visual-baseline.spec.ts 3 fixture · 复用 PRD-21 expectVisualMatch helper · 不切 aiipznt 实拍 baseline(TD-090/091 defer 决策延续) | 收官目标 + Step D 数据决策 |
+| D-239 | [重构删: /voice-chat 语音对话] | *(作废)* |
+| D-240 | 全 31 page visual baseline 覆盖矩阵 · PRD-22 13 + PRD-23 16 + PRD-24 新 2 = 31 baseline(voice-chat 已删)· prd24-visual-baseline.spec.ts 2 fixture · 复用 PRD-21 expectVisualMatch helper · 不切 aiipznt 实拍 baseline(TD-090/091 defer 决策延续) | 收官目标 + Step D 数据决策 |
 | D-241 | verify-prd-24.sh 收官 ALL CHECKS PASSED · 含 PRD-24 内 ≥ 30 checks + 全 32 baseline 跨 PRD-22+23+24 验证 · 一键 CI gate · 标志 1:1 视觉复刻达成 | 历史可追溯 · 准备 PRR |
 
 ---
@@ -86,7 +86,6 @@ PRD-24 完成 **3 modules 完整化 + 全 32 page visual diff 收官**:
 |---|---|---|---|
 | /daily-tasks | stub 未触(4 H + 8 button + 3 H3 占位) | spec §8.5.2 · 3-5 任务卡 + AI loading + 无 active 添加账号 button | UI 骨架 + 3-5 stub 任务卡(spec line 2438-2440 示例字面 "今天发布 1 条 step/7 生成的文案" / "优化 step/3 的简介" / "回复粉丝评论 X 条") + loading state + 空态 + ls-namespace 打卡 storage |
 | /evolution | stub 未触(6 H + 9 button + 5 H3 占位) | spec §8.5.3 · 5 级进化 + 4 指标 + 5 H3 模块 + 4 进化方向 radio | UI 骨架 + 5 H3 模块完整(进化等级/进化洞察/最近反馈/深度学习档案/进化设置) + 5 级 level badge(🌱 L1 → 👑 L5 字面锁) + 4 指标 stub(好评数/待改进/学习档案/满意率) + 4 进化方向 radio(综合优化/创意性优先/转化率优先/真实感优先) + ls-namespace settings storage |
-| /voice-chat | stub(QuanAn 612 LOC 但只 2 H + 12 button · 跟 spec §8.4.2 不匹配) | spec §8.4.2 · VOICE CHAT H1 + 6 quick prompts + 自我介绍 + input + 历史 | UI 骨架重构 + H1 Orbitron + 模块标题 + 自我介绍卡 + 6 quick prompts button grid(字面锁 spec line 2196-2201) + input + 历史 list + ls-namespace acc_ 前缀 storage |
 
 ### 1.2 全 32 page visual baseline 收官(1 medium US)
 
@@ -94,8 +93,8 @@ PRD-24 完成 **3 modules 完整化 + 全 32 page visual diff 收官**:
 |---|:-:|---|
 | PRD-22 | 13 | inline 重构 5 + step page 8 |
 | PRD-23 | 16 | stub 完整化 7 + PRD-15 沉淀工具 8 + 衍生 1 |
-| PRD-24 | 3 | /daily-tasks · /evolution · /voice-chat |
-| **总** | **32** | 32 page = 32 baseline · 1:1 视觉复刻达成 |
+| PRD-24 | 2 | /daily-tasks · /evolution *(voice-chat 已删)* |
+| **总** | **31** | 31 page = 31 baseline · 1:1 视觉复刻达成 |
 
 ### 1.3 收官(1 medium US)
 
@@ -109,8 +108,7 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 
 - ✅ /daily-tasks 完整化(stub 3-5 任务卡 + AI loading + 无 active 空态 + ls-namespace acc_ 前缀) · 跟 spec §8.5.2 1:1
 - ✅ /evolution 完整化(5 级进化 字面锁 + 4 指标仪表盘 + 5 H3 模块 + 4 进化方向 radio · 全字面锁) · 跟 spec §8.5.3 1:1
-- ✅ /voice-chat 完整化(VOICE CHAT H1 + 模块标题 + 自我介绍 + 6 quick prompts 字面锁 + input + 历史 localStorage) · 跟 spec §8.4.2 1:1
-- ✅ 32 page visual baseline 全建立(累计 PRD-22 13 + PRD-23 16 + PRD-24 3 = 32) · 阈值 5% threshold · 跨 PRD-22+23+24 全 pass
+- ✅ 31 page visual baseline 全建立(累计 PRD-22 13 + PRD-23 16 + PRD-24 2 = 31) · 阈值 5% threshold · 跨 PRD-22+23+24 全 pass
 - ✅ verify-prd-24.sh ALL CHECKS PASSED · /goal-verify + /prd-retro 跨 4 PRD 复盘 · AGENTS.md §11.15 沉淀
 - ✅ 5 US 全 audit approved(Opus 4 维度 + risk_level 分档) · D-233 unit test 同步严守(继承 PRD-23) · 反例库自动注入
 
@@ -303,79 +301,7 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 
 ---
 
-### US-003 high · /voice-chat 完整化(VOICE CHAT H1 + 模块标题 + 自我介绍 + 6 quick prompts + 历史 localStorage)
-
-**风险分档** · 🔴 **high**(VOICE CHAT 大组件重构 612 LOC stub · 6 quick prompts 字面锁严守 · 历史 localStorage acc_ 前缀 · quick prompt click 填 input 而非直接发送 UX 风险)
-
-**Story 大小** · medium(单次 ralph 迭代可完成 · 4 文件创建/修改 · ~380 LOC 新增 + 612 LOC 删除)
-
-**前置依赖** · spec §8.5.2 + 现有 /voice-chat 612 LOC stub + PRD-23 ls-namespace getLsKey helper + PRD-22 FadeInWrapper + glass-card.tsx
-
-**用户故事** ·
-作为 QuanAn 用户 · 当我访问 /voice-chat · 我看到 H1 "VOICE CHAT"(Orbitron uppercase 大字 · 类似 STORYBOARD pattern) + 副标 + 模块标题 H3 "你的专属 IP 变现顾问" + 自我介绍卡(glass-card · 字面锁 spec) + 6 quick prompts button grid(2×3 grid · 字面锁 spec line 2196-2201) + 输入框 placeholder "有什么问题尽管问我..." + 发送 button + mic button(stub 语音输入 PRD-25+) + speaker button(stub TTS PRD-25+) + 历史对话 list(从 localStorage `acc_{accountId}_voice_chat_history` 加载) · 点 quick prompt → 自动填到 input(用户可编辑再发送) · 点发送 → 添加 stub Q+A pair 到历史 list + localStorage save · 不接 LLM(D-234)。
-
-**验收标准** ·
-
-- **AC-1** · H1 字面锁 `VOICE CHAT`(Orbitron font-display uppercase · 类似 STORYBOARD pattern PRD-22 US-004) · 副标字面锁 `语音对话 · 你的专属 IP 变现顾问`(spec §8.4.2 + D1A) · 模块标题 H3 字面锁 `你的专属 IP 变现顾问`
-- **AC-2** · 新建 `apps/web/src/lib/constants/voice-chat.ts` · 导出 `VOICE_CHAT_QUICK_PROMPTS_6`(D-239) · 6 prompts 字面锁 spec §8.4.2 line 2196-2201 完整字面 ·
-  ```typescript
-  export const VOICE_CHAT_QUICK_PROMPTS_6: readonly string[] = [
-    '我是新手，怎么从0开始做短视频变现？',
-    '帮我分析一下美业赛道怎么做IP',
-    '怎么写出让人停不下来的爆款文案？',
-    '直播带货有哪些实操技巧？',
-    '如何打造个人 IP 的记忆点？',
-    '小红书和抖音哪个更适合新手？'
-  ] as const
-  ```
-- **AC-3** · 导出 `VOICE_CHAT_INTRO` · 自我介绍文案字面锁 spec §8.4.2 line 2185 ·
-  ```typescript
-  export const VOICE_CHAT_INTRO = '有什么问题尽管问我，我会用大白话给你讲清楚，还会给你详细的解决方案和落地步骤。不管是短视频、直播、还是私域变现，我都能帮你搞定。' as const
-  ```
-- **AC-4** · 导出 `VOICE_CHAT_INPUT_PLACEHOLDER`(spec §8.4.2 字面) `有什么问题尽管问我...` + `VOICE_CHAT_H1` (`VOICE CHAT`) + `VOICE_CHAT_SUBTITLE` (`语音对话 · 你的专属 IP 变现顾问`) + `VOICE_CHAT_MODULE_TITLE` (`你的专属 IP 变现顾问`)
-- **AC-5** · 重写 `apps/web/src/pages/tools/VoiceChat.tsx`(完整删 612 LOC stub) · 主区结构(从上到下) ·
-  1. PageHeader · `<span className="text-label-sm font-label text-primary uppercase tracking-wide">智能工具</span>` + H1 `VOICE CHAT`(`text-h1 font-display uppercase tracking-wider`) + 副标
-  2. 自我介绍卡 · `<div className="glass-card p-6 mb-6">` + H3 `{VOICE_CHAT_MODULE_TITLE}` font-display + p `{VOICE_CHAT_INTRO}` text-body-md leading-relaxed
-  3. 6 quick prompts button grid · `<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">` · `VOICE_CHAT_QUICK_PROMPTS_6.map((prompt, idx) => <button key={idx} onClick={() => setInput(prompt)} className="text-left p-3 rounded-lg border border-border bg-card hover:border-primary/40 transition-all duration-200">{prompt}</button>)`
-  4. 输入栏 · `<div className="flex gap-2 mb-4">` + input + 3 button ·
-     - input · `<input value={input} onChange={...} placeholder={VOICE_CHAT_INPUT_PLACEHOLDER} className="flex-1 ...">`
-     - 发送 button · `<Button onClick={handleSend} disabled={!input.trim()}><Send /></Button>`
-     - mic button · `<Button variant="outline" onClick={() => toast('语音输入 PRD-25+')}><Mic /></Button>`
-     - speaker button · `<Button variant="outline" onClick={() => toast('TTS 朗读 PRD-25+')}><Volume2 /></Button>`
-  5. 历史对话 list · `<div className="space-y-4">{history.map(item => <div className="glass-card p-4"><div className="font-bold mb-2">你 · {item.timestamp}</div><div>{item.question}</div><div className="font-bold mt-3 mb-2">AI 顾问</div><div className="text-muted-foreground">{item.answer}</div></div>)}</div>` + 顶部 [清空历史] button(stub localStorage.removeItem + setHistory([]))
-  6. FadeInWrapper stagger 入场
-- **AC-6** · 历史对话状态 · `const [history, setHistory] = useState<ChatItem[]>([])` · `useEffect(() => { const stored = localStorage.getItem(getLsKey(accountId, 'voice_chat_history')); if (stored) setHistory(JSON.parse(stored)) }, [accountId])` · LD-009 多账号隔离
-- **AC-7** · 点 quick prompt → `setInput(prompt)` 自动填到 input · 用户可编辑再点发送 · **不是直接发送**(防 UX 失误率高 · 反例库注入)
-- **AC-8** · 点发送 button → 添加 stub Q+A pair 到历史 list · `setHistory(prev => [...prev, { question: input, answer: 'AI 回复 stub: 此功能 PRD-25+ 接 LLM', timestamp: new Date().toISOString() }])` · 同步 localStorage.setItem · setInput('')
-- **AC-9** · DOM button 数 ≥ 12(6 quick prompts + 发送 + mic + speaker + 清空历史 + 顶部其他) · 接近 aiipznt 12
-- **AC-10** · DOM H 标签数 ≥ 2(H1 VOICE CHAT + H3 模块标题) · 接近 aiipznt 2
-- **AC-11** · **D-233 unit test 同步硬规则** · 新建 `apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx` · ≥ 7 test ·
-  - test 1: H1 字面 `VOICE CHAT` 命中
-  - test 2: 副标 + 模块标题 + 自我介绍字面对照
-  - test 3: 6 quick prompts 全字面渲染
-  - test 4: input placeholder 字面命中
-  - test 5: 点 quick prompt → setInput 触发(检 input value)· **不直接发送**
-  - test 6: 点发送 → 历史 list 加 1 项 + localStorage save(用 getLsKey helper · acc_ 前缀)
-  - test 7: useEffect load 历史从 localStorage(mock localStorage.getItem 返回 stub history)
-- **AC-12** · 新建 `apps/web/src/lib/constants/__tests__/voice-chat.test.ts` · ≥ 4 test · 覆盖 (a) VOICE_CHAT_QUICK_PROMPTS_6 长度 6 + 字面对照(spec line 2196-2201)(b) VOICE_CHAT_INTRO 字面 (c) VOICE_CHAT_H1 + SUBTITLE + MODULE_TITLE 字面 (d) VOICE_CHAT_INPUT_PLACEHOLDER 字面
-- **AC-13** · TypeScript 编译通过 · 0 error
-- **AC-14** · vitest run 通过 · 总 ≥ 321 test(基线 310 + US-003 新增 ≥ 11)
-- **AC-15** · 新增 e2e `tests/e2e/prd24-voice-chat-flow.spec.ts` · ≥ 4 test(H1 VOICE CHAT / 6 quick prompts 全字面 / quick prompt click 填 input · 不直接发送 / 发送 add 历史 + localStorage save)
-- **AC-16** · visual baseline `prd24-voice-chat.png` · 阈值 5%
-- **AC-17** · agent-browser 验证 · (a) H1 VOICE CHAT Orbitron 大字 · (b) 副标 + 模块标题 + 自我介绍 · (c) 6 quick prompts 渲染 · (d) 点 quick prompt → input 自动填 · (e) 点发送 → 历史 list + 1 · (f) localStorage 写入 acc_ 前缀 key · (g) console 无 error
-- **Typecheck passes**
-
-**文件 to create** ·
-- `apps/web/src/lib/constants/voice-chat.ts`
-- `apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx`
-- `apps/web/src/lib/constants/__tests__/voice-chat.test.ts`
-- `tests/e2e/prd24-voice-chat-flow.spec.ts`
-
-**文件 to modify** ·
-- `apps/web/src/pages/tools/VoiceChat.tsx`(完整重写 612 LOC stub)
-- `tests/e2e/prd24-visual-baseline.spec.ts`
-
-**anti_patterns 注入** · prd skill 检索 "quick prompts click 填 input" / "VOICE CHAT H1 Orbitron" / "历史 localStorage acc_ 前缀" / "unit test 同步" / "612 LOC 大组件重写" 关键词 · 注入 ≤ 3 条
+> ⚠️ US-003 作废(2026-06-18 重构)：**语音对话**(`/voice-chat` + `VoiceChatAgent` + STT/TTS worker)已删除。原内容见 git 历史。
 
 ---
 
@@ -385,20 +311,19 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 
 **Story 大小** · small(单次 ralph 迭代可完成 · 1 文件 · ~80 LOC)
 
-**前置依赖** · US-001~003 完成 · 3 new visual baseline 已建立(prd24-daily-tasks/evolution/voice-chat) · PRD-22 13 baseline + PRD-23 16 baseline 已在 main · 累计 32 baseline
+**前置依赖** · US-001~003 完成 · 2 new visual baseline 已建立(prd24-daily-tasks/evolution · voice-chat 已删) · PRD-22 13 baseline + PRD-23 16 baseline 已在 main · 累计 31 baseline
 
 **用户故事** ·
-作为 QuanAn 视觉一致性 owner · 我需要 `tests/e2e/prd24-visual-baseline.spec.ts` 含本 PRD 新加 3 fixture(在 US-001~003 中已逐个加入)+ 跑全 32 baseline 总 regression 验证(PRD-22 13 + PRD-23 16 + PRD-24 3) · 阈值 5% threshold 全 pass · 修任一 fail(scope ≤ 100 LOC)。
+作为 QuanAn 视觉一致性 owner · 我需要 `tests/e2e/prd24-visual-baseline.spec.ts` 含本 PRD 新加 2 fixture · voice-chat 已删(在 US-001~002 中已逐个加入)+ 跑全 31 baseline 总 regression 验证(PRD-22 13 + PRD-23 16 + PRD-24 2) · 阈值 5% threshold 全 pass · 修任一 fail(scope ≤ 100 LOC)。
 
 **验收标准** ·
 
-- **AC-1** · `tests/e2e/prd24-visual-baseline.spec.ts` 3 fixture 全建立 · /daily-tasks · /evolution · /voice-chat · 每 fixture viewport 1440x900 + fullPage + maxDiffPixelRatio 0.05 · 复用 PRD-21 expectVisualMatch helper · animations:disabled + transitions:disabled
-- **AC-2** · 跑全 baseline · `cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline prd23-visual-baseline prd24-visual-baseline` · 总 13(PRD-22)+ 16(PRD-23)+ 3(PRD-24)= **32 fixture 全 pass** · 阈值 5%
-- **AC-3** · `/tmp/aiipznt-clone-research/screenshots/` 含 32 prd*-XXX.png 全建立 · 验证 `ls /tmp/aiipznt-clone-research/screenshots/prd{22,23,24}-*.png | wc -l` ≥ 32
+- **AC-1** · `tests/e2e/prd24-visual-baseline.spec.ts` 2 fixture 全建立 · /daily-tasks · /evolution · voice-chat 已删 · 不建此 fixture · 每 fixture viewport 1440x900 + fullPage + maxDiffPixelRatio 0.05 · 复用 PRD-21 expectVisualMatch helper · animations:disabled + transitions:disabled
+- **AC-2** · 跑全 baseline · `cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline prd23-visual-baseline prd24-visual-baseline` · 总 13(PRD-22)+ 16(PRD-23)+ 2(PRD-24 · voice-chat 已删)= **31 fixture 全 pass** · 阈值 5%
+- **AC-3** · `/tmp/aiipznt-clone-research/screenshots/` 含 31 prd*-XXX.png 全建立 · 验证 `ls /tmp/aiipznt-clone-research/screenshots/prd{22,23,24}-*.png | wc -l` ≥ 31 · voice-chat 已删
 - **AC-4** · 任一 fixture fail · 修小问题(scope ≤ 100 LOC) · 优先排查 page 渲染/animation/font 差异 · 若需 `--update-snapshots` 重 baseline · Read baseline image 肉眼 confirm 跟 aiipznt 视觉相符才 commit
 - **AC-5** · TypeScript + vitest 通过 · 总 ≥ 321 · 0 fail
 - **AC-6** · D-233 unit test 同步(如有 page 改动 · 同步更新对应 tests)
-- **AC-7** · agent-browser 抽查 1 PRD-24 page(/voice-chat) · 验证渲染正常 · console 无 error
 - **AC-8** · 更新 progress.txt · 写入 "32 baseline regression 总验证 PASS" 标记 · 反映视觉对齐征程收官
 - **Typecheck passes**
 
@@ -426,10 +351,9 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 - **AC-1** · 新建 `scripts/verify-prd-24.sh` · 复用 PRD-23 10 section 结构 · ≥ 30 checks(PRD-24 内) · 关键检查 ·
   - §1 /daily-tasks · grep `今日行动清单` H1 + 3 H3 stub 任务字面 spec line 2438-2440 + EmptyState + 添加账号 button + DAILY_TASKS_STUB 常量存在
   - §2 /evolution · grep `智能体进化中心` H1 + 5 级 badge(🌱 L1 / 📚 L2 / 🌿 L3 / 🌳 L4 / 👑 L5 字面)+ 4 指标(好评数/待改进/学习档案/满意率)+ 5 H3 模块字面 + 4 进化方向 radio 字面
-  - §3 /voice-chat · grep `VOICE CHAT` H1 + 6 quick prompts 字面 + 自我介绍字面 + 输入框 placeholder
   - §4 跨 page · typecheck 0 errors + vitest ≥ 321 test pass
-  - §5 visual baseline · 32 fixture(prd22 13 + prd23 16 + prd24 3)全 pass · 阈值 5%
-  - §6 unit test 同步规则验证 · D-233 锁 · 3 new page(`DailyTasks/Evolution/VoiceChat`) 都有对应 __tests__/*.test.tsx + 3 new constants 都有对应 __tests__/*.test.ts
+  - §5 visual baseline · 31 fixture(prd22 13 + prd23 16 + prd24 2 · voice-chat 已删)全 pass · 阈值 5%
+  - §6 unit test 同步规则验证 · D-233 锁 · 2 new page(`DailyTasks/Evolution`) 都有对应 __tests__/*.test.tsx + 2 new constants 都有对应 __tests__/*.test.ts *(VoiceChat/voice-chat 已删)*
   - §7 ls-namespace 验证 · grep `getLsKey` 使用 in 3 new page · LD-009 多账号隔离严守
   - §8 5 LD 落实验证 · D-236 + D-237 + D-238 + D-239 + D-240
   - §9 全 PRD-21~24 累计 checks · prd21 8 + prd22 52 + prd23 60 + prd24 ≥ 30 = ≥ 150 cumulative checks
@@ -444,14 +368,14 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
   - 跨 PRD 复用度(inline picker × N · DiagnosisStepCard pattern × N · ls-namespace 多账号隔离 × N)
   - **关键洞察 · 1:1 视觉复刻达成 vs LLM 内容空 的边界**(Step D 数据驱动决策)
   - 反哺全局 skill 模板的总价值(D-233 unit test 同步 + reject-examples · 跨项目跨 PRD 复用)
-  - PRD-25+ LLM 接入 handoff(8 page 需接 LLM · /diagnosis / /step/8 / /voice-chat / /daily-tasks / /evolution / 4 内容创作工具)
+  - PRD-25+ LLM 接入 handoff(8 page 需接 LLM · /diagnosis / /step/8 / /daily-tasks / /evolution / 3 内容创作工具) [重构删: /voice-chat · acquisition-video]
 - **AC-6** · 更新 `.agents/tech-debt.json` · 评估关 TD-094(若 PRD-24 修了 e2e auth bypass 模板 · 或登记为 PRD-25 修) · 登记 PRD-24 内偏差(预期 ≤ 2 TD)
 - **AC-7** · 更新 `AGENTS.md §11.15` · 加 PRD-24 沉淀 · 含 ·
   - 3 modules 完整化(stub completion pattern 完结)
   - 32 baseline 收官(1:1 视觉复刻达成)
   - 5 级系统字面锁 pattern(可复用未来 N 级系统 page)
-  - 6 quick prompts pattern(可复用 chat-like page)
-  - LLM 接入 handoff(7 PRD-23 page + 3 PRD-24 page 共 10 page 留 PRD-25+)
+  - [重构删: 6 quick prompts pattern · voice-chat 已删]
+  - LLM 接入 handoff(7 PRD-23 page + 2 PRD-24 page 共 9 page 留 PRD-25+ · voice-chat 已删)
 - **AC-8** · 更新 `scripts/ralph/progress.txt` · PRD-24 ship summary 模板 + 累计 4 PRD 视觉对齐征程总结 ·
   ```
   ## PRD-21~24 视觉对齐征程总结(4 PRD ship)
@@ -465,7 +389,7 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
   - 全局反哺 prd-template-unit-test-sync.md(D-233 机制化)
 
   ### PRD-24 → PRD-25+ Handoff
-  - LLM 接入: /voice-chat (streaming) + /daily-tasks (AI 任务生成) + /evolution (AI 洞察) + 7 PRD-23 page (真 LLM)
+  - LLM 接入: /daily-tasks (AI 任务生成) + /evolution (AI 洞察) + 7 PRD-23 page (真 LLM) *(voice-chat 已删)*
   - 评估 TD-090/091 重新审视(LLM 接入后 visual diff vs aiipznt 实拍是否 ≤ 5%)
   ```
 - **AC-9** · TypeScript + vitest 通过 · 0 fail
@@ -493,7 +417,6 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 |---|:-:|:-:|:-:|:-:|:-:|
 | /daily-tasks | US-001 | 15 | ≥ 8 | 4(H1 + 3 H3) | prd24-daily-tasks.png |
 | /evolution | US-002 | 16 | ≥ 9 | 6(H1 + 5 H3) | prd24-evolution.png |
-| /voice-chat | US-003 | 17 | ≥ 12 | 2(H1 + H3 模块标题) | prd24-voice-chat.png |
 
 ### §4.2 共享 AC(全 5 US)
 
@@ -507,7 +430,7 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 
 ### §4.3 跨 US 集成 AC
 
-- **AC-Y1** · 32 page visual baseline 全建立(prd22 13 + prd23 16 + prd24 3)
+- **AC-Y1** · 31 page visual baseline 全建立(prd22 13 + prd23 16 + prd24 2 · voice-chat 已删)
 - **AC-Y2** · verify-prd-24.sh ≥ 30 checks 全 PASS · 累计 4 PRD ≥ 150 checks
 - **AC-Y3** · TD 评估 + 关闭 · /goal-verify + /prd-retro 文档完整
 - **AC-Y4** · AGENTS.md §11.15 + ~/.claude/playbooks/ 反哺 + handoff PRD-25+
@@ -529,7 +452,7 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 
 7. ❌ **不接 LLM**(D-234 同延续 · 留 PRD-25+) · 3 modules 完整化 = UI 骨架 + 真表单 + stub 输出 · 不调 trpc.XXX.generate / trpc.dailyTasks.list 等 · stub data 静态
 8. ❌ **不切 aiipznt 实拍 baseline**(TD-090/091 defer · 保持 prd24-XXX 自截图 · 内部 regression baseline)
-9. ❌ /voice-chat 点 quick prompt **不能直接发送** · 必须 setInput(prompt) 让用户编辑再发送(反例库注入 · UX 失误率高)
+9. [重构删: /voice-chat quick prompt 红线 · voice-chat 已删]
 10. ❌ /evolution 5 级 badge 字面不允许改写 · 'L1' 不能改 '1 级' · '0-4 反馈' 不能改 '0-4 次反馈'(D-237 字面锁)
 11. ❌ /daily-tasks 无 active account 不能显示空白或 spinner · 必须 EmptyState + 添加账号 CTA(防 PRD-15 EmptyState 反例)
 12. ❌ ls-namespace getLsKey 调用必须用 helper · 不允许 hardcode `acc_${accountId}_` 字符串拼接(PRD-15 TD-70 反例机制化)
@@ -556,7 +479,6 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 |---|---|---|
 | US-001 | medium | 拆 US-001a(constants + page rewrite)+ US-001b(3 test files)如 ≥ 3 reject |
 | US-002 | medium-large 边界(420 LOC + 5 常量) | 拆 US-002a(evolution.ts 4 常量 + Evolution.tsx 主结构)+ US-002b(5 H3 模块 + radio + localStorage save)如 ≥ 3 reject |
-| US-003 | medium(380 LOC) | 拆 US-003a(voice-chat.ts 常量 + page 主结构)+ US-003b(quick prompts + 历史 list + localStorage)如 ≥ 3 reject |
 | US-004 | small | 不拆(纯验证) |
 | US-005 | medium | 不拆(收官 docs) |
 
@@ -577,19 +499,16 @@ US-005 收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 codebase 
 ```
 US-001 (high) /daily-tasks   ← 独立 · spec §8.5.2 · 复用 ls-namespace + EmptyState
 US-002 (high) /evolution     ← 独立 · spec §8.5.3 · 复用 ls-namespace + glass-card
-US-003 (high) /voice-chat    ← 独立 · spec §8.4.2 · 复用 ls-namespace + glass-card
-
-US-004 (medium) 全 32 baseline 验证 ← US-001~003 完成后跑
+US-004 (medium) 全 31 baseline 验证 ← US-001~002 完成后跑 · voice-chat 已删
 US-005 (收官)                ← US-001~004 全部
 ```
 
 ### §7.3 下游 PRD
 
 - **PRD-25+** · LLM 接入 · 10 page 真 LLM 集成
-  - /voice-chat · streaming chat + 真 LLM
   - /daily-tasks · AI 任务生成
   - /evolution · AI 洞察生成
-  - 7 PRD-23 完整化 page 真 LLM(/diagnosis 7 维度评分 / /accounts 智能推荐 / /step/8 真直播方案 / /video-analysis 真解析 / /analysis 真分析 / /video-production 真制作方案 / /acquisition-video 真获客方案)
+  - 7 PRD-23 完整化 page 真 LLM(/diagnosis 7 维度评分 / /accounts 智能推荐 / /step/8 真直播方案 / /video-analysis 真解析 / /analysis 真分析 / /video-production 真制作方案) [重构删: /voice-chat streaming chat · /acquisition-video 真获客方案]
   - 评估 TD-090/091 重新审视(LLM 接入后 visual diff vs aiipznt 实拍 ≤ 5% 是否可行)
 
 ---
@@ -616,17 +535,16 @@ Monitor(command="tail -n 0 -F scripts/ralph/ralph-output.log 2>/dev/null | grep 
 |---|:-:|:-:|
 | US-001 high | 40-50 min(stub 完整化 + 3 状态) | 50 min |
 | US-002 high | 45-60 min(5 常量 + 5 H3 模块 + radio + localStorage) | 1.75h |
-| US-003 high | 40-55 min(612 LOC 删除 + 重构 + 历史 list) | 2.75h |
-| US-004 medium | 15-25 min(纯验证 + 32 baseline 跑) | 3.25h |
-| US-005 medium | 35-50 min(verify + retro + skill 更新) | 4.25h |
-| **累计** | **3-4h daemon** | + Opus audit 5×3-15min/US ≈ 5-7h wall time |
+| US-004 medium | 15-25 min(纯验证 + 31 baseline 跑) | 2.25h |
+| US-005 medium | 35-50 min(verify + retro + skill 更新) | 3.25h |
+| **累计** | **2-3h daemon** | + Opus audit 4×3-15min/US ≈ 4-6h wall time |
 
 ### §8.3 跨 PRD-24 大门禁
 
 1. ✅ US-001 完成 = /daily-tasks 可用 · UI 骨架 + 空态 + loading 三状态
 2. ✅ US-002 完成 = /evolution 5 级 + 4 指标 + 5 H3 全字面锁
-3. ✅ US-003 完成 = /voice-chat VOICE CHAT + 6 quick prompts + 历史 localStorage
-4. ✅ US-004 完成 = 32 baseline 总 regression pass · 1:1 视觉复刻达成里程碑
+3. [重构删: US-003 /voice-chat VOICE CHAT + 6 quick prompts + 历史 localStorage · 此门禁作废]
+4. ✅ US-004 完成 = 31 baseline 总 regression pass · 1:1 视觉复刻达成里程碑 · voice-chat 已删
 5. ✅ US-005 完成 = PRD-24 ship · PRD-21~24 视觉对齐征程收官 · PRD-25+ LLM 接入 handoff
 
 ---

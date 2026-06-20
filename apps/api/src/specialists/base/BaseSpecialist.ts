@@ -25,6 +25,9 @@ import { prisma } from '@/lib/prisma';
 import { contextAssembler as _contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { llmGateway as _llmGateway } from '@/workers/llm-gateway';
 
+import { runWithBudget, checkBudget, addCost, estimateCostUsd, BudgetExceededError } from '@/lib/security/cost-budget-guard';
+import { checkOutput, scanObjectOutput } from '@/lib/security/output-guardrail';
+
 import { SchemaValidationError, LLMTimeoutError } from './errors';
 
 import type {
@@ -87,6 +90,8 @@ export abstract class BaseSpecialist<TIn, TOut> {
     );
     const startedAt = Date.now();
 
+    // G78: wrap entire execute body in runWithBudget so addCost/checkBudget share scope
+    return runWithBudget(async () => {
     try {
       // Step 1: 入参校验(throws ZodError on failure)
       this.inputSchema.parse(req.userInput);
@@ -100,10 +105,32 @@ export abstract class BaseSpecialist<TIn, TOut> {
         needRag: this.config.knowledge.rag,
       }) as AssembledContext;
 
+      // F-6 fix: conservative constants for pre-call budget estimate (hoisted so both try blocks share them)
+      // Use most expensive known model + ceiling completion tokens so checkBudget can fire on large contexts.
+      const CONSERVATIVE_MODEL = 'claude-sonnet-4-6'; // most expensive in rate table
+      const CONSERVATIVE_COMPLETION_TOKENS = 4096;
+
       // Step 3: 子类实现的单次 LLM 调用 + AC-3 retry
       let raw: InvokeLLMResult;
       try {
+        // F-6 fix: pre-call budget estimate uses real assembled context size + conservative model rate.
+        // Old: estimateCostUsd(model_tier, 2000, 500) — model_tier string falls back to unknown rate
+        //      AND fixed 2000 tokens never reflects actual prompt size → checkBudget always ~$0.0045 → never fires.
+        // New: use ctx.metadata?.contextTokens (real assembled token count) as prompt estimate;
+        //      fallback 2000 if metadata absent (test mocks / edge cases);
+        //      conservative 4096 completion ceiling; estimate against most expensive known model
+        //      so that long-context calls on any tier correctly trigger the pre-call guard.
+        const preEstimate = estimateCostUsd(
+          CONSERVATIVE_MODEL,
+          ctx.metadata?.contextTokens ?? 2000,
+          CONSERVATIVE_COMPLETION_TOKENS,
+        );
+        checkBudget(preEstimate);
+
         raw = await this.invokeLLM(ctx, { ...req, traceId });
+
+        // G78: record actual cost after successful invokeLLM
+        addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
       } catch (err) {
         // AC-6: AbortError (timeout) → LLMTimeoutError
         if (err instanceof Error && err.name === 'AbortError') {
@@ -120,7 +147,18 @@ export abstract class BaseSpecialist<TIn, TOut> {
           'specialist.schema_validation.retry',
         );
         try {
+          // F-6 fix: retry also uses real context tokens (same ctx, same size); fallback 2000 if absent
+          const retryEstimate = estimateCostUsd(
+            CONSERVATIVE_MODEL,
+            ctx.metadata?.contextTokens ?? 2000,
+            CONSERVATIVE_COMPLETION_TOKENS,
+          );
+          checkBudget(retryEstimate);
+
           raw = await this.invokeLLM(ctx, { ...req, traceId });
+
+          // G78: record actual cost after successful retry
+          addCost(estimateCostUsd(raw.model, raw.tokens.prompt, raw.tokens.completion));
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') {
             throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
@@ -136,6 +174,8 @@ export abstract class BaseSpecialist<TIn, TOut> {
       const durationMs = Date.now() - startedAt;
 
       // Step 5: writeCostLog(AC-4/AC-8 完整字段)
+      // G12 系统性修: success 基于 invokeLLM 返回的 isFallback — 内层 fallback(如 VideoAgent)
+      // 出错时返回 isFallback:true 而不 throw，若此处写 success:true 则 canary 漏计失败。
       await this._writeCostLog({
         agentId: this.config.agentId,
         accountId: req.accountId,
@@ -149,10 +189,14 @@ export abstract class BaseSpecialist<TIn, TOut> {
         totalTokens: raw.tokens.total,
         durationMs,
         isFallback: raw.isFallback ?? false,
+        success: !(raw.isFallback ?? false),
       });
 
+      // G77: output compliance scan on parsed result
+      const guardedData = this._applyOutputGuardrail(parsed.data, traceId);
+
       // LD-018 R-14 (TD-016 修): 输出 disclaimer (按 input.industry · 敏感行业医疗/法律/金融)
-      const finalResult = this._applyDisclaimer(parsed.data, req.userInput);
+      const finalResult = this._applyDisclaimer(guardedData, req.userInput);
 
       return {
         result: finalResult,
@@ -179,11 +223,12 @@ export abstract class BaseSpecialist<TIn, TOut> {
       //   1. TypeError / ReferenceError — indicates a code bug, not a transient failure.
       //   2. Errors thrown by _validateMode() (invalid mode string) — programming error.
       // Everything else (HTTP 4xx/5xx, rate-limit, overload, abort, schema mismatch,
-      // network reset, JSON parse, etc.) → fallback gracefully.
+      // network reset, JSON parse, BudgetExceededError, etc.) → fallback gracefully.
       const isNonRecoverableProgrammingError =
         (err instanceof TypeError || err instanceof ReferenceError) &&
         !(err instanceof SchemaValidationError) &&
-        !(err instanceof LLMTimeoutError);
+        !(err instanceof LLMTimeoutError) &&
+        !(err instanceof BudgetExceededError);
 
       const isFallbackable = !isNonRecoverableProgrammingError;
 
@@ -202,6 +247,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
       );
 
       // AC-13: cost_log with model='fallback', tokens=0
+      // G12 fix: success=false 让 canary 错误率统计能感知到真实失败
       await this._writeCostLog({
         agentId: this.config.agentId,
         accountId: req.accountId,
@@ -215,6 +261,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
         totalTokens: 0,
         durationMs,
         isFallback: true,
+        success: false,
       });
 
       return {
@@ -226,6 +273,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
         traceId,
       };
     }
+    }); // end runWithBudget
   }
 
   /**
@@ -244,6 +292,53 @@ export abstract class BaseSpecialist<TIn, TOut> {
       return { ...obj, markdown: appendDisclaimerIfSensitive(obj.markdown, industry) } as TOut;
     }
     return attachDisclaimerMeta(obj, industry) as TOut;
+  }
+
+  /**
+   * G77 / F-2 fix: output compliance guardrail — scans parsed output for PII and over-promise violations.
+   * If string: runs checkOutput directly and re-parses sanitized text.
+   *   - re-parse success → return re-parsed (schema-valid sanitized)
+   *   - re-parse failure → return sanitized cast to TOut (safe > schema-min; violations MUST NOT leak back)
+   * If object: recursively scans string fields via scanObjectOutput.
+   *   - re-parse success → return re-parsed
+   *   - re-parse failure → return scanned.sanitized cast (never return original data with violations)
+   */
+  protected _applyOutputGuardrail(data: TOut, traceId: string): TOut {
+    if (typeof data === 'string') {
+      const { sanitized, violations } = checkOutput(data);
+      if (violations.length > 0) {
+        logger.warn(
+          { agentId: this.config.agentId, traceId, violations },
+          'output_compliance_violation',
+        );
+      }
+      const reparsed = this.outputSchema.safeParse(sanitized);
+      if (reparsed.success) return reparsed.data;
+      // F-2 fix: re-parse failed → return sanitized (never the original with violations)
+      logger.warn(
+        { agentId: this.config.agentId, traceId },
+        'output_guardrail.reparse_failed_using_sanitized',
+      );
+      return sanitized as unknown as TOut;
+    }
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      const scanned = scanObjectOutput(data as Record<string, unknown>);
+      if (scanned.violations.length > 0) {
+        logger.warn(
+          { agentId: this.config.agentId, traceId, violations: scanned.violations },
+          'output_compliance_violation',
+        );
+      }
+      const reparsed = this.outputSchema.safeParse(scanned.sanitized);
+      if (reparsed.success) return reparsed.data;
+      // F-2 fix: re-parse failed → return scanned.sanitized (never the original data with violations)
+      logger.warn(
+        { agentId: this.config.agentId, traceId },
+        'output_guardrail.reparse_failed_using_sanitized',
+      );
+      return scanned.sanitized as unknown as TOut;
+    }
+    return data;
   }
 
   /**
@@ -274,6 +369,8 @@ export abstract class BaseSpecialist<TIn, TOut> {
     totalTokens: number;
     durationMs: number;
     isFallback: boolean;
+    /** G12 fix: 真实 LLM 失败(fallback 触发)写 false，正常完成写 true。改为 required 避免 optional 在 TS compile 时被优化掉 */
+    success: boolean;
   }): Promise<void> {
     // fallback model has no provider prefix — use 'none' to avoid false detection
     const provider = data.modelUsed.startsWith('claude-')
@@ -298,7 +395,8 @@ export abstract class BaseSpecialist<TIn, TOut> {
           totalTokens: data.totalTokens,
           costUsd: calcCostUsd(data.modelUsed, data.promptTokens, data.completionTokens),
           durationMs: data.durationMs,
-          success: true,
+          // G12 fix: success=false 在 fallback path 显式传入(required field，不再 optional)
+          success: data.success,
           isFallback: data.isFallback,
           // AC-4: target jsonb = { stepKey, agentId }
           target: { stepKey: data.stepKey ?? null, agentId: data.agentId },

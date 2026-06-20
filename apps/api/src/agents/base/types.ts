@@ -11,7 +11,7 @@ export type SpecialistId =
   | 'TopicAgent' | 'CopywritingAgent' | 'VideoAgent'
   | 'LivestreamAgent' | 'PrivateDomainAgent' | 'AnalysisAgent'
   | 'DiagnosisAgent' | 'DeepLearnAgent'
-  | 'VoiceChatAgent' | 'EvolutionAgent' | 'DailyTaskAgent';
+  | 'EvolutionAgent' | 'DailyTaskAgent';
 
 /** LLM tier(ADR-013) */
 export type ModelTier = 'reasoning' | 'lightweight' | 'balanced';

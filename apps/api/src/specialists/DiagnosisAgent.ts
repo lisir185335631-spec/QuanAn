@@ -7,6 +7,7 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type { AssembledContext, ILLMGateway, InvokeLLMResult, SpecialistConfig, SpecialistRequest } from './base/types';
@@ -108,7 +109,7 @@ export class DiagnosisAgent extends BaseSpecialist<DiagnosisInput, DiagnosisOutp
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
         eventType: 'specialist_call',
       },
       timeout_ms: this.config.execution.timeout_ms,
@@ -117,7 +118,12 @@ export class DiagnosisAgent extends BaseSpecialist<DiagnosisInput, DiagnosisOutp
   }
 
   private _buildUserPrompt(userInput: DiagnosisInput): string {
-    const { answers } = userInput;
+    // R-14: answers[].comment = 用户问卷自由评论(incidental PII · 可能夹带手机/邮箱) → piiMask
+    // answers[].dimension/score = 枚举/数值 → 不动
+    const answers = userInput.answers.map((a) => ({
+      ...a,
+      ...(a.comment !== undefined ? { comment: piiMask(a.comment) } : {}),
+    }));
     return [
       '[诊断任务]',
       '以下是用户完成 8 步问卷后的自评数据，请根据这些数据生成 7 维度 IP 账号诊断报告：',

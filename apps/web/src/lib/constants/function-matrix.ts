@@ -16,7 +16,6 @@ export const FUNCTION_MATRIX: FunctionGroup[] = [
     cards: [
       { icon: '🔥', title: '全网爆款库', desc: '一键抓取全平台爆款视频和文案', href: '/trending' },
       { icon: '🔍', title: '爆款文案解析', desc: '粘贴文案，AI深度拆解爆款密码+一键仿写', href: '/video-analysis' },
-      { icon: '🎨', title: '爆款呈现形式', desc: '14种爆款呈现形式全解析', href: '/present-styles' },
     ],
   },
   {
@@ -33,14 +32,12 @@ export const FUNCTION_MATRIX: FunctionGroup[] = [
       { icon: '🤖', title: 'AI智能生成', desc: '基于方法论一键生成爆款文案', href: '/generate' },
       { icon: '📊', title: '文案结构分析', desc: '多维度分析评分精准优化', href: '/analysis' },
       { icon: '🎬', title: '短视频制作', desc: '文案转分镜脚本和拍摄方案', href: '/video-production' },
-      { icon: '🎯', title: '获客型视频', desc: '精准获客短视频方案', href: '/acquisition-video' },
     ],
   },
   {
     title: '智能工具',
     cards: [
       { icon: '🎥', title: '一键生成视频', desc: '文案自动转视频分镜+AI生成', href: '/ai-video' },
-      { icon: '🎙️', title: '语音对话', desc: '语音交互AI智能对话助手', href: '/voice-chat' },
       { icon: '📚', title: '深度学习', desc: '批量添加文案，AI深度分析风格逻辑', href: '/deep-learning' },
       { icon: '📖', title: '方法论知识库', desc: '系统学习全网爆款创作技巧', href: '/knowledge' },
     ],

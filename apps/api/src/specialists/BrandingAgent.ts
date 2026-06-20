@@ -12,6 +12,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -623,7 +625,7 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: TIMEOUT_MS[mode],
       retry: this.config.execution.retry,
@@ -643,7 +645,9 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
     userInput: BrandingInput,
     ctxUserPrompt: string,
   ): string {
-    const inputStr = JSON.stringify(userInput);
+    // LD-018 PII 修: userInput 含自由文本字段(如 niche/pain_points 等)可能带手机/邮箱 →
+    // 先用 piiMask 递归处理整个对象再 stringify · 枚举/数值字段 piiMask 会安全透传
+    const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'packaging') {
       return [
         ctxUserPrompt,
@@ -661,11 +665,32 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
         '⚠️ 严格约束: nickname 必须正好 5 个 · bio 必须正好 6 条 · bio.platform 仅限 5 个枚举值',
       ].join('\n');
     }
+    // PRD-37 US-P06: 提取产品四品 + 公司信息字段，拼入 prompt 提升人设个性化
+    const inp = userInput as Record<string, unknown>;
+    const productIntro = inp.productIntro as { drainage?: string; bestseller?: string; profit?: string; image?: string } | undefined;
+    const companyInfoStr = typeof inp.companyInfo === 'string' ? inp.companyInfo.trim() : '';
+    const hasProductIntro = productIntro && Object.values(productIntro).some((v) => typeof v === 'string' && v.trim());
+    const productLines: string[] = [];
+    if (hasProductIntro) {
+      productLines.push('', '[产品线信息(人设视角 · 请在内容支柱/信任体系/路线图中体现产品矩阵策略)]');
+      if (productIntro!.drainage?.trim()) productLines.push(`- 引流品: ${productIntro!.drainage}`);
+      if (productIntro!.bestseller?.trim()) productLines.push(`- 畅销品: ${productIntro!.bestseller}`);
+      if (productIntro!.profit?.trim()) productLines.push(`- 利润品: ${productIntro!.profit}`);
+      if (productIntro!.image?.trim()) productLines.push(`- 形象品: ${productIntro!.image}`);
+    }
+    const companyLines: string[] = [];
+    if (companyInfoStr) {
+      companyLines.push('', '[公司背景(请在差异化竞争优势/信任背书/路线图中体现公司优势)]');
+      companyLines.push(companyInfoStr);
+    }
+
     return [
       ctxUserPrompt,
       '',
       '[人设定制任务]',
       `用户输入: ${inputStr}`,
+      ...productLines,
+      ...companyLines,
       '',
       '⚠️ 严格约束(违反则输出无效):',
       '- coreIdentity.memoryPoints: 必须正好 3 个',

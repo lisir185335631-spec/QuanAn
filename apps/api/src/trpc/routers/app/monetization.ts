@@ -37,10 +37,11 @@ export const monetizationRouter = router({
   generate: protectedProcedure
     .input(generateMonetizationInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await monetizationAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'monetization-tool',
         userInput: input,
         traceId: traceId ?? undefined,
@@ -54,6 +55,48 @@ export const monetizationRouter = router({
           agentMode: 'monetization-tool',
           sourceType: 'user',
           inputSummary: input.productDescription?.substring(0, 100) ?? '[monetization-tool]',
+          content: JSON.stringify(agentRes.result),
+          contentType: 'json',
+          isFallback: agentRes.isFallback,
+          tokensUsed: agentRes.tokensUsed.total,
+          modelUsed: agentRes.modelUsed,
+          durationMs: agentRes.durationMs,
+          traceId: traceId ?? null,
+        },
+        select: HISTORY_SELECT,
+      });
+
+      return row;
+    }),
+
+  /** Generate rich Step4b monetization plan via monetization-plan mode */
+  generatePlan: protectedProcedure
+    .input(z.object({
+      industry: z.string().max(200).optional(),
+      productService: z.string().max(2000).optional(),
+      targetAudience: z.string().max(500).optional(),
+      ipPositioning: z.string().max(500).optional(),
+      currentIncome: z.string().max(200).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, activeAccountId, traceId, user } = ctx;
+
+      const agentRes = await monetizationAgent.execute({
+        accountId: activeAccountId!,
+        userId: user!.id,
+        mode: 'monetization-plan',
+        userInput: input,
+        traceId: traceId ?? undefined,
+        stepKey: 'step4b-plan',
+      });
+
+      const row = await prisma.history.create({
+        data: {
+          accountId: activeAccountId!,
+          agentId: 'MonetizationAgent',
+          agentMode: 'monetization-plan',
+          sourceType: 'user',
+          inputSummary: input.productService?.substring(0, 100) ?? '[monetization-plan]',
           content: JSON.stringify(agentRes.result),
           contentType: 'json',
           isFallback: agentRes.isFallback,

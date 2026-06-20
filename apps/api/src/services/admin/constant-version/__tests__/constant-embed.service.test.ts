@@ -1,19 +1,20 @@
 // PRD-14 US-007 · constant-embed.service.test.ts
-// AC-6: ≥ 6 it · 3 constantType 路由 + 失败 catch 不写 cost_log + mock LLMGateway 1536d + evaluateConstantVersion
+// AC-6: ≥ 6 it · 3 constantType 路由 + 失败 catch 不写 cost_log + mock OpenAIEmbeddingWorker 1536d + evaluateConstantVersion
+// D-038: embeddings 走 OpenAIEmbeddingWorker · 不走 LLMGateway
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
-const mockEmbed = vi.hoisted(() => vi.fn());
+const mockWorkerEmbed = vi.hoisted(() => vi.fn());
 const mockExecuteRawUnsafe = vi.hoisted(() => vi.fn());
 const mockCostLogCreate = vi.hoisted(() => vi.fn());
 const mockConstantVersionUpdate = vi.hoisted(() => vi.fn());
 
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: {
-    embed: mockEmbed,
-  },
+vi.mock('@/workers/embedding/openai-embedding', () => ({
+  OpenAIEmbeddingWorker: vi.fn().mockImplementation(() => ({
+    embed: mockWorkerEmbed,
+  })),
 }));
 
 vi.mock('@/lib/prisma', () => ({
@@ -41,15 +42,22 @@ import {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-// 1536-dim fake embedding (SHIELD: mock LLMGateway 1536d fake embedding)
+// 1536-dim fake embedding (SHIELD: mock OpenAIEmbeddingWorker 1536d fake embedding)
 const FAKE_EMBEDDING_1536 = new Array<number>(1536).fill(0.1);
+
+// EmbedResult shape returned by OpenAIEmbeddingWorker
+const FAKE_EMBED_RESULT = {
+  embedding: FAKE_EMBEDDING_1536,
+  tokens: 10,
+  costUsd: 0.00002,
+};
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
 describe('rebuildConstantVectorIndex', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockEmbed.mockResolvedValue(FAKE_EMBEDDING_1536);
+    mockWorkerEmbed.mockResolvedValue(FAKE_EMBED_RESULT);
     mockExecuteRawUnsafe.mockResolvedValue(1);
     mockCostLogCreate.mockResolvedValue({});
   });
@@ -58,8 +66,12 @@ describe('rebuildConstantVectorIndex', () => {
   it('upserts knowledge_chunk with type=case for constantType=case', async () => {
     const result = await rebuildConstantVectorIndex('case', 'opinion_beauty_01', '案例内容', 42);
 
-    expect(mockEmbed).toHaveBeenCalledOnce();
-    expect(mockEmbed).toHaveBeenCalledWith('案例内容');
+    expect(mockWorkerEmbed).toHaveBeenCalledOnce();
+    // D-038: worker called with payload {text, accountId, traceId}
+    const callArg = mockWorkerEmbed.mock.calls[0]![0] as { text: string; accountId: number; traceId: string };
+    expect(callArg.text).toBe('案例内容');
+    expect(callArg.accountId).toBe(0); // system accountId
+    expect(callArg.traceId).toMatch(/^constant-embed-42-/);
 
     const [sql, chunkType] = mockExecuteRawUnsafe.mock.calls[0] as [string, ...unknown[]];
     expect(sql).toContain('INSERT INTO knowledge_chunk');
@@ -86,23 +98,21 @@ describe('rebuildConstantVectorIndex', () => {
     expect(chunkType).toBe('element');
   });
 
-  // AC-6 test 4: failure — embed throws → does NOT write cost_log
-  it('throws and does not write cost_log when LLMGateway.embed fails', async () => {
-    mockEmbed.mockRejectedValue(new Error('Gateway unavailable'));
+  // AC-6 test 4: failure — embed throws → does NOT write cost_log (worker handles its own log)
+  it('throws and does not write cost_log when OpenAIEmbeddingWorker.embed fails', async () => {
+    mockWorkerEmbed.mockRejectedValue(new Error('Worker unavailable'));
 
     await expect(
       rebuildConstantVectorIndex('case', 'some_key', 'content', 99),
-    ).rejects.toThrow('Gateway unavailable');
+    ).rejects.toThrow('Worker unavailable');
 
     expect(mockCostLogCreate).not.toHaveBeenCalled();
     expect(mockExecuteRawUnsafe).not.toHaveBeenCalled();
   });
 
-  // AC-6 test 5: mock LLMGateway returns 1536-dim embedding + metadata in UPSERT
+  // AC-6 test 5: mock OpenAIEmbeddingWorker returns 1536-dim embedding + metadata in UPSERT
   it('passes 1536-dim embedding and correct metadata to executeRawUnsafe', async () => {
     await rebuildConstantVectorIndex('formula', 'curiosity_gap', '好奇缺口内容', 7);
-
-    expect(mockEmbed).toHaveBeenCalledWith('好奇缺口内容');
 
     // SQL template, then $1=chunkType $2=constantKey $3=content $4=metadata $5=vector $6=tokens
     const args = mockExecuteRawUnsafe.mock.calls[0] as [string, ...unknown[]];
@@ -115,20 +125,21 @@ describe('rebuildConstantVectorIndex', () => {
     const metadataArg = JSON.parse(args[4] as string) as { versionId: number };
     expect(metadataArg.versionId).toBe(7);
 
-    // cost_log written on success
-    expect(mockCostLogCreate).toHaveBeenCalledOnce();
-    const logData = mockCostLogCreate.mock.calls[0]![0] as { data: { eventType: string } };
-    expect(logData.data.eventType).toBe('constant_embed_rebuild');
+    // cost_log NOT written by service (worker writes its own embedding_call log — no double-write)
+    expect(mockCostLogCreate).not.toHaveBeenCalled();
   });
 
-  // AC-6 test 6: cost_log write failure is swallowed (not propagated)
-  it('does not throw when cost_log write fails after successful embed', async () => {
-    mockCostLogCreate.mockRejectedValue(new Error('DB write failed'));
+  // AC-6 test 6: D-038 compliance — worker called with correct payload shape
+  it('calls OpenAIEmbeddingWorker with correct EmbedPayload (text, accountId=0, traceId)', async () => {
+    const result = await rebuildConstantVectorIndex('element', 'fear', 'fear psychology content', 3);
 
-    // Should NOT throw even though cost_log fails
-    await expect(
-      rebuildConstantVectorIndex('element', 'fear', 'fear psychology content', 3),
-    ).resolves.toMatchObject({ versionId: 3 });
+    const callArg = mockWorkerEmbed.mock.calls[0]![0] as { text: string; accountId: number; traceId: string };
+    expect(callArg.text).toBe('fear psychology content');
+    expect(callArg.accountId).toBe(0);
+    expect(typeof callArg.traceId).toBe('string');
+    expect(callArg.traceId.length).toBeGreaterThan(0);
+
+    expect(result).toMatchObject({ versionId: 3 });
   });
 });
 

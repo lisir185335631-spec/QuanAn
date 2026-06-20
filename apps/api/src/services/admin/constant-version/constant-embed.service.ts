@@ -1,19 +1,21 @@
 // PRD-14 US-007 · constant-embed.service.ts
 // AC-2: rebuildConstantVectorIndex — embed new content + UPSERT knowledge_chunk
 // AC-5: evaluateConstantVersion — LLM Judge stub (mirrors evaluatePromptVersion)
-// SHIELD: embed 真调 LLMGateway · 写真实 cost_log · 不 stub (D-077 仅 LLM Judge / dingtalk)
+// SHIELD: embed 走 OpenAIEmbeddingWorker (D-038) · 不走 LLMGateway · 不 stub (D-077 仅 LLM Judge / dingtalk)
 // SHIELD: 失败 catch 不写 cost_log
+// NOTE: cost_log 由 OpenAIEmbeddingWorker 内部写 (embedding_call) · 本服务不重复写
 
 import { createHash } from 'node:crypto';
 
-import { Decimal } from '@prisma/client/runtime/library';
-
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
-import { llmGateway } from '@/workers/llm-gateway';
+import { OpenAIEmbeddingWorker } from '@/workers/embedding/openai-embedding';
 
-const EMBED_MODEL = 'openai-text-embedding-3-small';
-const EMBED_COST_PER_1K_USD = 0.00002;
+// System-level embedding worker (D-038: embeddings go through OpenAIEmbeddingWorker, not LLMGateway)
+const embeddingWorker = new OpenAIEmbeddingWorker();
+
+// System accountId for admin/background operations (no user context) — mirrors knowledge.ts:128
+const SYSTEM_ACCOUNT_ID = 0;
 
 export interface ConstantEmbedResult {
   versionId: number;
@@ -31,19 +33,27 @@ export async function rebuildConstantVectorIndex(
 ): Promise<ConstantEmbedResult> {
   const startMs = Date.now();
 
-  // Call LLMGateway.embed — real cost path (SHIELD: not stub)
+  // traceId format mirrors constant_embed_rebuild log (constant-embed-{versionId}-{hash})
+  const traceId = `constant-embed-${versionId}-${createHash('md5').update(constantKey).digest('hex').slice(0, 8)}`;
+
+  // D-038: call OpenAIEmbeddingWorker directly · NOT llmGateway.embed
+  // Worker internally writes cost_log (eventType='embedding_call') — no double-write here
   let embedding: number[];
   try {
-    embedding = await llmGateway.embed(newContent);
+    const result = await embeddingWorker.embed({
+      text: newContent,
+      accountId: SYSTEM_ACCOUNT_ID,
+      traceId,
+    });
+    embedding = result.embedding;
   } catch (err) {
     // SHIELD: failure — do NOT write cost_log
-    logger.error({ err, constantType, constantKey, versionId }, 'constant_embed.llm_gateway_failed');
+    logger.error({ err, constantType, constantKey, versionId }, 'constant_embed.worker_failed');
     throw err;
   }
 
   const durationMs = Date.now() - startMs;
   const estTokens = Math.ceil(newContent.length / 1.5);
-  const costUsd = Math.ceil(estTokens / 1000) * EMBED_COST_PER_1K_USD;
 
   // UPSERT 对应 vec 表 (knowledge_chunk) by (type=constantType, title=constantKey)
   // metadata={versionId, updatedAt} per AC-2
@@ -67,31 +77,6 @@ export async function rebuildConstantVectorIndex(
     `[${embedding.join(',')}]`,
     estTokens,
   );
-
-  // Write cost_log eventType='constant_embed_rebuild' · 真实 cost (SHIELD)
-  try {
-    await prisma.costLog.create({
-      data: {
-        accountId: null,
-        agentId: 'ConstantEmbedService',
-        eventType: 'constant_embed_rebuild',
-        callType: 'embedding_call',
-        modelTier: 'embedding',
-        modelUsed: EMBED_MODEL,
-        provider: 'openai',
-        promptTokens: estTokens,
-        completionTokens: 0,
-        totalTokens: estTokens,
-        audioSeconds: null,
-        charactersIn: newContent.length,
-        costUsd: new Decimal(costUsd.toFixed(6)),
-        durationMs,
-        traceId: `constant-embed-${versionId}-${createHash('md5').update(constantKey).digest('hex').slice(0, 8)}`,
-      },
-    });
-  } catch (err) {
-    logger.error({ err, versionId }, 'constant_embed.cost_log_write_failed');
-  }
 
   logger.info({ versionId, constantType, constantKey, durationMs }, 'constant_embed.done');
   return { versionId, constantType, constantKey, durationMs };

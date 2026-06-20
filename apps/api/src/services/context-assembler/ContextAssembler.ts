@@ -8,13 +8,17 @@
  * AC-1: assemble(req) → Promise<AssembledContext> · 对齐 ARCHITECTURE §6.4
  * AC-2: Promise.allSettled + 5s timeout + 降级注入空段
  * AC-8: metadata.layersUsed 真实反映成功层
- * AC-9: contextTokens = chars/4 粗算
+ * AC-9: contextTokens = 改进 CJK 加权估算(G1)
  * AC-10: systemPrompt 禁止包含 LLM 密钥或 API URL(R-001 安全红线)
+ * G1: 真实上下文预算约束 — 超出 MAX_CONTEXT_TOKENS 时按优先级裁剪
  */
 
 import { createHash } from 'node:crypto';
 
 import { piiMask } from '@/lib/compliance/pii-mask';
+import { MAX_CONTEXT_TOKENS, estimateTokens } from '@/lib/constants/context-budget';
+import { logger } from '@/lib/logger';
+import { detectInjection } from '@/lib/security/injection-filter';
 import { prisma } from '@/lib/prisma';
 import { getLatestInsight } from '@/memory/l4-profile';
 import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
@@ -49,6 +53,7 @@ export class ContextAssembler {
    * 总耗时应 ≤ 800ms(7 路并行 · cap 5s · 平均数据库 < 200ms)
    * PRD-13 US-003 AC-9: 加第 6 路 prompt_versions 查询(带 fallback)
    * PRD-14 US-008 AC-4: 加第 7 路 _fetchActiveConstants(带 brownfield fallback)
+   * G1: assemble 后用 estimateTokens 做最终计量 · trimmed 反映裁剪情况
    */
   async assemble(req: AssembleRequest): Promise<AssembledContext> {
     const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult, promptResult, dbConstantsResult] =
@@ -115,16 +120,27 @@ export class ContextAssembler {
       layersUsed.push('L7_db_constants');
     }
 
-    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks, activePromptContent, dbConstants);
     const userPrompt = this._formatUserPrompt(req.userInput);
-    const contextTokens = Math.ceil((systemPrompt.length + userPrompt.length) / 4);
+    const { systemPrompt, trimmed } = this._composeSystemPrompt(
+      req,
+      stepData,
+      constants,
+      evolutionInsight,
+      ragChunks,
+      activePromptContent,
+      dbConstants,
+      userPrompt,
+    );
+
+    // G1: 裁剪后用改进估算统计最终 token 量
+    const contextTokens = estimateTokens(systemPrompt) + estimateTokens(userPrompt);
 
     return {
       systemPrompt,
       userPrompt,
       tools: [],
       evolutionInsight,
-      metadata: { contextTokens, layersUsed, ragHits },
+      metadata: { contextTokens, layersUsed, ragHits, trimmed },
     };
   }
 
@@ -163,6 +179,40 @@ export class ContextAssembler {
   }
 
   /**
+   * 从 userInput 派生有语义的 RAG 检索 query。
+   *
+   * 优先级:
+   *   1. input.userMessage   — 专为 query 而设的字段
+   *   2. input.lastDescription — 存在时含上轮输出描述
+   *   3. userInput 所有 string 值中长度 ≥ MIN_QUERY_FIELD_LEN 的字段拼接(排除枚举短值)
+   *   4. agentId             — 绝对兜底(input 完全无有意义文本时)
+   */
+  _deriveRagQuery(input: Record<string, unknown>, agentId: string): string {
+    // 优先级 1
+    if (typeof input.userMessage === 'string' && input.userMessage.length > 0) {
+      return input.userMessage;
+    }
+    // 优先级 2
+    if (typeof input.lastDescription === 'string' && input.lastDescription.length > 0) {
+      return input.lastDescription;
+    }
+    // 优先级 3: 拼接 string 字段中长度 ≥ 4 的值(排除 'wechat'/'high' 等枚举短值)
+    const MIN_QUERY_FIELD_LEN = 4;
+    const MAX_QUERY_LEN = 500;
+    const textParts: string[] = [];
+    for (const value of Object.values(input)) {
+      if (typeof value === 'string' && value.length >= MIN_QUERY_FIELD_LEN) {
+        textParts.push(value);
+      }
+    }
+    if (textParts.length > 0) {
+      return textParts.join(' ').slice(0, MAX_QUERY_LEN);
+    }
+    // 优先级 4: 绝对兜底
+    return agentId;
+  }
+
+  /**
    * L5 RAG — PRD-9 US-003 AC-1: 按 agentId 推断 retrieve 策略
    * D-007 单一入口: 所有 RAG 逻辑在此集中 · specialist 文件 0 改动
    */
@@ -171,12 +221,7 @@ export class ContextAssembler {
     if (NON_GENERATIVE.has(req.agentId)) return [];
 
     const input = req.userInput as Record<string, unknown>;
-    const query =
-      typeof input?.userMessage === 'string'
-        ? input.userMessage
-        : typeof input?.lastDescription === 'string'
-          ? input.lastDescription
-          : req.agentId;
+    const query = this._deriveRagQuery(input, req.agentId);
 
     const traceId = `rag_${req.accountId}_${req.agentId}_${Date.now()}`;
     const retrieve = (type: 'case' | 'formula' | 'element', topK: number) =>
@@ -282,18 +327,76 @@ export class ContextAssembler {
   }
 
   /** PRD-9 US-003 AC-2: [Section 6] RAG 知识库参考 */
-  private _buildSection6(ragChunks: KnowledgeChunkContent[]): string {
+  private _buildSection6(ragChunks: KnowledgeChunkContent[], accountId?: number, agentId?: string): string {
     const lines: string[] = [
       `[Section 6] RAG 知识库参考(top-${ragChunks.length} 相似案例 · 仅供生成参考 · 不抄)`,
     ];
     ragChunks.forEach((chunk, i) => {
       const simStr = chunk.similarity !== undefined ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
-      const preview = chunk.content.slice(0, 200);
+      // G74: 过滤 RAG chunk 中的 prompt 注入模式(共享知识库可能被污染)
+      const filterResult = detectInjection(chunk.content);
+      if (filterResult.flagged) {
+        logger.warn(
+          { accountId, agentId, patterns: filterResult.patterns, chunkTitle: chunk.title },
+          'injection_detected',
+        );
+      }
+      const preview = filterResult.sanitized.slice(0, 200);
       lines.push(`─ 案例 ${i + 1}: ${chunk.title}${simStr}· ${preview}`);
     });
     return lines.join('\n');
   }
 
+  /**
+   * F-8 fix: variant of _buildSection6 that accepts a pre-computed sanitized-content cache
+   * to avoid re-running detectInjection on chunks already scanned in the truncation loop.
+   */
+  private _buildSection6WithCache(
+    ragChunks: KnowledgeChunkContent[],
+    cache: Map<string, string>,
+    accountId?: number,
+    agentId?: string,
+  ): string {
+    const lines: string[] = [
+      `[Section 6] RAG 知识库参考(top-${ragChunks.length} 相似案例 · 仅供生成参考 · 不抄)`,
+    ];
+    ragChunks.forEach((chunk, i) => {
+      const simStr = chunk.similarity !== undefined ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
+      // Use cached sanitized content; fall back to detectInjection if somehow missing from cache
+      const cached = cache.get(chunk.content);
+      let sanitized: string;
+      if (cached !== undefined) {
+        sanitized = cached;
+      } else {
+        const filterResult = detectInjection(chunk.content);
+        if (filterResult.flagged) {
+          logger.warn(
+            { accountId, agentId, patterns: filterResult.patterns, chunkTitle: chunk.title },
+            'injection_detected',
+          );
+        }
+        sanitized = filterResult.sanitized;
+      }
+      const preview = sanitized.slice(0, 200);
+      lines.push(`─ 案例 ${i + 1}: ${chunk.title}${simStr}· ${preview}`);
+    });
+    return lines.join('\n');
+  }
+
+  /**
+   * G1 预算裁剪 · 优先级分段贪心组装
+   *
+   * 优先级(高→低):
+   *   P0: persona            — must-keep，永不丢
+   *   P1: stepData           — 可截(保最近，丢最旧)
+   *   P2: evolution(Section4)— 可整段丢
+   *   P3: methodology        — 可整段丢
+   *   P2: RAG(Section6)      — 可截(保前几个 chunk)
+   *   P3: DB constants       — 可整段丢
+   *
+   * 顺序保持: 最终输出层序始终是 persona→step→evolution→methodology→RAG→DB
+   * trimmed: 被丢/截的层名列表
+   */
   private _composeSystemPrompt(
     req: AssembleRequest,
     stepData: StepRow[] | null,
@@ -302,39 +405,124 @@ export class ContextAssembler {
     ragChunks: KnowledgeChunkContent[],
     activePromptContent: string | null = null,
     dbConstants: Record<string, string> | null = null,
-  ): string {
+    userPrompt: string = '',
+  ): { systemPrompt: string; trimmed: string[] } {
     const tmpl = SPECIALIST_TEMPLATES[req.agentId];
 
     // PRD-13 US-003 AC-9/13: use DB prompt if available · fallback to templates/*.ts
-    // AC-13: brownfield — if prompt_versions has no record for this agent, fall back to templates/*.ts
     const persona =
       activePromptContent !== null
         ? activePromptContent
         : (tmpl?.persona ?? `你是 ${req.agentId} · IP 起号专家助手`);
 
-    // AC-5: L2 stepData 失败 → 占位 · 不报错
-    const stepSection =
-      stepData !== null && stepData.length > 0
-        ? stepData
-            .map((s) => `- ${s.stepKey}: ${JSON.stringify(s.result ?? {})}`)
-            .join('\n')
-        : '[新用户 · 暂无 step 数据]';
+    // G1: 计算 userPrompt 占用后剩余的系统提示预算
+    const userTokens = estimateTokens(userPrompt);
+    const systemBudget = MAX_CONTEXT_TOKENS - userTokens;
 
-    const lines: string[] = [
-      persona,
-      '────────────────────────────────────────',
-      '# 历史 step 摘要(L2 Core)',
-      stepSection,
-    ];
-
-    // PRD-8 US-004 AC-1: evolutionInsight 非 null 时注入 [Section 4] 用户偏好画像
-    if (evolutionInsight !== null) {
-      lines.push(
-        '────────────────────────────────────────',
-        this._buildSection4(evolutionInsight),
+    // 如果 userPrompt 单独就超出预算 → systemPrompt 只留 persona 并 warn
+    if (systemBudget <= 0) {
+      logger.warn(
+        { userTokens, maxContextTokens: MAX_CONTEXT_TOKENS },
+        '[G1] user input exceeds budget · systemPrompt 仅保留 persona',
       );
+      return { systemPrompt: persona, trimmed: ['step_data', 'evolution', 'methodology', 'rag', 'db_constants'] };
     }
 
+    const trimmed: string[] = [];
+
+    // ── 贪心组装 ──────────────────────────────────────────────────────────────
+    // 每层先构建文本，再决定是否放入
+
+    // P0 Persona — must-keep
+    const SEPARATOR = '────────────────────────────────────────';
+    let usedTokens = estimateTokens(persona);
+    const finalParts: string[] = [persona];
+
+    // P1 stepData — 可截(保最近的 step，丢最旧的)
+    const allStepData: StepRow[] = stepData !== null && stepData.length > 0 ? stepData : [];
+    const stepPlaceholder = '[新用户 · 暂无 step 数据]';
+
+    const stepHeader = [SEPARATOR, '# 历史 step 摘要(L2 Core)'].join('\n');
+    const stepHeaderTokens = estimateTokens(stepHeader + '\n');
+
+    if (allStepData.length === 0) {
+      // 空 step：只放占位符
+      const emptyStepText = stepHeader + '\n' + stepPlaceholder;
+      const emptyStepTokens = estimateTokens(emptyStepText);
+      if (usedTokens + emptyStepTokens <= systemBudget) {
+        finalParts.push(stepHeader, stepPlaceholder);
+        usedTokens += emptyStepTokens;
+      } else {
+        trimmed.push('step_data');
+      }
+    } else {
+      // 有 step：从最旧到最新排列(fetch 时 orderBy createdAt asc)
+      // 贪心：先把 header 算进去，再逐条从最新往旧反向加(保最近)
+      // 但最终输出顺序仍保持时间顺序(旧→新)
+      // G74: stepData 来自用户影响的历史数据，过滤 prompt 注入模式
+      const stepLines = allStepData.map((s) => {
+        const raw = JSON.stringify(s.result ?? {});
+        const filterResult = detectInjection(raw);
+        if (filterResult.flagged) {
+          logger.warn(
+            { accountId: req.accountId, agentId: req.agentId, patterns: filterResult.patterns, stepKey: s.stepKey },
+            'injection_detected',
+          );
+        }
+        return `- ${s.stepKey}: ${filterResult.sanitized}`;
+      });
+      // 先试全部
+      const fullStepText = stepHeader + '\n' + stepLines.join('\n');
+      const fullStepTokens = estimateTokens(fullStepText);
+
+      if (usedTokens + fullStepTokens <= systemBudget) {
+        // 全放
+        finalParts.push(stepHeader, stepLines.join('\n'));
+        usedTokens += fullStepTokens;
+      } else {
+        // 截断：从最新往旧收集，直到超预算为止
+        const availableForStep = systemBudget - usedTokens - stepHeaderTokens;
+        if (availableForStep <= 0) {
+          trimmed.push('step_data');
+        } else {
+          // 倒序选：保最近的(数组末尾)
+          const kept: string[] = [];
+          let keptTokens = 0;
+          for (let i = stepLines.length - 1; i >= 0; i--) {
+            const lineTokens = estimateTokens(stepLines[i]! + '\n');
+            if (keptTokens + lineTokens <= availableForStep) {
+              kept.unshift(stepLines[i]!); // 保持时间顺序
+              keptTokens += lineTokens;
+            } else {
+              // G1 fix: 遇第一个装不下的行即 break，保最近连续块，不跳到更旧的小行
+              break;
+            }
+          }
+          if (kept.length > 0) {
+            const truncatedStepText = stepHeader + '\n' + kept.join('\n');
+            finalParts.push(stepHeader, kept.join('\n'));
+            usedTokens += estimateTokens(truncatedStepText);
+            trimmed.push('step_data_truncated');
+          } else {
+            trimmed.push('step_data');
+          }
+        }
+      }
+    }
+
+    // P2 evolution(Section4) — 可整段丢
+    if (evolutionInsight !== null) {
+      const evolutionText = SEPARATOR + '\n' + this._buildSection4(evolutionInsight);
+      const evolutionTokens = estimateTokens(evolutionText);
+      if (usedTokens + evolutionTokens <= systemBudget) {
+        finalParts.push(SEPARATOR, this._buildSection4(evolutionInsight));
+        usedTokens += evolutionTokens;
+      } else {
+        trimmed.push('evolution');
+      }
+    }
+
+    // P3 methodology+constants — 可整段丢
     if (constants !== null) {
       const constParts: string[] = [];
       if (tmpl?.methodology) constParts.push(tmpl.methodology);
@@ -343,32 +531,93 @@ export class ContextAssembler {
         `爆款元素(${constants.hotElements.length} 类): ${constants.hotElements.map((e) => e.label).join(' / ')}`,
         `覆盖行业(${constants.industries.length} 类): ${[...new Set(constants.industries.map((i) => i.category))].join(' / ')}`,
       );
-      lines.push(
-        '────────────────────────────────────────',
-        '# 方法论(常量)',
-        constParts.join('\n'),
-      );
+      const methodologyText = [SEPARATOR, '# 方法论(常量)', constParts.join('\n')].join('\n');
+      const methodologyTokens = estimateTokens(methodologyText);
+      if (usedTokens + methodologyTokens <= systemBudget) {
+        finalParts.push(SEPARATOR, '# 方法论(常量)', constParts.join('\n'));
+        usedTokens += methodologyTokens;
+      } else {
+        trimmed.push('methodology');
+      }
     }
 
-    // PRD-9 US-003 AC-2: L5 RAG [Section 6] · ragChunks 为空时跳过(D-020 降级)
+    // P2 RAG(Section6) — 可截(保前几个 chunk)
     if (ragChunks.length > 0) {
-      lines.push(
-        '────────────────────────────────────────',
-        this._buildSection6(ragChunks),
-      );
+      const ragHeaderText = SEPARATOR;
+      const ragHeaderTokens = estimateTokens(ragHeaderText + '\n');
+
+      // F-8 fix: build once, reuse — avoid calling _buildSection6 (and detectInjection) twice
+      const fullSection6 = this._buildSection6(ragChunks, req.accountId, req.agentId);
+      const fullRagText = SEPARATOR + '\n' + fullSection6;
+      const fullRagTokens = estimateTokens(fullRagText);
+
+      if (usedTokens + fullRagTokens <= systemBudget) {
+        // 全部 RAG chunk 都放
+        finalParts.push(SEPARATOR, fullSection6);
+        usedTokens += fullRagTokens;
+      } else {
+        // 截断：从前往后保留尽可能多的 chunk
+        const availableForRag = systemBudget - usedTokens - ragHeaderTokens;
+        if (availableForRag <= 0) {
+          trimmed.push('rag');
+        } else {
+          // F-8 fix: cache detectInjection result per chunk so the estimate loop
+          // and the subsequent _buildSection6 call don't re-run detectInjection
+          const chunkFilterCache = new Map<string, string>(
+            ragChunks.map((c) => [c.content, detectInjection(c.content).sanitized]),
+          );
+          const keptChunks: KnowledgeChunkContent[] = [];
+          let keptTokens = 0;
+          for (const chunk of ragChunks) {
+            const simStr = chunk.similarity !== undefined ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
+            // G74: token 估算也用过滤后内容，保持与 _buildSection6 一致
+            // Use cached result — detectInjection already ran above for all chunks
+            const filteredPreview = (chunkFilterCache.get(chunk.content) ?? chunk.content).slice(0, 200);
+            const chunkLine = `─ 案例 ${keptChunks.length + 1}: ${chunk.title}${simStr}· ${filteredPreview}`;
+            const chunkTokens = estimateTokens(chunkLine + '\n');
+            if (keptTokens + chunkTokens <= availableForRag) {
+              keptChunks.push(chunk);
+              keptTokens += chunkTokens;
+            } else {
+              break;
+            }
+          }
+          if (keptChunks.length > 0) {
+            // F-8 fix: build once, reuse — avoid second _buildSection6 call
+            const keptSection6 = this._buildSection6WithCache(keptChunks, chunkFilterCache, req.accountId, req.agentId);
+            const keptRagText = SEPARATOR + '\n' + keptSection6;
+            finalParts.push(SEPARATOR, keptSection6);
+            usedTokens += estimateTokens(keptRagText);
+            trimmed.push('rag_truncated');
+          } else {
+            trimmed.push('rag');
+          }
+        }
+      }
     }
 
-    // PRD-14 US-008 AC-5/6: L7 DB constant versions · null = brownfield(跳过 · 旧路径已在上方)
+    // P3 DB constants — 可整段丢
     if (dbConstants !== null && Object.keys(dbConstants).length > 0) {
       const dbLines = Object.entries(dbConstants).map(([key, content]) => `- [${key}]: ${content.slice(0, 200)}`);
-      lines.push(
-        '────────────────────────────────────────',
+      const dbText = [
+        SEPARATOR,
         `[Section 7] 常量版本(DB · ${Object.keys(dbConstants).length} 条)`,
         ...dbLines,
-      );
+      ].join('\n');
+      const dbTokens = estimateTokens(dbText);
+      if (usedTokens + dbTokens <= systemBudget) {
+        finalParts.push(
+          SEPARATOR,
+          `[Section 7] 常量版本(DB · ${Object.keys(dbConstants).length} 条)`,
+          ...dbLines,
+        );
+        usedTokens += dbTokens;
+      } else {
+        trimmed.push('db_constants');
+      }
     }
 
-    return lines.join('\n');
+    return { systemPrompt: finalParts.join('\n'), trimmed };
   }
 
   private _formatUserPrompt(input: unknown): string {

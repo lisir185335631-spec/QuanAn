@@ -695,65 +695,7 @@ export default function Step5() {
             </div>
           </div>
 
-          {/* 2 个上传 dropzone */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 28 }}>
-            <motion.button
-              type="button"
-              aria-label="上传产品资料"
-              whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass lg-spec"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                width: '100%',
-                cursor: 'pointer',
-                borderRadius: 18,
-                borderStyle: 'dashed',
-                borderWidth: 1,
-                borderColor: 'rgba(168,197,224,0.4)',
-                padding: '32px 16px',
-                textAlign: 'center',
-                background: 'rgba(168,197,224,0.06)',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>description</span>
-              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传产品资料</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>产品介绍、卖点、价格体系、客户案例等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
-            </motion.button>
-            <motion.button
-              type="button"
-              aria-label="上传人物介绍与行业"
-              whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 18 }}
-              className="lg-glass lg-spec"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                width: '100%',
-                cursor: 'pointer',
-                borderRadius: 18,
-                borderStyle: 'dashed',
-                borderWidth: 1,
-                borderColor: 'rgba(168,197,224,0.4)',
-                padding: '32px 16px',
-                textAlign: 'center',
-                background: 'rgba(168,197,224,0.06)',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 32, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }} aria-hidden={true}>person</span>
-              <p style={{ fontSize: 15, fontWeight: 800, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>上传人物介绍与行业</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>个人经历、行业背景、专业资质、从业故事等</p>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.84)', margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）</p>
-            </motion.button>
-          </div>
+          {/* PRD-37 US-P08: 产品资料/人物介绍上传已前移至 Step1 · Step5 仅保留行业/产品文本输入 */}
 
           {/* CTA */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

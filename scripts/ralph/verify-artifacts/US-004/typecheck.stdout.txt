@@ -1,13 +1,4 @@
-Scope: 6 of 7 workspace projects
-packages/schemas typecheck$ tsc --noEmit
-packages/ui typecheck$ tsc --noEmit
-packages/ui typecheck: Done
-packages/schemas typecheck: Done
-packages/clients typecheck$ tsc --noEmit
-apps/api typecheck$ tsc --noEmit
-packages/clients typecheck: Done
-apps/api typecheck: Done
-apps/admin typecheck$ tsc --noEmit
-apps/web typecheck$ tsc --noEmit
-apps/admin typecheck: Done
-apps/web typecheck: Done
+
+> @quanqn/web@0.1.0 typecheck /Users/return/Desktop/QuanQn/apps/web
+> tsc --noEmit
+

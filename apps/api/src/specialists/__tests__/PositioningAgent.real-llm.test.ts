@@ -55,6 +55,7 @@ describe.skipIf(skipRealLlm)('PositioningAgent real LLM', () => {
 
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'industry',
       userInput: { industry: '美食' },
     });
@@ -80,6 +81,7 @@ describe.skipIf(skipRealLlm)('PositioningAgent real LLM', () => {
         data: expect.objectContaining({
           agentId: 'PositioningAgent',
           accountId: TEST_ACCOUNT_ID,
+      userId: 1,
           isFallback: false,
         }),
       }),
@@ -95,6 +97,7 @@ describe.skipIf(skipRealLlm)('PositioningAgent real LLM', () => {
 
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'execution',
       userInput: {
         industry: '美食',
@@ -123,6 +126,7 @@ describe.skipIf(skipRealLlm)('PositioningAgent real LLM', () => {
         data: expect.objectContaining({
           agentId: 'PositioningAgent',
           accountId: TEST_ACCOUNT_ID,
+      userId: 1,
           isFallback: false,
         }),
       }),

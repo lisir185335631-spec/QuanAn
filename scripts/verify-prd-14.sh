@@ -126,17 +126,17 @@ section "§4 plan-check 2.6.17 LD-A 三方一致性(AGENTS.md + 源码 + audit �
 LDAS_AGENTS=0; LDAS_CODE=0; LDAS_AUDIT=0
 
 # LD-A9
-if grep -q "LD-A9\|LD-A-9" AGENTS.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
+if grep -q "LD-A9\|LD-A-9" AGENTS.md .claude/rules/admin-subsystem.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
 if grep -rn "LD-A9" apps/api/src/ --include="*.ts" -q 2>/dev/null; then LDAS_CODE=$((LDAS_CODE + 1)); fi
 if grep -q "LD-A9" scripts/audit-redlines-admin.sh 2>/dev/null; then LDAS_AUDIT=$((LDAS_AUDIT + 1)); fi
 
 # LD-A10
-if grep -q "LD-A10\|LD-A-10" AGENTS.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
+if grep -q "LD-A10\|LD-A-10" AGENTS.md .claude/rules/admin-subsystem.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
 if grep -rn "LD-A10" apps/api/src/ --include="*.ts" -q 2>/dev/null; then LDAS_CODE=$((LDAS_CODE + 1)); fi
 if grep -q "LD-A10" scripts/audit-redlines-admin.sh 2>/dev/null; then LDAS_AUDIT=$((LDAS_AUDIT + 1)); fi
 
 # LD-A11
-if grep -q "LD-A11\|LD-A-11" AGENTS.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
+if grep -q "LD-A11\|LD-A-11" AGENTS.md .claude/rules/admin-subsystem.md 2>/dev/null; then LDAS_AGENTS=$((LDAS_AGENTS + 1)); fi
 if grep -rn "LD-A11" apps/api/src/ --include="*.ts" -q 2>/dev/null; then LDAS_CODE=$((LDAS_CODE + 1)); fi
 if grep -q "LD-A11" scripts/audit-redlines-admin.sh 2>/dev/null; then LDAS_AUDIT=$((LDAS_AUDIT + 1)); fi
 

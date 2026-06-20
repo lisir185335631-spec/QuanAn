@@ -1,7 +1,7 @@
 # QuanAn · 架构决策记录(ADR.md)
 
 > **版本** · v0.3(2026-05-06 创建 · 2026-05-07 v0.2 修订:加 ADR-019 monorepo / ADR-020 双 daemon / ADR-021 admin 独立部署 · 2026-05-23 v0.3 修订:加 ADR-022 OKLCH token 切换路 α)
-> **角色** · 把 [AGENTS.md §3](AGENTS.md) 的 18 条 Locked Decisions 展开成完整决策记录
+> **角色** · 把 [AGENTS.md §3](AGENTS.md) 的 18 条 Locked Decisions 展开成完整决策记录（并补充 ADR-019~022，现共 22 条）
 > **格式** · 每条 ADR 含 `Status / Context / Options / Decision / Consequences / Implementation / References`
 > **配套** · [ARCHITECTURE.md](ARCHITECTURE.md) · [AGENTS.md](AGENTS.md) · [DATA-MODEL.md](DATA-MODEL.md) · [PROMPTS.md](PROMPTS.md)
 

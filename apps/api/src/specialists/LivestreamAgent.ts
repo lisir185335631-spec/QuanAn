@@ -17,6 +17,7 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -253,13 +254,18 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
     // BrandingAgent pattern: inline ctx.systemPrompt so R-11 grep -v "ctx\." passes
     const systemPrompt = `${SYSTEM_PROMPT_GENERATE_PLAN}\n\n${ctx.systemPrompt}`;
 
+    // R-14: productInfo/targetAudience = 业务/受众元数据(incidental PII) → piiMask
+    // platform/experience = 枚举值 → 不动
+    const productInfo = piiMask(String(input['productInfo'] ?? input['lastProductInfo'] ?? '未填写'));
+    const targetAudience = piiMask(String(input['targetAudience'] ?? input['lastTargetAudience'] ?? '未填写'));
+
     const userPrompt = [
       ctx.userPrompt,
       '',
       '[直播策划方案生成任务 · generate_plan]',
       `平台: ${String(input['platform'] ?? input['lastPlatform'] ?? '抖音')}`,
-      `产品信息: ${String(input['productInfo'] ?? input['lastProductInfo'] ?? '未填写')}`,
-      `目标受众: ${String(input['targetAudience'] ?? input['lastTargetAudience'] ?? '未填写')}`,
+      `产品信息: ${productInfo}`,
+      `目标受众: ${targetAudience}`,
       `经验等级: ${experience}`,
       '',
       '请以 JSON 格式输出完整的直播策划方案(6 模块):',
@@ -287,7 +293,7 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -304,8 +310,10 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
   ): Promise<InvokeLLMResult> {
     const input = req.userInput as Record<string, unknown>;
     const experience = input['experience'] as string | undefined ?? '有经验';
+    // R-14: scriptText = 用户待优化的直播脚本正文(主体内容) → 不 mask(AI 分析对象·mask 毁任务)
     const scriptText = String(input['scriptText'] ?? input['lastResult'] ?? '');
-    const optimizeGoal = String(input['optimizeGoal'] ?? '提升转化率');
+    // R-14: optimizeGoal = 优化方向提示(incidental 元数据) → piiMask
+    const optimizeGoal = piiMask(String(input['optimizeGoal'] ?? '提升转化率'));
 
     // SHIELD(PRD-19 §11.11.4): optimize_script 专属 system prompt — 不与 generate_plan 混用
     // BrandingAgent pattern: inline ctx.systemPrompt so R-11 grep -v "ctx\." passes
@@ -342,7 +350,7 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -368,7 +376,7 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -376,7 +384,14 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamM
   }
 
   private _buildLegacyUserPrompt(userInput: LivestreamInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
+    // R-14: mask incidental 元数据字段(productInfo/targetAudience/optimizeGoal)
+    // experience/sub_function = 枚举值 → piiMask 对非字符串安全透传 · 但 string 字段须逐字段处理
+    const raw = userInput as Record<string, unknown>;
+    const maskedInput: Record<string, unknown> = { ...raw };
+    for (const key of ['productInfo', 'lastProductInfo', 'targetAudience', 'lastTargetAudience', 'optimizeGoal']) {
+      if (typeof maskedInput[key] === 'string') maskedInput[key] = piiMask(maskedInput[key] as string);
+    }
+    const inputJson = JSON.stringify(maskedInput);
 
     return [
       ctx.userPrompt,

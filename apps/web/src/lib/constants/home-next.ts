@@ -10,7 +10,6 @@ import {
   Fingerprint,
   Globe,
   LayoutGrid,
-  Mic,
   Radio,
   Search,
   Sparkles,
@@ -118,12 +117,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         desc: '粘贴文案，AI深度拆解爆款密码+一键仿写',
         href: '/video-analysis',
       },
-      {
-        icon: LayoutGrid,
-        title: '爆款呈现形式',
-        desc: '14种爆款呈现形式全解析',
-        href: '/present-styles',
-      },
     ],
   },
   {
@@ -175,12 +168,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         desc: '文案转分镜脚本和拍摄方案',
         href: '/video-production',
       },
-      {
-        icon: Target,
-        title: '获客型视频',
-        desc: '精准获客短视频方案',
-        href: '/acquisition-video',
-      },
     ],
   },
   {
@@ -193,13 +180,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         title: '一键生成视频',
         desc: '文案自动转视频分镜+AI生成',
         href: '/ai-video',
-      },
-      {
-        icon: Mic,
-        title: '语音对话',
-        desc: '语音交互AI智能对话助手',
-        href: '/voice-chat',
-        arrow: true,
       },
       {
         icon: Brain,

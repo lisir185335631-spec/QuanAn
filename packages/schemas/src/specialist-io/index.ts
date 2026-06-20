@@ -1,11 +1,11 @@
 // specialist-io barrel — PRD-2 US-004 + US-005 + PRD-4 US-011 + PRD-5 US-001 + PRD-6 US-001 + PRD-8 US-001
-// 14 Specialist I/O schemas + constants
+// 13 Specialist I/O schemas + constants
 // US-004: 5 创作类 (copywriting/videoAnalysis/videoProduction/boomGenerate/monetization)
 // US-005: 4 流程类 (privateDomain/diagnosis/evolution/deepLearning)
 // US-011: 9 step input schemas (step1/3/3b/4/4b/5/6/7/8)
 // PRD-5 US-001: analysis schemas + constants (HOT_ELEMENT_KEYS_22 / SCRIPT_TYPE_KEYS_20)
 // PRD-6 US-001: 5 video schemas (videoProduction/acquisitionVideo/aiVideo/acquisitionCopywriting/imageGen)
-// PRD-8 US-001: 3 智能模块 schemas (evolution content / dailyTask / voiceChat)
+// PRD-8 US-001: 2 智能模块 schemas (evolution content / dailyTask)
 
 export * from './constants';
 export * from './analysis.schema';
@@ -24,5 +24,4 @@ export * from './evolution.schema';
 export * from './deepLearning.schema';
 export * from './step-inputs.schema';
 export * from './dailyTask.schema';
-export * from './voiceChat.schema';
 export * from './presentStyles.schema';

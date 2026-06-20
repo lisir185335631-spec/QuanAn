@@ -55,8 +55,14 @@ export type StepHotElementKey = (typeof STEP_HOT_ELEMENT_KEYS)[number];
 // ── Step 1: 行业定位 ──────────────────────────────────────────────────────────
 
 // z.string().min(1) allows both enum keys and custom industry strings; rejects empty (AC-14)
+// PRD-37 US-P04: 加两层行业字段(optional · 向后兼容 · 保留 lastIndustry 双写)
+// PRD-37 US-P08: 加文件 Asset ID 列表(optional · 上传前置 Step1 → 前端写入 productMaterialAssetIds/personaFileAssetIds)
 export const Step1InputSchema = z.object({
   lastIndustry: z.string().min(1, { message: '行业必填' }),
+  lastIndustryCategory: z.string().optional(),
+  lastIndustrySub: z.string().optional(),
+  productMaterialAssetIds: z.array(z.number()).optional(),
+  personaFileAssetIds: z.array(z.number()).optional(),
 });
 
 export type Step1Input = z.infer<typeof Step1InputSchema>;
@@ -76,6 +82,7 @@ export type Step3Input = z.infer<typeof Step3InputSchema>;
 
 // ── Step 3b: 人设深化 ─────────────────────────────────────────────────────────
 
+// PRD-37 US-P06: 新增产品四品 + 公司介绍字段(optional · 向后兼容)
 export const Step3bInputSchema = z.object({
   lastPlatform: z.enum(STEP_PLATFORM_KEYS, {
     errorMap: () => ({ message: '请选择平台' }),
@@ -84,6 +91,13 @@ export const Step3bInputSchema = z.object({
   lastTargetAudience: z.string().max(200).default(''),
   lastStrengths: z.string().max(200).default(''),
   lastStory: z.string().max(500).default(''),
+  productIntro: z.object({
+    drainage: z.string().max(200).default(''),
+    bestseller: z.string().max(200).default(''),
+    profit: z.string().max(200).default(''),
+    image: z.string().max(200).default(''),
+  }).optional(),
+  companyInfo: z.string().max(500).optional(),
 });
 
 export type Step3bInput = z.infer<typeof Step3bInputSchema>;
@@ -141,6 +155,9 @@ export type Step6Input = z.infer<typeof Step6InputSchema>;
 
 // ── Step 7: 文案生成 ──────────────────────────────────────────────────────────
 
+// PRD-37 US-P09 AC6: 增 sourceTrendingId/viralStructure (optional · 向后兼容)
+// sourceTrendingId: 来源选题 ID(Step5 爆款选题 id·可选)
+// viralStructure: AnalysisAgent viral mode 输出的顶层结构(hook/body/cta·可选)
 export const Step7InputSchema = z.object({
   lastScriptType: z.enum(STEP_SCRIPT_TYPE_KEYS, {
     errorMap: () => ({ message: '请选择脚本类型' }),
@@ -149,6 +166,8 @@ export const Step7InputSchema = z.object({
     z.enum(STEP_HOT_ELEMENT_KEYS, { errorMap: () => ({ message: '无效元素' }) }),
   ).max(5),
   lastTopic: z.string().min(2, { message: '话题至少2字' }).max(200),
+  sourceTrendingId: z.string().optional(),
+  viralStructure: z.unknown().optional(),
 });
 
 export type Step7Input = z.infer<typeof Step7InputSchema>;

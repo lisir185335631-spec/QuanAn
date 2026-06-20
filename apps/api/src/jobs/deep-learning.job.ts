@@ -17,6 +17,8 @@ export const DEEP_LEARNING_QUEUE_NAME = 'deep-learning';
 export interface DeepLearningJobPayload {
   historyId: number;
   accountId: number;
+  /** fix ⑥: 真实触发用户 id，由路由层带入，替代 SYSTEM_USER_ID */
+  userId: number;
   samples: Array<{ text: string; source: string }>;
   traceId: string;
 }
@@ -52,9 +54,9 @@ export const deepLearningQueue = new Queue<DeepLearningJobPayload>(DEEP_LEARNING
 });
 
 async function processDeepLearningJob(payload: DeepLearningJobPayload): Promise<void> {
-  const { historyId, accountId, samples, traceId } = payload;
+  const { historyId, accountId, userId, samples, traceId } = payload;
 
-  logger.info({ historyId, accountId, traceId }, 'deep_learning_job.started');
+  logger.info({ historyId, accountId, userId, traceId }, 'deep_learning_job.started');
 
   // Mark as processing
   await prisma.history.update({
@@ -65,6 +67,7 @@ async function processDeepLearningJob(payload: DeepLearningJobPayload): Promise<
   try {
     const agentRes = await deepLearnAgent.execute({
       accountId,
+      userId, // fix ⑥: 透传真实用户 id，不再落 SYSTEM_USER_ID 限流桶
       userInput: { samples },
       traceId,
     });

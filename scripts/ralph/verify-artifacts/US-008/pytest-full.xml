@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="vitest" tests="181" failures="0" errors="0" time="2.02">
-  <testsuite name="apps/web vitest zero-regression" tests="181" failures="0" errors="0" time="2.02">
-    <testcase name="vitest run 181/181 pass (zero-regression gate)" classname="zero-regression" time="2.02"/>
+<testsuites name="vitest" tests="181" failures="0" errors="0" time="3.08">
+  <testsuite name="apps/web vitest zero-regression" tests="181" failures="0" errors="0" time="3.08">
+    <testcase name="vitest run 181/181 pass (zero-regression gate)" classname="zero-regression" time="3.08"/>
   </testsuite>
 </testsuites>

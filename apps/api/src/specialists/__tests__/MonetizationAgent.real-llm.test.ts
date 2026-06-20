@@ -53,6 +53,7 @@ describe.skipIf(skipRealLlm)('MonetizationAgent real LLM', () => {
 
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       userInput: {
         industry: '健身',
         currentRevenue: '0',
@@ -99,6 +100,7 @@ describe.skipIf(skipRealLlm)('MonetizationAgent real LLM', () => {
         data: expect.objectContaining({
           agentId: 'MonetizationAgent',
           accountId: TEST_ACCOUNT_ID,
+      userId: 1,
           isFallback: false,
         }),
       }),

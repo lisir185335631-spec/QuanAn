@@ -26,7 +26,7 @@ import type { Prisma } from '@prisma/client';
 
 const DATE_RANGE_VALUES = ['last_7d', 'last_30d', 'all', 'today', 'week', 'month', 'custom'] as const;
 
-// ── Tool slug → agentId mapping (14 tools · US-008 AC-7) ─────────────────────
+// ── Tool slug → agentId mapping (13 tools · US-008 AC-7) ─────────────────────
 
 const TOOL_AGENT_MAP: Record<string, string[]> = {
   trending: ['TrendingAgent'],
@@ -39,9 +39,7 @@ const TOOL_AGENT_MAP: Record<string, string[]> = {
   analysis: ['AnalysisAgent'],
   videoAnalysis: ['VideoAnalysisAgent'],
   videoProduction: ['VideoProductionAgent', 'VideoAgent'],
-  acquisitionVideo: ['VideoAgent'],
   aiVideo: ['VideoAgent'],
-  voiceChat: ['VoiceChatAgent'],
   deepLearning: ['DeepLearningAgent'],
   knowledge: ['KnowledgeAgent'],
 };

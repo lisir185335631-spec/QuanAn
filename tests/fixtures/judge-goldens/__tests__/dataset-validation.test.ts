@@ -50,14 +50,15 @@ describe('Count validation', () => {
     expect((sallyRaw as unknown[]).length).toBe(30);
   });
 
-  it('custom-70.json has exactly 70 entries', () => {
+  it('custom-70.json has exactly 72 entries', () => {
+    // 補 DiagnosisAgent(+1) + EvolutionAgent(+1) 达到各 2 条配额，总数从 70 扩至 72
     expect(Array.isArray(customRaw)).toBe(true);
-    expect((customRaw as unknown[]).length).toBe(70);
+    expect((customRaw as unknown[]).length).toBe(72);
   });
 
-  it('combined dataset has exactly 100 entries', () => {
+  it('combined dataset has exactly 102 entries', () => {
     const total = (sallyRaw as unknown[]).length + (customRaw as unknown[]).length;
-    expect(total).toBe(100);
+    expect(total).toBe(102);
   });
 });
 
@@ -125,6 +126,18 @@ describe('source field marking', () => {
     const parsed = goldenDatasetSchema.parse(customRaw);
     const count = parsed.filter(e => e.specialistId === 'PresentationAgent').length;
     expect(count).toBeGreaterThanOrEqual(4);
+  });
+
+  it('custom-70 DiagnosisAgent quota >= 2', () => {
+    const parsed = goldenDatasetSchema.parse(customRaw);
+    const count = parsed.filter(e => e.specialistId === 'DiagnosisAgent').length;
+    expect(count).toBeGreaterThanOrEqual(2);
+  });
+
+  it('custom-70 EvolutionAgent quota >= 2', () => {
+    const parsed = goldenDatasetSchema.parse(customRaw);
+    const count = parsed.filter(e => e.specialistId === 'EvolutionAgent').length;
+    expect(count).toBeGreaterThanOrEqual(2);
   });
 
   it('custom-70 has 14 unique specialist IDs (all spec §7 specialists represented)', () => {

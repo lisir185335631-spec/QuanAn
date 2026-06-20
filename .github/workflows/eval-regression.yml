@@ -1,0 +1,61 @@
+name: Eval Regression
+
+# Judge / eval-suite 回归门禁。
+#
+# 无 ANTHROPIC_API_KEY 时: judge 测试全部 skipIf 跳过 → 退出码 0 · 绿灯 · 不卡 PR。
+# 有 ANTHROPIC_API_KEY(repo secret) 时: 真调 LLM · 跑完整 judge 回归 · 门槛见 judge-runner
+# 注释"threshold: score 须 ≥ 6/10"。目标: PRD-28 US-016 AC-3 CI 独立门禁。
+#
+# 与 ci.yml(typecheck/shadow drift) 互补 —— 这里专跑 judge + golden schema 验证。
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  eval-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # repo secret: 配了真 key → judge 真跑回归; 无 key → skipIf 自动跳过退出 0
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm db:generate
+
+      # ── API key 状态透明度 ─────────────────────────────────────────────────
+      # 显式回显 KEY 配置状态，让 CI 日志可见，不静默零防护
+      - name: Check API key configuration
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "✅ judge 回归将真跑"
+          else
+            echo "⚠️ ANTHROPIC_API_KEY 未配置 → judge 回归 skip(非门禁保护,仅 golden schema 验证生效)"
+          fi
+
+      # ── Golden fixture schema + count validation ───────────────────────────
+      # 不需要 API key · 纯 schema/count/specialistId 验证 · 每 PR 必跑
+      - name: Golden fixture validation
+        run: pnpm test tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts
+
+      # ── Judge 回归门禁 ─────────────────────────────────────────────────────
+      # 有 ANTHROPIC_API_KEY: 真调 LLM · 19 judge files 跑完整评分回归
+      # 无 ANTHROPIC_API_KEY: describe.skipIf(!process.env.ANTHROPIC_API_KEY) 全 skip → 退出 0
+      - name: Judge regression (skips if no API key)
+        run: pnpm test:judge

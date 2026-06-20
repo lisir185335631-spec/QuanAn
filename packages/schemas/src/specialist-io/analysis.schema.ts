@@ -44,15 +44,25 @@ export const analysisStructuralOutput = z.object({
     .min(3)
     .max(5),
   rewriteSnippet: z.string().min(50).max(200),
+  elements: z.array(z.string()).min(1),
+  pros: z.array(z.string()).min(1),
+  cons: z.array(z.string()).min(1),
 });
 
-/** viral mode 输出: 元素拆解 + 洞察 + 仿写版 */
+/** viral mode 输出: 元素拆解 + 洞察 + 仿写版 + 爆款结构(viralStructure) */
 export const analysisViralOutput = z.object({
   analysis: z.object({
     elements: z.array(z.enum(HOT_ELEMENT_KEYS_22)),
     structure: z.string(),
     hookType: z.string(),
     viralFormula: z.string(),
+    evaluation: z.string().optional(),
+  }),
+  // PRD-37 US-P09 AC3: 顶层 viralStructure — hook/正文/CTA 结构化拆解
+  viralStructure: z.object({
+    hook: z.string().min(10),      // 开场钩子(≥10字)
+    body: z.string().min(10),      // 正文结构(≥10字)
+    cta: z.string().min(5),        // 行动号召(≥5字)
   }),
   insights: z
     .array(
@@ -64,6 +74,24 @@ export const analysisViralOutput = z.object({
     )
     .min(3),
   rewriteVersion: z.string().min(50),
+  hookAnalysis: z
+    .object({
+      score: z.number().int().min(0).max(100),
+      maxScore: z.number().int().min(1).max(100),
+      type: z.string(),
+      technique: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  topicStrategy: z
+    .object({
+      category: z.string(),
+      angle: z.string(),
+      targetAudience: z.string(),
+      evaluation: z.string(),
+    })
+    .optional(),
+  timeline: z.array(z.string()).min(1).optional(),
 });
 
 // ── Type inference ────────────────────────────────────────────────────────────

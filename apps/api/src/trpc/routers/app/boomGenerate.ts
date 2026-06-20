@@ -59,7 +59,7 @@ export const boomGenerateRouter = router({
   generate: protectedProcedure
     .input(generateBoomInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       // AC-8: industry 未提供 → 读 activeAccount.industry
       let effectiveIndustry = input.industry;
@@ -73,14 +73,15 @@ export const boomGenerateRouter = router({
 
       const agentRes = await copywritingAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'boom',
         userInput: { ...input, industry: effectiveIndustry },
         traceId: traceId ?? undefined,
       });
 
       const boomResult = agentRes.result as BoomOutput;
-      // D-032: 5 篇 candidates 用 '\n\n---\n\n' 分隔合并为单行 content
-      const content = boomResult.candidates.join('\n\n---\n\n');
+      // D-032 updated: store structured candidates as JSON string in content
+      const content = JSON.stringify(boomResult.candidates);
       const inputSummary = (input.theme ?? input.industry ?? 'boom').substring(0, 100);
 
       const row = await prisma.history.create({
@@ -102,6 +103,7 @@ export const boomGenerateRouter = router({
         },
         select: HISTORY_BOOM_SELECT,
       });
-      return row;
+      // Return DB row + structured candidates for frontend 1:1 mapping
+      return { ...row, candidates: boomResult.candidates };
     }),
 });

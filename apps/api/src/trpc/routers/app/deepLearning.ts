@@ -203,6 +203,7 @@ export const deepLearningRouter = router({
           {
             historyId: historyRow.id,
             accountId: activeAccountId!,
+            userId: user!.id, // fix ⑥: 入队时带真实用户 id，worker 透传给 agent 限流
             samples: input.samples,
             traceId: jobId,
           },
@@ -220,8 +221,6 @@ export const deepLearningRouter = router({
         { historyId: historyRow.id, accountId: activeAccountId, jobId, sampleCount: input.samples.length },
         'deep_learning.learn.enqueued',
       );
-
-      void user; // suppress unused warning — available if needed for future enrich
 
       return { jobId, status: 'queued' as const };
     }),

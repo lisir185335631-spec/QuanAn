@@ -6,12 +6,16 @@
  */
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { useStepData } from '@/hooks/useStepData';
+import { trpc } from '@/lib/trpc';
 import {
   type Industry,
   STEP1_INDUSTRIES_56,
@@ -101,11 +105,128 @@ const S1_HEAT = [92, 85, 88, 78, 83, 90, 72, 86, 80, 94, 75, 88, 82, 76, 89, 84,
 
 export default function Step1() {
   const navigate = useNavigate();
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+  const { save } = useStepData(accountId, 'step1');
   const [activeTabId, setActiveTabId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState<Industry | null>(null);
   const [customIndustry, setCustomIndustry] = useState<string>('');
   const [customModalOpen, setCustomModalOpen] = useState(false);
+
+  // ── US-P08: 文件上传状态 ─────────────────────────────────────────────────────
+  const productFileInputRef = useRef<HTMLInputElement>(null);
+  const personaFileInputRef = useRef<HTMLInputElement>(null);
+  const [productFiles, setProductFiles] = useState<Array<{ name: string; assetId: number }>>([]);
+  const [personaFiles, setPersonaFiles] = useState<Array<{ name: string; assetId: number }>>([]);
+  const [uploadingProduct, setUploadingProduct] = useState(false);
+  const [uploadingPersona, setUploadingPersona] = useState(false);
+
+  // ── US-P10 AC1: 生成爆款选题 — 关联资料下拉框 ──────────────────────────────
+  const [topicGenAssetId, setTopicGenAssetId] = useState<string>('');
+  const allUploadedFiles = [
+    ...productFiles.map((f) => ({ ...f, type: '产品资料' })),
+    ...personaFiles.map((f) => ({ ...f, type: '人物介绍' })),
+  ];
+
+  const uploadAssetMutation = trpc.asset.uploadAsset.useMutation();
+  const summarizeStep1AssetsMutation = trpc.asset.summarizeStep1Assets.useMutation();
+
+  // PRD-37 US-P08: 支持 PDF/Word(.docx)/Excel(.xlsx)/Markdown(.md)
+  const STEP1_FILE_ACCEPT = '.pdf,.doc,.docx,.xlsx,.xls,.md,.markdown';
+  const STEP1_FILE_ACCEPT_LABEL = 'PDF / Word / Excel / Markdown';
+
+  function readFileAsBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve((e.target?.result as string) ?? '');
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleProductFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploadingProduct(true);
+    try {
+      const newEntries: Array<{ name: string; assetId: number }> = [];
+      for (const file of files) {
+        const dataUrl = await readFileAsBase64(file);
+        const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+        const inferredMime = (file.type && file.type !== 'application/octet-stream')
+          ? file.type
+          : (ext === 'md' || ext === 'markdown' ? 'text/markdown' : (file.type || 'application/octet-stream'));
+        const result = await uploadAssetMutation.mutateAsync({
+          fileDataUrl: dataUrl,
+          fileName: file.name,
+          fileMime: inferredMime,
+          fileSizeBytes: file.size,
+          relatedStepKey: 'step1',
+          assetSubtype: 'product_material',
+        });
+        newEntries.push({ name: file.name, assetId: result.assetId });
+      }
+      setProductFiles((prev) => [...prev, ...newEntries]);
+      toast.success(`已上传 ${newEntries.length} 个产品资料，解析中…`);
+    } catch {
+      toast.error('上传失败，请重试');
+    } finally {
+      setUploadingProduct(false);
+      if (productFileInputRef.current) productFileInputRef.current.value = '';
+    }
+  }
+
+  async function handlePersonaFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploadingPersona(true);
+    try {
+      const newEntries: Array<{ name: string; assetId: number }> = [];
+      for (const file of files) {
+        const dataUrl = await readFileAsBase64(file);
+        const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+        const inferredMime = (file.type && file.type !== 'application/octet-stream')
+          ? file.type
+          : (ext === 'md' || ext === 'markdown' ? 'text/markdown' : (file.type || 'application/octet-stream'));
+        const result = await uploadAssetMutation.mutateAsync({
+          fileDataUrl: dataUrl,
+          fileName: file.name,
+          fileMime: inferredMime,
+          fileSizeBytes: file.size,
+          relatedStepKey: 'step1',
+          assetSubtype: 'persona_file',
+        });
+        newEntries.push({ name: file.name, assetId: result.assetId });
+      }
+      setPersonaFiles((prev) => [...prev, ...newEntries]);
+      toast.success(`已上传 ${newEntries.length} 个人物介绍，解析中…`);
+    } catch {
+      toast.error('上传失败，请重试');
+    } finally {
+      setUploadingPersona(false);
+      if (personaFileInputRef.current) personaFileInputRef.current.value = '';
+    }
+  }
+
+  // ── US-P05: 子行业两层选择状态 ───────────────────────────────────────────────
+  const [selectedSubId, setSelectedSubId] = useState<string>('');
+  const [subCustomValue, setSubCustomValue] = useState<string>('');
+  const [subCustomModalOpen, setSubCustomModalOpen] = useState(false);
+  const [subError, setSubError] = useState<string>('');
+
+  // 当前行业的 subIndustries 列表
+  const currentSubIndustries = selectedIndustry?.subIndustries ?? [];
+  const hasSubIndustries = currentSubIndustries.length > 0;
+
+  // 实际存储的子行业值(other 时用自定义值；否则存中文 label 而非英文 id · 让 LLM 收到精准语义)
+  const resolvedSubValue =
+    selectedSubId === 'other'
+      ? subCustomValue
+      : (currentSubIndustries.find((s) => s.id === selectedSubId)?.label ?? selectedSubId);
+  const hasSubSelection = hasSubIndustries
+    ? (selectedSubId !== '' && (selectedSubId !== 'other' || subCustomValue !== ''))
+    : true; // 无 subIndustries 的行业不强求
 
   const activeTab = STEP1_TABS.find((t) => t.id === activeTabId) ?? STEP1_TABS[0]!;
   const tabFiltered =
@@ -126,20 +247,95 @@ export default function Step1() {
   function handleSelectIndustry(ind: Industry) {
     setSelectedIndustry(ind);
     setCustomIndustry('');
+    // 切换大类时重置子行业选择
+    setSelectedSubId('');
+    setSubCustomValue('');
+    setSubError('');
+  }
+
+  function handleSubSelect(subId: string) {
+    setSelectedSubId(subId);
+    setSubError('');
+    if (subId === 'other') {
+      setSubCustomModalOpen(true);
+    }
+  }
+
+  function handleSubCustomConfirm(value: string) {
+    setSubCustomValue(value);
+    setSubError('');
   }
 
   function handleCustomConfirm(value: string) {
     setCustomIndustry(value);
     setSelectedIndustry(null);
+    setSelectedSubId('');
+    setSubCustomValue('');
   }
 
   function clearSelection() {
     setSelectedIndustry(null);
     setCustomIndustry('');
+    setSelectedSubId('');
+    setSubCustomValue('');
+    setSubError('');
+  }
+
+  // ── US-P10 AC1: 跳转到爆款选题生成(Step5) ──────────────────────────────────
+  function handleGoToTopicGen() {
+    // 与 handleSubmit 对齐：选了大类但未选子行业 → 提示，不跳转
+    if (selectedIndustry && hasSubIndustries && !hasSubSelection) {
+      setSubError('请选择子行业');
+      return;
+    }
+    // 先保存当前行业选择(如有)，再跳转到 Step5 带上关联 assetId
+    if (hasSelection && accountId !== null) {
+      const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
+      save({
+        industry: selectedLabel,
+        lastIndustry: selectedLabel,
+        lastIndustryCategory: selectedIndustry?.label ?? '',
+        lastIndustrySub: resolvedSubValue,
+        ...(subCustomFlag ? { industrySubCustom: true } : {}),
+        productMaterialAssetIds: productFiles.map((f) => f.assetId),
+        personaFileAssetIds: personaFiles.map((f) => f.assetId),
+      });
+    }
+    const params = new URLSearchParams();
+    if (topicGenAssetId) params.set('assetId', topicGenAssetId);
+    navigate(`/step/5${params.toString() ? `?${params.toString()}` : ''}`);
   }
 
   function handleSubmit() {
     if (!hasSelection) return;
+    // AC-3: 选了大类但未选子行业 → 提示，不跳转
+    if (selectedIndustry && hasSubIndustries && !hasSubSelection) {
+      setSubError('请选择子行业');
+      return;
+    }
+    // AC-4: 落库 industry / lastIndustry / lastIndustryCategory / lastIndustrySub
+    // PRD-37 US-P08: 同时存 productMaterialAssetIds / personaFileAssetIds
+    const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
+    save({
+      industry: selectedLabel,
+      lastIndustry: selectedLabel,
+      lastIndustryCategory: selectedIndustry?.label ?? '',
+      lastIndustrySub: resolvedSubValue,
+      ...(subCustomFlag ? { industrySubCustom: true } : {}),
+      productMaterialAssetIds: productFiles.map((f) => f.assetId),
+      personaFileAssetIds: personaFiles.map((f) => f.assetId),
+    });
+    // PRD-37 US-P08: fire-and-forget LLM 梳理(有上传资料才调 · 不阻塞跳转)
+    const allAssetIds = [
+      ...productFiles.map((f) => f.assetId),
+      ...personaFiles.map((f) => f.assetId),
+    ];
+    if (allAssetIds.length > 0) {
+      summarizeStep1AssetsMutation.mutate({
+        productMaterialAssetIds: productFiles.map((f) => f.assetId),
+        personaFileAssetIds: personaFiles.map((f) => f.assetId),
+      });
+    }
     navigate('/step/3');
   }
 
@@ -327,6 +523,79 @@ export default function Step1() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
+            {/* ── US-P10 AC1: 生成爆款选题入口 ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+              {/* 关联资料下拉(暂定 · AC1 规定下拉框形式) */}
+              {allUploadedFiles.length > 0 && (
+                <div
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    padding: '2px 4px',
+                    border: `0.5px solid rgba(168,197,224,0.5)`,
+                    minWidth: 160,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 15, color: C.ikb, flexShrink: 0, marginLeft: 6 }}>attach_file</span>
+                  <select
+                    data-testid="step1-topic-asset-select"
+                    value={topicGenAssetId}
+                    onChange={(e) => setTopicGenAssetId(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 11,
+                      fontFamily: F.cn,
+                      color: topicGenAssetId ? C.ink : 'rgba(255,255,255,0.55)',
+                      padding: '6px 8px',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                    }}
+                  >
+                    <option value="" style={{ background: '#1a2a4a', color: 'rgba(255,255,255,0.6)' }}>关联资料（可选）</option>
+                    {allUploadedFiles.map((f) => (
+                      <option key={f.assetId} value={String(f.assetId)} style={{ background: '#1a2a4a', color: '#fff' }}>
+                        [{f.type}] {f.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <motion.button
+                type="button"
+                data-testid="step1-goto-topic-gen"
+                onClick={handleGoToTopicGen}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                className="lg-glass ikb-focusring"
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap',
+                  borderRadius: 12,
+                  padding: '10px 16px',
+                  fontFamily: F.cn,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  cursor: 'pointer',
+                  border: `0.5px solid rgba(168,197,224,0.55)`,
+                  background: 'rgba(168,197,224,0.12)',
+                  textShadow: C.textShadow,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>local_fire_department</span>
+                生成爆款选题
+              </motion.button>
+            </div>
+
             <motion.button
               type="button"
               onClick={() => setCustomModalOpen(true)}
@@ -738,6 +1007,578 @@ export default function Step1() {
           </RevealGroup>
         )}
 
+        {/* ── US-P05: 子行业选择区块(大类选中后出现) ──────── */}
+        {selectedIndustry && hasSubIndustries && (
+          <Reveal style={{ marginBottom: 40 }}>
+            <motion.div
+              className="lg-glass lg-spec"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+              style={{ borderRadius: 20, padding: 28 }}
+            >
+              {/* 区块标题 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 10,
+                    background: 'rgba(168,197,224,0.22)',
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                    category
+                  </span>
+                </span>
+                <div>
+                  <h2
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 700,
+                      color: C.ink,
+                      fontFamily: F.cn,
+                      margin: 0,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    选择子行业
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'rgba(255,255,255,0.7)',
+                      fontFamily: F.cn,
+                      margin: 0,
+                    }}
+                  >
+                    {selectedIndustry.label} · 请进一步细化你的赛道
+                  </p>
+                </div>
+                {subError && (
+                  <span
+                    data-testid="sub-industry-error"
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      borderRadius: 999,
+                      background: 'rgba(255,80,80,0.18)',
+                      border: '0.5px solid rgba(255,80,80,0.4)',
+                      padding: '4px 14px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: 'rgba(255,120,120,0.95)',
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      warning
+                    </span>
+                    {subError}
+                  </span>
+                )}
+              </div>
+
+              {/* 入口 1: 下拉框 */}
+              <div style={{ marginBottom: 20 }}>
+                <label
+                  htmlFor="sub-industry-select"
+                  style={{
+                    display: 'block',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: 8,
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  下拉选择
+                </label>
+                <div
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 12,
+                    padding: '2px 4px',
+                    border:
+                      selectedSubId !== ''
+                        ? '1px solid rgba(168,197,224,0.6)'
+                        : `0.5px solid ${C.line}`,
+                  }}
+                >
+                  <select
+                    id="sub-industry-select"
+                    data-testid="sub-industry-select"
+                    value={selectedSubId}
+                    onChange={(e) => handleSubSelect(e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 14,
+                      fontFamily: F.cn,
+                      color: selectedSubId !== '' ? C.ink : 'rgba(255,255,255,0.5)',
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                    }}
+                  >
+                    <option value="" disabled style={{ background: '#1a2a4a', color: 'rgba(255,255,255,0.6)' }}>
+                      请选择子行业…
+                    </option>
+                    {currentSubIndustries.map((sub) => (
+                      <option
+                        key={sub.id}
+                        value={sub.id}
+                        style={{ background: '#1a2a4a', color: '#fff' }}
+                      >
+                        {sub.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb, flexShrink: 0, marginRight: 10 }}>
+                    expand_more
+                  </span>
+                </div>
+              </div>
+
+              {/* 分割线 */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginBottom: 20,
+                }}
+              >
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.5)',
+                    fontFamily: F.mono,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  或
+                </span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              </div>
+
+              {/* 入口 2: 网格点选 */}
+              <div>
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: 12,
+                    margin: '0 0 12px',
+                    textShadow: C.textShadow,
+                  }}
+                >
+                  网格点选
+                </p>
+                <div
+                  data-testid="sub-industry-grid"
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                  }}
+                >
+                  {currentSubIndustries.map((sub) => {
+                    const isActive = selectedSubId === sub.id;
+                    return (
+                      <motion.button
+                        key={sub.id}
+                        type="button"
+                        data-testid={`sub-industry-chip-${sub.id}`}
+                        data-state={isActive ? 'active' : 'inactive'}
+                        onClick={() => handleSubSelect(sub.id)}
+                        whileHover={{ y: -2 }}
+                        transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                        style={{
+                          borderRadius: 9999,
+                          border: isActive
+                            ? '1.5px solid rgba(168,197,224,0.75)'
+                            : `0.5px solid ${C.line}`,
+                          background: isActive
+                            ? 'rgba(168,197,224,0.25)'
+                            : 'rgba(255,255,255,0.07)',
+                          color: isActive ? C.ikb : 'rgba(255,255,255,0.84)',
+                          padding: '8px 18px',
+                          fontSize: 13,
+                          fontWeight: isActive ? 700 : 500,
+                          fontFamily: F.cn,
+                          cursor: 'pointer',
+                          boxShadow: isActive ? '0 2px 12px rgba(168,197,224,0.2)' : 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          transition: 'all 0.2s',
+                          textShadow: C.textShadow,
+                        }}
+                      >
+                        {isActive && (
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                            check
+                          </span>
+                        )}
+                        {sub.id === 'other' && !isActive && (
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                            edit
+                          </span>
+                        )}
+                        {sub.label}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 子行业已选展示 + 自定义值提示 */}
+              {selectedSubId !== '' && selectedSubId !== 'other' && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.7)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>
+                    check_circle
+                  </span>
+                  <span>已选子行业:</span>
+                  <span
+                    data-testid="sub-industry-selected-label"
+                    style={{ fontWeight: 700, color: C.ikb }}
+                  >
+                    {currentSubIndustries.find((s) => s.id === selectedSubId)?.label ?? selectedSubId}
+                  </span>
+                </div>
+              )}
+              {selectedSubId === 'other' && subCustomValue && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.7)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>
+                    check_circle
+                  </span>
+                  <span>自定义子行业:</span>
+                  <span
+                    data-testid="sub-industry-selected-label"
+                    style={{ fontWeight: 700, color: C.ikb }}
+                  >
+                    {subCustomValue}
+                  </span>
+                </div>
+              )}
+              {selectedSubId === 'other' && !subCustomValue && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: 'rgba(255,200,80,0.85)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                    info
+                  </span>
+                  <span>请在弹窗中输入自定义子行业名称</span>
+                  <button
+                    type="button"
+                    onClick={() => setSubCustomModalOpen(true)}
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: C.ikb,
+                      textDecoration: 'underline',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: F.cn,
+                      padding: 0,
+                    }}
+                  >
+                    点击输入
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </Reveal>
+        )}
+
+        {/* ── US-P08: 文件上传(产品资料 + 人物介绍) ─────────── */}
+        <Reveal style={{ marginBottom: 44 }}>
+          <motion.div
+            className="lg-glass lg-spec"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+            style={{ borderRadius: 20, padding: 28 }}
+          >
+            {/* 区块标题 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  background: 'rgba(168,197,224,0.22)',
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>upload_file</span>
+              </span>
+              <div>
+                <h2 style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
+                  信息采集（可选）
+                </h2>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn, margin: 0 }}>
+                  上传产品资料 · AI 将自动梳理产品卖点与人物背景
+                </p>
+              </div>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  borderRadius: 999,
+                  background: 'rgba(168,197,224,0.15)',
+                  padding: '4px 12px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                支持 {STEP1_FILE_ACCEPT_LABEL}
+              </span>
+            </div>
+
+            {/* 两个上传区 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              {/* 产品资料 dropzone */}
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10, textShadow: C.textShadow }}>
+                  产品资料
+                </p>
+                <motion.button
+                  type="button"
+                  aria-label="上传产品资料"
+                  data-testid="step1-upload-product"
+                  onClick={() => productFileInputRef.current?.click()}
+                  disabled={uploadingProduct}
+                  whileHover={uploadingProduct ? {} : { y: -4 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    width: '100%',
+                    cursor: uploadingProduct ? 'not-allowed' : 'pointer',
+                    borderRadius: 16,
+                    borderStyle: 'dashed',
+                    borderWidth: 1,
+                    borderColor: 'rgba(168,197,224,0.4)',
+                    padding: '28px 16px',
+                    textAlign: 'center',
+                    background: 'rgba(168,197,224,0.06)',
+                    opacity: uploadingProduct ? 0.6 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 28, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
+                    {uploadingProduct ? 'progress_activity' : 'description'}
+                  </span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {uploadingProduct ? '上传中…' : '上传产品资料'}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>
+                    产品介绍、卖点、价格体系、客户案例等
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                    仅支持 PDF / Word / Excel / Markdown
+                  </p>
+                </motion.button>
+                <input
+                  ref={productFileInputRef}
+                  type="file"
+                  accept={STEP1_FILE_ACCEPT}
+                  multiple
+                  onChange={handleProductFilesChange}
+                  className="sr-only"
+                  data-testid="step1-product-file-input"
+                />
+                {/* 已上传文件列表 */}
+                {productFiles.length > 0 && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {productFiles.map((f, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          borderRadius: 8,
+                          background: 'rgba(168,197,224,0.12)',
+                          border: '0.5px solid rgba(168,197,224,0.3)',
+                          padding: '6px 10px',
+                          fontSize: 12,
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>check_circle</span>
+                        <span style={{ flex: 1, color: C.ink, fontFamily: F.cn, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textShadow: C.textShadow }}>
+                          {f.name}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.ikb, fontFamily: F.mono }}>解析中</span>
+                        <button
+                          type="button"
+                          aria-label={`删除 ${f.name}`}
+                          onClick={() => setProductFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: 0, display: 'flex' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 人物介绍 dropzone */}
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10, textShadow: C.textShadow }}>
+                  人物介绍
+                </p>
+                <motion.button
+                  type="button"
+                  aria-label="上传人物介绍"
+                  data-testid="step1-upload-persona"
+                  onClick={() => personaFileInputRef.current?.click()}
+                  disabled={uploadingPersona}
+                  whileHover={uploadingPersona ? {} : { y: -4 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 18 }}
+                  className="lg-glass"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    width: '100%',
+                    cursor: uploadingPersona ? 'not-allowed' : 'pointer',
+                    borderRadius: 16,
+                    borderStyle: 'dashed',
+                    borderWidth: 1,
+                    borderColor: 'rgba(168,197,224,0.4)',
+                    padding: '28px 16px',
+                    textAlign: 'center',
+                    background: 'rgba(168,197,224,0.06)',
+                    opacity: uploadingPersona ? 0.6 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 28, color: C.ink, filter: 'drop-shadow(0 2px 6px rgba(6,14,38,.8))' }}>
+                    {uploadingPersona ? 'progress_activity' : 'person'}
+                  </span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                    {uploadingPersona ? '上传中…' : '上传人物介绍'}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', margin: 0, fontFamily: F.cn }}>
+                    个人经历、行业背景、专业资质、从业故事等
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: 0, fontFamily: F.cn }}>
+                    仅支持 PDF / Word / Excel / Markdown
+                  </p>
+                </motion.button>
+                <input
+                  ref={personaFileInputRef}
+                  type="file"
+                  accept={STEP1_FILE_ACCEPT}
+                  multiple
+                  onChange={handlePersonaFilesChange}
+                  className="sr-only"
+                  data-testid="step1-persona-file-input"
+                />
+                {/* 已上传文件列表 */}
+                {personaFiles.length > 0 && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {personaFiles.map((f, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          borderRadius: 8,
+                          background: 'rgba(168,197,224,0.12)',
+                          border: '0.5px solid rgba(168,197,224,0.3)',
+                          padding: '6px 10px',
+                          fontSize: 12,
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.ikb }}>check_circle</span>
+                        <span style={{ flex: 1, color: C.ink, fontFamily: F.cn, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textShadow: C.textShadow }}>
+                          {f.name}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.ikb, fontFamily: F.mono }}>解析中</span>
+                        <button
+                          type="button"
+                          aria-label={`删除 ${f.name}`}
+                          onClick={() => setPersonaFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: 0, display: 'flex' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </Reveal>
+
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
         <Reveal style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
@@ -947,6 +1788,7 @@ export default function Step1() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, textShadow: C.textShadow }}>已选择:</span>
+              {/* 大类 pill */}
               <span
                 style={{
                   display: 'flex',
@@ -983,6 +1825,40 @@ export default function Step1() {
                   <span className="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
               </span>
+              {/* 子行业 pill(已选时显示) */}
+              {resolvedSubValue && (
+                <>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>›</span>
+                  <span
+                    data-testid="sticky-sub-industry-pill"
+                    style={{
+                      borderRadius: 999,
+                      border: `0.5px solid rgba(168,197,224,0.35)`,
+                      background: 'rgba(168,197,224,0.12)',
+                      padding: '4px 12px',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'rgba(168,197,224,0.9)',
+                      fontFamily: F.cn,
+                      textShadow: C.textShadow,
+                    }}
+                  >
+                    {resolvedSubValue}
+                  </span>
+                </>
+              )}
+              {/* 未选子行业且有子行业列表时 → 提示 */}
+              {selectedIndustry && hasSubIndustries && !resolvedSubValue && (
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: 'rgba(255,200,80,0.8)',
+                    fontFamily: F.cn,
+                  }}
+                >
+                  ↑ 请选择子行业
+                </span>
+              )}
             </div>
             <Magnetic strength={0.3}>
               <button
@@ -1016,6 +1892,20 @@ export default function Step1() {
         onOpenChange={setCustomModalOpen}
         hideTrigger
         onConfirm={handleCustomConfirm}
+      />
+
+      {/* US-P05: 子行业自定义 modal(复用 CustomIndustryModal) */}
+      <CustomIndustryModal
+        open={subCustomModalOpen}
+        onOpenChange={(open) => {
+          setSubCustomModalOpen(open);
+          // 用户关闭弹窗但未输入时，重置 other 选中
+          if (!open && !subCustomValue) {
+            setSelectedSubId('');
+          }
+        }}
+        hideTrigger
+        onConfirm={handleSubCustomConfirm}
       />
     </LiquidShell>
   );

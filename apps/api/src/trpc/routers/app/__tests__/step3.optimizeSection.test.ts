@@ -51,6 +51,7 @@ function makeCtx() {
     prisma: { stepData: { upsert: mockStepDataUpsert } },
     activeAccountId: 42,
     traceId: 'trace-abc',
+    user: { id: 1 },
   };
 }
 

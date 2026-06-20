@@ -55,17 +55,4 @@ test.describe('PRD-24 Visual Baseline', () => {
     });
   });
 
-  test('/voice-chat fullPage matches prd24-voice-chat.png', async ({ page }) => {
-    await page.goto(`${API_BASE}/auth/dev-login`);
-    await page.waitForURL(`${BASE_URL}/**`);
-    await page.goto(`${BASE_URL}/voice-chat`);
-    await page.waitForLoadState('networkidle');
-    await page.locator('h1').waitFor({ state: 'visible' });
-    await expectVisualMatch(page, {
-      baseline: 'prd24-voice-chat.png',
-      viewport: { width: 1440, height: 900 },
-      fullPage: true,
-      maxDiffPixelRatio: 0.05,
-    });
-  });
 });

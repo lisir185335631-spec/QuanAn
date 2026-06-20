@@ -359,9 +359,11 @@ interface TrendingFilterCardProps {
   industry: Industry;
   platformKey: string;
   keywords: string;
+  maxAuthorFollowers: string;
   onIndustryChange: (id: string) => void;
   onPlatformChange: (key: string) => void;
   onKeywordsChange: (v: string) => void;
+  onMaxAuthorFollowersChange: (v: string) => void;
   onFetch: () => void;
 }
 
@@ -369,9 +371,11 @@ function TrendingFilterCard({
   industry,
   platformKey,
   keywords,
+  maxAuthorFollowers,
   onIndustryChange,
   onPlatformChange,
   onKeywordsChange,
+  onMaxAuthorFollowersChange,
   onFetch,
 }: TrendingFilterCardProps) {
   return (
@@ -429,8 +433,8 @@ function TrendingFilterCard({
           {/* 平台 chips */}
           <PlatformChips platformKey={platformKey} onSelect={onPlatformChange} />
 
-          {/* 关键词 input + CTA */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'end', gap: 16 }}>
+          {/* 关键词 + 粉丝阈值 row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <label
                 htmlFor="tr-keywords"
@@ -466,6 +470,51 @@ function TrendingFilterCard({
                 />
               </div>
             </div>
+
+            {/* 粉丝数阈值 input — PRD-37 US-P11 AC-③ */}
+            <div>
+              <label
+                htmlFor="tr-max-followers"
+                style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 800, letterSpacing: '0.04em', color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+              >
+                <span style={{ marginRight: 4, display: 'inline-block', height: 14, width: 4, borderRadius: 9999, background: `linear-gradient(to bottom, ${C.ikb}, rgba(255,255,255,0.5))` }} />
+                粉丝数阈值（可选）
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }}>group</span>
+                <input
+                  id="tr-max-followers"
+                  type="number"
+                  min={1}
+                  value={maxAuthorFollowers}
+                  onChange={(e) => onMaxAuthorFollowersChange(e.target.value)}
+                  placeholder="如 100000，只返回低粉爆款"
+                  data-testid="trending-max-author-followers-input"
+                  onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; e.currentTarget.style.borderColor = 'rgba(168,197,224,0.7)'; }}
+                  onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = C.line; }}
+                  style={{
+                    width: '100%',
+                    borderRadius: 10,
+                    border: `0.5px solid ${C.line}`,
+                    background: 'rgba(255,255,255,0.08)',
+                    padding: '12px 12px 12px 40px',
+                    fontSize: 14,
+                    color: C.ink,
+                    fontFamily: F.cn,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    textShadow: C.textShadow,
+                  }}
+                />
+              </div>
+              <p style={{ marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.60)', fontFamily: F.cn }}>
+                仅返回粉丝数 &lt; 阈值的低粉爆款内容
+              </p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Magnetic strength={0.3}>
               <button
                 type="button"
@@ -997,10 +1046,30 @@ function TrendingTableSkeleton() {
 type _TrendingListItemBase = RouterOutputs['trending']['listWithFavorites']['items'][number];
 type TrendingListItem = Omit<_TrendingListItemBase, 'crawledAt'> & { crawledAt: Date | string };
 
+// ── 低粉爆款 / 热点案例 分类判断 ─────────────────────────────────────────────
+// 低粉爆款: authorFollowers 有值且 < 100000 (10w)
+// 热点案例: 近期高互动 = likeCount + commentCount 排名前列 (相对判断)
+type TrendingCategory = 'low-follower' | 'hot-case' | 'general';
+
+function classifyItem(item: TrendingListItem, maxAuthorFollowersNum?: number): TrendingCategory {
+  const threshold = maxAuthorFollowersNum ?? 100000;
+  const followers = (item as { authorFollowers?: number }).authorFollowers;
+  if (followers !== undefined && followers !== null && followers < threshold) {
+    return 'low-follower';
+  }
+  // 热点案例: likeCount > 50000 (高互动阈值)
+  if (item.likeCount > 50000) {
+    return 'hot-case';
+  }
+  return 'general';
+}
+
 export default function Trending() {
   const [industryId, setIndustryId] = useState<string>(TRENDING_DEFAULT_INDUSTRY_ID);
   const [platformKey, setPlatformKey] = useState<string>('all');
   const [keywords, setKeywords] = useState<string>('');
+  /** 粉丝数阈值输入 (字符串 — 用户直接填，空=不过滤) PRD-37 US-P11 */
+  const [maxAuthorFollowersInput, setMaxAuthorFollowersInput] = useState<string>('');
   const [search, setSearch] = useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
   const [sort, setSort] = useState<'likeCount' | 'commentCount' | 'shareCount'>('likeCount');
@@ -1022,6 +1091,14 @@ export default function Trending() {
   const queryPlatforms = platformKey !== 'all' ? [platformKey as 'douyin' | 'xiaohongshu' | 'bilibili' | 'kuaishou' | 'shipinhao' | 'weibo'] : undefined;
   const queryIndustry = industry.label !== '全部' ? industry.label : undefined;
 
+  // PRD-37 US-P11: 粉丝阈值 — 解析用户输入为数字(空=不过滤)
+  const maxAuthorFollowersNum = maxAuthorFollowersInput.trim()
+    ? parseInt(maxAuthorFollowersInput.trim(), 10)
+    : undefined;
+  const queryMaxAuthorFollowers = maxAuthorFollowersNum !== undefined && !isNaN(maxAuthorFollowersNum) && maxAuthorFollowersNum > 0
+    ? maxAuthorFollowersNum
+    : undefined;
+
   const utils = trpc.useUtils();
 
   // Shared query key — keep in sync between useQuery + onMutate cache ops
@@ -1032,6 +1109,7 @@ export default function Trending() {
     sort,
     page,
     pageSize: 20 as const,
+    maxAuthorFollowers: queryMaxAuthorFollowers,
   };
 
   // Main list query
@@ -1098,10 +1176,10 @@ export default function Trending() {
   const totalPages = listData?.totalPages ?? 1;
   const total = listData?.total ?? 0;
 
-  // reset page when filters change
+  // reset page when filters change (including maxAuthorFollowers)
   useEffect(() => {
     setPage(1);
-  }, [platformKey, industryId, debouncedSearch, sort]);
+  }, [platformKey, industryId, debouncedSearch, sort, queryMaxAuthorFollowers]);
 
   return (
     <LiquidShell>
@@ -1120,9 +1198,11 @@ export default function Trending() {
         industry={industry}
         platformKey={platformKey}
         keywords={keywords}
+        maxAuthorFollowers={maxAuthorFollowersInput}
         onIndustryChange={(id) => { setIndustryId(id); setPage(1); }}
         onPlatformChange={(key) => { setPlatformKey(key); setPage(1); }}
         onKeywordsChange={setKeywords}
+        onMaxAuthorFollowersChange={setMaxAuthorFollowersInput}
         onFetch={() => {
           // Apply keywords from filter card into the unified search state, then refetch
           if (keywords.trim()) {
@@ -1198,6 +1278,51 @@ export default function Trending() {
 
       {!isLoading && !isError && items.length > 0 && (
         <>
+          {/* 低粉爆款 / 热点案例 分类标签条 — PRD-37 US-P11 AC-③ */}
+          {(() => {
+            const lowFollowerCount = items.filter((it) => classifyItem(it, queryMaxAuthorFollowers) === 'low-follower').length;
+            const hotCaseCount = items.filter((it) => classifyItem(it, queryMaxAuthorFollowers) === 'hot-case').length;
+            if (lowFollowerCount === 0 && hotCaseCount === 0) return null;
+            return (
+              <div
+                data-testid="trending-category-bar"
+                style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}
+              >
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>内容分类:</span>
+                {lowFollowerCount > 0 && (
+                  <span
+                    data-testid="trending-category-low-follower"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      borderRadius: 6, padding: '3px 10px',
+                      fontSize: 12, fontWeight: 700, fontFamily: F.mono,
+                      background: 'rgba(168,197,224,0.18)', color: C.ikb,
+                    }}
+                  >
+                    低粉爆款 {lowFollowerCount}
+                  </span>
+                )}
+                {hotCaseCount > 0 && (
+                  <span
+                    data-testid="trending-category-hot-case"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      borderRadius: 6, padding: '3px 10px',
+                      fontSize: 12, fontWeight: 700, fontFamily: F.mono,
+                      background: 'rgba(228,238,255,0.18)', color: C.yellow,
+                    }}
+                  >
+                    热点案例 {hotCaseCount}
+                  </span>
+                )}
+                {queryMaxAuthorFollowers && (
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.48)', fontFamily: F.cn }}>
+                    粉丝 &lt; {queryMaxAuthorFollowers.toLocaleString()} 过滤中
+                  </span>
+                )}
+              </div>
+            );
+          })()}
           <TrendingTable
             items={items}
             onViewDetail={(id) => setDetailId(id)}

@@ -2,7 +2,7 @@
 
 > **版本** · v1.0 · PRD-28 US-004 · D-266 字面锁
 > **路径** · `tests/fixtures/judge-goldens/`
-> **规模** · 100 条 · 双轨 sally-30 + custom-70
+> **规模** · 102 条 · 双轨 sally-30 + custom-72
 
 ## 目录
 
@@ -10,7 +10,7 @@
 - [GoldenDataset TypeScript Interface](#goldendataset-typescript-interface)
 - [字段说明](#字段说明)
 - [14 Specialist ID 枚举](#14-specialist-id-枚举)
-- [Custom-70 配额分布](#custom-70-配额分布)
+- [Custom-72 配额分布](#custom-72-配额分布)
 - [JSON 示例](#json-示例)
 - [Zod Schema 位置](#zod-schema-位置)
 - [验证方法](#验证方法)
@@ -37,7 +37,7 @@ export interface GoldenSample {
     | 'AnalysisAgent'
     | 'DiagnosisAgent'
     | 'DeepLearnAgent'
-    | 'VoiceChatAgent'
+    | 'PresentationAgent'
     | 'EvolutionAgent'
     | 'DailyTaskAgent';
 
@@ -97,13 +97,13 @@ export type GoldenDataset = GoldenSample[];
 PositioningAgent    BrandingAgent       MonetizationAgent
 TopicAgent          CopywritingAgent    VideoAgent
 LivestreamAgent     PrivateDomainAgent  AnalysisAgent
-DiagnosisAgent      DeepLearnAgent      VoiceChatAgent
+DiagnosisAgent      DeepLearnAgent      PresentationAgent
 EvolutionAgent      DailyTaskAgent
 ```
 
 ---
 
-## Custom-70 配额分布
+## Custom-72 配额分布
 
 | Specialist | 配额 | ID 范围 |
 |---|:-:|---|
@@ -116,12 +116,12 @@ EvolutionAgent      DailyTaskAgent
 | AnalysisAgent | 6 | custom-051 ~ custom-056 |
 | LivestreamAgent | 2 | custom-057 ~ custom-058 |
 | PrivateDomainAgent | 2 | custom-059 ~ custom-060 |
-| DiagnosisAgent | 2 | custom-061 ~ custom-062 |
+| PresentationAgent | 4 | custom-061, custom-065, custom-066, custom-071 |
+| DiagnosisAgent | 2 | custom-062, custom-072 |
 | DeepLearnAgent | 2 | custom-063 ~ custom-064 |
-| VoiceChatAgent | 2 | custom-065 ~ custom-066 |
 | EvolutionAgent | 2 | custom-067 ~ custom-068 |
 | DailyTaskAgent | 2 | custom-069 ~ custom-070 |
-| **总计** | **70** | |
+| **总计** | **72** | |
 
 ---
 
@@ -203,7 +203,7 @@ jq 'length' tests/fixtures/judge-goldens/sally-30.json
 
 # 验证 custom-70.json 条数
 jq 'length' tests/fixtures/judge-goldens/custom-70.json
-# → 70
+# → 72
 
 # 验证 source 标记
 jq '[.[] | .source] | unique' tests/fixtures/judge-goldens/sally-30.json

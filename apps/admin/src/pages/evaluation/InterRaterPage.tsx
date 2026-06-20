@@ -512,7 +512,8 @@ export default function InterRaterPage() {
               <div style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 4 }}>
                 Cohen&apos;s κ (categorical)
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: agreement.kappa >= 0.4 ? '#86efac' : '#fca5a5' }}>
+              {/* PRD-28 历史 0.4 → 对齐 KB eval-suite gate 0.6 */}
+              <div style={{ fontSize: 22, fontWeight: 700, color: agreement.kappa >= 0.6 ? '#86efac' : '#fca5a5' }}>
                 {agreement.kappa.toFixed(3)}
               </div>
             </div>
@@ -532,12 +533,12 @@ export default function InterRaterPage() {
                 style={{
                   fontSize: 14,
                   fontWeight: 700,
-                  color: agreement.kappa >= 0.4 ? '#86efac' : '#fde68a',
+                  color: agreement.kappa >= 0.6 ? '#86efac' : '#fde68a',
                   textTransform: 'capitalize',
                 }}
               >
                 {agreement.interpretation}
-                {agreement.kappa < 0.4 && ' (below threshold κ≥0.4)'}
+                {agreement.kappa < 0.6 && ' (below threshold κ≥0.6)'}
               </div>
             </div>
           </div>

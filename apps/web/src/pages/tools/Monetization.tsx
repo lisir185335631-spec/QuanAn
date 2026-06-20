@@ -761,7 +761,8 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>产品矩阵</h3>
             </div>
           </div>
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} data-testid="mn-product-matrix">
+          <div data-testid="mn-product-matrix">
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
             {productMatrix.map((item, idx) => {
               const c = ACCENT_CYCLE[idx % ACCENT_CYCLE.length];
               return (
@@ -801,6 +802,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               );
             })}
           </RevealGroup>
+          </div>
         </div>
       </Reveal>
 
@@ -878,7 +880,8 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
             </span>
             转化漏斗
           </h3>
-          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} data-testid="mn-conversion-funnel">
+          <div data-testid="mn-conversion-funnel">
+          <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
             {conversionFunnel.map((step, idx) => {
               const c = ACCENT_CYCLE[idx % ACCENT_CYCLE.length];
               return (
@@ -917,6 +920,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
               );
             })}
           </RevealGroup>
+          </div>
         </div>
       </Reveal>
 

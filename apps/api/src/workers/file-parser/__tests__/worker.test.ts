@@ -1,5 +1,5 @@
-// PRD-12 US-008 · file-parser worker · 12+ tests
-// 覆盖: 5 file type / autoVerdict 4 branch (强 PII/弱 PII/banned/抽样) / size 限制 / mime 白名单
+// PRD-12 US-008 · PRD-37 US-P07 · file-parser worker · tests
+// 覆盖: 5 file type / autoVerdict 4 branch / size 限制 / mime 白名单 / Excel MIME / Asset 解析流
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,11 +9,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockDeepLearnReviewQueueCreate = vi.fn();
 const mockAdminAuditLogCreate = vi.fn();
+const mockAssetUpdate = vi.fn();
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
     deepLearnReviewQueue: { create: mockDeepLearnReviewQueueCreate },
     adminAuditLog: { create: mockAdminAuditLogCreate },
+    asset: { update: mockAssetUpdate },
   },
 }));
 
@@ -37,6 +39,12 @@ vi.mock('@/lib/logger', () => ({
 const mockComputeVerdict = vi.fn();
 vi.mock('@/services/admin/content-review/deep-learn-auto-verdict.service', () => ({
   computeDeepLearnAutoVerdict: mockComputeVerdict,
+}));
+
+// PRD-37 US-P07: mock parse engine — avoid requiring actual pdf/docx/xlsx binaries in unit tests
+const mockParseFileBuffer = vi.fn();
+vi.mock('@/workers/file-parser/parse-engine', () => ({
+  parseFileBuffer: mockParseFileBuffer,
 }));
 
 const { processFileParserJob } = await import('@/workers/file-parser/worker');
@@ -78,10 +86,12 @@ describe('processFileParserJob', () => {
     vi.clearAllMocks();
     mockDeepLearnReviewQueueCreate.mockResolvedValue({ id: 1 });
     mockAdminAuditLogCreate.mockResolvedValue({ id: BigInt(1) });
+    mockAssetUpdate.mockResolvedValue({ id: 1 });
     mockComputeVerdict.mockResolvedValue(makeApprovedVerdict());
+    mockParseFileBuffer.mockResolvedValue('parsed text from engine');
   });
 
-  // --- 5 file types ---
+  // --- 5 file types (legacy rawText path) ---
 
   it('PDF MIME 通过白名单 · 正常入 queue', async () => {
     await processFileParserJob({ ...BASE, fileMime: 'application/pdf', fileName: 'doc.pdf' });
@@ -107,6 +117,103 @@ describe('processFileParserJob', () => {
   it('TXT MIME 通过白名单 · 正常入 queue', async () => {
     await processFileParserJob({ ...BASE, fileMime: 'text/plain', fileName: 'note.txt' });
     expect(mockDeepLearnReviewQueueCreate).toHaveBeenCalledOnce();
+  });
+
+  // --- PRD-37 US-P07: Excel MIME whitelist ---
+
+  it('Excel MIME (.xlsx) 通过白名单 · 正常入 queue', async () => {
+    const mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    await processFileParserJob({ ...BASE, fileMime: mime, fileName: 'data.xlsx' });
+    expect(mockDeepLearnReviewQueueCreate).toHaveBeenCalledOnce();
+  });
+
+  it('Excel MIME (.xls legacy) 通过白名单 · 正常入 queue', async () => {
+    await processFileParserJob({ ...BASE, fileMime: 'application/vnd.ms-excel', fileName: 'data.xls' });
+    expect(mockDeepLearnReviewQueueCreate).toHaveBeenCalledOnce();
+  });
+
+  // --- PRD-37 US-P07: parse engine routing via fileBuffer ---
+
+  it('fileBuffer 存在 · 调用 parseFileBuffer · 用 engine 结果入 queue', async () => {
+    const fileBuffer = Buffer.from('fake pdf bytes').toString('base64');
+    await processFileParserJob({
+      ...BASE,
+      fileBuffer,
+      assetId: 42,
+    });
+    expect(mockParseFileBuffer).toHaveBeenCalledOnce();
+    // engine result should feed into computeDeepLearnAutoVerdict
+    expect(mockComputeVerdict).toHaveBeenCalledWith('parsed text from engine', expect.any(Object));
+    expect(mockDeepLearnReviewQueueCreate).toHaveBeenCalledOnce();
+  });
+
+  it('fileBuffer 为空 · 走 rawText 路径 · parseFileBuffer 不调用', async () => {
+    await processFileParserJob({ ...BASE, fileBuffer: '' });
+    expect(mockParseFileBuffer).not.toHaveBeenCalled();
+    expect(mockComputeVerdict).toHaveBeenCalledWith('正常内容', expect.any(Object));
+  });
+
+  it('无 fileBuffer · 走 rawText 路径 · parseFileBuffer 不调用', async () => {
+    await processFileParserJob(BASE);
+    expect(mockParseFileBuffer).not.toHaveBeenCalled();
+  });
+
+  // --- PRD-37 US-P07: Asset 解析流 ---
+
+  it('assetId 存在 + engine 成功 · 写 Asset.parsedText + parsingStatus=completed', async () => {
+    const fileBuffer = Buffer.from('bytes').toString('base64');
+    mockParseFileBuffer.mockResolvedValue('sheet data row1,row2');
+
+    await processFileParserJob({
+      ...BASE,
+      assetId: 99,
+      fileBuffer,
+    });
+
+    expect(mockAssetUpdate).toHaveBeenCalledOnce();
+    const call = (mockAssetUpdate.mock.calls[0] as [{ where: unknown; data: Record<string, unknown> }])[0];
+    expect(call.where).toEqual({ id: 99, accountId: 1 });
+    expect(call.data.parsedText).toBe('sheet data row1,row2');
+    expect(call.data.parsingStatus).toBe('completed');
+    expect(call.data.parsingError).toBeNull();
+  });
+
+  it('assetId 存在 + engine 抛出错误 · 写 parsingStatus=failed', async () => {
+    const fileBuffer = Buffer.from('corrupt').toString('base64');
+    mockParseFileBuffer.mockRejectedValue(new Error('parse failed'));
+
+    await processFileParserJob({
+      ...BASE,
+      assetId: 77,
+      fileBuffer,
+    });
+
+    expect(mockAssetUpdate).toHaveBeenCalledOnce();
+    const call = (mockAssetUpdate.mock.calls[0] as [{ where: unknown; data: Record<string, unknown> }])[0];
+    expect(call.where).toEqual({ id: 77, accountId: 1 });
+    expect(call.data.parsingStatus).toBe('failed');
+    expect(call.data.parsedText).toBeNull();
+    // deepLearnReviewQueue 仍写入（失败也走扫描）
+    expect(mockDeepLearnReviewQueueCreate).toHaveBeenCalledOnce();
+  });
+
+  it('assetId 存在 + engine 返回空字符串 · parsingStatus=failed', async () => {
+    const fileBuffer = Buffer.from('empty').toString('base64');
+    mockParseFileBuffer.mockResolvedValue('');
+
+    await processFileParserJob({
+      ...BASE,
+      assetId: 55,
+      fileBuffer,
+    });
+
+    const call = (mockAssetUpdate.mock.calls[0] as [{ where: unknown; data: Record<string, unknown> }])[0];
+    expect(call.data.parsingStatus).toBe('failed');
+  });
+
+  it('无 assetId · 不调用 Asset.update', async () => {
+    await processFileParserJob(BASE);
+    expect(mockAssetUpdate).not.toHaveBeenCalled();
   });
 
   // --- autoVerdict 4 branches ---

@@ -15,8 +15,6 @@ export const HEADER_NAV: HeaderNavGroup[] = [
       { label: '爆款选题', href: '/step/5' },
       { label: '文案生成', href: '/step/7' },
       { label: '文案解析', href: '/video-analysis' },
-      { label: '获客视频', href: '/acquisition-video' },
-      { label: '呈现形式', href: '/present-styles' },
     ],
   },
   {
@@ -38,7 +36,6 @@ export const HEADER_NAV: HeaderNavGroup[] = [
       { label: 'IP诊断', href: '/diagnosis' },
       { label: '每日任务', href: '/daily-tasks' },
       { label: 'AI视频', href: '/ai-video' },
-      { label: '语音对话', href: '/voice-chat' },
       { label: '深度学习', href: '/deep-learning' },
       { label: '进化仪表盘', href: '/evolution' },
     ],

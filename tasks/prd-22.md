@@ -71,11 +71,11 @@
 |---|---|---|
 | D-214 | inline picker utility 3 件套 · `<ScriptTypeInlineCards>` / `<ElementsInlineMultiPicker>` / `<PlatformInlineRadio>` · 路径 `apps/web/src/components/inline-pickers/` | aiipznt 5 page 主区直接 inline 渲染所有 button 选项 · 不用 form 抽象 |
 | D-215 | inline picker API 设计 · `value` / `onChange` / `disabled` 标准 React controlled component · 不接 form state | 与现有 ToolForm 解耦 · 各 page 自行管理选中态 |
-| D-216 | /generate 重构后保留 ToolForm import 但不用 · 不删除(防 PRD-19 沉淀回滚)· 跨 PRD 兼容 | PRD-15 沉淀的 ToolForm 仍被 /analysis / /video-production / /acquisition-video 用 · 本 PRD 不动 ToolForm 本身 |
+| D-216 | /generate 重构后保留 ToolForm import 但不用 · 不删除(防 PRD-19 沉淀回滚)· 跨 PRD 兼容 | PRD-15 沉淀的 ToolForm 仍被 /analysis / /video-production 用[重构删:`/acquisition-video`已删,不再是ToolForm用户] · 本 PRD 不动 ToolForm 本身 |
 | D-217 | /knowledge 4 tab 字面锁 · `"20 类脚本"` / `"20 大爆款"` / `"开头公式"` / `"核心公式"` · 即使内部数据是 22 元素也要展示 "20 大爆款" | dump §3 Diff 6 + spec §8.4.4 实测确认 |
 | D-218 | /step/1 6 tab 字面锁 · `"全部行业 (56)"` / `"🏠 生活服务 (18)"` / `"🛒 电商零售 (13)"` / `"✍️ 内容创作 (7)"` / `"💼 专业服务 (14)"` / `"🏭 产业制造 (4)"` · 第一 tab 必须是"全部行业 (56)"且默认选中 | dump §3 Diff 3 实测 · 跟 spec §7.1 line 1235 写法不同 · 以 dump 为准 |
 | D-219 | /step/7 与 /generate 共享 inline picker 但状态独立 · /step/7 stepData.save · /generate 不读 step 数据 | spec §8.3.1 写 "step/7 强调与 IP 流程串联(自动复用 step3/3b 的人设、step5 的选题), /generate 是独立调用版本(不读 step 数据)" |
-| D-220 | step pages 输出区 D1A 字面锁清单(H3 标题)· /step/3 7 H3:`视频参考案例` / `昵称推荐` / `头像设计方案` / `背景图设计方案` / `简介文案方案` / `整体包装策略` · /step/3b 6 H3 / /step/4b 3 阶梯 H3 / /step/7 4 H4(`话题抛出` / `正方` / `反方` / `我的立场`) | dump §2.2 多 H 实测 + spec §7.2/7.3/7.5/7.8 字段名 |
+| D-220 | step pages 输出区 D1A 字面锁清单(H3 标题)· /step/3 6 H3:`视频参考案例` / `昵称推荐` / `头像设计方案` / `简介文案方案` / `整体包装策略`[重构删:`背景图设计方案`已删,7→6 H3] · /step/3b 6 H3 / /step/4b 3 阶梯 H3 / /step/7 4 H4(`话题抛出` / `正方` / `反方` / `我的立场`) | dump §2.2 多 H 实测 + spec §7.2/7.3/7.5/7.8 字段名 |
 | D-221 | /ai-video 分镜表 13 列字面锁 · `["镜号", "景别", "角度", "运镜", "时长", "画面描述", "台词/解说", "字幕", "背景音乐", "音效", "情绪", "拍摄要点", "剪辑建议"]` · 表头 Orbitron 大写 · 行数据按 spec §8.4.1 输出 6-12 分镜 | spec §8.4.1 写 "每个分镜包含：景别、角度、运镜、情绪、台词" · 实际表格 13 列扩展 |
 | D-222 | visual diff 13 page 覆盖矩阵 · /generate / /boom-generate / /ai-video / /knowledge / /step/1 / /step/3 / /step/3b / /step/4 / /step/4b / /step/5 / /step/6 / /step/7 + /knowledge mobile 视图 = 13 baseline · 全部用 prd21-visual-baseline 同套 expectVisualMatch helper | 复用 PRD-21 infra · 13 page 是 PRD-22 范围 |
 | D-223 | inline picker emoji 渲染锁 · 用 emoji 字符直接渲染 · 不用 `<Emoji />` 组件 · 不用 svg icon 替代 | spec §Ⅹ.2/Ⅹ.3 数据本身就是 emoji 字符 · 直接渲染对齐 aiipznt DOM |
@@ -103,7 +103,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
 | Step | aiipznt H数 | QuanAn H数 | 差距点 | 严重度 |
 |---|:-:|:-:|---|:-:|
 | /step/1 | 1 | 1 | 56 emoji 卡 5 列网格 + 6 tab + 自定义 modal 缺失 | 🔴 |
-| /step/3 | 8 | ~2 | 7 H3 输出区(视频参考案例 / 昵称推荐 / 头像设计方案 / 背景图设计方案 / 简介文案方案 / 整体包装策略)缺失 | 🔴 |
+| /step/3 | 7 | ~2 | 6 H3 输出区(视频参考案例 / 昵称推荐 / 头像设计方案 / 简介文案方案 / 整体包装策略)缺失[重构删:背景图设计方案已删,H1+6H3=7] | 🔴 |
 | /step/3b | 7 | ~2 | 6 H3 输出区 + 多 textarea 缺失 | 🔴 |
 | /step/4 | 1 | ~1 | 3 input/textarea(粉丝量/目标/情况)+ 输出对齐 spec §7.4 | 🟡 |
 | /step/4b | 8 | ~2 | 3 阶梯输出(初阶/中阶/高阶)+ 收入结构 + 成功案例 缺失 | 🔴 |
@@ -131,7 +131,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
 - ✅ /ai-video 主区 inline 5 平台 + 6 视频类型 + 文案 textarea 0/5000 + 分镜表 13 列 · 跟 spec §8.4.1 1:1
 - ✅ /knowledge 主区 inline 4 tab(20 类脚本 / 20 大爆款 / 开头公式 / 核心公式)+ 20 卡 emoji + 案例计数 button + 搜索 input · 跟 spec §8.4.4 1:1
 - ✅ /step/1 56 emoji 卡 5 列网格 + 6 tab(全部行业 56 + 5 大类)+ 自定义 modal + 已选状态卡 · 跟 spec §7.1 + dump §3 Diff 3 1:1
-- ✅ /step/3 + /step/3b 多 textarea + 5 平台 radio + 6-7 H3 输出区 · 跟 spec §7.2 + §7.3 1:1
+- ✅ /step/3 + /step/3b 多 textarea + 5 平台 radio + 5-6 H3 输出区 · 跟 spec §7.2 + §7.3 1:1[重构删:step/3 背景图设计方案已删,7→6 H3;第一项H3"账号包装方案"算顶部总览,纯内容H3=5]
 - ✅ /step/4 + /step/4b 3 input/textarea + 3 阶梯输出(初阶/中阶/高阶)+ 收入结构 + 成功案例 · 跟 spec §7.4 + §7.5 1:1
 - ✅ /step/5 + /step/6 行业 input × 2 + file upload × 2 + 粘贴文案 textarea + 跳 step7 提示 · 跟 spec §7.6 + §7.7 1:1
 - ✅ /step/7 20 脚本搜索 input + 22 元素多选 + 4 H4 输出(话题抛出 / 正方 / 反方 / 我的立场)· 跟 spec §7.8 1:1
@@ -443,23 +443,23 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
 **前置依赖** · US-001 PlatformInlineRadio
 
 **用户故事** ·
-作为 QuanAn 用户 · 当我访问 /step/3 · 我看到 H1 `账号包装方案` + 个人信息 textarea + 5 平台 radio(PlatformInlineRadio)+ 目标受众 input + 现有账号情况 input + 主 CTA · 输出区 7 H3 块(视频参考案例 / 昵称推荐 / 头像设计方案 / 背景图设计方案 / 简介文案方案 / 整体包装策略 + 顶部"账号包装方案"H3)· 每块独立"复制" + "重新生成" button · 而不是 ToolForm 通用抽象只有 2 H 标签。/step/3b 类似 6 H3 块。
+作为 QuanAn 用户 · 当我访问 /step/3 · 我看到 H1 `账号包装方案` + 个人信息 textarea + 5 平台 radio(PlatformInlineRadio)+ 目标受众 input + 现有账号情况 input + 主 CTA · 输出区 6 H3 块(视频参考案例 / 昵称推荐 / 头像设计方案 / 简介文案方案 / 整体包装策略 + 顶部"账号包装方案"H3)[重构删:背景图设计方案已删,7→6 H3] · 每块独立"复制" + "重新生成" button · 而不是 ToolForm 通用抽象只有 2 H 标签。/step/3b 类似 6 H3 块。
 
 **验收标准** ·
 
-- **AC-1** · /step/3 H1 `账号包装方案` · 副标题 `当前行业：{industry}。输入你的个人信息，AI 将为你生成极其详细的账号包装方案，包含昵称、头像参考图、背景图参考、简介等全方位深度解析。`(spec §7.2)· 顶部副标签 `STEP 03 · 账号包装方案`
+- **AC-1** · /step/3 H1 `账号包装方案` · 副标题 `当前行业：{industry}。输入你的个人信息，AI 将为你生成极其详细的账号包装方案，包含昵称、头像参考图、背景图参考、简介等全方位深度解析。`[重构删:背景图参考图已删](spec §7.2)· 顶部副标签 `STEP 03 · 账号包装方案`
 - **AC-2** · /step/3 输入表单 ·
   - textarea `你的个人信息`(必填)placeholder spec §7.2 line 1289 完整字面
   - `<PlatformInlineRadio value={platform} onChange={setPlatform} />`(5 平台 radio)
   - input `目标受众`(可选)placeholder `你想吸引什么样的粉丝？`
   - input `现有账号情况`(可选)placeholder `新账号/已有账号的粉丝量等`
   - 主 CTA `生成账号包装方案` · 次级 `[重新生成]` `[智能优化]`(已有结果时)
-- **AC-3** · /step/3 输出区 7 H3(D-220 字面锁) ·
+- **AC-3** · /step/3 输出区 6 H3(D-220 字面锁)[重构删:原7 H3,背景图设计方案已删] ·
   - H3 `账号包装方案`(顶部总览)
   - H3 `视频参考案例`(3 个 list)
   - H3 `昵称推荐`(5 备选)
   - H3 `头像设计方案`(style/colorScheme/expression/mustHave/avoid/aiPrompt)
-  - H3 `背景图设计方案`(style/layout/colorTone/copyContent/platformSizes)
+  - [重构删:背景图参考图功能已删: H3 背景图设计方案]
   - H3 `简介文案方案`(formula + 6 versions)
   - H3 `整体包装策略`(visualConsistency/firstImpression/conversionPath/platformPriority)
   - 每 H3 块右侧 `[复制]` + `[重新生成]` button
@@ -478,7 +478,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
   - H3 `IP 故事框架`
 - **AC-6** · 表单状态走 stepData.save(step3 / step3b)
 - **AC-7** · 加 `<glass-card>` wrapper 用到所有 H3 输出块 · framer-motion FadeInWrapper stagger 0.05 * idx
-- **AC-8** · DOM H 标签数(/step/3)= 8(H1 + 7 H3)对齐 aiipznt
+- **AC-8** · DOM H 标签数(/step/3)= 7(H1 + 6 H3)[重构删:原8=H1+7H3,背景图设计方案已删,现7=H1+6H3]
 - **AC-9** · DOM H 标签数(/step/3b)= 7(H1 + 6 H3)对齐 aiipznt
 - **AC-10** · typecheck + vitest 不破
 - **AC-11** · 已有 e2e `tests/e2e/prd17-step3-flow.spec.ts` + `prd17-step3b-flow.spec.ts` 更新断言对齐新结构(7+6 H3)
@@ -690,7 +690,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
   - §4 /ai-video · grep `PlatformInlineRadio` + `VIDEO_TYPES` import + 分镜表 13 列
   - §5 /knowledge · grep 4 tab `"20 类脚本"` `"20 大爆款"` `"开头公式"` `"核心公式"` 字面 + 20 卡 + search input
   - §6 /step/1 · grep 6 tab `"全部行业 (56)"` 字面 + 56 卡 + 自定义 modal
-  - §7 /step/3 + /step/3b · grep 7+6 H3 字面(D-220 锁)+ PlatformInlineRadio
+  - §7 /step/3 + /step/3b · grep 6+6 H3 字面(D-220 锁)[重构删:step/3原7 H3→6 H3,背景图设计方案已删]+ PlatformInlineRadio
   - §8 /step/4 + /step/4b · grep 3 阶梯 H3 `"初阶变现路径"` `"中阶变现路径"` `"高阶变现路径"` 字面
   - §9 /step/5 + /step/6 + /step/7 · grep file upload + textarea + 20 脚本 + 22 元素 + 4 H4 输出
   - §10 跨 page · typecheck 0 errors + vitest > 196 test pass + 13 page visual diff pass + 13 visual baseline 文件存在
@@ -746,7 +746,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
 | /ai-video | US-004 | 8 | ≥ 14 | 2 | prd22-ai-video.png |
 | /knowledge | US-005 | 9 | ≥ 47 | 1 | prd22-knowledge.png |
 | /step/1 | US-006 | 12 | ≥ 65 | 1 | prd22-step1.png |
-| /step/3 | US-007 | 12(共享) | ≥ 5 | 8 | prd22-step3.png |
+| /step/3 | US-007 | 12(共享) | ≥ 5 | 7[重构删:原8=H1+7H3→7=H1+6H3] | prd22-step3.png |
 | /step/3b | US-007 | 12(共享) | ≥ 5 | 7 | prd22-step3b.png |
 | /step/4 | US-008 | 12(共享) | ≥ 4 | 4 | prd22-step4.png |
 | /step/4b | US-008 | 12(共享) | ≥ 8 | 8 | prd22-step4b.png |
@@ -829,7 +829,7 @@ PRD-15~21 累计 ship 后 · 主应用结构对齐 85%+(28/32 page 有 baseline 
 - **PRD-16**(设计系统 D1=A + D4=B + Home/Header/guide/ip-plan 结构 · animate-ping/data-grid-bg/glass-card 基础 utility)
 - **PRD-17**(/step/1 IndustryDropdown 简版 + /step/3 + /step/3b 表单基础)
 - **PRD-18**(/step/4 + /step/4b + /step/5 + /step/6 + /step/7 表单基础)
-- **PRD-19**(8 stub /diagnosis / /accounts / /daily-tasks / /evolution / /step/8 / /generate / /boom-generate / /ai-video / /knowledge / /analysis / /video-production / /acquisition-video 基础占位)
+- **PRD-19**(8 stub /diagnosis / /accounts / /daily-tasks / /evolution / /step/8 / /generate / /boom-generate / /ai-video / /knowledge / /analysis / /video-production 基础占位[重构删:`/acquisition-video`获客视频功能已删,stub不再存在])
 - **PRD-20**(LLM Gateway 真接入 · 9/9 PASSED)
 - **PRD-21**(visual-diff infra + Header 精修 + Mobile nav + 共享 utility · 13 page baseline 可复用)
 
@@ -856,7 +856,7 @@ US-012 (收官)           ← US-001~011 全部
 ### §7.3 下游 PRD
 
 - **PRD-23** · 3 stub 完整化(/diagnosis · /accounts · /step/8)+ 14 工具视觉精修(已 inline 重构的 5 + 已 PRD-15 完整化的 8 + /trending 验证)
-- **PRD-24** · 6 modules 视觉精修(/daily-tasks · /evolution · /my-topics · /history · /voice-chat)+ 全 32 page visual diff 收官
+- **PRD-24** · 5 modules 视觉精修(/daily-tasks · /evolution · /my-topics · /history)+ 全 32 page visual diff 收官[重构删:`/voice-chat`语音对话功能已删,6→5 modules]
 
 ---
 

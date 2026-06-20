@@ -43,9 +43,6 @@ vi.mock('@/specialists/TopicAgent', () => ({
 vi.mock('@/specialists/VideoAgent', () => ({
   videoAgent: { execute: vi.fn() },
 }));
-vi.mock('@/specialists/VoiceChatAgent', () => ({
-  voiceChatAgent: { execute: vi.fn() },
-}));
 vi.mock('@/specialists/AnalysisAgent', () => ({
   analysisAgent: { execute: vi.fn() },
 }));

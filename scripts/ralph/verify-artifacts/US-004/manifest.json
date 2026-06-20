@@ -1,17 +1,17 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-21T13:18:00",
-  "validator_end_ts": "2026-05-21T13:21:00",
-  "test_command": "pnpm vitest run + pnpm -r typecheck",
+  "validator_start_ts": "2026-05-19T06:42:00",
+  "validator_end_ts": "2026-05-19T07:05:00",
+  "test_command": "pnpm typecheck + pnpm test (vitest) + pnpm test:visual:check (playwright)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-1/2/3/4/5/6/7/8/9/10/COMMON all pass. X-6 zero-regression: 407/407. Typecheck: 6 ws 0 errors. US-004 files lint 0 errors. Pre-existing lint errors in admin/workers (94 errors, TD not introduced by US-004). AC-6 'failed' state: inline div used instead of toast — semantic intent (show error UI) met; mutation network errors still use toast.error.",
   "artifacts": [
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
+    "vitest.stdout.txt",
     "typecheck.stdout.txt",
-    "manifest.json"
-  ]
+    "playwright-visual.stdout.txt",
+    "playwright-e2e-subset.stdout.txt"
+  ],
+  "notes": "vitest: 181/181 passed (24 files). typecheck: 0 errors. visual-baseline: 4/4 passed. header.spec.ts 6 pre-existing failures (test IDs header-user-trigger/header-account-trigger/header-tools-trigger absent from Header.tsx in both HEAD and HEAD~1 — not caused by US-004). AC-10 browser verified: grid bg visible, ping dot found, toast bottom-right confirmed via screenshot."
 }

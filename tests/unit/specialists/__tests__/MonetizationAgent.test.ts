@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MonetizationAgent, Step4bOutputSchema } from '@/specialists/MonetizationAgent';
+import { MonetizationAgent, Step4bOutputSchema, MonetizationPlanOutputSchema } from '@/specialists/MonetizationAgent';
 import { SchemaValidationError } from '@/specialists/base/errors';
 import type { ILLMGateway, InvokeLLMResult } from '@/specialists/base/types';
 
@@ -190,5 +190,154 @@ describe('MonetizationAgent', () => {
     expect(agent.config.execution.model_tier).toBe('reasoning');
     expect(agent.config.execution.timeout_ms).toBe(45_000);
     expect(agent.config.execution.retry).toBe(1);
+  });
+
+  // ── monetization-plan mode ────────────────────────────────────────────────
+
+  describe('monetization-plan mode', () => {
+    const VALID_PLAN_CONTENT = {
+      marketAnalysis: {
+        industryAnalysis: 'AI智能体定制与OPC创业培训赛道',
+        marketScale: '【建议参考】市场规模快速增长，个人IP商业化空间广阔。',
+        competition: '竞争激烈但垂直细分仍有蓝海。',
+        monetizationPotential: '变现潜力非常高，客单价高且可规模化。',
+      },
+      stages: [
+        {
+          number: 1,
+          icon: 'trending',
+          range: '建议目标 ¥0-90万',
+          title: '起步阶段（建议参考）',
+          duration: '建议 6-12 个月',
+          coreStrategy: '【建议】积累私域，验证产品-市场契合',
+          productMatrix: [
+            {
+              category: '引流品',
+              name: '免费体验课',
+              priceRange: '0元（建议）',
+              targetCustomer: '对AI感兴趣的创业者',
+              monthlyTarget: '建议目标 200-500人',
+              monthlyRevenue: '建议目标 ¥0-5000',
+            },
+          ],
+          keyActions: ['发布内容', '建立私域', '推出引流品'],
+          risks: ['流量积累慢', '变现转化不稳定'],
+        },
+        {
+          number: 2,
+          icon: 'diamond',
+          range: '建议目标 ¥100-1000万',
+          title: '发展阶段（建议参考）',
+          duration: '建议 12-24 个月',
+          coreStrategy: '【建议】升级产品线，打造爆款',
+          productMatrix: [
+            {
+              category: '利润品',
+              name: '系统课程',
+              priceRange: '9800元（建议）',
+              targetCustomer: '有学习需求的OPC创业者',
+              monthlyTarget: '建议目标 10-20人',
+              monthlyRevenue: '建议目标 ¥10-20万',
+            },
+          ],
+          keyActions: ['升级产品', '投放获客', '建立团队'],
+          risks: ['团队管理难度', '竞争加剧'],
+        },
+        {
+          number: 3,
+          icon: 'crown',
+          range: '建议目标 ¥1000万+',
+          title: '规模化阶段（建议参考）',
+          duration: '建议 24-48 个月',
+          coreStrategy: '【建议】品牌化、平台化',
+          productMatrix: [
+            {
+              category: '后端产品',
+              name: '企业内训',
+              priceRange: '10-100万元（建议）',
+              targetCustomer: '企业客户',
+              monthlyTarget: '建议目标 0.1-0.3单',
+              monthlyRevenue: '建议目标 ¥1-30万',
+            },
+          ],
+          keyActions: ['品牌化运营', '开发B端市场', '融资扩张'],
+          risks: ['资本运作风险', '技术迭代快'],
+        },
+      ],
+      revenueStructure: [
+        { name: '定制服务', percentage: '40%', desc: '【建议配比】高客单价核心收入', highlight: true },
+        { name: '培训课程', percentage: '35%', desc: '【建议配比】可规模化收入' },
+        { name: '后端产品', percentage: '25%', desc: '【建议配比】高价值长期收入' },
+      ],
+      successCases: [
+        {
+          title: '【示例】AI教育IP成长路径',
+          category: '示意性原型',
+          journey: '典型成长路径（示例）：从AI工具教程起步 → 积累核心用户 → 推出系统课 → 建立平台。',
+          outcome: '【示例参考】典型时间轴6-18个月，实际因执行力差异较大。',
+          insight: '【核心启示】垂直深度是变现转化率的关键因素。',
+        },
+        {
+          title: '【示例】技能服务型IP路径',
+          category: '示意性原型',
+          journey: '典型成长路径（示例）：展示案例 → 低价接单 → 涨价筛客 → 课程化。',
+          outcome: '【示例参考】服务变产品是规模化关键。',
+          insight: '【核心启示】尽早标准化，突破时间瓶颈。',
+        },
+      ],
+    };
+
+    it('monetization-plan: returns valid MonetizationPlanOutput with stages[3] and successCases[2]', async () => {
+      const agent = new MonetizationAgent(makeGateway([VALID_PLAN_CONTENT]));
+      const res = await agent.execute({ ...BASE_REQ, mode: 'monetization-plan', stepKey: 'step4b-plan' });
+
+      const result = res.result as typeof VALID_PLAN_CONTENT;
+      expect(result.stages).toHaveLength(3);
+      expect(result.successCases).toHaveLength(2);
+      expect(result.marketAnalysis.industryAnalysis).toBeTruthy();
+      expect(result.revenueStructure.length).toBeGreaterThan(0);
+      expect(res.isFallback).toBe(false);
+    });
+
+    it('monetization-plan: fallback satisfies MonetizationPlanOutputSchema', async () => {
+      // Bad content triggers fallback — stages[] fails length(3)
+      const badContent = { ...VALID_PLAN_CONTENT, stages: [] };
+      const agent = new MonetizationAgent(makeGateway([badContent, badContent]));
+      const res = await agent.execute({ ...BASE_REQ, mode: 'monetization-plan', stepKey: 'step4b-plan' });
+
+      expect(res.isFallback).toBe(true);
+      const parseResult = MonetizationPlanOutputSchema.safeParse(res.result);
+      expect(parseResult.success).toBe(true);
+    });
+
+    it('monetization-plan: prompt includes advisory framing (plan persona)', async () => {
+      const gateway = makeGateway([VALID_PLAN_CONTENT]);
+      const agent = new MonetizationAgent(gateway);
+      await agent.execute({ ...BASE_REQ, mode: 'monetization-plan', stepKey: 'step4b-plan' });
+
+      const callArgs = (gateway.complete as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as {
+        systemPrompt: string;
+        userPrompt: string;
+      };
+      expect(callArgs.systemPrompt).toContain('建议性');
+      expect(callArgs.systemPrompt).toContain('变现路径顾问');
+      expect(callArgs.userPrompt).toContain('变现路径规划任务');
+    });
+
+    it('monetization-plan: existing tool mode unaffected', async () => {
+      const toolContent = {
+        productMatrix: ['课程A · 599元', '社群B · 2999元/年'],
+        pricingStrategy: '阶梯定价策略',
+        conversionFunnel: ['免费引流', '低价转化', '高价服务'],
+      };
+      const agent = new MonetizationAgent(makeGateway([toolContent]));
+      const res = await agent.execute({ ...BASE_REQ, mode: 'monetization-tool', stepKey: 'tool-monetization' });
+
+      expect(res.isFallback).toBe(false);
+      const result = res.result as typeof toolContent;
+      expect(result.productMatrix).toBeDefined();
+      expect(result.pricingStrategy).toBeDefined();
+      expect(result.conversionFunnel).toBeDefined();
+    });
   });
 });

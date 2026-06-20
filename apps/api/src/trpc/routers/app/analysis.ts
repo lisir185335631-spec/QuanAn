@@ -51,10 +51,11 @@ export const analysisRouter = router({
   analyze: protectedProcedure
     .input(analysisStructuralInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await analysisAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'structural',
         userInput: { copy: input.copy },
         traceId: traceId ?? undefined,

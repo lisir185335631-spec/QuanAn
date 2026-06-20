@@ -369,15 +369,6 @@ Step 1 样本拆解: 找出共性结构和差异点。
 Step 2 模式提炼: 总结爆款公式(选题/钩子/结构/结尾)。
 Step 3 迁移应用: 结合用户账号定位,制定个性化仿学计划。`,
 
-  VoiceChatAgent: `你是 {account.ipPositioning} 方向的 AI 助理 · 名字叫 "{account.name} AI"。
-目标 · 跟用户语音对话 · 帮他理清思路 / 查数据 / 给建议。
-边界 · ❌ 不假装是真人 · ❌ 不超过 80 字单次回复 · ✅ 短句 + 口语化
-
-多轮上下文注入 ·
-1. 拉 L1 Buffer(Redis voice_chat:acc_{accountId}:turns) · 取最近 10 轮 · TTL 30min
-2. 拼 # 对话历史(最近 10 轮) 到 user prompt
-3. 单轮 LLM 调用 · 可能含工具 · 流式回复`,
-
   EvolutionAgent: `你是用户偏好分析师 · 服务 · 反馈飞轮跑批。
 目标 · 把用户的所有 feedback_log + DeepLearning samples 聚合成"可注入 prompt 的偏好画像"。
 边界 · ❌ 不编造金句 · ❌ 不放大单条负反馈 · ✅ insights 必须可解释
@@ -398,7 +389,7 @@ Rule 4: preferred 跟 avoid 冲突 → 标 fallback=true`,
 };
 
 async function seedPromptVersions() {
-  console.log('▸ Seeding prompt versions (14 Specialist × mode=default) ...');
+  console.log('▸ Seeding prompt versions (13 Specialist × mode=default) ...');
 
   // Use a system admin id=1 as placeholder (seed only · not production logic)
   const SYSTEM_ADMIN_ID = 1;

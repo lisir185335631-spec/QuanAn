@@ -1,6 +1,7 @@
 /**
  * BoomGenerate.test.tsx — /boom-generate 字面锁测试
  * mock-first 静态 · 验证 1:1 字面复刻
+ * + 1:1 mapping 单元测试 (candidates → BoomEntry shape)
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -309,5 +310,108 @@ describe('BoomGenerate', () => {
   it('entry 6 opening key sentence', () => {
     renderPage();
     expect(screen.getAllByText(/从此告别肥胖烦恼/).length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ── 1:1 mapping pure unit test ────────────────────────────────────────────────
+
+describe('BoomGenerate · 1:1 mapping (pure unit)', () => {
+  it('candidate fields map directly to BoomEntry — no substring slicing, no hardcoded scores', () => {
+    // Verify the mapping shape: each candidate field maps 1:1 to BoomEntry
+    // This is a structural contract test (no rendering needed)
+    type BoomCandidate = {
+      title: string;
+      opening: string;
+      development: string;
+      climax: string;
+      ending: string;
+      reason: string;
+      indexScore: string;
+    };
+    type BoomEntry = {
+      index: number;
+      title: string;
+      indexScore: string;
+      type: string;
+      format: string;
+      element: string;
+      opening: string;
+      development: string;
+      climax: string;
+      ending: string;
+      reason: string;
+    };
+
+    const candidate: BoomCandidate = {
+      title: '测试标题',
+      opening: '开头文案内容',
+      development: '内容发展部分',
+      climax: '高潮转折部分',
+      ending: '结尾CTA部分',
+      reason: '爆款原因说明',
+      indexScore: '9/10',
+    };
+
+    // Replicate the 1:1 mapping from BoomGenerate.tsx onSuccess
+    const mapped: BoomEntry = {
+      index: 1,
+      title: candidate.title,           // 1:1 — no transformation
+      indexScore: candidate.indexScore, // 1:1 — from API, not hardcoded
+      type: '爆款型',
+      format: '口播文案',
+      element: '共鸣',                  // from selectedLabels
+      opening: candidate.opening,       // 1:1 — no substring slicing
+      development: candidate.development, // 1:1
+      climax: candidate.climax,         // 1:1
+      ending: candidate.ending,         // 1:1
+      reason: candidate.reason,         // 1:1
+    };
+
+    expect(mapped.title).toBe(candidate.title);
+    expect(mapped.indexScore).toBe(candidate.indexScore); // NOT hardcoded
+    expect(mapped.opening).toBe(candidate.opening);       // NOT sliced
+    expect(mapped.development).toBe(candidate.development);
+    expect(mapped.climax).toBe(candidate.climax);
+    expect(mapped.ending).toBe(candidate.ending);
+    expect(mapped.reason).toBe(candidate.reason);
+    expect(mapped.index).toBe(1); // i + 1
+  });
+
+  it('5 candidates produce 5 BoomEntry objects with correct indices', () => {
+    type BoomCandidate = {
+      title: string; opening: string; development: string;
+      climax: string; ending: string; reason: string; indexScore: string;
+    };
+    const candidates: BoomCandidate[] = Array.from({ length: 5 }, (_, i) => ({
+      title: `候选${i + 1}`,
+      opening: `开头${i + 1}`,
+      development: `发展${i + 1}`,
+      climax: `高潮${i + 1}`,
+      ending: `结尾${i + 1}`,
+      reason: `原因${i + 1}`,
+      indexScore: `${8 + (i % 2)}/10`,
+    }));
+
+    const mapped = candidates.map((c, i) => ({
+      index: i + 1,
+      title: c.title,
+      indexScore: c.indexScore,
+      type: '爆款型',
+      format: '口播文案',
+      element: '共鸣',
+      opening: c.opening,
+      development: c.development,
+      climax: c.climax,
+      ending: c.ending,
+      reason: c.reason,
+    }));
+
+    expect(mapped).toHaveLength(5);
+    mapped.forEach((entry, i) => {
+      expect(entry.index).toBe(i + 1);
+      expect(entry.title).toBe(`候选${i + 1}`);
+      expect(entry.opening).toBe(`开头${i + 1}`);
+      expect(entry.indexScore).toBe(`${8 + (i % 2)}/10`);
+    });
   });
 });

@@ -41,18 +41,6 @@ test.describe('PRD-25 LLM pages vs aiipznt baseline (TD-090 数据驱动)', () =
     });
   });
 
-  // US-002: /voice-chat
-  test('/voice-chat vs aiipznt 31-voice-chat.png', async ({ page }) => {
-    await page.goto(`${BASE_URL}/voice-chat`);
-    await page.waitForLoadState('networkidle');
-    await expectVisualMatch(page, {
-      baseline: '31-voice-chat.png',
-      viewport: { width: 1440, height: 900 },
-      fullPage: true,
-      maxDiffPixelRatio: LLM_TOLERANCE,
-    });
-  });
-
   // US-003: /daily-tasks
   test('/daily-tasks vs aiipznt 41-daily-tasks.png', async ({ page }) => {
     await page.goto(`${BASE_URL}/daily-tasks`);

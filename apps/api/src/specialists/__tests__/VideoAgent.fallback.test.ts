@@ -3,7 +3,7 @@
  * Non-skipIf: always runs (no real LLM key needed).
  * Covers: production mode fallback trigger path (LLM error → fallbackTemplate.production
  * → isFallback=true), ProductionOutputSchema conformance on fallback result,
- * and verifies shooting/acquisition/storyboard modes are NOT broken.
+ * and verifies shooting/storyboard modes are NOT broken.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -46,9 +46,7 @@ vi.mock('@/lib/logger', () => ({
 import {
   VideoAgent,
   ProductionOutputSchema,
-  VideoAcquisitionOutputSchema,
   type ProductionOutput,
-  type VideoAcquisitionOutput,
 } from '../VideoAgent';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -72,7 +70,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
   it('does NOT throw — returns isFallback=true instead', async () => {
     const agent = new VideoAgent();
     await expect(
-      agent.execute({ accountId: TEST_ACCOUNT_ID, mode: 'production', userInput: BASE_USER_INPUT }),
+      agent.execute({ accountId: TEST_ACCOUNT_ID, userId: 1, mode: 'production', userInput: BASE_USER_INPUT }),
     ).resolves.not.toThrow();
   });
 
@@ -80,6 +78,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -90,6 +89,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -100,6 +100,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -111,6 +112,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -123,6 +125,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -143,6 +146,7 @@ describe('VideoAgent production mode fallback — LLM gateway throws', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -170,6 +174,7 @@ describe('VideoAgent production mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -181,6 +186,7 @@ describe('VideoAgent production mode fallback — generic API error', () => {
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -209,6 +215,7 @@ describe('VideoAgent production mode fallback — LLM returns invalid content', 
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -219,6 +226,7 @@ describe('VideoAgent production mode fallback — LLM returns invalid content', 
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'production',
       userInput: BASE_USER_INPUT,
     });
@@ -263,6 +271,7 @@ describe('VideoAgent shooting mode — fallback NOT triggered on LLM success', (
     const agent = new VideoAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'shooting',
       userInput: BASE_USER_INPUT,
     });
@@ -271,166 +280,3 @@ describe('VideoAgent shooting mode — fallback NOT triggered on LLM success', (
   });
 });
 
-// ── acquisition mode fallback (LLM gateway throws) ────────────────────────
-
-describe('VideoAgent acquisition mode fallback — LLM gateway throws', () => {
-  const ACQUISITION_USER_INPUT = {
-    sourceCopy: '行业: 美业\n目标客户: 想要创业的宝妈\n产品卖点: 零基础可学',
-    conversionGoal: '引流加粉',
-  };
-
-  beforeEach(() => {
-    vi.resetAllMocks();
-    mockStepDataFindMany.mockResolvedValue([]);
-    mockCostLogCreate.mockResolvedValue({ id: 1 });
-    mockGetLatestInsight.mockResolvedValue(null);
-    mockComplete.mockRejectedValue(new Error('ANTHROPIC_API_KEY missing for reasoning tier'));
-  });
-
-  it('does NOT throw — returns isFallback=true instead', async () => {
-    const agent = new VideoAgent();
-    await expect(
-      agent.execute({ accountId: TEST_ACCOUNT_ID, mode: 'acquisition', userInput: ACQUISITION_USER_INPUT }),
-    ).resolves.not.toThrow();
-  });
-
-  it('returns isFallback=true on LLM error', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    expect(result.isFallback).toBe(true);
-  });
-
-  it('returns modelUsed="fallback" on fallback path', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    expect(result.modelUsed).toBe('fallback');
-  });
-
-  it('fallback result passes VideoAcquisitionOutputSchema.safeParse', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    const parsed = VideoAcquisitionOutputSchema.safeParse(result.result);
-    expect(parsed.success).toBe(true);
-  });
-
-  it('fallback result has script (min 100 chars), cta (min 10 chars)', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    const data = result.result as VideoAcquisitionOutput;
-    expect(typeof data.script).toBe('string');
-    expect(data.script.length).toBeGreaterThanOrEqual(100);
-    expect(typeof data.cta).toBe('string');
-    expect(data.cta.length).toBeGreaterThanOrEqual(10);
-  });
-
-  it('fallback result has conversionPath string and keyMessages array', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    const data = result.result as VideoAcquisitionOutput;
-    expect(typeof data.conversionPath).toBe('string');
-    expect(Array.isArray(data.keyMessages)).toBe(true);
-    expect(data.keyMessages.length).toBeGreaterThanOrEqual(1);
-  });
-});
-
-// ── acquisition mode fallback (generic API 401 error) ────────────────────
-
-describe('VideoAgent acquisition mode fallback — generic API error', () => {
-  const ACQUISITION_USER_INPUT = {
-    sourceCopy: '行业: 健身\n目标客户: 减肥人群\n产品卖点: 7天见效',
-    conversionGoal: '私信咨询',
-  };
-
-  beforeEach(() => {
-    vi.resetAllMocks();
-    mockStepDataFindMany.mockResolvedValue([]);
-    mockCostLogCreate.mockResolvedValue({ id: 1 });
-    mockGetLatestInsight.mockResolvedValue(null);
-    mockComplete.mockRejectedValue(new Error('401 {"type":"authentication_error","message":"invalid x-api-key"}'));
-  });
-
-  it('does NOT throw on 401 — returns isFallback=true', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    expect(result.isFallback).toBe(true);
-    expect(result.modelUsed).toBe('fallback');
-  });
-
-  it('fallback result passes VideoAcquisitionOutputSchema on 401 error', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    const parsed = VideoAcquisitionOutputSchema.safeParse(result.result);
-    expect(parsed.success).toBe(true);
-  });
-});
-
-// ── acquisition mode fallback (LLM returns invalid content) ──────────────
-
-describe('VideoAgent acquisition mode fallback — LLM returns invalid content', () => {
-  const ACQUISITION_USER_INPUT = {
-    sourceCopy: '行业: 教育培训\n目标客户: 学生家长\n产品卖点: 提分快',
-    conversionGoal: '直接成交',
-  };
-
-  beforeEach(() => {
-    vi.resetAllMocks();
-    mockStepDataFindMany.mockResolvedValue([]);
-    mockCostLogCreate.mockResolvedValue({ id: 1 });
-    mockGetLatestInsight.mockResolvedValue(null);
-    // Simulate gateway returning a string instead of valid VideoAcquisitionOutput
-    mockComplete.mockResolvedValue({
-      content: '抱歉，AI 服务暂时不可用，请稍后再试。',
-      tokens: { prompt: 0, completion: 0, total: 0 },
-      model: 'gpt-4o',
-    });
-  });
-
-  it('returns isFallback=true when LLM returns string content failing schema', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    expect(result.isFallback).toBe(true);
-  });
-
-  it('fallback result passes VideoAcquisitionOutputSchema when LLM returns invalid content', async () => {
-    const agent = new VideoAgent();
-    const result = await agent.execute({
-      accountId: TEST_ACCOUNT_ID,
-      mode: 'acquisition',
-      userInput: ACQUISITION_USER_INPUT,
-    });
-    const parsed = VideoAcquisitionOutputSchema.safeParse(result.result);
-    expect(parsed.success).toBe(true);
-  });
-});

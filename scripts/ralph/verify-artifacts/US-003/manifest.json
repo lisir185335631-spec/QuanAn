@@ -1,15 +1,29 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-21T12:48:00",
-  "validator_end_ts": "2026-05-21T12:56:25",
-  "test_command": "pnpm vitest run (zero regression) + pnpm typecheck (4 workspaces) + pnpm test:visual:prd23:check --grep present-styles",
+  "validator_start_ts": "2026-05-19T06:08:00",
+  "validator_end_ts": "2026-05-19T06:17:00",
+  "test_command": "pnpm vitest run (181 tests) + pnpm playwright test prd21-mobile-nav.spec.ts (4 e2e) + browser AC-8 validation (Playwright headless)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "All 10 ACs pass. Zero regression: 181/181 vitest tests pass. 4/4 e2e chromium tests pass. Browser validation: hamburger visible, panel at Y=64 (below 64px header bar, not side sheet), backdrop-blur-2xl present, 4 group labels visible, 25 nav links, sticky user zone at bottom, 0 console errors. Panel correctly rendered inside <header> after container div (y=64 matches inner header bar bottom=64, full width 375px, no dialog/sheet role elements).",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ]
+    "typecheck.stdout.txt",
+    "e2e.stdout.txt"
+  ],
+  "ac_results": {
+    "AC-1": "PASS - MobileNavPanel.tsx exists with correct interface, lg:hidden backdrop-blur-2xl classes, data-testid=header-mobile-panel, role=navigation, 3 sections (IP accounts / nav groups / sticky user zone)",
+    "AC-2": "PASS - Sheet drawer removed, Header.tsx rewritten to 153 lines, no Sheet imports",
+    "AC-3": "PASS - useState mobileOpen, hamburger (data-testid=header-hamburger, lg:hidden), X/Menu icon toggle, MobileNavPanel rendered inside header after container div",
+    "AC-4": "PASS - 0 Sheet/SheetContent/SheetHeader/SheetTitle/SheetTrigger imports in Header.tsx",
+    "AC-5": "PASS - tsc --noEmit exit 0, 0 errors (typecheck.stdout.txt)",
+    "AC-6": "PASS - tests/e2e/prd21-mobile-nav.spec.ts 4/4 tests pass chromium (e2e.stdout.txt)",
+    "AC-7": "PASS - header.spec.ts references header-mobile-panel, no old header-mobile-sheet testid",
+    "AC-8": "PASS - (a) hamburger visible ✓ (b) panel Y=64 below 64px header bar, x=0, w=375 (not side sheet) ✓ (c) backdrop-blur-2xl ✓ (d) 4 group labels 创作/策划/智能/更多 visible ✓ (e) exactly 25 nav links ✓ (f) sticky.bottom-0 user zone present ✓",
+    "AC-9": "PASS - 0 console errors",
+    "AC-10 Typecheck": "PASS - 0 errors"
+  }
 }

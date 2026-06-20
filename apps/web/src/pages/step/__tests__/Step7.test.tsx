@@ -54,8 +54,29 @@ vi.mock('@/lib/trpc', () => ({
         }),
       },
     },
+    // US-P10: viral analysis mutation mock
+    videoAnalysis: {
+      analyze: {
+        useMutation: () => ({
+          mutate: vi.fn(),
+          isPending: false,
+          isError: false,
+          error: null,
+          data: undefined,
+        }),
+      },
+    },
   },
 }));
+
+// US-P10: mock readOtherStep (returns null by default → step5Topic = null, no topic echo rendered)
+vi.mock('@/hooks/useStepData', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/hooks/useStepData')>();
+  return {
+    ...original,
+    readOtherStep: vi.fn(() => null),
+  };
+});
 
 // ── Reset state before each test ──────────────────────────────────────────────
 beforeEach(() => {

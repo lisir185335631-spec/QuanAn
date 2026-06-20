@@ -3,8 +3,8 @@
  * PRD-3 US-001: removes step/account alias routers (TD-012) → canonical ipAccounts/stepData only
  */
 
-import { acquisitionVideoRouter } from '@/trpc/routers/app/acquisitionVideo';
 import { aiVideoRouter } from '@/trpc/routers/app/aiVideo';
+import { assetRouter } from '@/trpc/routers/app/asset';
 import { analysisRouter } from '@/trpc/routers/app/analysis';
 import { authRouter } from '@/trpc/routers/app/auth';
 import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
@@ -24,25 +24,20 @@ import { presentStylesRouter } from '@/trpc/routers/app/presentStyles';
 import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
 import { step3Router } from '@/trpc/routers/app/step3';
 import { stepDataRouter } from '@/trpc/routers/app/stepData';
-import { sttRouter } from '@/trpc/routers/app/stt';
 import { trendingRouter } from '@/trpc/routers/app/trending';
-import { ttsRouter } from '@/trpc/routers/app/tts';
 import { videoAnalysisRouter } from '@/trpc/routers/app/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/app/videoProduction';
-import { voiceChatRouter } from '@/trpc/routers/app/voiceChat';
 import { router } from '@/trpc/trpc';
 
 export const appRouter = router({
   auth: authRouter,
-  acquisitionVideo: acquisitionVideoRouter,
+  asset: assetRouter,
   aiVideo: aiVideoRouter,
   dailyTasks: dailyTasksRouter,
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
   step3: step3Router,
   stepData: stepDataRouter,
-  stt: sttRouter,
-  tts: ttsRouter,
   copywriting: copywritingRouter,
   videoAnalysis: videoAnalysisRouter,
   videoProduction: videoProductionRouter,
@@ -59,7 +54,6 @@ export const appRouter = router({
   costLog: costLogRouter,
   analysis: analysisRouter,
   history: historyRouter,
-  voiceChat: voiceChatRouter,
 });
 
 export type AppRouter = typeof appRouter;

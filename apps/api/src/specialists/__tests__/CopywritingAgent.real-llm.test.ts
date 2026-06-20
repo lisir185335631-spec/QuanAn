@@ -55,6 +55,7 @@ describe.skipIf(skipRealLlm)('CopywritingAgent step7 real LLM', () => {
 
       const result = await agent.execute({
         accountId: TEST_ACCOUNT_ID,
+      userId: 1,
         mode: 'step7',
         userInput: {
           scriptType: 'educational',

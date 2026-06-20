@@ -52,10 +52,11 @@ export const videoAnalysisRouter = router({
   analyze: protectedProcedure
     .input(analyzeVideoInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, traceId, user } = ctx;
 
       const agentRes = await analysisAgent.execute({
         accountId: activeAccountId!,
+        userId: user!.id,
         mode: 'viral',
         userInput: { lastCopy: input.lastCopy, lastTitle: input.lastTitle },
         traceId: traceId ?? undefined,

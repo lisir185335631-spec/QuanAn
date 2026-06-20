@@ -17,15 +17,15 @@
   - **D-001** LD-001 95/5 编排范式(本期 3 L5 是 5% Agent 范畴 · 严禁内 while/for 循环)
   - **D-004** LD-004 + ADR-005 · 3 L5 走外部 orchestrator(BullMQ + node-cron + tRPC subscription)
   - **D-005** BaseSpecialist 抽象(本期 3 L5 仍**部分继承** BaseSpecialist · 但 execute() 内允许多次 LLM 调用)
-  - **D-006** 五层记忆(本期实施 L1 Buffer + 接通 L4 Profile + 准备 L5 Trending Cache placeholder)
+  - **D-006** 五层记忆(本期接通 L4 Profile + 准备 L5 Trending Cache placeholder)[重构删 L1 Buffer · 语音对话已删]
   - **D-007** ContextAssembler 唯一 prompt 注入入口(本期接通 EvolutionInsight 注入 · 全 11 生成型 Specialist)
   - **D-008** 反馈飞轮 5 阶段闭环(本期 Phase 4 跑批 + Phase 5 注入)
   - **D-009** RLS + LD-009 双层防护(本期所有 router 沿用)
-  - **D-012** LLMGateway 唯一 LLM 调用入口(STT/TTS 是 image-gen 类例外 · 不走 LLMGateway · 同 D-038 模式)
+  - **D-012** LLMGateway 唯一 LLM 调用入口(STT/TTS 已重构删除 · 不再有例外)[重构]
   - **D-026** 不动既有 procedure · 新建变体(EvolutionAgent + ContextAssembler 改 systemPrompt 是扩展非破坏)
   - **D-028** 多 mode Specialist `_mode + outputSchema getter`(EvolutionAgent triggerType 是 enum · 不分 mode · 不适用)
-  - **D-038** ImageGen Worker 独立 · 不走 LLMGateway(本期 STT/TTS Worker 同模式)
-  - **D-040** cost_log eventType 3 类(本期加 'l5_agent' / 'stt_call' / 'tts_call' 第 4-6 类)
+  - **D-038** ImageGen Worker 独立 · 不走 LLMGateway[重构删:语音对话已删,STT/TTS Worker 不实施]
+  - **D-040** cost_log eventType 3 类(本期加 'l5_agent' 第 4 类)[重构删 stt_call / tts_call · 已删语音对话]
   - **D-046** Schema SoT 三处一致原则(本期严格遵循 · 详 §1.0 SoT 表)
   - **D-047** canonical 选择优先级 specialists > routers > packages/schemas
   - **D-049** 路径 B 自动触发(本期已部署 · 不需再实施)
@@ -35,19 +35,19 @@
 - §1.7 9 条偏离决策(本期实施第 5 条 进化机制自动注入 vs 手动)
 - §4.4 3 L5 自治 Agent 特殊性(完整定义)
 - §5 五层记忆体系 + 进化飞轮(完整理论)
-- §6.12-14 VoiceChat / Evolution / DailyTask Specialist 定义
+- §6.12-14 VoiceChat / Evolution / DailyTask Specialist 定义[重构: VoiceChat 已删 · 仅 Evolution / DailyTask 有效]
 - §9.9 P7 智能工具 实施计划(10-12 stories 估)
 
 ### §0.3 PROMPTS.md 引用
 
-- §12 VoiceChatAgent 完整 prompt + 5 工具 function calling 定义
+- §12 VoiceChatAgent 完整 prompt + 5 工具 function calling 定义[重构: 已删 · 不再引用]
 - §13 EvolutionAgent 完整 prompt + 提炼规则(Rule 1-5 · 频次门槛 / 溯源 / 渐进更新 / 冲突检测 / 数量上限)
 - §14 DailyTaskAgent 完整 prompt + 7 任务类型 + 冷启动模板
 
 ### §0.4 DATA-MODEL.md 引用
 
 - §3 主应用 18 表(FeedbackLog / EvolutionProfile / EvolutionInsight / DeepLearningArchive / DailyTask 全已 prisma 实施 · PRD-2 落地)
-- §3.4.5 cost_log 表(本期 eventType 新增 'l5_agent' / 'stt_call' / 'tts_call' 3 类 · 第 4-6)
+- §3.4.5 cost_log 表(本期 eventType 新增 'l5_agent' 1 类 · 第 4 类)[重构删 stt_call / tts_call]
 - §6.3-4 EvolutionProfile + EvolutionInsight 完整字段
 
 ### §0.5 AGENTS.md 引用
@@ -58,8 +58,8 @@
 - §3 LD-006(5 层记忆架构)
 - §3 LD-007(ContextAssembler 唯一入口)
 - §3 LD-008(反馈飞轮 5 阶段)
-- §3 LD-016(测试金字塔 · 本期 vitest 750+ / judge 50+ / e2e 145+)
-- §3 R-001(LLM key 不暴露前端 · 含 OpenAI Whisper/TTS key)
+- §3 LD-016(测试金字塔 · 本期 vitest 750+ / judge 42+ / e2e 145+)
+- §3 R-001(LLM key 不暴露前端)[重构删 含 OpenAI Whisper/TTS key · 语音对话已删]
 - §3 R-12(原子事务 · EvolutionAgent level 升级 + insight 写入同 transaction)
 
 ### §0.6 ADR.md 引用
@@ -75,7 +75,7 @@
 - **P-2 启 daemon 前必跑 health check**(perl alarm 25s)
 - **P-3 Foundation 档严审 SoT**(沿用 D-046)· 写 L5 Agent persona / state schema 时三处一致
 - **P-4 3 L5 Agent 必走 ADR-018 外部 orchestrator** · 严禁 LLM 内部 while/for 循环
-- **P-5 必跑 /plan-check 7 项门禁** · 含跨 story 协议锁(L5 Agent 共享 EvolutionProfile / VoiceChat session)
+- **P-5 必跑 /plan-check 7 项门禁** · 含跨 story 协议锁(L5 Agent 共享 EvolutionProfile)[重构删 VoiceChat session]
 - **P-6 reject feedback 必 < 3K 字符**
 - **P-7 Monitor + watch-audit-gate 双联动**
 
@@ -99,7 +99,7 @@
 
 ## §1.0 ★★★ Schema 字段 SoT 表(US-001 + US-002 共用 · TD-022 治本继承)
 
-> **背景** · 沿用 PRD-7 §1.0 SoT 模式(D-046 三处一致原则)· 本期 4 个核心 schema(EvolutionInsight content / DailyTask tasks / VoiceChatTurn / L1 Buffer entry)严格锁定。
+> **背景** · 沿用 PRD-7 §1.0 SoT 模式(D-046 三处一致原则)· 本期 2 个核心 schema(EvolutionInsight content / DailyTask tasks)严格锁定。[重构删 VoiceChatTurn / L1 Buffer entry]
 >
 > **canonical 选择优先级**(D-047)· specialists inline > routers inline > packages/schemas
 
@@ -168,77 +168,7 @@ const DailyTaskOutputSchema = z.object({
 });
 ```
 
-### §1.0.3 VoiceChatTurn schema(US-001 + US-011 共用 · L1 Buffer 存)
-
-**canonical**: `apps/api/src/specialists/VoiceChatAgent.ts` `VoiceChatTurnSchema`
-
-```typescript
-const VoiceChatRoleEnum = z.enum(['user', 'assistant', 'tool']);
-
-const VoiceChatTurnSchema = z.object({
-  turnId: z.string().uuid(),
-  role: VoiceChatRoleEnum,
-  content: z.string(),
-  toolCalls: z.array(z.object({
-    name: z.enum(['get_current_step', 'search_history', 'query_diagnosis', 'get_today_tasks', 'get_evolution_insights']),
-    args: z.record(z.unknown()),
-    result: z.string().optional(),
-  })).optional(),
-  audioUrl: z.string().url().optional(), // TTS 输出的临时 URL(15 min TTL)
-  timestamp: z.number().int().positive(), // unix ms
-});
-
-// L1 Buffer 存储格式(Redis voice_chat:acc_{id}:turns List · max 20 turns · TTL 30min)
-const VoiceChatBufferSchema = z.object({
-  accountId: z.number().int().positive(),
-  turns: z.array(VoiceChatTurnSchema).max(20),
-  sessionId: z.string().uuid(),
-  createdAt: z.number().int().positive(),
-});
-```
-
-### §1.0.4 5 工具 function calling schema(US-002 + US-011 共用)
-
-**canonical**: `apps/api/src/specialists/VoiceChatAgent.ts` `VOICE_CHAT_TOOLS`
-
-```typescript
-const VOICE_CHAT_TOOLS = [
-  {
-    name: 'get_current_step' as const,
-    description: '查询当前 IP 账号 9 步主线的完成进度',
-    parameters: { type: 'object' as const, properties: {}, required: [] },
-  },
-  {
-    name: 'search_history' as const,
-    description: '在用户的历史生成内容中搜索 · 按关键词模糊匹配',
-    parameters: {
-      type: 'object' as const,
-      properties: {
-        keyword: { type: 'string', description: '搜索关键词' },
-        limit: { type: 'number', default: 5 },
-      },
-      required: ['keyword'],
-    },
-  },
-  {
-    name: 'query_diagnosis' as const,
-    description: '查最新诊断报告(8 维度短板)',
-    parameters: { type: 'object' as const, properties: {}, required: [] },
-  },
-  {
-    name: 'get_today_tasks' as const,
-    description: '查今日 3-5 个推荐任务',
-    parameters: { type: 'object' as const, properties: {}, required: [] },
-  },
-  {
-    name: 'get_evolution_insights' as const,
-    description: '查当前 EvolutionProfile + 最新 insight',
-    parameters: { type: 'object' as const, properties: {}, required: [] },
-  },
-];
-```
-
-### §1.0.5 SoT 一致性验证规则(US-001 + US-002 验收硬要求)
+### §1.0.3 SoT 一致性验证规则(US-001 + US-002 验收硬要求)[重构删 §1.0.3 VoiceChatTurn schema · §1.0.4 VOICE_CHAT_TOOLS]
 
 ```bash
 # 验 1: packages/schemas vs specialists inline 字段一致
@@ -250,16 +180,12 @@ diff <(grep -E "z\.(string|number|enum|array|object|union|literal)\(" packages/s
 grep -E "z\.object\(\{.*insights" apps/api/src/trpc/routers/evolution.ts
 # 期望: 0 命中(import packages/schemas)
 
-# 验 3: 5 工具 name 跨 3 处一致(VoiceChatAgent.ts + types + router)
-grep -E "get_current_step|search_history|query_diagnosis|get_today_tasks|get_evolution_insights" apps/api/src/specialists/VoiceChatAgent.ts
-# 期望: 每个 name 至少 3 次命中(define + dispatch + types)
-
-# 验 4: DailyTask 7 task type 一致
+# 验 3: DailyTask 7 task type 一致[重构删 voice-chat tools 验证]
 grep -c "do_step\|optimize_content\|learn_methodology\|review_diagnosis\|upload_sample\|set_goal\|engage_community" apps/api/src/specialists/DailyTaskAgent.ts
 # 期望: ≥ 7 命中
 
-# 验 5: type alias chain(PRD-7 R1 教训)
-grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/src/specialists/EvolutionAgent.ts apps/api/src/specialists/DailyTaskAgent.ts apps/api/src/specialists/VoiceChatAgent.ts
+# 验 4: type alias chain(PRD-7 R1 教训)[重构删 VoiceChatAgent.ts]
+grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/src/specialists/EvolutionAgent.ts apps/api/src/specialists/DailyTaskAgent.ts
 # 期望: 每个文件至少 1 个 re-export · 保证下游 import 不破
 ```
 
@@ -273,10 +199,9 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 > **priority** · 1
 > **depends_on** · []
 
-**描述** · PRD-8 全部后续 stories 的数据契约前置 · 5 项:
+**描述** · PRD-8 全部后续 stories 的数据契约前置 · 4 项[重构删 VoiceChatTurn schema 项]:
 
-1. **5 层记忆 schema 实施**(L1/L2/L3/L4/L5):
-   - L1 Buffer: `apps/api/src/memory/l1-buffer.ts` 真接 Redis(key pattern `voice_chat:acc_{id}:turns` · List 类型 · max 20 · TTL 30min)+ VoiceChatBufferSchema(详 §1.0.3)
+1. **5 层记忆 schema 实施**(L1/L2/L3/L4/L5)[重构删 L1 Buffer voice_chat Redis]:
    - L2 Core: 接 stepData(既有 · 不动 · 仅暴露 read interface)
    - L3 Recall: 接 History 表(既有 · 不动)
    - L4 Profile: 接 EvolutionProfile + DeepLearningArchive(既有 · 增 read helpers)
@@ -291,10 +216,7 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
    - `packages/schemas/src/specialist-io/dailyTask.schema.ts` 新建
    - 7 TaskType enum + TaskItemSchema(uuid/title/description/type/ctaUrl/ctaText/expectedOutcome/estimatedMinutes/difficulty/completed)
 
-4. **VoiceChatTurn schema 锁定**(§1.0.3 + §1.0.4):
-   - `packages/schemas/src/specialist-io/voiceChat.schema.ts` 新建 · 含 VoiceChatTurnSchema + VoiceChatBufferSchema + VOICE_CHAT_TOOLS
-
-5. **ContextAssembler 协议升级**:
+4. **ContextAssembler 协议升级**:
    - `apps/api/src/services/context-assembler/types.ts` AssembledContext 加 `evolutionInsight?: EvolutionInsightContent | null` 字段(可空 · 用户首次无 insight)
    - `apps/api/src/services/context-assembler/ContextAssembler.ts` assemble() 内并行 fetch 加第 5 路(L4 EvolutionInsight latest · 5s timeout · 失败 fallback null)
    - 注:本 story 仅升级**协议** · 不动 11 Specialist 的 systemPrompt 注入(留 US-004)
@@ -302,32 +224,29 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 **Acceptance Criteria** ·
 - [ ] AC-1: `packages/schemas/src/specialist-io/evolution.schema.ts` 新建 · 含 EvolutionInsightContentSchema + InsightsSchema + TriggerTypeSchema · 跟 §1.0.1 100% 一致
 - [ ] AC-2: `packages/schemas/src/specialist-io/dailyTask.schema.ts` 新建 · 含 DailyTaskOutputSchema + TaskItemSchema + TaskTypeEnum · 跟 §1.0.2 100% 一致
-- [ ] AC-3: `packages/schemas/src/specialist-io/voiceChat.schema.ts` 新建 · 含 VoiceChatTurnSchema + VoiceChatBufferSchema + VOICE_CHAT_TOOLS · 跟 §1.0.3-4 100% 一致
-- [ ] AC-4: `apps/api/src/memory/l1-buffer.ts` 真接 Redis · `pushTurn(accountId, turn)` / `getTurns(accountId, limit?)` / `clearBuffer(accountId)` 3 API + Redis key prefix `voice_chat:acc_${id}:turns` + max 20 + TTL 1800s
-- [ ] AC-5: `apps/api/src/memory/l4-profile.ts` 加 helpers · `getLatestInsight(accountId): Promise<EvolutionInsightContent | null>` + `getDeepLearningSamples(accountId, limit=10)` (复用 existing prisma queries · 不重复定义)
-- [ ] AC-6: `apps/api/src/memory/l5-trending.ts` placeholder · interface 定 `getHotTrending(category?: string, limit=20): Promise<TrendingItem[]>` · 实施返空数组 + TODO 注释 'PRD-9 真接 trending API'
-- [ ] AC-7: `apps/api/src/services/context-assembler/types.ts` AssembledContext 加 `evolutionInsight?: EvolutionInsightContent | null` 字段
-- [ ] AC-8: `apps/api/src/services/context-assembler/ContextAssembler.ts` assemble() 加第 5 路并行 fetch L4 latest insight · Promise.allSettled · 5s timeout · 失败 evolutionInsight=null
-- [ ] AC-9: `packages/schemas/src/specialist-io/index.ts` barrel 加 3 新 export · grep `from './evolution.schema'` + `from './dailyTask.schema'` + `from './voiceChat.schema'` 命中 3
-- [ ] AC-10: type alias re-export(PRD-7 R1 教训)· EvolutionAgent.ts / DailyTaskAgent.ts / VoiceChatAgent.ts(US-002 创建)预留 `export type { ... } from '@quanan/schemas/specialist-io'`
-- [ ] AC-11: SoT 验 §1.0.5 验证 1-2-5 全过(其他 3-4 在 US-002/011 跑)
-- [ ] AC-12: vitest unit · L1 Buffer 5 tests(push/get/clear/maxLimit/TTL)+ schema validation 8 tests(3 schemas × happy + reject)
-- [ ] AC-13: pnpm typecheck 6 ws 0 error · pnpm lint --max-warnings=0 全过
-- [ ] AC-14: pnpm test 既有 727 + 新 13 = 740 全过(零回归)
+- [ ] AC-3[重构删 voiceChat.schema.ts AC]: `apps/api/src/memory/l4-profile.ts` 加 helpers · `getLatestInsight(accountId): Promise<EvolutionInsightContent | null>` + `getDeepLearningSamples(accountId, limit=10)` (复用 existing prisma queries · 不重复定义)
+- [ ] AC-4: `apps/api/src/memory/l5-trending.ts` placeholder · interface 定 `getHotTrending(category?: string, limit=20): Promise<TrendingItem[]>` · 实施返空数组 + TODO 注释 'PRD-9 真接 trending API'
+- [ ] AC-5: `apps/api/src/services/context-assembler/types.ts` AssembledContext 加 `evolutionInsight?: EvolutionInsightContent | null` 字段
+- [ ] AC-6: `apps/api/src/services/context-assembler/ContextAssembler.ts` assemble() 加第 5 路并行 fetch L4 latest insight · Promise.allSettled · 5s timeout · 失败 evolutionInsight=null
+- [ ] AC-7: `packages/schemas/src/specialist-io/index.ts` barrel 加 2 新 export · grep `from './evolution.schema'` + `from './dailyTask.schema'` 命中 2[重构删 voiceChat.schema export]
+- [ ] AC-8: type alias re-export(PRD-7 R1 教训)· EvolutionAgent.ts / DailyTaskAgent.ts 预留 `export type { ... } from '@quanan/schemas/specialist-io'`[重构删 VoiceChatAgent.ts]
+- [ ] AC-9: SoT 验 §1.0.3 验证 1-2-4 全过[重构删 voice-chat tools 验证 3]
+- [ ] AC-10: vitest unit · schema validation 5 tests(2 schemas × happy + reject)[重构删 L1 Buffer 5 tests · voiceChat schema tests]
+- [ ] AC-11: pnpm typecheck 6 ws 0 error · pnpm lint --max-warnings=0 全过
+- [ ] AC-12: pnpm test 既有 727 + 新 10 = 737 全过(零回归)[重构删 L1 Buffer tests]
 
 **files_to_create** ·
 - `packages/schemas/src/specialist-io/evolution.schema.ts`(~60 行)
 - `packages/schemas/src/specialist-io/dailyTask.schema.ts`(~50 行)
-- `packages/schemas/src/specialist-io/voiceChat.schema.ts`(~60 行)
-- `apps/api/src/memory/l1-buffer.ts`(~80 行 · Redis ioredis client + 3 API)
+- [重构删 voiceChat.schema.ts]
 - `apps/api/src/memory/l4-profile.ts`(~50 行 · 2 helpers)
 - `apps/api/src/memory/l5-trending.ts`(~30 行 · placeholder)
 - `apps/api/src/memory/index.ts`(~10 行 · barrel)
-- `tests/unit/api/memory/l1-buffer.test.ts`(~80 行 · 5 tests)
-- `tests/unit/api/schemas/l5-agent-schemas.test.ts`(~80 行 · 8 tests)
+- [重构删 l1-buffer.ts · l1-buffer.test.ts]
+- `tests/unit/api/schemas/l5-agent-schemas.test.ts`(~50 行 · 5 tests)[重构删 L1 Buffer tests]
 
 **files_to_modify** ·
-- `packages/schemas/src/specialist-io/index.ts`(加 3 barrel export)
+- `packages/schemas/src/specialist-io/index.ts`(加 2 barrel export)[重构删 voiceChat.schema]
 - `apps/api/src/services/context-assembler/types.ts`(AssembledContext 加 evolutionInsight)
 - `apps/api/src/services/context-assembler/ContextAssembler.ts`(assemble 加第 5 路)
 
@@ -343,47 +262,42 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 > **priority** · 2
 > **depends_on** · [US-001]
 
-**描述** · 3 L5 Specialist 骨架 + 触发器协议铺路:
+**描述** · 2 L5 Specialist 骨架 + 触发器协议铺路[重构删 VoiceChatAgent]:
 
-1. **3 L5 Specialist 骨架**(stub · execute 留对应 story):
+1. **2 L5 Specialist 骨架**(stub · execute 留对应 story)[重构删 VoiceChatAgent.ts]:
    - `apps/api/src/specialists/EvolutionAgent.ts` 新建 · 继承 BaseSpecialist · execute() 本 story 仅占位 throw `'PRD-8 US-003 真接'` · outputSchema = EvolutionInsightContentSchema · model_tier='reasoning' · timeout_ms=60000
    - `apps/api/src/specialists/DailyTaskAgent.ts` 新建 · 继承 BaseSpecialist · execute() 留 US-007 · outputSchema = DailyTaskOutputSchema · model_tier='lightweight' · timeout_ms=30000
-   - `apps/api/src/specialists/VoiceChatAgent.ts` 新建 · 继承 BaseSpecialist · execute() 留 US-011 · outputSchema = z.never()(因 streaming · 不走 safeParse · 用 SSE 流式)· model_tier='reasoning' · tools=['llm.stream', 'llm.tools']
 
 2. **BullMQ 队列定义**:
    - `apps/api/src/workers/evolution/queue.ts` 新建 · `evolutionQueue = new Queue('evolution-agent', { connection: redis })` · BullMQ Worker 实施留 US-003
    - `apps/api/src/workers/daily-task/queue.ts` 新建 · 同上 · queue name 'daily-task-agent' · Worker 留 US-007
 
-3. **5 工具 function calling 定义**:
-   - `apps/api/src/specialists/VoiceChatAgent.ts` 顶部 export `VOICE_CHAT_TOOLS`(per §1.0.4)· 5 工具 schema 完整
-   - Tool dispatcher 留 US-011
-
-4. **node-cron 调度骨架**:
+3. **node-cron 调度骨架**:
    - `apps/api/src/cron/daily-task-runner.ts` 新建 · `cron.schedule('0 0 * * *', ...)` · 主体 stub `console.log('TODO US-007')` · 真接留 US-007
    - 注:本 story 不启 cron(避免 stub 跑)· 仅定义文件 + import 注册留 US-007
 
-5. **ContextAssembler 路由更新**:
-   - `apps/api/src/services/context-assembler/templates/index.ts` 加 3 新 entry · evolutionAgent / dailyTaskAgent / voiceChatAgent
-   - 3 templates 文件(`evolution-agent.ts` / `daily-task-agent.ts` / `voice-chat-agent.ts`)各 ~50 行 · 含 §0.3 PROMPTS prompt persona + 基础占位
+4. **ContextAssembler 路由更新**[重构删 voice-chat-agent template]:
+   - `apps/api/src/services/context-assembler/templates/index.ts` 加 2 新 entry · evolutionAgent / dailyTaskAgent
+   - 2 templates 文件(`evolution-agent.ts` / `daily-task-agent.ts`)各 ~50 行 · 含 §0.3 PROMPTS prompt persona + 基础占位
 
 **Acceptance Criteria** ·
 - [ ] AC-1: EvolutionAgent.ts 继承 BaseSpecialist · agentId='EvolutionAgent' · outputSchema getter = EvolutionInsightContentSchema · model_tier='reasoning' · timeout_ms=60000 · execute() throw 'PRD-8 US-003 真接'
 - [ ] AC-2: DailyTaskAgent.ts 继承 BaseSpecialist · agentId='DailyTaskAgent' · outputSchema = DailyTaskOutputSchema · model_tier='lightweight' · timeout_ms=30000 · execute() throw 'PRD-8 US-007 真接'
-- [ ] AC-3: VoiceChatAgent.ts 继承 BaseSpecialist · agentId='VoiceChatAgent' · model_tier='reasoning' · tools=['llm.stream', 'llm.tools'] · execute() throw 'PRD-8 US-011 真接' · 顶部 export VOICE_CHAT_TOOLS(per §1.0.4 5 工具)
-- [ ] AC-4: workers/evolution/queue.ts + workers/daily-task/queue.ts 新建 · BullMQ Queue + Redis connection · 不启 Worker
-- [ ] AC-5: cron/daily-task-runner.ts 新建 · cron.schedule('0 0 * * *', ...) 定义但**不**调 cron.start()(避免 stub 跑)· 留 US-007 启动
-- [ ] AC-6: 3 ContextAssembler templates 新建(evolution-agent / daily-task-agent / voice-chat-agent)· 各 ~50 行 prompt persona(参 PROMPTS §12.1/§13.1/§14.1)
-- [ ] AC-7: services/context-assembler/templates/index.ts SPECIALIST_TEMPLATES 加 3 entries
-- [ ] AC-8: type alias re-export(PRD-7 R1)· 每 Agent .ts 文件首部 `export type { ... } from '@quanan/schemas/specialist-io'` re-export 对应 types
-- [ ] AC-9: SoT 验 §1.0.5 验证 3(5 工具 name 跨 3 处一致)+ 验证 4(7 task type)全过
-- [ ] AC-10: unit test · 3 Specialist 骨架 happy path stub call should throw(各 1 test)+ schema getter 校验(各 1 test)= 6 tests
-- [ ] AC-11: pnpm typecheck 0 error · pnpm lint --max-warnings=0 全过
-- [ ] AC-12: pnpm test vitest 740 + 6 = 746 全过
+- [重构删 AC-3 VoiceChatAgent.ts AC]
+- [ ] AC-3: workers/evolution/queue.ts + workers/daily-task/queue.ts 新建 · BullMQ Queue + Redis connection · 不启 Worker
+- [ ] AC-4: cron/daily-task-runner.ts 新建 · cron.schedule('0 0 * * *', ...) 定义但**不**调 cron.start()(避免 stub 跑)· 留 US-007 启动
+- [ ] AC-5: 2 ContextAssembler templates 新建(evolution-agent / daily-task-agent)· 各 ~50 行 prompt persona(参 PROMPTS §13.1/§14.1)[重构删 voice-chat-agent template]
+- [ ] AC-6: services/context-assembler/templates/index.ts SPECIALIST_TEMPLATES 加 2 entries[重构删 1]
+- [ ] AC-7: type alias re-export(PRD-7 R1)· EvolutionAgent.ts / DailyTaskAgent.ts 各首部 `export type { ... } from '@quanan/schemas/specialist-io'`[重构删 VoiceChatAgent.ts]
+- [ ] AC-8: SoT 验 §1.0.3 验证 3(7 task type)全过[重构删 voice-chat tools 验证]
+- [ ] AC-9: unit test · 2 Specialist 骨架 stub call should throw(各 1 test)+ schema getter 校验(各 1 test)= 4 tests[重构删 VoiceChatAgent tests]
+- [ ] AC-10: pnpm typecheck 0 error · pnpm lint --max-warnings=0 全过
+- [ ] AC-11: pnpm test vitest 737 + 4 = 741 全过
 
 **files_to_create** ·
 - `apps/api/src/specialists/EvolutionAgent.ts`(~120 行 · 骨架 + persona + outputSchema + throw stub)
 - `apps/api/src/specialists/DailyTaskAgent.ts`(~100 行)
-- `apps/api/src/specialists/VoiceChatAgent.ts`(~150 行 · 含 VOICE_CHAT_TOOLS)
+- [重构删 VoiceChatAgent.ts]
 - `apps/api/src/workers/evolution/queue.ts`(~40 行)
 - `apps/api/src/workers/evolution/index.ts`(~20 行 barrel)
 - `apps/api/src/workers/daily-task/queue.ts`(~40 行)
@@ -392,17 +306,17 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 - `apps/api/src/cron/index.ts`(~20 行 barrel + 注册)
 - `apps/api/src/services/context-assembler/templates/evolution-agent.ts`(~60 行)
 - `apps/api/src/services/context-assembler/templates/daily-task-agent.ts`(~60 行)
-- `apps/api/src/services/context-assembler/templates/voice-chat-agent.ts`(~60 行)
+- [重构删 voice-chat-agent.ts]
 - `tests/unit/specialists/EvolutionAgent.test.ts`(~40 行 · 2 tests)
 - `tests/unit/specialists/DailyTaskAgent.test.ts`(~40 行 · 2 tests)
-- `tests/unit/specialists/VoiceChatAgent.test.ts`(~50 行 · 2 tests)
+- [重构删 VoiceChatAgent.test.ts]
 
 **files_to_modify** ·
-- `apps/api/src/services/context-assembler/templates/index.ts`(SPECIALIST_TEMPLATES 加 3 entries)
+- `apps/api/src/services/context-assembler/templates/index.ts`(SPECIALIST_TEMPLATES 加 2 entries)[重构删 1]
 
 **test_command** · `pnpm typecheck && pnpm test && pnpm lint --max-warnings=0`
 
-**anti_patterns** · PRD-7 R1 type alias re-export · PRD-6 多 mode Specialist outputSchema getter 模式(适用 VoiceChat tools 切换)
+**anti_patterns** · PRD-7 R1 type alias re-export
 
 ---
 
@@ -707,290 +621,60 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 
 ---
 
-### **US-009 · STTWorker · OpenAI Whisper-1**
+### **US-009 · 收官 · LLM Judge + e2e + lint clean + 全套绿灯**[重构: 原 US-013 · 删 US-009/010/011/012 语音对话组]
 
-> **risk_level** · `high`(OpenAI API · audio handling · cost 控制 · 错误处理)
-> **priority** · 9
-> **depends_on** · [US-002]
-
-**描述** · STT(Speech-to-Text)Worker · 真接 OpenAI Whisper-1:
-
-1. **STTWorker 实施**(`apps/api/src/workers/stt/`):
-   - `whisper.ts` 主入口 · OpenAI SDK whisper-1 API
-   - 输入 · audio blob(webm/mp3 · max 25MB · 30s max duration)
-   - 输出 · `{ text, durationMs, costUsd }`
-   - cost · whisper-1 = $0.006/min(D-040 eventType='stt_call' · 第 5 类)
-   - 限流 · IMAGE_GEN_DAILY_LIMIT_PER_USER 同模式 · STT_DAILY_LIMIT_PER_USER=50(每人每天最多 50 次 STT)
-
-2. **stt router** `transcribe` mutation:
-   - input `{ audioBlob: base64String, mimeType: 'webm'|'mp3' }`(本 story 测试用 · US-012 改 multipart upload)
-   - protectedProcedure + rate limit check + cost_log 写入
-
-3. **错误处理**:
-   - OpenAI API timeout 30s
-   - audio too large(> 25MB)→ 客户端 400
-   - rate limit exceeded → TOO_MANY_REQUESTS
-   - OpenAI 500 → fallback 'STT 失败 · 请重试'
-
-**Acceptance Criteria** ·
-- [ ] AC-1: workers/stt/whisper.ts 真接 OpenAI SDK whisper-1 · model='whisper-1' · response_format='text' · language='zh'
-- [ ] AC-2: 25MB max size 校验 + 30s max duration 校验(audio metadata 解析)
-- [ ] AC-3: cost_log eventType='stt_call' · provider='openai' · modelUsed='whisper-1' · costUsd 按 duration 计算($0.006/min)
-- [ ] AC-4: STT_DAILY_LIMIT_PER_USER=50 · sliding window 同 image-gen pattern
-- [ ] AC-5: stt.transcribe mutation · protectedProcedure + rate limit check + Whisper 调用 + cost_log
-- [ ] AC-6: 错误路径 · timeout / oversize / rate-limit / API error 各 1 unit
-- [ ] AC-7: unit test · nock OpenAI mock · 5 tests(happy / oversize / timeout / rate-limit / API error)
-- [ ] AC-8: integration test · 真 OpenAI 调用(env OPENAI_API_KEY 存在时) · 跑 1 个 5s 中文音频 · expect 文本含关键词
-- [ ] AC-9: R-001 不暴露 OpenAI key 给前端 · grep `OPENAI_API_KEY` apps/web 应 0 命中
-- [ ] AC-10: pnpm typecheck 0 + test 全过
-
-**files_to_create** ·
-- `apps/api/src/workers/stt/whisper.ts`(~150 行)
-- `apps/api/src/workers/stt/index.ts`(barrel)
-- `apps/api/src/lib/rate-limit/stt.ts`(~80 行)
-- `apps/api/src/trpc/routers/stt.ts`(~80 行)
-- `tests/unit/api/workers/stt.test.ts`(~120 行 · 5 tests)
-- `tests/integration/api/stt-whisper.test.ts`(~80 行 · 真 OpenAI 调用 · CI skip)
-
-**files_to_modify** ·
-- `apps/api/src/trpc/routers/_app.ts`
-- `apps/api/src/lib/constants/sttLimits.ts`(新建 STT_DAILY_LIMIT_PER_USER=50)
-- `.env.example`(加 OPENAI_API_KEY 注释)
-
-**test_command** · `pnpm test tests/unit/api/workers/stt.test.ts`
-
-**anti_patterns** · PRD-6 ImageGen Worker 模式继承(同 D-038 模式 · 不走 LLMGateway)· PRD-7 R1 type alias
-
----
-
-### **US-010 · TTSWorker · OpenAI TTS-1**
-
-> **risk_level** · `high`(OpenAI API · audio streaming · cost 控制)
-> **priority** · 10
-> **depends_on** · [US-002]
-
-**描述** · TTS(Text-to-Speech)Worker · 真接 OpenAI TTS-1:
-
-1. **TTSWorker 实施**(`apps/api/src/workers/tts/`):
-   - `openai-tts.ts` 主入口 · OpenAI SDK TTS-1 API
-   - 输入 · `{ text, voice: 'alloy'|'echo'|'fable'|'onyx'|'nova'|'shimmer' }`(默认 nova · 中文友好)
-   - 输出 · `{ audioBuffer: Buffer (mp3), durationMs, costUsd }`
-   - cost · tts-1 = $15.00/1M chars(D-040 eventType='tts_call' · 第 6 类)
-   - 限流 · TTS_DAILY_LIMIT_PER_USER=100
-
-2. **tts router** `synthesize` mutation:
-   - input `{ text: string, voice?: enum }`(max 4000 chars)
-   - 输出 · `{ audioUrl: string }`(临时 URL · upload 到 Asset 表 + S3 · TTL 15min)
-   - protectedProcedure + rate limit + cost_log
-
-3. **错误处理**:
-   - text 太长(> 4000 chars)→ 客户端 400
-   - rate limit → TOO_MANY_REQUESTS
-   - OpenAI 错误 → fallback empty + toast
-
-**Acceptance Criteria** ·
-- [ ] AC-1: workers/tts/openai-tts.ts 真接 OpenAI SDK TTS-1 · model='tts-1' · voice='nova' default
-- [ ] AC-2: 4000 chars max 校验
-- [ ] AC-3: 输出 mp3 buffer → upload to Asset(per existing PRD-6 ImageGen pattern · accountId 双层防护)+ 返 publicUrl
-- [ ] AC-4: cost_log eventType='tts_call' · costUsd = ceil(text.length / 1000) * 0.015
-- [ ] AC-5: TTS_DAILY_LIMIT_PER_USER=100 · sliding window
-- [ ] AC-6: tts.synthesize mutation · protectedProcedure + rate limit + 调用 + Asset 写入
-- [ ] AC-7: 错误路径 · oversize / timeout / rate-limit / API error 各 1 unit
-- [ ] AC-8: unit test 5 tests · integration 1 真 OpenAI 调用(CI skip)
-- [ ] AC-9: Asset.publicUrl 返回 · TTL 15min(若需配 S3 signed URL · 否则 placeholder · 留 PRR 评估)
-- [ ] AC-10: pnpm typecheck 0 + test 全过
-
-**files_to_create** ·
-- `apps/api/src/workers/tts/openai-tts.ts`(~150 行)
-- `apps/api/src/workers/tts/index.ts`(barrel)
-- `apps/api/src/lib/rate-limit/tts.ts`(~80 行)
-- `apps/api/src/trpc/routers/tts.ts`(~100 行)
-- `tests/unit/api/workers/tts.test.ts`(~120 行)
-- `tests/integration/api/tts-openai.test.ts`(~80 行 · CI skip)
-
-**files_to_modify** ·
-- `apps/api/src/trpc/routers/_app.ts`
-- `apps/api/src/lib/constants/ttsLimits.ts`(新建)
-
-**test_command** · `pnpm test tests/unit/api/workers/tts.test.ts`
-
-**anti_patterns** · 同 US-009(ImageGen Worker 模式)
-
----
-
-### **US-011 · VoiceChatAgent 真接 LLM + 5 tools function calling + L1 Buffer**
-
-> **risk_level** · `high`(多轮状态 + tools dispatch + L1 Buffer 并发 + tRPC subscription)
-> **priority** · 11
-> **depends_on** · [US-001, US-002, US-009, US-010]
-
-**描述** · VoiceChatAgent 真接 + 5 工具 dispatch + L1 Buffer 状态:
-
-1. **VoiceChatAgent execute() 真接**:
-   - LLMGateway.stream() · tools=[VOICE_CHAT_TOOLS] · streaming=true · timeout=30s/turn
-   - input · `{ text, accountId, sessionId? }`(text 来自 STT)
-   - output · streaming SSE · `{ type: 'delta', text }` / `{ type: 'tool_call', name, args }` / `{ type: 'tool_result', name, result }` / `{ type: 'done', tokens }`
-   - 每轮 ≤ 30s · ≤ 80 字(PROMPTS §12.1 边界约束)
-
-2. **5 工具 dispatcher**(`apps/api/src/lib/voice-chat/tools-dispatcher.ts`):
-   - 5 工具映射到 prisma queries · 通过 prismaCtx + accountId 拿 stepData / history / diagnosis / dailyTasks / evolutionInsight
-   - each tool ≤ 2s · 失败 fallback message
-
-3. **L1 Buffer 接通**:
-   - `pushTurn` 每轮 user + assistant 各一条
-   - `getTurns` 用于 LLM 注入历史(最近 10 turns · 防超 context)
-   - 30 min TTL · 用户挂掉后自动清
-
-4. **tRPC subscription**:
-   - `voiceChat.start` subscription · 输入 `{ accountId, text, sessionId }` · 输出 observable<VoiceChatChunk>
-   - 客户端 useSubscription · 流式 onData
-
-**Acceptance Criteria** ·
-- [ ] AC-1: VoiceChatAgent execute() 真接 LLMGateway.stream() · model_tier='reasoning' · tools=VOICE_CHAT_TOOLS · timeout 30s
-- [ ] AC-2: tools-dispatcher.ts 5 工具映射 · 每个工具调对应 prisma query(get_current_step → stepData / search_history → history.findMany / etc)· 各 ≤ 2s
-- [ ] AC-3: L1 Buffer pushTurn 每轮 user + assistant 入 buffer · getTurns 取最近 10 注入下次 LLM 调用
-- [ ] AC-4: tRPC subscription voiceChat.start · 流式输出 type='delta'/'tool_call'/'tool_result'/'done' chunks
-- [ ] AC-5: 30 min TTL · grep `EXPIRE.*1800` apps/api/src/memory/l1-buffer.ts 命中 1+
-- [ ] AC-6: cost_log 写 'l5_agent' eventType + agentMode=null + modelUsed
-- [ ] AC-7: 每轮 ≤ 80 字校验 prompt 规则 · LLM 真生超 80 字时 prompt 提示截断(post-validate)
-- [ ] AC-8: 工具 dispatcher 并发安全 · 同 accountId 单 thread(LRU lock?)防 race
-- [ ] AC-9: unit test 12 tests(每工具 dispatch / L1 push/get/clear / subscription 3 chunks / tool call dispatch / fallback / timeout)
-- [ ] AC-10: integration test · seed account · 模拟 3 turn 对话 · 验证 L1 Buffer 3 个 user + 3 个 assistant turns
-- [ ] AC-11: pnpm typecheck 0 + lint 0 + test 全过
-- [ ] AC-12: LLM Judge 3 case · VoiceChatAgent 1 工具 / 2 工具 / 0 工具 评分 ≥ 4.0/5
-
-**files_to_create** ·
-- `apps/api/src/lib/voice-chat/tools-dispatcher.ts`(~200 行 · 5 工具映射)
-- `apps/api/src/trpc/routers/voiceChat.ts`(~150 行 · subscription)
-- `tests/unit/specialists/VoiceChatAgent.test.ts`(扩展 · +12 tests)
-- `tests/integration/api/voice-chat-flow.test.ts`(~150 行)
-- `tests/judge/voice-chat.judge.ts`(~100 行 · 3 case)
-
-**files_to_modify** ·
-- `apps/api/src/specialists/VoiceChatAgent.ts`(execute() 真接 + tools handling ~+200 行)
-- `apps/api/src/trpc/routers/_app.ts`
-- `apps/api/src/services/context-assembler/templates/voice-chat-agent.ts`(US-002 stub → 真 persona)
-
-**test_command** · `pnpm test tests/unit/specialists/VoiceChatAgent.test.ts tests/integration/api/voice-chat-flow.test.ts`
-
-**anti_patterns** · PRD-7 R1 type alias · PRD-6 多 mode outputSchema(本 story tools 切换不分 mode · 用 single schema + tools array)
-
----
-
-### **US-012 · /voice-chat 前端页面 · WebRTC 录音 + audio player**
-
-> **risk_level** · `high`(WebRTC 浏览器兼容性 + audio recording + subscription 客户端管理)
-> **priority** · 12
-> **depends_on** · [US-009, US-010, US-011]
-
-**描述** · /voice-chat 工具页 · 用户语音多轮对话 UI:
-
-1. **WebRTC 录音**:
-   - `navigator.mediaDevices.getUserMedia({ audio: true })` · 权限请求 + 错误处理
-   - MediaRecorder · webm/opus codec · 30s max recording
-   - 上传 audio blob → stt.transcribe → text → voiceChat.start subscription
-
-2. **Audio player**:
-   - subscription onData type='done' → 调 tts.synthesize → audioUrl → HTML5 audio play
-
-3. **多轮对话 UI**:
-   - turn list(user message bubble · assistant message bubble · tool call card)
-   - 录音按钮(按住录 · 松开发送)
-   - 沉默检测(stop after 30s silence · 主动问"还想聊什么吗?")
-   - 退出 · 按"挂掉"按钮 · 清 L1 Buffer + 显示总结
-
-4. **错误处理**:
-   - mic 权限拒绝 → "请允许麦克风权限" toast
-   - STT 失败 → "听不清 · 请重说" toast
-   - VoiceChat error → toast + 保留 buffer
-
-**Acceptance Criteria** ·
-- [ ] AC-1: /voice-chat 页面渲染 · 录音按钮 + turn list + audio player + status bar
-- [ ] AC-2: MediaRecorder 录 webm/opus · max 30s · 按住录 + 松开发
-- [ ] AC-3: STT → text shown in user bubble → voiceChat.start subscription → assistant bubble 流式 typing
-- [ ] AC-4: done event → tts.synthesize → audio play(autoplay · 浏览器策略允许)
-- [ ] AC-5: 5 工具 call card 渲染(name + args + result)· 折叠展开
-- [ ] AC-6: 30s silence detection · 主动问"还想聊什么吗?"
-- [ ] AC-7: 挂掉按钮 → clearBuffer + 显示总结("本次对话 N 轮 · 用时 X 分钟")
-- [ ] AC-8: 用 agent-browser mock mic + 跑 1 轮对话 · 截图保存 verify-artifacts/US-012/(限制:webrtc mock 复杂 · 可降级跑 unit + manual visual verify)
-- [ ] AC-9: 无 console error · 无未 release media stream(leak)
-- [ ] AC-10: pnpm typecheck 0 + lint 0 + test 全过
-
-**files_to_create** ·
-- `apps/web/src/pages/VoiceChat.tsx`(~350 行)
-- `apps/web/src/components/voice-chat/RecordButton.tsx`(~80 行)
-- `apps/web/src/components/voice-chat/TurnList.tsx`(~80 行)
-- `apps/web/src/components/voice-chat/AudioPlayer.tsx`(~60 行)
-- `apps/web/src/hooks/useVoiceRecorder.ts`(~120 行)
-- `tests/unit/web/pages/VoiceChat.test.tsx`(~100 行 · 主要测 UI · WebRTC mock)
-- `tests/e2e/voice-chat.spec.ts`(~80 行 · 降级测 · 仅页面 load + 录音按钮存在)
-
-**files_to_modify** ·
-- `apps/web/src/router.tsx`
-
-**test_command** · `pnpm test tests/unit/web/pages/VoiceChat.test.tsx && pnpm typecheck`
-
-**anti_patterns** · PRD-3 Header 30 accounts ScrollArea(本 story turn list 无类似 · 但 audio player 多 instances 需 cleanup hook)
-
----
-
-### **US-013 · 收官 · LLM Judge + e2e + lint clean + 全套绿灯**
-
-> **risk_level** · `medium · large`(18 AC · 类似 PRD-6 US-014 收官模式)
-> **priority** · 13
-> **depends_on** · [US-001 ~ US-012]
+> **risk_level** · `medium · large`(类似 PRD-6 US-014 收官模式)
+> **priority** · 9[重构: 原 priority 13 · US-009/010/011/012 已删]
+> **depends_on** · [US-001 ~ US-008]
 
 **描述** · 全套绿灯门禁 + LLM Judge 扩展 + e2e 集成 + lint clean:
 
-1. **LLM Judge +6 case**:
+1. **LLM Judge +3 case**[重构删 VoiceChatAgent 3 case]:
    - EvolutionAgent.judge.ts(已 US-003 加 1)+ insight-injection.judge.ts(已 US-004 加 2)
-   - 本 story +6 case · DailyTaskAgent 2 case(LLM 真接 + cold-start)+ VoiceChatAgent 3 case(1/2/0 工具)+ feedback-evolution-loop 1 case
-   - 总 LLM Judge 50+ case(PRD-6 39 + 本 PRD 8+)
+   - 本 story +3 case · DailyTaskAgent 2 case(LLM 真接 + cold-start)+ feedback-evolution-loop 1 case
+   - 总 LLM Judge 42+(前序累计 39 + 本 PRD 3+)
 
-2. **e2e 集成 spec**:
+2. **e2e 集成 spec**[重构删 voice-chat-flow.spec.ts]:
    - evolution-loop.spec.ts · feedback → trigger → EvolutionInsight 写入 → 下次 generate prompt 含注入
    - daily-task-flow.spec.ts · cron mock + DailyTask 生成 + UI 渲染 + markCompleted
-   - voice-chat-flow.spec.ts(降级)· /voice-chat 页面 load + 录音按钮 + tools area visible
-   - 3 个 spec + workers=1 + fullyParallel=false 沿用 PRD-5/6 教训
+   - 2 个 spec + workers=1 + fullyParallel=false 沿用 PRD-5/6 教训
 
 3. **lint clean + typecheck + 全套测试**:
-   - vitest 750+(原 727 + 23 新)
+   - vitest 750+(原 727 + 约 23 新)[重构删 语音对话 related tests]
    - pnpm typecheck 6 ws 0 error
    - pnpm lint --max-warnings=0 全过
-   - judge 50+(原 39 + 11 新)
-   - e2e 145+(原 142 + 3 新)
+   - judge 42+(原 39 + 3 新)[重构删 VoiceChatAgent judge]
+   - e2e 144+(原 142 + 2 新)[重构删 voice-chat-flow.spec.ts]
 
-4. **cost_log eventType 3 新类 grep**:
+4. **cost_log eventType 1 新类 grep**[重构删 stt_call / tts_call]:
    - 'l5_agent' · grep apps/api/src 命中 ≥3
-   - 'stt_call' · grep 命中 1
-   - 'tts_call' · grep 命中 1
 
 **Acceptance Criteria** ·
-- [ ] AC-1: judge 50+ 全过(原 39 + 11 new)
+- [ ] AC-1: judge 42+ 全过(原 39 + 3 new)[重构删 VoiceChatAgent judge case]
 - [ ] AC-2: vitest 750+ 全过(零回归)
 - [ ] AC-3: pnpm typecheck 6 ws 0 error
 - [ ] AC-4: pnpm lint --max-warnings=0 全过
-- [ ] AC-5: e2e 145+ 全过(原 142 + 3 new)
-- [ ] AC-6: 3 e2e spec(evolution-loop + daily-task-flow + voice-chat-flow)workers=1 + fullyParallel=false
-- [ ] AC-7: cost_log eventType 6 类 grep 全命中(specialist_call / judge_call / image_gen / l5_agent / stt_call / tts_call)
-- [ ] AC-8: BullMQ queues 4 个 grep(image-gen + evolution-agent + daily-task-agent + voice-chat?)
+- [ ] AC-5: e2e 144+ 全过(原 142 + 2 new)[重构删 voice-chat-flow.spec.ts]
+- [ ] AC-6: 2 e2e spec(evolution-loop + daily-task-flow)workers=1 + fullyParallel=false[重构删 voice-chat-flow]
+- [ ] AC-7: cost_log eventType 4 类 grep 全命中(specialist_call / judge_call / image_gen / l5_agent)[重构删 stt_call / tts_call]
+- [ ] AC-8: BullMQ queues 3 个 grep(image-gen + evolution-agent + daily-task-agent)[重构删 voice-chat queue]
 - [ ] AC-9: cron schedules grep('0 0 \\* \\* \\*') 命中 1+(DailyTaskAgent)
-- [ ] AC-10: L1 Buffer Redis key grep('voice_chat:acc') 命中 1+
-- [ ] AC-11: ContextAssembler.assemble() 第 5 路 fetch grep · 命中 1
-- [ ] AC-12: 11 Specialist templates 全含 evolutionInsight 注入 · grep `evolutionInsight` 命中 ≥11
-- [ ] AC-13: VOICE_CHAT_TOOLS 5 工具 name 跨 3 处一致 · grep 验证
-- [ ] AC-14: Agent specialists count = 14 · ls apps/api/src/specialists/*.ts 应 14(原 11 + 3 L5)
-- [ ] AC-15: workers count = 6 · ls apps/api/src/workers/*/ 应 6(原 4 image-gen/llm-gateway/file-parser/methodology-query + stt + tts + evolution + daily-task = 8 实际)
-- [ ] AC-16: browser 验证 3 工具页 · /evolution + /daily-tasks + /voice-chat load + form visible + 0 ErrorBoundary + 0 console error
-- [ ] AC-17: D-046~D-049(PRD-7)+ D-050~?(本 PRD)Locked Decisions 全落实
-- [ ] AC-18: 本期新增 patterns 已通过 progress.txt 回传准备(retro stage)
+- [重构删 AC-10 L1 Buffer voice_chat:acc grep]
+- [ ] AC-10: ContextAssembler.assemble() 第 5 路 fetch grep · 命中 1
+- [ ] AC-11: 11 Specialist templates 全含 evolutionInsight 注入 · grep `evolutionInsight` 命中 ≥11
+- [重构删 AC-13 VOICE_CHAT_TOOLS grep]
+- [ ] AC-12: Agent specialists count = 12 · ls apps/api/src/specialists/*.ts 应 12(原 11 + 2 L5)[重构删 VoiceChatAgent.ts]
+- [ ] AC-13: workers count = 6 · ls apps/api/src/workers/*/ 应 6(原 4 image-gen/llm-gateway/file-parser/methodology-query + evolution + daily-task)[重构删 stt/tts workers]
+- [ ] AC-14: browser 验证 2 工具页 · /evolution + /daily-tasks load + form visible + 0 ErrorBoundary + 0 console error[重构删 /voice-chat]
+- [ ] AC-15: D-046~D-049(PRD-7)+ D-050~?(本 PRD)Locked Decisions 全落实
+- [ ] AC-16: 本期新增 patterns 已通过 progress.txt 回传准备(retro stage)
 
 **files_to_create** ·
 - `tests/judge/daily-task.judge.ts`(扩展 · US-007 已 80 行 · 加 case)
-- `tests/judge/voice-chat.judge.ts`(扩展 · US-011 已 100 行 · 加 case)
+- [重构删 tests/judge/voice-chat.judge.ts]
 - `tests/e2e/evolution-loop.spec.ts`(~150 行)
 - `tests/e2e/daily-task-flow.spec.ts`(~120 行)
-- `tests/e2e/voice-chat-flow.spec.ts`(~80 行 · 降级测)
+- [重构删 tests/e2e/voice-chat-flow.spec.ts]
 
 **files_to_modify** · 无(仅扩展既有 · 不动 source)
 
@@ -998,16 +682,13 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 
 ---
 
-## §2 Functional Requirements
+## §2 Functional Requirements[重构删 FR-5/FR-6/FR-8]
 
-- **FR-1**: 3 L5 自治 Agent(VoiceChat + Evolution + DailyTask)走 ADR-018 外部 orchestrator · 严禁 LLM 内 while/for 循环
+- **FR-1**: 2 L5 自治 Agent(Evolution + DailyTask)走 ADR-018 外部 orchestrator · 严禁 LLM 内 while/for 循环[重构删 VoiceChat]
 - **FR-2**: EvolutionAgent 累计反馈阈值触发器 · count ∈ {5, 20, 50, 100} · BullMQ async + 原子事务
 - **FR-3**: ContextAssembler 注入 EvolutionInsight 到全 11 生成型 Specialist systemPrompt · 无 insight 时跳过
 - **FR-4**: DailyTaskAgent 0 点 cron 触发 + per-account fan-out · DailyTask 表 @@unique(accountId, taskDate) 保证幂等
-- **FR-5**: VoiceChatAgent 流式 + 5 工具 function calling + L1 Buffer Redis(max 20 turns · TTL 30min)
-- **FR-6**: STT/TTS Worker 真接 OpenAI Whisper-1 + TTS-1 · cost_log 写新 eventType('stt_call', 'tts_call')
-- **FR-7**: 5 层记忆完整实施(L1 Buffer + L2 stepData + L3 History + L4 EvolutionProfile + L5 Trending placeholder)
-- **FR-8**: rate limit · STT 50/user/day · TTS 100/user/day · sliding window 同 image-gen pattern
+- **FR-5**: 4 层记忆完整实施(L2 stepData + L3 History + L4 EvolutionProfile + L5 Trending placeholder)[重构删 L1 Buffer voice_chat]
 
 ## §3 范围排除(Non-Goals)
 
@@ -1016,21 +697,20 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 - ❌ DeepLearnAgent 自动学习触发器(本期 DeepLearningArchive 仅作 EvolutionAgent 输入)
 - ❌ Trending Cache L5 真实施(placeholder · 留 PRD-9)
 - ❌ admin 任何代码
-- ❌ 国内 STT/TTS 备份 provider · OpenAI only(PRR 评估国内合规)
+- ❌ VoiceChatAgent / STT / TTS(语音对话已重构删除)
 - ❌ 移动端 App / 原生 SDK
 
 ## §4 Design Considerations
 
 - 沿用 Aurelian Dark · 复用 ToolForm / ToolResult / Card / Button
 - 新 charts 用 Recharts(已 PRD-6 引入)
-- 3 工具页(/evolution / /daily-tasks / /voice-chat)按 PRD-MASTER §5.3 设计稿占位 · 主要业务逻辑驱动 · 视觉细节留 design polish(可 PRR)
+- 2 工具页(/evolution / /daily-tasks)按 PRD-MASTER §5.3 设计稿占位 · 主要业务逻辑驱动 · 视觉细节留 design polish(可 PRR)[重构删 /voice-chat]
 
 ## §5 Technical Considerations
 
 - 严守 LD-001(95/5)· LD-006(5 层记忆)· LD-007(ContextAssembler 唯一入口)· LD-008(飞轮 5 阶段)· R-12(原子事务)
 - BullMQ Worker 并发控制 · evolution=1 · daily-task=5(平衡 LLM 限流 + 速度)
 - cron 幂等 · DailyTask 表 @@unique([accountId, taskDate]) + Worker upsert
-- L1 Buffer Redis key prefix + TTL · 防内存泄漏
 - OpenAI API 限流 · per-org TPM (token per minute) + RPM · 留 PRR 评估 enterprise account 升级时机
 
 ## §6 跨 Story 协议锁
@@ -1040,15 +720,12 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
 | `EvolutionInsightContentSchema` | `z.ZodObject` | US-001 | US-003, US-004 | 5 字段 direction/insights{...} |
 | `TriggerTypeSchema` | `z.union` 4 literal | US-001 | US-003 | 仅 'threshold:5/20/50/100' |
 | `DailyTaskOutputSchema` | `z.ZodObject` | US-001 | US-007, US-008 | tasks[3-5] + TaskItemSchema |
-| `VoiceChatTurnSchema` | `z.ZodObject` | US-001 | US-011 | role/content/toolCalls/audioUrl |
-| `VOICE_CHAT_TOOLS` | `as const` array 5 entries | US-002 | US-011 | 5 工具 function calling |
 | `evolutionQueue` | `Queue('evolution-agent')` | US-002 | US-003 | BullMQ |
 | `dailyTaskQueue` | `Queue('daily-task-agent')` | US-002 | US-007 | BullMQ |
 | `_cleanup_stale_verify_artifacts` | function in ralph.py | PRD-7 US-002 | (本 PRD daemon 启动时跑)| 跨 PRD 残留清理 |
 | `enqueueIfThresholdMet(accountId, traceId)` | `(number, string?) => Promise<void>` | US-003 | US-006(feedback hook) | 阈值触发 |
 | `runForAllActiveAccounts()` | `() => Promise<void>` | US-007 | (cron 主调用) | per-account fan-out |
-| `cost_log.eventType` | enum 'l5_agent'/'stt_call'/'tts_call' | US-003/009/010 | US-013 grep | 新 3 类(D-040 扩展) |
-| `tools-dispatcher.dispatch(name, args)` | `(string, Record<string, unknown>) => Promise<string>` | US-011 | (内部消费)| 5 工具 dispatch |
+| `cost_log.eventType` | enum 'l5_agent' | US-003 | US-009 grep | 新 1 类(D-040 扩展)[重构删 stt_call / tts_call · US-009/010] |
 
 定义 story priority < 消费 story priority(全 PRD 拓扑正确 · 无循环依赖)。
 
@@ -1065,13 +742,11 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
   - 不实施站内通知 banner / email push
   - 留 PRR 阶段评估推送渠道
 
-- **D-052**(STT/TTS 仅 OpenAI provider):
-  - 本期仅 Whisper-1 + TTS-1 · 不引入国内 provider(阿里云 / 火山引擎)
-  - 留 PRR 国内合规评估
+- **D-052**(STT/TTS 仅 OpenAI provider)[重构: 已删语音对话功能 · 本 D 已作废]:
+  - 语音对话功能已重构删除 · 原 D-052 决策不再适用
 
-- **D-053**(L1 Buffer Redis key prefix + TTL):
-  - `voice_chat:acc_{id}:turns` List 类型 · max 20 · TTL 1800s
-  - 不引入 RedisJSON / Stream(复杂度太高)
+- **D-053**(L1 Buffer Redis key prefix + TTL)[重构: 已删语音对话功能 · 本 D 已作废]:
+  - VoiceChatAgent 及 L1 Buffer 已重构删除
 
 - **D-054**(ContextAssembler 注入 EvolutionInsight 到全 11 生成型 Specialist):
   - 11 templates 全接通(D-007 单一入口)
@@ -1082,20 +757,19 @@ grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/sr
     - 等价于 PRD v0.1 原写"1 per accountId" · 但 BullMQ concurrency 是全局 worker 级别 · 不支持 per-key · 用 jobId dedup 实现 per-account 串行
   - DailyTaskAgent: concurrency=5(per-account fan-out 跑 5 个 account 同时 · 平衡速度 vs LLM 限流)
 
-## §8 Success Metrics
+## §8 Success Metrics[重构删 VoiceChatAgent 指标]
 
-- 3 L5 Agent 全部 PASS(VoiceChat / Evolution / DailyTask)
+- 2 L5 Agent 全部 PASS(Evolution / DailyTask)[重构删 VoiceChat]
 - 反馈飞轮闭环 · 第 5 个 feedback create → BullMQ trigger → EvolutionInsight 写入 → 下次 PositioningAgent prompt 含注入(e2e 验)
 - DailyTaskAgent · 0 点 cron 跑 1 次 · DailyTask 表多 N 行(N=active accounts 7d)
-- VoiceChatAgent · 1 轮对话 ≤ 30s · 5 工具任一触发 ≤ 2s
-- vitest 750+ / typecheck 0 / lint 0 / judge 50+ / e2e 145+
-- cost_log 6 eventType 全命中
+- vitest 750+ / typecheck 0 / lint 0 / judge 42+ / e2e 144+
+- cost_log 4 eventType 全命中[重构删 stt_call / tts_call]
 
 ## §9 Open Questions
 
 - **Q-1** · EvolutionAgent dead-letter 告警渠道?(钉钉 webhook / Sentry / 仅日志)· 本期仅 log + 留 PRR
-- **Q-2** · TTS 输出 audioUrl TTL 15min 是否需 S3 signed URL?· 本期 Asset.publicUrl placeholder · 留 PRR
-- **Q-3** · VoiceChatAgent 多用户会话隔离粒度?· accountId 隔离 · 但同 account 多 device 是否互通?(本期不互通 · sessionId 隔离)
+- **Q-2** · TTS 输出 audioUrl TTL 15min[重构作废: 语音对话已删 · Q-2 不再适用]
+- **Q-3** · VoiceChatAgent 多用户会话隔离粒度[重构作废: 语音对话已删 · Q-3 不再适用]
 - **Q-4** · cron 失败告警 SOP?· 本期 log only · 留 PRR 接 Sentry
 
 ---

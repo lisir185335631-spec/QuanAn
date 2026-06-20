@@ -37,7 +37,7 @@ import type {
 
 // ── AC-1: VideoAgent mode union ───────────────────────────────────────────────
 
-export type VideoAgentMode = 'shooting' | 'production' | 'acquisition' | 'storyboard';
+export type VideoAgentMode = 'shooting' | 'production' | 'storyboard';
 
 // ── PRD-20 US-005 AC-2: 8-column storyboard item schema for shooting mode ─────
 // columns: duration/scene/shotType/angle/movement/emotion/dialogue/action
@@ -114,24 +114,6 @@ const ProductionBaseSchema = z.object({
 
 export type ProductionOutput = z.infer<typeof ProductionOutputSchema>;
 
-// ── acquisition mode schemas (VideoAgent) ─────────────────────────────────────
-
-export const VideoAcquisitionOutputSchema = z.object({
-  script: z.string().min(100),
-  cta: z.string().min(10),
-  conversionPath: z.string(),
-  keyMessages: z.array(z.string()).min(1),
-});
-
-const VideoAcquisitionBaseSchema = z.object({
-  script: z.string(),
-  cta: z.string(),
-  conversionPath: z.string(),
-  keyMessages: z.array(z.string()),
-});
-
-export type VideoAcquisitionOutput = z.infer<typeof VideoAcquisitionOutputSchema>;
-
 // ── storyboard mode schemas (AC-4 · matches packages/schemas aiVideoSceneSchema exactly) ──────────
 
 const StoryboardSceneSchema = z.object({
@@ -166,7 +148,7 @@ export type StoryboardOutput = z.infer<typeof StoryboardOutputSchema>;
 
 // ── VideoMultiOutput union ────────────────────────────────────────────────────
 
-export type VideoMultiOutput = ShootingOutput | ProductionOutput | VideoAcquisitionOutput | StoryboardOutput;
+export type VideoMultiOutput = ShootingOutput | ProductionOutput | StoryboardOutput;
 
 // ── AC-6: input schema — sourceCopy > 5000 chars → zod 拒 ────────────────────
 
@@ -336,13 +318,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
       schedule: '制作拍摄约 2-3 小时，后期剪辑约 1-2 小时（系统繁忙备用制作计划）',
     } satisfies ProductionOutput,
 
-    acquisition: {
-      script: '你是否曾经遇到这个问题？每天花大量时间做内容，但粉丝增长却停滞不前？今天分享一个经过验证的方法，帮助你快速突破瓶颈，实现精准涨粉。我们的系统已帮助数百位创作者从 0 到 10 万粉丝，现在这个机会也属于你（系统繁忙备用文案·请稍后重试）。',
-      cta: '立即扫描下方二维码，免费获取详细方案（系统繁忙备用 CTA）',
-      conversionPath: '视频引流→扫码→咨询群→成交',
-      keyMessages: ['经验证的涨粉方法', '针对创作者的专属方案', '免费咨询了解详情'],
-    } satisfies VideoAcquisitionOutput,
-
     storyboard: {
       title: 'Content Creator Story (Fallback Template)',
       totalDuration: '60s',
@@ -386,7 +361,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     switch (this._mode) {
       case 'shooting':    return ShootingOutputSchema as z.ZodType<VideoMultiOutput>;
       case 'production':  return ProductionOutputSchema as z.ZodType<VideoMultiOutput>;
-      case 'acquisition': return VideoAcquisitionOutputSchema as z.ZodType<VideoMultiOutput>;
       case 'storyboard':  return StoryboardOutputSchema as z.ZodType<VideoMultiOutput>;
       default:            throw new Error(`Unknown VideoAgent mode: ${this._mode as string}`);
     }
@@ -407,7 +381,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
 
     if (mode === 'shooting')    return this._invokeShooting(ctx, req);
     if (mode === 'production')  return this._invokeProduction(ctx, req);
-    if (mode === 'acquisition') return this._invokeVideoAcquisition(ctx, req);
     if (mode === 'storyboard')  return this._invokeStoryboard(ctx, req);
     throw new Error(`Unknown VideoAgent mode: ${mode as string}`);
   }
@@ -427,7 +400,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -453,7 +426,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
           trace_id: req.traceId ?? '',
           agentId: this.config.agentId,
           accountId: req.accountId,
-          userId: 0,
+          userId: req.userId,
         },
         timeout_ms: this.config.execution.timeout_ms,
         retry: this.config.execution.retry,
@@ -492,60 +465,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     }
   }
 
-  // ── acquisition mode ─────────────────────────────────────────────────────
-  // PRD-29.6 fix: LLM error or safeParse failure → return fallbackTemplate.acquisition
-  // (isFallback=true) instead of throwing. Mirrors _invokeProduction pattern.
-
-  private async _invokeVideoAcquisition(
-    ctx: AssembledContext,
-    req: SpecialistRequest<VideoInput>,
-  ): Promise<InvokeLLMResult> {
-    try {
-      const res = await this.llmGateway.complete({
-        model_tier: this.config.execution.model_tier,
-        systemPrompt: ctx.systemPrompt,
-        userPrompt: this._buildUserPrompt(req.userInput, ctx, 'acquisition'),
-        responseFormat: { type: 'json_schema' as const, schema: VideoAcquisitionBaseSchema },
-        metadata: {
-          trace_id: req.traceId ?? '',
-          agentId: this.config.agentId,
-          accountId: req.accountId,
-          userId: 0,
-        },
-        timeout_ms: this.config.execution.timeout_ms,
-        retry: this.config.execution.retry,
-      });
-
-      // Validate the LLM response against the strict schema before returning.
-      // If the content fails safeParse (e.g. LLM returned a string error message
-      // or a malformed object), fall back rather than letting BaseSpecialist retry
-      // and eventually throw SchemaValidationError with no fallback catch.
-      const parsed = VideoAcquisitionOutputSchema.safeParse(res.content);
-      if (!parsed.success) {
-        const fallback = VideoAgent.fallbackTemplate['acquisition'] as VideoAcquisitionOutput;
-        return {
-          content: fallback,
-          tokens: res.tokens,
-          model: res.model,
-          isFallback: true,
-        };
-      }
-
-      return res;
-    } catch {
-      // Any LLM gateway error (API auth failure, network error, rate-limit, etc.)
-      // → return acquisition fallback template so execute() returns isFallback=true
-      // instead of propagating the throw through tRPC.
-      const fallback = VideoAgent.fallbackTemplate['acquisition'] as VideoAcquisitionOutput;
-      return {
-        content: fallback,
-        tokens: { prompt: 0, completion: 0, total: 0 },
-        model: 'fallback',
-        isFallback: true,
-      };
-    }
-  }
-
   // ── storyboard mode — AC-4 ASCII enforced via schema-level regex ─────────
 
   private async _invokeStoryboard(
@@ -561,7 +480,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -574,7 +493,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     switch (mode) {
       case 'shooting':    return this._buildShootingPrompt(userInput, ctx);
       case 'production':  return this._buildProductionPrompt(userInput, ctx);
-      case 'acquisition': return this._buildAcquisitionVideoPrompt(userInput, ctx);
       case 'storyboard':  return this._buildStoryboardPrompt(userInput, ctx);
     }
   }
@@ -633,29 +551,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
       '- description 填画面内容描述 · bgm 填音乐风格 · reference 和 note 无内容填"无"',
       '- equipment 包含完整专业设备 · 含备用方案',
       '- schedule 按场景集中拍摄 · 减少换场成本',
-    ].join('\n');
-  }
-
-  private _buildAcquisitionVideoPrompt(userInput: VideoInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
-    return [
-      ctx.userPrompt,
-      '',
-      '[获客视频脚本任务 · acquisition mode]',
-      `用户输入: ${inputJson}`,
-      '',
-      '请以 JSON 格式返回获客视频方案:',
-      '{',
-      '  "script": "完整视频脚本文案(至少 100 字 · 含钩子+价值+CTA · 转化导向)",',
-      '  "cta": "明确行动号召(至少 10 字 · 具体可操作：扫码/私信/点击链接)",',
-      '  "conversionPath": "转化路径描述(视频→CTA行动→落地页→成交)",',
-      '  "keyMessages": ["核心卖点1", "核心卖点2"]',
-      '}',
-      '',
-      '⚠️ 严格约束:',
-      '- script 前 5 秒必须命中痛点 · CTA 出现在中段和结尾',
-      '- cta 必须具体可操作 · 不能模糊',
-      '- keyMessages 最多 3 个 · 聚焦核心转化点',
     ].join('\n');
   }
 

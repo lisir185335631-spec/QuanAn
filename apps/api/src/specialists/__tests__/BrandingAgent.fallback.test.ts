@@ -63,6 +63,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -73,6 +74,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -83,6 +85,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -94,6 +97,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -106,6 +110,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -117,6 +122,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -128,6 +134,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -140,6 +147,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -151,6 +159,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -163,6 +172,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -177,6 +187,7 @@ describe('BrandingAgent fallback (persona mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'persona',
       userInput: {},
     });
@@ -202,6 +213,7 @@ describe('BrandingAgent fallback (packaging mode)', () => {
     const agent = new BrandingAgent();
     const result = await agent.execute({
       accountId: TEST_ACCOUNT_ID,
+      userId: 1,
       mode: 'packaging',
       userInput: {},
     });

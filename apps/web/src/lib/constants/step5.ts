@@ -106,12 +106,13 @@ export const STEP5_LOADING_TEXT = 'AI 正在生成 100 个爆款选题，预计 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 // STEP5_CATEGORIES_5 · 5 项 H3 字面锁 · AC-3 D-220
+// PRD-37 US-P09 AC2: 各类说明扩为一句完整类型说明(非空·非占位)
 export const STEP5_CATEGORIES_5: readonly Step5Category[] = [
-  { key: 'traffic',   label: '知识科普类选题', description: '科普行业知识，建立专业形象' },
-  { key: 'monetize',  label: '产品种草类选题', description: '展示产品价值，促进购买决策' },
-  { key: 'persona',   label: '情感共鸣类选题', description: '触动用户情感，增强品牌连接' },
-  { key: 'cognition', label: '争议讨论类选题', description: '引发话题讨论，提升互动数据' },
-  { key: 'case',      label: '干货实操类选题', description: '实用技巧分享，积累精准粉丝' },
+  { key: 'traffic',   label: '知识科普类选题', description: '围绕行业知识与专业洞察创作，帮助账号快速建立垂直领域权威形象，吸引精准流量' },
+  { key: 'monetize',  label: '产品种草类选题', description: '聚焦产品卖点与用户痛点，用真实场景与对比数据激发购买欲，直接驱动转化与变现' },
+  { key: 'persona',   label: '情感共鸣类选题', description: '挖掘目标用户的真实情绪与生活故事，用共情叙事拉近账号与粉丝距离，提升长期粘性' },
+  { key: 'cognition', label: '争议讨论类选题', description: '提出行业反直觉观点或争议话题，激发评论区对话，借助互动热度放大算法分发权重' },
+  { key: 'case',      label: '干货实操类选题', description: '分享可直接复用的操作方法与案例拆解，满足用户"即学即用"需求，积累高价值精准粉丝' },
 ] as const;
 
 // ─── Numeric Constants ────────────────────────────────────────────────────────

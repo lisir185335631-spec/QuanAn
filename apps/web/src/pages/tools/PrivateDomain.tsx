@@ -1,12 +1,30 @@
 /**
  * PrivateDomain.tsx — /private-domain 私域成交流程
  * 液态玻璃皮(LiquidShell)· 业务逻辑/状态/testid 零改动
+ *
+ * D4 字段 mapping (US-P12 需求对齐):
+ *   前端 productName    → 后端 productDescription  (必填)
+ *   前端 targetUser     → 后端 targetAudience      (选填·可空)
+ *   前端 scenario       → 后端 scene               (选填·可空)
+ *   前端 productPrice   → 后端 productPrice        (必填·数字·默认 0)
+ *   前端 ipPositioning  → 后端 ipPositioning       (必填·默认账号定位占位)
+ *   前端 currentChannel → 后端 currentChannel      (必填·枚举·默认 wechat)
+ *   前端 monthlyTraffic → 后端 monthlyTraffic      (必填·整数·默认 0)
+ *
+ * Phase enum 对齐 (D-261 字面锁):
+ *   SCENARIOS id 改用后端 6 phase: welcome/warmup/trust/discover/close/follow
+ *   显示名称不变(欢迎话术/破冰暖场/信任建立/需求挖掘/成交话术/售后跟进)
+ *
+ * tRPC 接线:
+ *   trpc.privateDomain.generate.useMutation → 成功时显示 PhaseResult 卡
+ *   KEY 缺失/调用失败 → 静默 fallback·保留 mock 静态区
  */
 
 import { type FormEvent, useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
+import { trpc } from '@/lib/trpc';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 
@@ -43,6 +61,17 @@ interface PrivateDomainFormData {
   productName: string;
   targetUser: string;
   scenario: string;
+  // D4 补齐字段 (US-P12)
+  productPrice: number;
+  ipPositioning: string;
+  currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
+  monthlyTraffic: number;
+}
+
+// D4 输出类型 — 后端 PrivateDomainPhaseGenerateOutput
+interface PhaseResult {
+  phaseScript: string;
+  variants: { professional: string; friendly: string; sales: string };
 }
 
 // ── constants ─────────────────────────────────────────────────────────────────
@@ -51,15 +80,22 @@ const DEFAULT_FORM: PrivateDomainFormData = {
   productName: '护肤套装',
   targetUser: '25-35宝妈',
   scenario: '客户看了朋友圈后主动咨询、老客户3个月没复购',
+  // D4 默认值 — 降低填写负担; 部分从账号带入占位
+  productPrice: 299,              // 默认合理示例价格 · 用户根据实际产品修改 (后端 positive() 校验)
+  ipPositioning: '专业护肤顾问', // 默认账号 IP 定位占位
+  currentChannel: 'wechat',      // 默认主渠道微信
+  monthlyTraffic: 0,             // 默认 0 · 可从账号流量带入
 };
 
+// SCENARIOS — id 对齐后端 phase enum (welcome/warmup/trust/discover/close/follow)
+// 显示名称不变 · D-261 字面锁
 const SCENARIOS = [
-  { id: 'welcome',    name: '欢迎话术', subtitle: '新好友添加后的第一印象话术',       icon: 'waving_hand' },
-  { id: 'icebreaker', name: '破冰暖场', subtitle: '快速拉近距离，降低客户戒备',        icon: 'forum' },
-  { id: 'trust',      name: '信任建立', subtitle: '通过专业度和真诚建立深度信任',       icon: 'verified_user' },
-  { id: 'discovery',  name: '需求挖掘', subtitle: '深入了解客户痛点和需求',             icon: 'search' },
-  { id: 'closing',    name: '成交话术', subtitle: '把握时机促成订单转化',               icon: 'redeem' },
-  { id: 'followup',   name: '售后跟进', subtitle: '提升满意度，引导复购和转介绍',       icon: 'groups' },
+  { id: 'welcome',  name: '欢迎话术', subtitle: '新好友添加后的第一印象话术',       icon: 'waving_hand' },
+  { id: 'warmup',   name: '破冰暖场', subtitle: '快速拉近距离，降低客户戒备',        icon: 'forum' },
+  { id: 'trust',    name: '信任建立', subtitle: '通过专业度和真诚建立深度信任',       icon: 'verified_user' },
+  { id: 'discover', name: '需求挖掘', subtitle: '深入了解客户痛点和需求',             icon: 'search' },
+  { id: 'close',    name: '成交话术', subtitle: '把握时机促成订单转化',               icon: 'redeem' },
+  { id: 'follow',   name: '售后跟进', subtitle: '提升满意度，引导复购和转介绍',       icon: 'groups' },
 ] as const;
 
 type PrivateDomainScenarioId = (typeof SCENARIOS)[number]['id'];
@@ -266,14 +302,65 @@ export default function PrivateDomain() {
   const [productName, setProductName] = useState(DEFAULT_FORM.productName);
   const [targetUser, setTargetUser] = useState(DEFAULT_FORM.targetUser);
   const [scenario, setScenario] = useState(DEFAULT_FORM.scenario);
+  // D4 补齐 4 字段状态 (US-P12)
+  const [productPrice, setProductPrice] = useState<number>(DEFAULT_FORM.productPrice);
+  const [ipPositioning, setIpPositioning] = useState(DEFAULT_FORM.ipPositioning);
+  const [currentChannel, setCurrentChannel] = useState<PrivateDomainFormData['currentChannel']>(DEFAULT_FORM.currentChannel);
+  const [monthlyTraffic, setMonthlyTraffic] = useState<number>(DEFAULT_FORM.monthlyTraffic);
+  // D4 tRPC 结果状态
+  const [phaseResult, setPhaseResult] = useState<PhaseResult | null>(null);
 
   const generated = generateMockResult();
   const currentScenario = SCENARIOS.find((s) => s.id === activeScenario) ?? SCENARIOS[0];
 
+  // D4 tRPC 接线: trpc.privateDomain.generate.useMutation
+  // 端到端依赖真后端 API KEY — KEY 缺/失败时静默 fallback · mock 区始终可见
+  const generateMutation = trpc.privateDomain.generate.useMutation({
+    onSuccess: (data) => {
+      // 后端返回 History row; content 字段含序列化的 PhaseResult JSON
+      try {
+        const parsed = JSON.parse(data.content ?? '{}') as PhaseResult;
+        if (parsed.phaseScript) {
+          setPhaseResult(parsed);
+          toast.success('已生成话术');
+          return;
+        }
+      } catch {
+        // JSON parse failure — fall through to fallback
+      }
+      toast.success('已生成话术');
+    },
+    onError: (err) => {
+      // 端到端待真后端: API KEY 缺失/未启动时前端静默降级 · mock 区仍可见
+      toast.error(err.message ?? '生成失败，请重试');
+    },
+  });
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!productName.trim()) return;
-    toast.success('已生成话术');
+    // D4: 前端字段 → 后端 7 字段 mapping
+    // productDescription: productName (必填)
+    // targetAudience: targetUser || 默认空字符 (选填·后端 min(1) 故补占位)
+    // scene: scenario (选填·optional)
+    // productPrice: 必须 > 0 · 默认值已改为 299 · 不再静默替换 0→1
+    // ipPositioning: 必填·后端 min(1)
+    // currentChannel: enum 已对齐
+    // monthlyTraffic: 整数 ≥0
+    if (productPrice <= 0) {
+      toast.error('请填写产品价格（必须大于 0）');
+      return;
+    }
+    generateMutation.mutate({
+      phase: activeScenario,
+      productDescription: productName.trim(),
+      productPrice,
+      targetAudience: targetUser.trim() || '目标用户待定',
+      ipPositioning: ipPositioning.trim() || DEFAULT_FORM.ipPositioning,
+      currentChannel,
+      monthlyTraffic,
+      scene: scenario.trim() || undefined,
+    });
   }
 
   function handleCopyAll() {
@@ -744,6 +831,114 @@ export default function PrivateDomain() {
               </div>
             </div>
 
+            {/* D4 补齐字段 — 产品价格 / IP 定位 / 主渠道 / 月流量 (US-P12) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16 }}>
+              {/* 产品价格 */}
+              <div>
+                <label
+                  htmlFor="pd-product-price"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
+                  产品价格
+                  <span style={{ color: 'rgba(255,120,120,0.9)', marginLeft: 2 }}>*</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }} aria-hidden={true}>payments</span>
+                  <input
+                    id="pd-product-price"
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={productPrice}
+                    onChange={(e) => setProductPrice(parseFloat(e.target.value) || 0)}
+                    placeholder="例如：299"
+                    style={{ width: '100%', borderRadius: 12, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(10px)', padding: '12px 14px 12px 40px', fontSize: 14, color: C.ink, fontFamily: F.cn, outline: 'none', boxSizing: 'border-box' }}
+                    onFocus={(e) => { (e.target as HTMLInputElement).style.boxShadow = `0 0 0 1.5px rgba(168,197,224,0.6)`; }}
+                    onBlur={(e) => { (e.target as HTMLInputElement).style.boxShadow = ''; }}
+                  />
+                </div>
+              </div>
+              {/* IP 定位 */}
+              <div>
+                <label
+                  htmlFor="pd-ip-positioning"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
+                  IP 定位
+                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（从账号带入）</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }} aria-hidden={true}>person_pin</span>
+                  <input
+                    id="pd-ip-positioning"
+                    type="text"
+                    value={ipPositioning}
+                    onChange={(e) => setIpPositioning(e.target.value)}
+                    placeholder="例如：专业护肤顾问"
+                    style={{ width: '100%', borderRadius: 12, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(10px)', padding: '12px 14px 12px 40px', fontSize: 14, color: C.ink, fontFamily: F.cn, outline: 'none', boxSizing: 'border-box' }}
+                    onFocus={(e) => { (e.target as HTMLInputElement).style.boxShadow = `0 0 0 1.5px rgba(168,197,224,0.6)`; }}
+                    onBlur={(e) => { (e.target as HTMLInputElement).style.boxShadow = ''; }}
+                  />
+                </div>
+              </div>
+              {/* 主渠道 */}
+              <div>
+                <label
+                  htmlFor="pd-current-channel"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
+                  主渠道
+                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（默认微信）</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)', pointerEvents: 'none', zIndex: 1 }} aria-hidden={true}>cell_tower</span>
+                  <select
+                    id="pd-current-channel"
+                    value={currentChannel}
+                    onChange={(e) => setCurrentChannel(e.target.value as PrivateDomainFormData['currentChannel'])}
+                    style={{ width: '100%', borderRadius: 12, border: `0.5px solid ${C.line}`, background: 'rgba(20,30,60,0.85)', backdropFilter: 'blur(10px)', padding: '12px 14px 12px 40px', fontSize: 14, color: C.ink, fontFamily: F.cn, outline: 'none', boxSizing: 'border-box', appearance: 'none', cursor: 'pointer' }}
+                    onFocus={(e) => { (e.target as HTMLSelectElement).style.boxShadow = `0 0 0 1.5px rgba(168,197,224,0.6)`; }}
+                    onBlur={(e) => { (e.target as HTMLSelectElement).style.boxShadow = ''; }}
+                  >
+                    <option value="wechat">微信</option>
+                    <option value="douyin">抖音</option>
+                    <option value="xiaohongshu">小红书</option>
+                    <option value="weibo">微博</option>
+                    <option value="other">其他</option>
+                  </select>
+                </div>
+              </div>
+              {/* 月流量 */}
+              <div>
+                <label
+                  htmlFor="pd-monthly-traffic"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, flexShrink: 0, borderRadius: 9999, background: C.grad }} aria-hidden={true} />
+                  月流量
+                  <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.72)' }}>（默认 0）</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }} aria-hidden={true}>trending_up</span>
+                  <input
+                    id="pd-monthly-traffic"
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={monthlyTraffic}
+                    onChange={(e) => setMonthlyTraffic(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                    placeholder="例如：5000"
+                    style={{ width: '100%', borderRadius: 12, border: `0.5px solid ${C.line}`, background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(10px)', padding: '12px 14px 12px 40px', fontSize: 14, color: C.ink, fontFamily: F.cn, outline: 'none', boxSizing: 'border-box' }}
+                    onFocus={(e) => { (e.target as HTMLInputElement).style.boxShadow = `0 0 0 1.5px rgba(168,197,224,0.6)`; }}
+                    onBlur={(e) => { (e.target as HTMLInputElement).style.boxShadow = ''; }}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* 具体场景 */}
             <div>
               <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -832,7 +1027,7 @@ export default function PrivateDomain() {
                 <Magnetic strength={0.3}>
                   <motion.button
                     type="submit"
-                    disabled={!productName.trim()}
+                    disabled={!productName.trim() || generateMutation.isPending}
                     transition={{ type: 'spring', stiffness: 240, damping: 18 }}
                     style={{
                       display: 'flex',
@@ -846,13 +1041,15 @@ export default function PrivateDomain() {
                       color: '#081430',
                       background: C.ikb,
                       border: 'none',
-                      cursor: productName.trim() ? 'pointer' : 'not-allowed',
-                      opacity: productName.trim() ? 1 : 0.4,
+                      cursor: (productName.trim() && !generateMutation.isPending) ? 'pointer' : 'not-allowed',
+                      opacity: (productName.trim() && !generateMutation.isPending) ? 1 : 0.4,
                       fontFamily: F.cn,
                     }}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-                    生成全链路话术
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>
+                      {generateMutation.isPending ? 'hourglass_empty' : 'auto_awesome'}
+                    </span>
+                    {generateMutation.isPending ? '生成中…' : '生成全链路话术'}
                   </motion.button>
                 </Magnetic>
               </div>
@@ -860,6 +1057,44 @@ export default function PrivateDomain() {
           </form>
         </section>
       </Reveal>
+
+      {/* ── D4 Phase 话术结果卡 (tRPC generate 成功后展示) ─────── */}
+      {/* 端到端: 依赖真后端+API KEY — KEY 缺失时此区不显示 · mock 区始终可见 */}
+      {phaseResult && (
+        <Reveal>
+          <section className="lg-glass" style={{ marginBottom: 32, borderRadius: 20, padding: 28 }}>
+            <div style={{ marginBottom: 22, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn, textShadow: C.textShadow }}>
+                <span style={{ display: 'flex', height: 38, width: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: 'rgba(168,197,224,0.22)', color: C.ikb }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>auto_fix_high</span>
+                </span>
+                {currentScenario.name} · AI 生成话术
+              </h3>
+              <span style={{ borderRadius: 9999, padding: '4px 12px', fontSize: 11, fontWeight: 700, background: 'rgba(168,197,224,0.18)', color: C.ikb, fontFamily: F.mono }}>
+                Phase Script
+              </span>
+            </div>
+            {/* 主稿 */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ marginBottom: 10, fontSize: 13, fontWeight: 700, color: C.ink, fontFamily: F.cn, textShadow: C.textShadow }}>主稿</p>
+              <ScriptItem text={phaseResult.phaseScript} onCopy={() => copyText(phaseResult.phaseScript)} accent={C.ikb} />
+            </div>
+            {/* 3 风格变体 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              {([
+                { key: 'professional' as const, label: '专业版', accent: C.ikb },
+                { key: 'friendly'    as const, label: '亲切版', accent: C.yellow },
+                { key: 'sales'       as const, label: '销售版', accent: C.accent3 },
+              ]).map((v) => (
+                <div key={v.key}>
+                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: v.accent, fontFamily: F.cn }}>{v.label}</p>
+                  <ScriptItem text={phaseResult.variants[v.key]} onCopy={() => copyText(phaseResult.variants[v.key])} accent={v.accent} />
+                </div>
+              ))}
+            </div>
+          </section>
+        </Reveal>
+      )}
 
       {/* ── KPI 卡一排 ───────────────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 44 }}>

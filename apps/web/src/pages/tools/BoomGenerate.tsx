@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { trpc } from '@/lib/trpc';
+
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import {
@@ -452,15 +454,17 @@ function BoomSettings({ industry, topic, onIndustryChange, onTopicChange }: Boom
 // ── inline BoomCTA ─────────────────────────────────────────────────────────────
 interface BoomCTAProps {
   onClick?: () => void;
+  isPending?: boolean;
 }
 
-function BoomCTA({ onClick }: BoomCTAProps) {
+function BoomCTA({ onClick, isPending }: BoomCTAProps) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Magnetic strength={0.3}>
         <motion.button
           type="button"
           onClick={onClick}
+          disabled={isPending}
           className="lg-gradbtn"
           whileTap={{ y: 1 }}
           transition={{ type: 'spring', stiffness: 240, damping: 18 }}
@@ -475,12 +479,17 @@ function BoomCTA({ onClick }: BoomCTAProps) {
             color: '#fff',
             fontFamily: F.cn,
             border: 'none',
-            cursor: 'pointer',
+            cursor: isPending ? 'not-allowed' : 'pointer',
+            opacity: isPending ? 0.7 : 1,
             outline: 'none',
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
-          {BOOM_CTA}
+          {isPending ? (
+            <span className="material-symbols-outlined" style={{ fontSize: 18, animation: 'spin 1s linear infinite' }} aria-hidden={true}>progress_activity</span>
+          ) : (
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>auto_awesome</span>
+          )}
+          {isPending ? '生成中...' : BOOM_CTA}
         </motion.button>
       </Magnetic>
     </div>
@@ -841,11 +850,59 @@ export default function BoomGenerate() {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([...BOOM_DEFAULT_SELECTED_KEYS]);
   const [industry, setIndustry] = useState<string>(BOOM_FIELD_INDUSTRY_DEFAULT);
   const [topic, setTopic] = useState<string>(BOOM_FIELD_TOPIC_DEFAULT);
+  const [entries, setEntries] = useState<ReadonlyArray<BoomEntry>>([...BOOM_ENTRIES]);
 
   const totalElements = HOT_ELEMENT_GROUPS.reduce((sum: number, cat) => sum + cat.items.length, 0);
 
+  // trpc mutation: boomGenerate.generate
+  const generateMutation = trpc.boomGenerate.generate.useMutation({
+    onSuccess: (data) => {
+      const selectedLabels = HOT_ELEMENT_GROUPS.flatMap((g) => g.items)
+        .filter((item) => selectedKeys.includes(item.key))
+        .map((item) => item.label);
+      const elementStr = selectedLabels.join('、');
+
+      // 1:1 mapping: candidates → BoomEntry[]
+      const mapped: BoomEntry[] = data.candidates.map((c, i) => ({
+        index: i + 1,
+        title: c.title,
+        indexScore: c.indexScore,
+        type: '爆款型',
+        format: '口播文案',
+        element: elementStr,
+        opening: c.opening,
+        development: c.development,
+        climax: c.climax,
+        ending: c.ending,
+        reason: c.reason,
+      }));
+      setEntries(mapped);
+      toast.success('已生成爆款文案');
+    },
+    onError: (err) => {
+      toast.error(err.message ?? '生成失败，请重试');
+    },
+  });
+
+  const isPending = generateMutation.isPending;
+
   function handleGenerate() {
-    toast.success('已生成爆款文案');
+    // Filter out 'benefit' as specified, cast remaining to valid enum keys
+    const validElements = selectedKeys.filter((k) => k !== 'benefit') as Array<
+      'list' | 'greed' | 'fear' | 'curiosity' | 'contrast' | 'resonance' | 'empathy' |
+      'social_proof' | 'authority' | 'leverage' | 'worst' | 'reveal' | 'controversy' |
+      'challenge' | 'transformation' | 'anger' | 'surprise' | 'trend' | 'scarcity' |
+      'small_big' | 'low_cost_high' | 'low_cost_unknown'
+    >;
+    if (validElements.length === 0) {
+      toast.error('请至少选择一个爆款元素');
+      return;
+    }
+    generateMutation.mutate({
+      elements: validElements,
+      industry: industry || undefined,
+      theme: topic || undefined,
+    });
   }
 
   return (
@@ -858,6 +915,7 @@ export default function BoomGenerate() {
             type="button"
             aria-label="重新生成"
             onClick={handleGenerate}
+            disabled={isPending}
             className="lg-glass"
             onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168,197,224,0.55)'; }}
             onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
@@ -877,12 +935,13 @@ export default function BoomGenerate() {
               textTransform: 'uppercase',
               letterSpacing: '0.12em',
               fontFamily: F.mono,
-              cursor: 'pointer',
+              cursor: isPending ? 'not-allowed' : 'pointer',
+              opacity: isPending ? 0.7 : 1,
               transition: 'all 0.18s',
               outline: 'none',
               textShadow: C.textShadow,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
+            onMouseEnter={(e) => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>refresh</span>
@@ -893,7 +952,7 @@ export default function BoomGenerate() {
               type="button"
               aria-label="导出方案"
               onClick={() => {
-                const text = JSON.stringify(BOOM_ENTRIES, null, 2);
+                const text = JSON.stringify(entries, null, 2);
                 navigator.clipboard.writeText(text).then(
                   () => toast.success('已复制全部'),
                   () => toast.error('复制失败'),
@@ -1082,7 +1141,7 @@ export default function BoomGenerate() {
             </div>
             <div style={{ marginTop: 16 }}>
               <p style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                {BOOM_ENTRIES.length}
+                {entries.length}
                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn, marginLeft: 2 }}>篇</span>
               </p>
               <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>生成结果</p>
@@ -1178,7 +1237,7 @@ export default function BoomGenerate() {
 
       {/* ── CTA ─────────────────────────────────────────────── */}
       <div style={{ marginBottom: 44 }}>
-        <BoomCTA onClick={handleGenerate} />
+        <BoomCTA onClick={handleGenerate} isPending={isPending} />
       </div>
 
       {/* ── 元素组合分析 ────────────────────────────────────── */}
@@ -1187,7 +1246,7 @@ export default function BoomGenerate() {
       </Reveal>
 
       {/* ── 结果列表 ─────────────────────────────────────────── */}
-      <BoomResultList entries={BOOM_ENTRIES} />
+      <BoomResultList entries={entries} />
 
       {/* ── 数据洞察(雷达 + 趋势) ─────────────────────────── */}
       <Reveal style={{ marginTop: 40, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>

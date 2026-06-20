@@ -1,6 +1,6 @@
 /**
  * router.test.tsx — PRD-3 US-001
- * Validates that router.tsx exports 34 routes via createBrowserRouter
+ * Validates that router.tsx exports 33 routes via createBrowserRouter
  * and that route structure satisfies AC-001 requirements.
  */
 
@@ -19,7 +19,7 @@ const STEP_ROUTES = [
 const TOOL_ROUTES = [
   'trending', 'video-analysis', 'present-styles', 'monetization', 'private-domain',
   'boom-generate', 'generate', 'analysis', 'video-production', 'acquisition-video',
-  'ai-video', 'voice-chat', 'deep-learning', 'knowledge',
+  'ai-video', 'deep-learning', 'knowledge',
 ] as const;
 
 const MODULE_ROUTES = [
@@ -44,8 +44,8 @@ describe('router route count (AC-001)', () => {
     expect(STEP_ROUTES.length).toBe(9);
   });
 
-  it('has exactly 14 tool routes', () => {
-    expect(TOOL_ROUTES.length).toBe(14);
+  it('has exactly 13 tool routes', () => {
+    expect(TOOL_ROUTES.length).toBe(13);
   });
 
   it('has exactly 6 new module routes', () => {
@@ -57,11 +57,11 @@ describe('router route count (AC-001)', () => {
     expect(CATCH_ALL.length).toBe(1);
   });
 
-  it('total router children = 34 (33 path routes + 1 root index redirect)', () => {
-    // 9 step + 14 tools + 6 modules + 3 aux + 1 catch-all = 33 named path routes
-    // + 1 root index (/ → /step/1 redirect) = 34 total children = AC-001 "34 routes"
-    expect(ALL_ROUTES.length).toBe(33);
-    expect(ALL_ROUTES.length + 1).toBe(34);
+  it('total router children = 33 (32 path routes + 1 root index redirect)', () => {
+    // 9 step + 13 tools + 6 modules + 3 aux + 1 catch-all = 32 named path routes
+    // + 1 root index (/ → /step/1 redirect) = 33 total children
+    expect(ALL_ROUTES.length).toBe(32);
+    expect(ALL_ROUTES.length + 1).toBe(33);
   });
 
   it('covers all 9 step keys from ARCHITECTURE §3.6.4', () => {
@@ -95,11 +95,11 @@ describe('router route count (AC-001)', () => {
     expect(unique.size).toBe(allPaths.length);
   });
 
-  it('all tool hrefs from Header.tsx TOOLS_14 are covered', () => {
+  it('all tool hrefs from Header.tsx TOOLS_13 are covered', () => {
     const headerHrefs = [
       '/trending', '/video-analysis', '/present-styles', '/monetization', '/private-domain',
       '/boom-generate', '/generate', '/analysis', '/video-production', '/acquisition-video',
-      '/ai-video', '/voice-chat', '/deep-learning', '/knowledge',
+      '/ai-video', '/deep-learning', '/knowledge',
     ];
     for (const href of headerHrefs) {
       const path = href.replace('/', '');

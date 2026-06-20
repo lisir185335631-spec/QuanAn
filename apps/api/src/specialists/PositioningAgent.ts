@@ -16,6 +16,7 @@
 import { z } from 'zod';
 
 import { INDUSTRY_KEYS } from '@/lib/constants/industries';
+import { piiMask } from '@/lib/compliance/pii-mask';
 
 import { BaseSpecialist } from './base/BaseSpecialist';
 
@@ -138,7 +139,7 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
         '建议稍后重试，AI 将根据您的行业背景输出差异化定位建议。目前可先聚焦您最擅长的细分领域，从小处着手，逐步建立专业权威形象。',
     } satisfies Step1Output,
     execution: {
-      markdown: `# 执行计划\n\n> ⚠️ 系统繁忙，以下为通用备用执行计划，请稍后重试获取针对您 IP 定位的个性化方案。\n\n## 第一阶段：账号冷启动（第 1-30 天）\n\n**核心目标：** 完成账号基础建设，发布首批优质内容，建立初步粉丝基础。\n\n### 1. 每日任务表\n\n| 时段 | 任务 | 时长 |\n|------|------|------|\n| 早 08:00 | 刷同行热门内容 · 记录选题灵感 | 15 分钟 |\n| 午 12:00 | 回复昨日评论 · 互动维护 | 10 分钟 |\n| 晚 20:00 | 发布当日内容 · 观察数据 | 20 分钟 |\n\n- **内容生产**：每日至少准备 1 条内容素材（文案/脚本/拍摄素材）\n- **账号运营**：积极回复评论，建立早期粉丝关系\n- **竞品监测**：每日浏览 3-5 个同领域账号，记录爆款特征\n\n### 2. 每周里程碑\n\n| 周次 | 里程碑目标 | 验收标准 |\n|------|-----------|----------|\n| 第 1 周 | 账号资料 100% 完善 | 头像/简介/背景图全部就位 |\n| 第 2 周 | 首批 5 条内容发布 | 平均播放 ≥ 500 |\n| 第 3 周 | 粉丝突破 100 | 自然增粉（非买粉）|\n| 第 4 周 | 爆款内容 1 条 | 播放 ≥ 5000 |\n\n- 每周复盘数据，调整内容方向与发布策略\n- 与同领域创作者建立互推关系，扩大曝光\n\n### 3. 阶段 KPI\n\n| 指标 | 第 1 月目标 | 第 3 月目标 | 第 6 月目标 |\n|------|------------|------------|------------|\n| 粉丝数 | 500 | 5,000 | 30,000 |\n| 月均播放量 | 5 万 | 50 万 | 500 万 |\n| 爆款率 | ≥ 10% | ≥ 20% | ≥ 30% |\n| 变现收入 | 0 | 试水期 | ≥ 1 万/月 |\n\n---\n\n## 第二阶段：内容矩阵搭建（第 31-90 天）\n\n**核心目标：** 建立稳定内容输出体系，实现自然增粉。\n\n- 建立固定内容栏目（系列感增强用户黏性）\n- 开发爆款选题公式（结合热点 + 垂直领域）\n- 打造个人 IP 标签，强化用户记忆点\n\n## 第三阶段：商业化启动（第 91-180 天）\n\n**核心目标：** 粉丝达到变现门槛，启动初步商业合作。\n\n- 粉丝突破 1 万里程碑，解锁直播、橱窗等功能\n- 品牌合作：主动对接品牌方，提供数据报告\n- 私域沉淀：将粉丝引导至微信社群，建立会员体系\n\n---\n\n> 💡 以上为通用备用执行计划，实际执行计划需结合您的行业特点与个人资源定制。请稍后重试获取个性化方案。`,
+      markdown: `# 执行计划\n\n> ⚠️ 系统繁忙，以下为通用备用执行计划，请稍后重试获取针对您 IP 定位的个性化方案。\n\n## 第一阶段：账号冷启动（第 1-30 天）\n\n**核心目标：** 完成账号基础建设，发布首批优质内容，建立初步粉丝基础。\n\n### 1. 每日运营计划\n\n| 时段 | 任务 | 时长 |\n|------|------|------|\n| 早 08:00 | 刷同行热门内容 · 记录选题灵感 | 15 分钟 |\n| 午 12:00 | 回复昨日评论 · 互动维护 | 10 分钟 |\n| 晚 20:00 | 发布当日内容 · 观察数据 | 20 分钟 |\n\n- **内容生产**：每日至少准备 1 条内容素材（文案/脚本/拍摄素材）\n- **账号运营**：积极回复评论，建立早期粉丝关系\n- **竞品监测**：每日浏览 3-5 个同领域账号，记录爆款特征\n\n### 2. 每周里程碑\n\n| 周次 | 里程碑目标 | 验收标准 |\n|------|-----------|----------|\n| 第 1 周 | 账号资料 100% 完善 | 头像/简介/背景图全部就位 |\n| 第 2 周 | 首批 5 条内容发布 | 平均播放 ≥ 500 |\n| 第 3 周 | 粉丝突破 100 | 自然增粉（非买粉）|\n| 第 4 周 | 爆款内容 1 条 | 播放 ≥ 5000 |\n\n- 每周复盘数据，调整内容方向与发布策略\n- 与同领域创作者建立互推关系，扩大曝光\n\n### 3. 阶段 KPI\n\n| 指标 | 第 1 月目标 | 第 3 月目标 | 第 6 月目标 |\n|------|------------|------------|------------|\n| 粉丝数 | 500 | 5,000 | 30,000 |\n| 月均播放量 | 5 万 | 50 万 | 500 万 |\n| 爆款率 | ≥ 10% | ≥ 20% | ≥ 30% |\n| 变现收入 | 0 | 试水期 | ≥ 1 万/月 |\n\n---\n\n## 第二阶段：内容矩阵搭建（第 31-90 天）\n\n**核心目标：** 建立稳定内容输出体系，实现自然增粉。\n\n- 建立固定内容栏目（系列感增强用户黏性）\n- 开发爆款选题公式（结合热点 + 垂直领域）\n- 打造个人 IP 标签，强化用户记忆点\n\n## 第三阶段：商业化启动（第 91-180 天）\n\n**核心目标：** 粉丝达到变现门槛，启动初步商业合作。\n\n- 粉丝突破 1 万里程碑，解锁直播、橱窗等功能\n- 品牌合作：主动对接品牌方，提供数据报告\n- 私域沉淀：将粉丝引导至微信社群，建立会员体系\n\n---\n\n> 💡 以上为通用备用执行计划，实际执行计划需结合您的行业特点与个人资源定制。请稍后重试获取个性化方案。`,
     } satisfies Step4Output,
     // US-007 AC-6: recommend fallback
     recommend: {
@@ -181,7 +182,7 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: req.userId,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
@@ -225,7 +226,7 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0,
+        userId: req.userId,
       },
       timeout_ms: 15_000,
       retry: 1,
@@ -245,14 +246,29 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     userInput: PositioningInput,
     ctxUserPrompt: string,
   ): string {
-    const inputStr = JSON.stringify(userInput);
+    // LD-018 PII 修: userInput 含自由文本字段(如 niche/product_description 等)可能带 PII →
+    // 先用 piiMask 递归处理整个对象再 stringify · 枚举/数值字段 piiMask 会安全透传
+    const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'industry') {
+      // PRD-37 US-P04: 提取子行业上下文，注入 prompt 让市场分析更精准
+      const industryCategory = typeof userInput['lastIndustryCategory'] === 'string' ? userInput['lastIndustryCategory'] : undefined;
+      const industrySub = typeof userInput['lastIndustrySub'] === 'string' ? userInput['lastIndustrySub'] : undefined;
+      const subIndustryContext = (industryCategory || industrySub)
+        ? [
+            '',
+            '[子行业上下文]',
+            ...(industryCategory ? [`行业大类: ${industryCategory}`] : []),
+            ...(industrySub ? [`细分子行业: ${industrySub}`] : []),
+            '请在市场分析和定位建议中聚焦该细分子行业的竞争态势与差异化机会',
+          ]
+        : [];
       return [
         ctxUserPrompt,
         '',
         '[行业定位分析任务]',
         `可用行业枚举(${INDUSTRY_KEYS.length} 个): ${INDUSTRY_LIST_STR}`,
         `用户输入: ${inputStr}`,
+        ...subIndustryContext,
         '',
         '请以 JSON 返回: { industry, marketAnalysis, competitionLevel, recommendation }',
         'competitionLevel 必须是 "low" | "medium" | "high" 之一',

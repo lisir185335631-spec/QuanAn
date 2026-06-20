@@ -48,6 +48,18 @@ jobs:
           fi
           echo "✅ shadow 与后端 router 同步,无漂移。"
 
+      # ── 红线审计 ──────────────────────────────────────────────────────────────
+      # audit:redlines / audit:redlines-admin / audit:ld 均在 Prisma generate 之后运行
+      # （audit 脚本可能依赖 @prisma/client 生成类型）。任一失败 → job 红。
+      # Red-line audit:接 CI surface 红线违规。当前存量违规(R-1/R-5/R-11)待阶段6清,
+      # 故 continue-on-error(不阻断 CI);阶段6 清完存量后删此行改 blocking。
+      - name: Red-line audit
+        continue-on-error: true
+        run: |
+          pnpm audit:redlines
+          pnpm audit:redlines-admin
+          pnpm audit:ld
+
       # 全包类型检查(turbo 缓存):web / admin / api / clients / schemas / ui。
       - name: Typecheck (all packages)
         run: pnpm turbo run typecheck

@@ -1,24 +1,453 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="vitest" tests="367" failures="0" errors="0" time="3.95">
-  <testsuite name="apps/web unit tests" tests="367" failures="0" errors="0">
-    <testcase name="VideoProduction AC-1 H1字面锁" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-1 副标题" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-1 CTA disabled" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-1 text≥10字→enabled" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-2 4 H3区块渲染" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-2 真实数据渲染" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-5 isFallback=true" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-5 isFallback=false" classname="VideoProduction" time="0.01"/>
-    <testcase name="VideoProduction AC-6 onError toast" classname="VideoProduction" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-1 H1字面锁" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-1 副标题" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-3 CTA disabled" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-3 CTA enabled" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-4 4 H4区块渲染" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-4 真实内容渲染" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-5 isFallback=true" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-5 isFallback=false" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-6 onError toast" classname="AcquisitionVideo" time="0.01"/>
-    <testcase name="AcquisitionVideo AC-5 industry select" classname="AcquisitionVideo" time="0.01"/>
-  </testsuite>
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="181" failures="0" errors="0" time="5.154">
+    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-18T23:46:47.608Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.105690375">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.02343525">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.004314125">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.004238916">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.034135875">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.03511175">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.002046458">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-18T23:46:47.609Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.292067959">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.044955833">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.003274875">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.193127458">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.019228542">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.022725375">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.002292042">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.001651083">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.003152334">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-18T23:46:47.610Z" hostname="returndeMacBook-Pro.local" tests="30" failures="0" errors="0" skipped="0" time="0.496401625">
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.001399334">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.000266167">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.122038667">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.0052085">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.015458875">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.012183584">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.004983916">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.041527792">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.093278958">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.022759666">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.013651708">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.002804958">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.002233125">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.005558709">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.002619917">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.00312225">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.001818083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.004059083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.033705208">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.004394709">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders ip-plan-page with h1 我的IP方案" time="0.01220275">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders 9 step cards with 查看详情 buttons" time="0.036068083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; shows 已完成 0 / 9 步 with empty completedSteps" time="0.005627916">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.003586041">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.001280041">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.004247541">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.001945667">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.012124292">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.00230125">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.021759667">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-18T23:46:47.614Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.163102584">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.034112541">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.009900334">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.005581708">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.008702041">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.072470709">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.011624834">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.003075917">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.003506042">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.0003775">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.010855916">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/__tests__/useStepData.test.tsx" timestamp="2026-05-18T23:46:47.614Z" hostname="returndeMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="0.0250165">
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (a) save() writes LS then calls trpc mutation" time="0.014374042">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (b) load() reads synchronously from localStorage" time="0.000797917">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (b) load() returns null when key absent" time="0.000491208">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (c) dbQuery enabled=true when accountId !== null" time="0.000704792">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (c) dbQuery enabled=false when accountId === null" time="0.002790583">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; (c) dbQuery has staleTime 30000 and retry false" time="0.001475209">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="useStepData &gt; return shape includes save, load, isSaving, dbQuery" time="0.001831125">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="readOtherStep &gt; (d) returns null when accountId is null" time="0.000330541">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="readOtherStep &gt; (d) returns null when LS key absent" time="0.000235125">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="readOtherStep &gt; (d) returns parsed value when key present" time="0.000179">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/useStepData.test.tsx" name="readOtherStep &gt; (e) JSON.parse failure → console.warn + return null" time="0.0006525">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/states/__tests__/states.test.tsx" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.068101083">
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="LoadingState &gt; renders custom text" time="0.026529583">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="ErrorState &gt; shows 重试 button when onRetry is provided" time="0.038204542">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="EmptyState &gt; renders default title &apos;暂无数据&apos;" time="0.002523209">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/industries.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.000964125">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; total count is 56" time="0.000373541">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 生活服务 count is 18" time="0.000068292">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 电商零售 count is 13" time="0.000055375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_TABS &gt; non-all tab counts sum to 56" time="0.0000665">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.002520708">
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 5 platforms" time="0.000769959">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 6 H3 output blocks" time="0.000119917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; all platforms have emoji prefix" time="0.000348375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; output H3 labels start with number 1-6" time="0.000181166">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3b.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.006420958">
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 3 textareas" time="0.004649875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 5 H3 output blocks" time="0.000095084">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; first textarea (personalInfo) is required" time="0.00006225">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; advantages and story are not required" time="0.000062833">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; H3 labels start with number 1-5" time="0.000076625">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.002440958">
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; SUBTITLE 字面严格 1:1 spec §7.4 line 1492" time="0.000820542">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000216667">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; OUTPUT_H3_3 数量锁 · length === 3" time="0.000187667">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; PLATFORMS_5 re-export · length === 5" time="0.000197375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; Step4Result interface 字段结构" time="0.000299166">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4b.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.003963542">
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564" time="0.001032292">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 4 产品类型字面 1:1 spec §7.5 line 1551" time="0.000799042">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; SUBTITLE 字面严格 1:1 spec §7.5 line 1521" time="0.000302875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; OUTPUT_H3_5 数量锁 · length === 5" time="0.000097792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000078334">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; TEXTAREA required === true · id === product_description" time="0.000168375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; BUTTONS 3 字面 1:1 spec §7.5 line 1532" time="0.000286084">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; Step4bResult interface 字段结构" time="0.0002315">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step5.test.ts" timestamp="2026-05-18T23:46:47.615Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.007946583">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; SUBTITLE 字面严格 1:1 spec §7.6 line 1595" time="0.000976083">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630" time="0.000586708">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; INPUTS_2 数量锁 · length === 2" time="0.004676875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_UPLOADS_2 数量锁 · length === 2" time="0.000138584">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_MAX_MB === 20" time="0.000084917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606" time="0.00018525">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; TOTAL_TOPICS === 100" time="0.000068541">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; Step5Topic interface 字段结构" time="0.000106917">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step6.test.ts" timestamp="2026-05-18T23:46:47.616Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.003673083">
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; SUBTITLE 字面严格 1:1 spec §7.7 line 1639" time="0.000917792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号" time="0.000414">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA_MIN_CHARS === 10" time="0.000180334">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647" time="0.000091167">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1" time="0.000125458">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; Step6Result interface 字段结构" time="0.000290666">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step7.test.ts" timestamp="2026-05-18T23:46:47.616Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.006005375">
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_TYPES_20 长度 === 20" time="0.000828041">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_TYPES_20 第 1 = debate · 字面 1:1" time="0.000194834">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENTS_22 长度 === 22" time="0.000236167">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; 4 分组累加严格 6+5+6+5 = 22" time="0.000261166">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; DEBATE_H4_4 4 个 h4Label 字面 1:1 · 严禁 H4. 前缀 · 严禁英文" time="0.000169083">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SEARCH_PLACEHOLDER 字面 1:1 spec line 1679" time="0.000108792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENT_COUNTER_TEMPLATE 含全角括号 · 字面 1:1 spec line 1693" time="0.000094458">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_DISPLAY_TEMPLATE 含全角冒号 + 半角 hyphen · 字面 1:1 spec line 1701" time="0.000080834">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; BUTTONS 4 字面 1:1 spec §7.8 line 1710-1712" time="0.000174084">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SUBTITLE 字面 1:1 spec §7.8 line 1671" time="0.000102125">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; Step7DebateResult interface 字段结构" time="0.0002635">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; Step7Result interface 字段结构 · body 默认为 Step7DebateResult" time="0.000443666">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; TEXTAREA id/label/placeholder 字面 1:1 spec §7.8 line 1699" time="0.000111708">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENT_GROUPS_4 length === 4 · 4 个 label 字面 1:1" time="0.000117875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step8.test.ts" timestamp="2026-05-18T23:46:47.616Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.004337667">
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号" time="0.000951">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBFUNCTIONS_2 · 2 个 h3Label 字面 1:1 · 含全角冒号" time="0.000410584">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; EXPERIENCE_3 · 3 个 label 含中点 · · 严禁 hyphen 或逗号" time="0.000690541">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OUTPUT_MODULES_6 · 6 个 h3Label 字面 1:1 spec §7.9 line 1782" time="0.000223583">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; PLATFORMS_5 re-export from step3 · length === 5" time="0.00013575">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; BUTTON_GENERATE_PLAN + BUTTON_OPTIMIZE_SCRIPT 字面 1:1" time="0.000134083">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OPTIMIZE_MIN_CHARS === 10" time="0.000096458">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; STEP8_OPTIMIZE_OUTPUT_LABELS_2 · TD-77 fix · length === 2 · 禁 hardcode" time="0.0002235">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; Step8Result interface · generate_plan + optimize_script 两分支" time="0.000302583">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/migration/__tests__/legacy-ls.test.ts" timestamp="2026-05-18T23:46:47.616Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.006560834">
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; returns { migrated:0, skipped:0 } when accountId is null" time="0.001777125">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; returns migrated=0 skipped=10 and writes FLAG when no legacy keys exist" time="0.000520291">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; returns { migrated:0, skipped:10 } on subsequent calls due to FLAG" time="0.000194917">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; migrates all 10 legacy keys when all have data" time="0.000507875">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; does not overwrite existing new key but still removes old key" time="0.00031325">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; migrates only keys that have old data and no new key conflict" time="0.000501042">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; migrates acc_step5_selected_topic to selected_topic suffix" time="0.000129375">
+        </testcase>
+        <testcase classname="src/lib/migration/__tests__/legacy-ls.test.ts" name="migrateLegacyLs &gt; handles QuotaExceededError gracefully: warns and continues" time="0.001546333">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step1.test.tsx" timestamp="2026-05-18T23:46:47.617Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.294372417">
+        <testcase classname="src/pages/step/__tests__/Step1.test.tsx" name="Step1 &gt; renders h1 with correct title" time="0.165694667">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step1.test.tsx" name="Step1 &gt; renders EmptyState when no result" time="0.049072292">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step1.test.tsx" name="Step1 &gt; renders CTA button with new label" time="0.046175542">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step1.test.tsx" name="Step1 &gt; CTA label uses constant not hardcoded string" time="0.032577208">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step3.test.tsx" timestamp="2026-05-18T23:46:47.617Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.348348542">
+        <testcase classname="src/pages/step/__tests__/Step3.test.tsx" name="Step3 &gt; renders h1 with correct title" time="0.270779083">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3.test.tsx" name="Step3 &gt; renders EmptyState when no result" time="0.010406459">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3.test.tsx" name="Step3 &gt; renders CTA button" time="0.043482375">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3.test.tsx" name="Step3 &gt; shows industry prefill subtitle" time="0.022132208">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step3b.test.tsx" timestamp="2026-05-18T23:46:47.617Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.314267834">
+        <testcase classname="src/pages/step/__tests__/Step3b.test.tsx" name="Step3b &gt; renders h1 with correct title" time="0.194716875">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3b.test.tsx" name="Step3b &gt; renders EmptyState when no result" time="0.041809958">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3b.test.tsx" name="Step3b &gt; renders CTA button" time="0.048763833">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step3b.test.tsx" name="Step3b &gt; renders personal info textarea label" time="0.028045125">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step4b.test.tsx" timestamp="2026-05-18T23:46:47.617Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.004741708">
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; maps currentAnalysis to market_analysis" time="0.000915375">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; maps ladder to three_stages with STEP4B_THREE_STAGES ranges" time="0.000245167">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; maps ladder[i].action to coreStrategy" time="0.000584875">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; maps revenueStructure primary at 60% and secondary at 25%/15%" time="0.0003025">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; maps successCases title/summary to name/result fields" time="0.000742208">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; handles empty ladder gracefully" time="0.000176417">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step4b.test.tsx" name="adaptStep4bResult &gt; revenue_structure uses simple percent numbers · 0 recharts dependency" time="0.00102125">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step5.test.tsx" timestamp="2026-05-18T23:46:47.618Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.223662375">
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders h1 with 爆款选题库" time="0.195498709">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders EmptyState when no result" time="0.006626875">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders CTA button 一键生成" time="0.003408208">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders industry input placeholder" time="0.007675792">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders STEP_TAG" time="0.009344292">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step6.test.tsx" timestamp="2026-05-18T23:46:47.618Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.25721625">
+        <testcase classname="src/pages/step/__tests__/Step6.test.tsx" name="Step6 &gt; renders h1 with 拍摄计划" time="0.125984041">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step6.test.tsx" name="Step6 &gt; renders STEP_TAG" time="0.025407208">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step6.test.tsx" name="Step6 &gt; renders EmptyState when no result" time="0.031238875">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step6.test.tsx" name="Step6 &gt; renders generate button" time="0.040075292">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step6.test.tsx" name="Step6 &gt; generate button is disabled when textarea is empty" time="0.033343875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step7.test.tsx" timestamp="2026-05-18T23:46:47.618Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.266662167">
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders h1 with 文案生成" time="0.126576459">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders STEP_TAG" time="0.007523875">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders 选择脚本类型 label from constant (TD-76)" time="0.029828291">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders EmptyState when no result" time="0.055070583">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders 生成爆款文案 button" time="0.02078275">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step7.test.tsx" name="Step7 &gt; renders navigation buttons" time="0.0257835">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step8.test.tsx" timestamp="2026-05-18T23:46:47.619Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.23610125">
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders h1 with 直播策划" time="0.151238916">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders STEP_TAG" time="0.010491875">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders 2 subfunction H3 tab buttons" time="0.017204083">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders generate_plan tab by default (activeIdx=0)" time="0.003992416">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders EmptyState for generate_plan with template literal pattern" time="0.003929208">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; renders experience radio options" time="0.014106709">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step8.test.tsx" name="Step8 &gt; generate button is initially enabled (no required fields)" time="0.034295667">
+        </testcase>
+    </testsuite>
 </testsuites>

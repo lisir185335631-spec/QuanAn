@@ -359,9 +359,9 @@
 
 ---
 
-### US-005 ★ foundation · `step3.ts` 常量(PLATFORMS_5 + STEP3_OUTPUT_H3_6 + placeholders 字面锁)
+### US-005 ★ foundation · `step3.ts` 常量(PLATFORMS_5 + STEP3_OUTPUT_H3_5 + placeholders 字面锁)[重构删:STEP3_OUTPUT_H3_6→STEP3_OUTPUT_H3_5,背景图设计已删]
 
-**描述** · 作为开发者,我需要把 Step 3 的 5 platform radio + 6 H3 输出区 + 4 input/textarea placeholder 字面常量化为 `apps/web/src/lib/constants/step3.ts`,以便 US-006a/006b 直接读 · 字面 1:1 严锁(D1=A 红线 · 防 PRD-16 US-004 类 desc 创意改写 reject)。
+**描述** · 作为开发者,我需要把 Step 3 的 5 platform radio + 5 H3 输出区 + 4 input/textarea placeholder 字面常量化为 `apps/web/src/lib/constants/step3.ts`,以便 US-006a/006b 直接读 · 字面 1:1 严锁(D1=A 红线 · 防 PRD-16 US-004 类 desc 创意改写 reject)。[重构删:背景图设计方案 H3 已删,6→5 H3]
 
 **Acceptance Criteria** ·
 
@@ -382,27 +382,28 @@
     { id: 'bilibili',     label: '📺 B站',      name: 'B站' },
   ] as const;
 
-  // STEP3_OUTPUT_H3_6 · 6 H3 输出模块字面 1:1 来源 spec §7.2 "6 大模块"
+  // STEP3_OUTPUT_H3_5 · 5 H3 输出模块字面 1:1 来源 spec §7.2[重构删:原STEP3_OUTPUT_H3_6/6大模块,背景图设计已删,5大模块]
   export interface Step3OutputBlock {
-    id: 'videoReferences' | 'nickname' | 'avatar' | 'background' | 'bio' | 'strategy';
+    id: 'videoReferences' | 'nickname' | 'avatar' | 'bio' | 'strategy';
     h3Label: string;       // H3 文字 · 如 '1. 视频参考案例'
     hint: string;          // 副标提示
   }
+  // [重构删 'background' from id union · 2026-06-17]
 
-  export const STEP3_OUTPUT_H3_6: readonly Step3OutputBlock[] = [
+  export const STEP3_OUTPUT_H3_5: readonly Step3OutputBlock[] = [
     { id: 'videoReferences', h3Label: '1. 视频参考案例',  hint: 'AI 推荐 3 个本行业的爆款视频参考(含标题、描述、搜索词)' },
     { id: 'nickname',        h3Label: '2. 昵称推荐',      hint: '5 个备选昵称 + 命名策略 + 各平台调整建议' },
     { id: 'avatar',          h3Label: '3. 头像设计方案',  hint: '风格 / 配色 / 表情 / 必含元素 / 禁忌 / AI 绘图 prompt' },
-    { id: 'background',      h3Label: '4. 背景图设计方案', hint: '风格 / 布局 / 配色 / 文案 / 3 平台尺寸适配 / AI 绘图 prompt' },
-    { id: 'bio',             h3Label: '5. 简介文案方案',  hint: '简介公式 + 6 个版本(3 平台 × 主号副号)+ SEO 关键词' },
-    { id: 'strategy',        h3Label: '6. 整体包装策略',  hint: '视觉一致性 / 第一印象 / 转化路径 / 平台优先级' },
+    { id: 'bio',             h3Label: '4. 简介文案方案',  hint: '简介公式 + 6 个版本(3 平台 × 主号副号)+ SEO 关键词' },
+    { id: 'strategy',        h3Label: '5. 整体包装策略',  hint: '视觉一致性 / 第一印象 / 转化路径 / 平台优先级' },
   ] as const;
+  // [重构删 background 背景图设计方案 entry · 原 STEP3_OUTPUT_H3_6 改为 STEP3_OUTPUT_H3_5 · 昵称后直接接简介 · 序号随之调整]
 
-  // STEP3_BUTTONS_3 · 每 H3 子模块右侧 3 按钮 + 头像/背景图 加 [生成参考图]
+  // STEP3_BUTTONS_3 · 每 H3 子模块右侧 3 按钮[只删背景图参考图的生成参考图按钮;头像设计/视频参考案例的生成参考图按钮保留(对齐 prd-29.6 US-006)]
   export const STEP3_BUTTON_COPY = '复制';
   export const STEP3_BUTTON_REGENERATE = '重新生成';
   export const STEP3_BUTTON_OPTIMIZE = '智能优化';
-  export const STEP3_BUTTON_GEN_IMAGE = '生成参考图';
+  // [重构删 背景图 STEP3_BUTTON_GEN_IMAGE = '生成参考图' · 背景图参考图功能已删;头像设计/视频参考案例的生成参考图按钮保留(对齐 prd-29.6 US-006)]
 
   // 顶部右侧 · [一键重新生成] [复制全部]
   export const STEP3_HEADER_BUTTON_REGEN_ALL = '一键重新生成';
@@ -438,7 +439,8 @@
   // STEP3_PAGE · 顶部 step 标签 + H1 + 副标
   export const STEP3_STEP_TAG = 'STEP 03 · 账号包装方案';
   export const STEP3_H1 = '账号包装方案';
-  export const STEP3_SUBTITLE_TEMPLATE = '当前行业：{industry}。输入你的个人信息，AI 将为你生成极其详细的账号包装方案，包含昵称、头像参考图、背景图参考、简介等全方位深度解析。';
+  export const STEP3_SUBTITLE_TEMPLATE = '当前行业：{industry}。输入你的个人信息，AI 将为你生成极其详细的账号包装方案，包含昵称、头像参考图、简介等全方位深度解析。';
+  // [重构删 背景图参考 · 2026-06-17]
 
   // STEP3_LOADING_TEXT · loading 文案
   export const STEP3_LOADING_TEXT = 'AI 正在生成你的账号包装方案，预计 30-60 秒...';
@@ -452,24 +454,23 @@
   - `grep -F "视频参考案例" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "昵称推荐" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "头像设计方案" apps/web/src/lib/constants/step3.ts` 命中 1 次
-  - `grep -F "背景图设计方案" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "简介文案方案" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "整体包装策略" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "生成账号包装方案" apps/web/src/lib/constants/step3.ts` 命中 1 次
   - `grep -F "STEP 03 · 账号包装方案" apps/web/src/lib/constants/step3.ts` 命中 1 次
-- [ ] **AC-3** · 数字锁 · `STEP3_PLATFORMS_5.length === 5` + `STEP3_OUTPUT_H3_6.length === 6`
+- [ ] **AC-3** · 数字锁 · `STEP3_PLATFORMS_5.length === 5` + `STEP3_OUTPUT_H3_5.length === 5`[重构删 背景图 · 改 6→5]
 - [ ] **AC-4** · 单元测试 · 新建 `apps/web/src/lib/constants/__tests__/step3.test.ts`:
   ```typescript
   describe('STEP3 constants', () => {
     it('5 platforms', () => expect(STEP3_PLATFORMS_5.length).toBe(5));
-    it('6 H3 output blocks', () => expect(STEP3_OUTPUT_H3_6.length).toBe(6));
+    it('5 H3 output blocks', () => expect(STEP3_OUTPUT_H3_5.length).toBe(5)); // [重构删 background · 改 6→5]
     it('all platforms have emoji prefix', () => {
       STEP3_PLATFORMS_5.forEach(p => {
         expect(p.label).toMatch(/^[\u{1F300}-\u{1F9FF}]/u);
       });
     });
-    it('output H3 labels start with number 1-6', () => {
-      STEP3_OUTPUT_H3_6.forEach((block, idx) => {
+    it('output H3 labels start with number 1-5', () => {
+      STEP3_OUTPUT_H3_5.forEach((block, idx) => {
         expect(block.h3Label.startsWith(`${idx + 1}. `)).toBe(true);
       });
     });
@@ -581,7 +582,7 @@
 - [ ] **AC-2** · handleSubmit 逻辑(mock · 不接 backend):
   - setIsLoading(true)
   - await new Promise(r => setTimeout(r, 1500))(模拟 AI 生成)
-  - 生成 mock result 数据(参 spec §7.2 6 大模块结构 · 用 placeholder 文本填充)
+  - 生成 mock result 数据(参 spec §7.2 5 大模块结构 · 用 placeholder 文本填充)
   - stepData.save('step3', { input: { personalInfo, platform, audience, accountStatus }, result: mockResult })
   - setIsLoading(false)
   - scrollIntoView 到输出区(US-006b 实现的 anchor)
@@ -611,9 +612,9 @@
 
 ---
 
-### US-006b high · Step 3 page · 6 H3 输出区 + 每 H3 三按钮 + 顶部右侧 2 按钮
+### US-006b high · Step 3 page · 5 H3 输出区 + 每 H3 三按钮 + 顶部右侧 2 按钮[重构删 背景图设计 H3 · 原 6→5]
 
-**描述** · 作为用户,提交表单后 mock 生成完成,我想在表单下方看到 6 H3 输出区(视频参考 / 昵称推荐 / 头像设计 / 背景图设计 / 简介文案 / 整体策略)· 每个 H3 右侧有 [复制] [重新生成] [智能优化] 三按钮 · 头像/背景图 H3 额外有 [生成参考图] 按钮 · 顶部右侧有 [一键重新生成] [复制全部] 两按钮。
+**描述** · 作为用户,提交表单后 mock 生成完成,我想在表单下方看到 5 H3 输出区(视频参考 / 昵称推荐 / 头像设计 / 简介文案 / 整体策略)· 每个 H3 右侧有 [复制] [重新生成] [智能优化] 三按钮 · 顶部右侧有 [一键重新生成] [复制全部] 两按钮。[重构删 背景图设计方案 H3 · 删 生成参考图 按钮]
 
 **Acceptance Criteria** ·
 
@@ -633,11 +634,11 @@
         </Button>
       </div>
 
-      {/* 6 H3 输出区 */}
+      {/* 5 H3 输出区 */}
+      {/* [重构删 背景图设计方案 H3 · 原 6→5 · 删 isImageBlock / STEP3_BUTTON_GEN_IMAGE] */}
       <div className="space-y-8">
-        {STEP3_OUTPUT_H3_6.map(block => {
+        {STEP3_OUTPUT_H3_5.map(block => {
           const blockData = result[block.id];
-          const isImageBlock = block.id === 'avatar' || block.id === 'background';
 
           return (
             <div key={block.id} className="glass-card rounded-xl p-6">
@@ -659,12 +660,6 @@
                     <Wand2 className="w-4 h-4 mr-1" />
                     {STEP3_BUTTON_OPTIMIZE}
                   </Button>
-                  {isImageBlock && (
-                    <Button variant="outline" size="sm" onClick={() => handleGenImage(block.id)}>
-                      <ImagePlus className="w-4 h-4 mr-1" />
-                      {STEP3_BUTTON_GEN_IMAGE}
-                    </Button>
-                  )}
                 </div>
               </div>
 
@@ -677,27 +672,28 @@
     </section>
   )}
   ```
-- [ ] **AC-2** · Step3OutputContent 组件 · 按 block.id 渲染对应结构(参 spec §7.2 6 大模块字段):
+- [ ] **AC-2** · Step3OutputContent 组件 · 按 block.id 渲染对应结构(参 spec §7.2 5 大模块字段)[重构删 background]:
   - videoReferences · `Array<{title, description, platform, searchQuery}>` × 3
   - nickname · `recommended: Array<{name, reason, searchability}> × 5` + `strategy` + `platformAdjust`
   - avatar · `style / colorScheme / expression / references / mustHave / avoid / aiPrompt`
-  - background · `style / layout / colorTone / copyContent / mustHave / platformSizes / aiPrompt`
+  - [重构删 · 背景图参考图功能已删除]
   - bio · `formula + versions × 6(3 平台 × 主号副号)`
   - strategy · `visualConsistency / firstImpression / conversionPath / platformPriority`
 - [ ] **AC-3** · 三按钮交互(mock · 不接 backend):
   - handleCopy(blockId)· 把对应 block 内容 copy 到剪贴板(navigator.clipboard.writeText)· toast 提示 `已复制`
   - handleRegen(blockId)· toast 提示 `重新生成中...`(mock 1.5s 后更新该 block 数据)
   - handleOptimize(blockId)· 弹小 modal 让用户输入"优化方向"(如"更年轻化")· toast 提示 `智能优化中...`
-- [ ] **AC-4** · handleRegenAll · 顶部 [一键重新生成] · 重新跑 mock 全部 6 block · toast 提示 `全部模块重新生成中...`
-- [ ] **AC-5** · handleCopyAll · 顶部 [复制全部] · 把 6 block 内容拼接 copy · toast 提示 `已复制全部 6 个模块`
-- [ ] **AC-6** · 字面校验 · grep 6 H3 label 严格命中:
-  - `grep -F "1. 视频参考案例" apps/web/src/pages/Step3.tsx` 命中(via STEP3_OUTPUT_H3_6 import 间接)
-  - 同样 `2. 昵称推荐` `3. 头像设计方案` `4. 背景图设计方案` `5. 简介文案方案` `6. 整体包装策略`
-  - 三按钮字面 `复制` `重新生成` `智能优化` `生成参考图` 必须从 step3.ts 常量读 · 不允许 hardcode
+- [ ] **AC-4** · handleRegenAll · 顶部 [一键重新生成] · 重新跑 mock 全部 5 block · toast 提示 `全部模块重新生成中...`[重构删 背景图 · 6→5]
+- [ ] **AC-5** · handleCopyAll · 顶部 [复制全部] · 把 5 block 内容拼接 copy · toast 提示 `已复制全部 5 个模块`[重构删 背景图 · 6→5]
+- [ ] **AC-6** · 字面校验 · grep 5 H3 label 严格命中[重构删 背景图设计方案]:
+  - `grep -F "1. 视频参考案例" apps/web/src/pages/Step3.tsx` 命中(via STEP3_OUTPUT_H3_5 import 间接)
+  - 同样 `2. 昵称推荐` `3. 头像设计方案` `4. 简介文案方案` `5. 整体包装策略`
+  - [重构删: 4. 背景图设计方案]
+  - 三按钮字面 `复制` `重新生成` `智能优化` 必须从 step3.ts 常量读 · 不允许 hardcode · [重构删 生成参考图]
 - [ ] **AC-7** · 使用 agent-browser:
   - 走 US-006a 流程到 loading 完成
-  - 输出区 6 H3 渲染 · 每个 H3 右侧三按钮可见
-  - 头像 / 背景图 H3 额外显示 [生成参考图] 按钮
+  - 输出区 5 H3 渲染 · 每个 H3 右侧三按钮可见[重构删 背景图 H3 · 6→5]
+  - [只删背景图参考图的生成参考图按钮;头像设计/视频参考案例的生成参考图按钮保留(对齐 prd-29.6 US-006)]
   - 顶部右侧 [一键重新生成] [复制全部] 可见
   - 点 H3 第 1 个的 [复制] · toast `已复制`
 - [ ] **AC-8** · Typecheck 通过
@@ -706,7 +702,7 @@
 **files_to_modify** · `apps/web/src/pages/Step3.tsx`(output 部分接力)
 **test_command** · `cd apps/web && pnpm tsc --noEmit`
 **size_hint** · medium-large
-**risk_level** · high(6 模块结构复杂 · 字面锁多)
+**risk_level** · high(5 模块结构复杂 · 字面锁多)
 
 ---
 
@@ -1107,9 +1103,9 @@
     await expect(page.locator('h3:has-text("1. 视频参考案例")')).toBeVisible({ timeout: 5000 });
     await expect(page.locator('h3:has-text("2. 昵称推荐")')).toBeVisible();
     await expect(page.locator('h3:has-text("3. 头像设计方案")')).toBeVisible();
-    await expect(page.locator('h3:has-text("4. 背景图设计方案")')).toBeVisible();
-    await expect(page.locator('h3:has-text("5. 简介文案方案")')).toBeVisible();
-    await expect(page.locator('h3:has-text("6. 整体包装策略")')).toBeVisible();
+    // [重构删 h3:has-text("4. 背景图设计方案") · 背景图参考图功能已删]
+    await expect(page.locator('h3:has-text("4. 简介文案方案")')).toBeVisible();
+    await expect(page.locator('h3:has-text("5. 整体包装策略")')).toBeVisible();
     // 截图 2
     await page.screenshot({ path: 'apps/web/e2e/screenshots/prd-17-step3.png', fullPage: true });
 
@@ -1168,7 +1164,7 @@
 
   echo "── §5 page 重写 ──"
   grep -q "STEP1_INDUSTRIES_56\|STEP1_TABS" apps/web/src/pages/Step1.tsx && ok "Step1 用了 industries 常量" || fail "Step1 未读 industries 常量"
-  grep -q "STEP3_PLATFORMS_5\|STEP3_OUTPUT_H3_6" apps/web/src/pages/Step3.tsx && ok "Step3 用了 step3 常量" || fail "Step3 未读 step3 常量"
+  grep -q "STEP3_PLATFORMS_5\|STEP3_OUTPUT_H3_5" apps/web/src/pages/Step3.tsx && ok "Step3 用了 step3 常量" || fail "Step3 未读 step3 常量"
   grep -q "STEP3B_TEXTAREAS_3\|STEP3B_OUTPUT_H3_5" apps/web/src/pages/Step3b.tsx && ok "Step3b 用了 step3b 常量" || fail "Step3b 未读 step3b 常量"
 
   echo ""
@@ -1198,11 +1194,11 @@
 - **FR-6** · Step 1 已选状态卡必须显示 `已选择:{industry.label}` + 关键词列表
 - **FR-7** · Step 1 主 CTA 必须 1:1 显示 `确认并进入下一步` + var(--primary) gradient(不允许"金色"或"紫色"措辞)
 - **FR-8** · Step 1 自定义 modal 必须用 shadcn Dialog · trigger label `自定义输入行业` + modal title `自定义你的行业` + confirm button `确认使用`
-- **FR-9** · 系统必须提供 `apps/web/src/lib/constants/step3.ts`,导出 STEP3_PLATFORMS_5(5 平台含 emoji)+ STEP3_OUTPUT_H3_6(6 H3 输出区)+ 表单字段字面常量
-- **FR-10** · `apps/web/src/pages/Step3.tsx` 必须用 STEP3_PLATFORMS_5 / STEP3_OUTPUT_H3_6 渲染,**不允许** hardcode 平台或 H3 字面
+- **FR-9** · 系统必须提供 `apps/web/src/lib/constants/step3.ts`,导出 STEP3_PLATFORMS_5(5 平台含 emoji)+ STEP3_OUTPUT_H3_5(5 H3 输出区)[重构删:STEP3_OUTPUT_H3_6→STEP3_OUTPUT_H3_5,背景图设计区块已删]+ 表单字段字面常量
+- **FR-10** · `apps/web/src/pages/Step3.tsx` 必须用 STEP3_PLATFORMS_5 / STEP3_OUTPUT_H3_5 渲染,**不允许** hardcode 平台或 H3 字面
 - **FR-11** · Step 3 5 platform radio 标签必须 1:1 含 emoji · 严禁去掉 emoji(D1=A 锁)
-- **FR-12** · Step 3 6 H3 输出区文字必须 1:1 来源 STEP3_OUTPUT_H3_6 · 严禁创意改写(D1=A 锁)
-- **FR-13** · Step 3 每 H3 子模块右侧三按钮 `复制` `重新生成` `智能优化` + 头像/背景图额外 `生成参考图`
+- **FR-12** · Step 3 5 H3 输出区文字必须 1:1 来源 STEP3_OUTPUT_H3_5 · 严禁创意改写(D1=A 锁)[重构删:原"6 H3"改"5 H3"]
+- **FR-13** · Step 3 每 H3 子模块右侧三按钮 `复制` `重新生成` `智能优化`[只删背景图参考图的生成参考图按钮;头像设计/视频参考案例的生成参考图按钮保留(对齐 prd-29.6 US-006)]
 - **FR-14** · Step 3 顶部右侧 `一键重新生成` `复制全部` 两按钮
 - **FR-15** · 系统必须提供 `apps/web/src/lib/constants/step3b.ts`,导出 STEP3B_TEXTAREAS_3(3 textarea)+ STEP3B_OUTPUT_H3_5(5 H3)+ 表单字段字面常量
 - **FR-16** · `apps/web/src/pages/Step3b.tsx` 必须用 STEP3B_TEXTAREAS_3 / STEP3B_OUTPUT_H3_5 渲染
@@ -1221,7 +1217,7 @@
 ## §3 Non-Goals(明确 6 项不做)
 
 - **N-1** · 不实现 backend tRPC AI 生成 API · 仅前端 layout + mock data 填充(留 PRD-AI 专项)
-- **N-2** · 不实现 [生成参考图] 按钮的真实图像生成 · 仅 button placeholder(toast 提示 "图像生成接口待 PRD-AI 接入")
+- **N-2** · [重构删:背景图参考图功能已删,`生成参考图` 按钮整体移除,本 Non-Goal 作废]
 - **N-3** · 不实现 Step 2 / Step 4 / Step 4b / Step 5 / Step 6 / Step 7 / Step 8 page(留 PRD-18)
 - **N-4** · 不实现 14 工具 page 中尚未完整化的 8 个 stub(留 PRD-19)
 - **N-5** · 不动 admin SPA (`apps/admin/`)· D3=A 锁定 · 0 触动
@@ -1287,8 +1283,8 @@
 | `STEP1_CUSTOM_TRIGGER_LABEL` | string | US-001 | US-004 | `自定义输入行业` |
 | `STEP1_CUSTOM_MODAL_*` | string × 4 | US-001 | US-004 | modal title / placeholder / confirm / cancel 字面 |
 | `STEP3_PLATFORMS_5` | readonly Step3Platform[] | US-005 | US-006a, US-008 | 5 platform 含 emoji 字面 · Step 3b 共享 |
-| `STEP3_OUTPUT_H3_6` | readonly Step3OutputBlock[] | US-005 | US-006b | 6 H3 字面 + hint |
-| `STEP3_BUTTON_*` | string × 4 | US-005 | US-006b | 复制 / 重新生成 / 智能优化 / 生成参考图 字面 |
+| `STEP3_OUTPUT_H3_5` | readonly Step3OutputBlock[] | US-005 | US-006b | 5 H3 字面 + hint[重构删:原 STEP3_OUTPUT_H3_6/6 H3,背景图设计块已删] |
+| `STEP3_BUTTON_*` | string × 3 | US-005 | US-006b | 复制 / 重新生成 / 智能优化 字面[重构删:生成参考图 字面已删] |
 | `STEP3_FORM` | object | US-005 | US-006a | 4 字段 label + required + placeholder |
 | `STEP3_CTA_LABEL` | string | US-005 | US-006a | `生成账号包装方案` |
 | `STEP3B_TEXTAREAS_3` | readonly Step3bTextarea[] | US-007 | US-008 | 3 textarea label + placeholder + required |
@@ -1307,7 +1303,7 @@
 - **D-146** · 56 行业 5 大类来源 spec §7.1 + dump §2.2 实测确认(全部 56 / 生活服务 18 / 电商零售 13 / 内容创作 7 / 专业服务 14 / 产业制造 4)· 数字严锁
 - **D-147** · Step 1 6 tab 顺序固定(全部行业 / 生活服务 / 电商零售 / 内容创作 / 专业服务 / 产业制造)· 不允许重排
 - **D-148** · Step 3 表单字段严格 4 项 · 1 textarea(必填)+ 5 platform radio(必填)+ 2 input(可选)
-- **D-149** · Step 3 输出 H3 严格 **6 模块**(视频参考 / 昵称推荐 / 头像设计 / 背景图设计 / 简介文案 / 整体包装策略)· 不是 7 · H1 "账号包装方案"是 H1 不算 H3
+- **D-149** · Step 3 输出 H3 严格 **5 模块**(视频参考 / 昵称推荐 / 头像设计 / 简介文案 / 整体包装策略)· 不是 6 · H1 "账号包装方案"是 H1 不算 H3[重构删:背景图设计模块已删,6→5]
 - **D-150** · Step 3b 表单字段严格 5 项 · 3 textarea(第 1 必填)+ 1 platform radio(必填)+ 1 input 受众(可选)
 - **D-151** · Step 3b 输出 H3 严格 **5 模块**(核心身份定位 / 思想体系 / 内容人设 / 信任构建体系 / 人设打造路线图)· 不是 6 · H1 "人设定制方案"是 H1 不算 H3
 - **D-152** · 三态组件 LoadingState / ErrorState / EmptyState 单独 US-009 foundation · 跨 step 复用 · PRD-18 / PRD-19 必继续复用 · 不重复造轮子
@@ -1317,7 +1313,7 @@
 - **D-156** · Step 3 / Step 3b 输出区 H3 文字严格 1:1(不允许创意改写)· 防 PRD-16 US-004 reject 复发("15 desc 全创意改写"教训)
 - **D-157** · 5 platform radio 标签严格 1:1 含 emoji(📱 抖音 / 📕 小红书 / 📺 视频号 / 🎬 快手 / 📺 B站)· 严禁去 emoji
 - **D-158** · 主 CTA 用 `var(--primary)` gradient · PRD 文档严禁出现 "金色 gradient" 或 "紫色 gradient" 措辞 · 防 PRD-16 US-003 reject 复发(WARN 升 ERROR 教训)
-- **D-159** · Step 3 子模块右侧三按钮 `复制` `重新生成` `智能优化` · 头像/背景图 H3 额外加 `生成参考图` · 顶部右侧 `一键重新生成` `复制全部` 两按钮
+- **D-159** · Step 3 子模块右侧三按钮 `复制` `重新生成` `智能优化` · 顶部右侧 `一键重新生成` `复制全部` 两按钮[只删背景图参考图的生成参考图按钮;头像设计/视频参考案例的生成参考图按钮保留(对齐 prd-29.6 US-006)]
 - **D-160** · 不实现 backend tRPC AI 生成 API + 不实现真实图像生成(留 PRD-AI 专项)· 本 PRD 纯前端 mock data + setTimeout 模拟生成延迟
 
 ---
@@ -1479,7 +1475,7 @@ cp scripts/ralph/prd-17.json scripts/ralph/prd.json
 
 - 接 backend tRPC api · LLM Gateway 多供应商
 - Step 3 / 3b / 5 / 6 / 7 / 8 等 mock 接口换真实 LLM 生成
-- 接图像生成 API([生成参考图] 按钮真实化)
+- [重构删:背景图参考图功能已删,此 PRD-AI 条目作废]
 - 留 PRD-16~19 layout 完整后再启动
 
 ---

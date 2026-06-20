@@ -12,7 +12,7 @@
 |---|---|---|
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | 架构骨架(9 章 · 3022 行) | 入仓必读 · 知道整体设计 |
 | **[AGENTS.md](AGENTS.md)** | 代码层约束(18 LD · 17 红线 · 测试 · 审计) | 写代码前必读 |
-| **[ADR.md](ADR.md)** | 18 个架构决策详细 | 想知道"为什么这么设计"时读 |
+| **[ADR.md](ADR.md)** | 22 个架构决策详细 | 想知道"为什么这么设计"时读 |
 | **[DATA-MODEL.md](DATA-MODEL.md)** | 完整 Prisma schema · 18 实体 · RLS | 改 schema 前必读 |
 | **[PROMPTS.md](PROMPTS.md)** | 14 Specialist system prompt 模板 | 改 prompt 前必读 |
 | **[SCAFFOLD.md](SCAFFOLD.md)** | src/ 目录索引 + 80 文件清单 | 找文件位置时查 |

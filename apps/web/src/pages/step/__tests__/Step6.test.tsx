@@ -60,6 +60,17 @@ vi.mock('@/lib/trpc', () => ({
       get: { useQuery: () => mockState.getQuery },
       save: { useMutation: () => mockState.saveMutation },
     },
+    // US-P03: 呈现形式并入 Step6 · 需 mock presentStyles.recommend
+    presentStyles: {
+      recommend: {
+        useMutation: () => ({
+          mutate: vi.fn(),
+          isPending: false,
+          isError: false,
+          data: undefined,
+        }),
+      },
+    },
   },
 }));
 
@@ -113,7 +124,8 @@ describe('Step6', () => {
 
   it('generate button is disabled when textarea is empty', () => {
     renderStep6();
-    const textarea = screen.getByRole('textbox');
+    // US-P03 adds a second textarea (ps-text); target the shooting plan textarea by placeholder
+    const textarea = screen.getByPlaceholderText(/输入你的视频脚本文案/);
     fireEvent.change(textarea, { target: { value: '' } });
     const btn = screen.getByRole('button', { name: /生成拍摄计划/ });
     expect(btn).toBeDisabled();

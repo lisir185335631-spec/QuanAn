@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { trpc } from '@/lib/trpc';
+
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 
@@ -170,10 +172,66 @@ export default function VideoAnalysis() {
   const [content, setContent] = useState(DEFAULT_FORM.content);
   const [rewriteTopic, setRewriteTopic] = useState(DEFAULT_FORM.rewriteTopic);
 
+  const analyzeMutation = trpc.videoAnalysis.analyze.useMutation({
+    onSuccess: () => { toast.success('深度解析完成'); },
+    onError: (err: { message?: string }) => { toast.error(err.message ?? '解析失败，请重试'); },
+  });
+
+  const isPending = analyzeMutation.isPending;
+  const isError = analyzeMutation.isError;
+
+  interface ViralOutput {
+    analysis: { elements: string[]; structure: string; hookType: string; viralFormula: string; evaluation?: string };
+    insights: Array<{ element: string; explanation: string; impact: string }>;
+    rewriteVersion: string;
+    hookAnalysis?: {
+      score: number;
+      maxScore: number;
+      type: string;
+      technique: string;
+      evaluation: string;
+    };
+    topicStrategy?: {
+      category: string;
+      angle: string;
+      targetAudience: string;
+      evaluation: string;
+    };
+    timeline?: string[];
+  }
+
+  function parseVideoContent(data: typeof analyzeMutation.data): ViralOutput | null {
+    if (!data) return null;
+    try {
+      const parsed = JSON.parse(data.content) as unknown;
+      if (!parsed || typeof parsed !== 'object') return null;
+      const p = parsed as Record<string, unknown>;
+      if (!p.analysis || !Array.isArray(p.insights) || typeof p.rewriteVersion !== 'string') return null;
+      return p as unknown as ViralOutput;
+    } catch { return null; }
+  }
+
+  const viralData = parseVideoContent(analyzeMutation.data);
+
   const generated = generateMockResult();
 
+  const displayPopularElements = viralData
+    ? viralData.insights.map((ins) => ({ name: ins.element, main: ins.explanation, note: `影响力：${ins.impact}` }))
+    : generated.popularElements;
+  const displayPopularFormula = viralData
+    ? { title: viralData.analysis.viralFormula, chips: viralData.analysis.elements }
+    : generated.popularFormula;
+  const displayNarrativeLabel = viralData?.analysis.structure ?? generated.narrativeStructure.label;
+  const displayRewriteVersion = viralData?.rewriteVersion ?? null;
+  const displayHookAnalysis = viralData?.hookAnalysis ?? generated.hookAnalysis;
+  const displayTopicStrategy = viralData?.topicStrategy ?? generated.topicStrategy;
+  const displayTimeline = viralData?.timeline ?? generated.narrativeStructure.timeline;
+  // evaluation field added to viral analysis object (analysis.schema.ts + AnalysisAgent.ts)
+  const displayNarrativeEvaluation = viralData?.analysis?.evaluation ?? generated.narrativeStructure.evaluation;
+
   function handleAnalyze() {
-    toast.success('已开始深度解析');
+    if (!content.trim() || content.trim().length < 10 || isPending) return;
+    analyzeMutation.mutate({ lastTitle: videoTitle || undefined, lastCopy: content });
   }
 
   function handleRewriteGenerate() {
@@ -181,6 +239,10 @@ export default function VideoAnalysis() {
   }
 
   function handleRewriteCopy() {
+    if (displayRewriteVersion) {
+      void navigator.clipboard.writeText(displayRewriteVersion).then(() => toast.success('已复制仿写文案'));
+      return;
+    }
     const r = generated.rewriteResult;
     const text = [
       '• 标题', r.title, '', '• 开头', r.intro, '', '• 正文', ...r.body,
@@ -198,20 +260,22 @@ export default function VideoAnalysis() {
   }
 
   // rewriteResult 总字数
-  const rewriteWordCount = [
-    generated.rewriteResult.title,
-    generated.rewriteResult.intro,
-    ...generated.rewriteResult.body,
-    generated.rewriteResult.twist,
-    generated.rewriteResult.ending,
-  ].join('').length;
+  const rewriteWordCount = displayRewriteVersion
+    ? displayRewriteVersion.length
+    : [
+        generated.rewriteResult.title,
+        generated.rewriteResult.intro,
+        ...generated.rewriteResult.body,
+        generated.rewriteResult.twist,
+        generated.rewriteResult.ending,
+      ].join('').length;
 
   // 爆款解析雷达六维数据 — 冷蓝/白双色交替
   const RADAR_DIMS_VA = [
     { label: '选题精准', value: 72, color: C.ikb },
-    { label: '钩子强度', value: generated.hookAnalysis.score, color: 'rgba(255,255,255,0.85)' },
+    { label: '钩子强度', value: displayHookAnalysis.score, color: 'rgba(255,255,255,0.85)' },
     { label: '叙事张力', value: 65, color: C.accent3 },
-    { label: '元素密度', value: generated.popularElements.length * 30, color: C.ikb },
+    { label: '元素密度', value: displayPopularElements.length * 30, color: C.ikb },
     { label: '情绪价值', value: 78, color: 'rgba(255,255,255,0.85)' },
     { label: '转化引导', value: 55, color: C.accent3 },
   ];
@@ -333,7 +397,7 @@ export default function VideoAnalysis() {
           <button
             type="button"
             onClick={handleAnalyze}
-            disabled={!content.trim()}
+            disabled={!content.trim() || isPending}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -351,7 +415,7 @@ export default function VideoAnalysis() {
               cursor: 'pointer',
               transition: 'background 0.2s',
               textShadow: C.textShadow,
-              opacity: content.trim() ? 1 : 0.4,
+              opacity: content.trim() && !isPending ? 1 : 0.4,
             }}
             onMouseEnter={(e) => { if (content.trim()) (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.6), rgba(120,160,220,0.5))'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, rgba(168,197,224,0.45), rgba(120,160,220,0.35))'; }}
@@ -650,7 +714,7 @@ export default function VideoAnalysis() {
                 <button
                   type="button"
                   onClick={handleAnalyze}
-                  disabled={!content.trim()}
+                  disabled={!content.trim() || isPending}
                   className="lg-gradbtn"
                   style={{
                     display: 'inline-flex',
@@ -662,8 +726,8 @@ export default function VideoAnalysis() {
                     fontWeight: 700,
                     color: '#fff',
                     fontFamily: F.cn,
-                    cursor: content.trim() ? 'pointer' : 'not-allowed',
-                    opacity: content.trim() ? 1 : 0.4,
+                    cursor: content.trim() && !isPending ? 'pointer' : 'not-allowed',
+                    opacity: content.trim() && !isPending ? 1 : 0.4,
                     border: 'none',
                     textShadow: C.textShadow,
                   }}
@@ -676,6 +740,23 @@ export default function VideoAnalysis() {
           </div>
         </section>
       </Reveal>
+
+      {isPending && (
+        <Reveal style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 14, padding: '14px 20px', background: 'rgba(168,197,224,0.15)', border: `0.5px solid rgba(168,197,224,0.35)` }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb, animation: 'spin 1s linear infinite' }} aria-hidden={true}>progress_activity</span>
+            <p style={{ fontSize: 14, color: C.ikb, fontFamily: F.cn, margin: 0 }}>AI 正在深度解析中，请稍候…</p>
+          </div>
+        </Reveal>
+      )}
+      {isError && (
+        <Reveal style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 14, padding: '14px 20px', background: 'rgba(239,68,68,0.12)', border: `0.5px solid rgba(239,68,68,0.35)` }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#f87171' }} aria-hidden={true}>error</span>
+            <p style={{ fontSize: 14, color: '#f87171', fontFamily: F.cn, margin: 0 }}>解析失败，请重试</p>
+          </div>
+        </Reveal>
+      )}
 
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
@@ -723,13 +804,13 @@ export default function VideoAnalysis() {
             <div style={{ marginTop: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                  {generated.hookAnalysis.score}
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
+                  {displayHookAnalysis.score}
+                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>/{displayHookAnalysis.maxScore}</span>
                 </p>
                 <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>钩子评分</p>
               </div>
               <div style={{ height: 48, width: 48, flexShrink: 0 }}>
-                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label={`钩子评分 ${generated.hookAnalysis.score} 分`}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', width: '100%' }} role="img" aria-label={`钩子评分 ${displayHookAnalysis.score} 分`}>
                   <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(168,197,224,0.18)" strokeWidth="3.5" />
                   <circle
                     cx="18"
@@ -739,7 +820,7 @@ export default function VideoAnalysis() {
                     stroke={C.ikb}
                     strokeWidth="3.5"
                     strokeLinecap="round"
-                    strokeDasharray={`${(generated.hookAnalysis.score / generated.hookAnalysis.maxScore) * 100} 100`}
+                    strokeDasharray={`${(displayHookAnalysis.score / displayHookAnalysis.maxScore) * 100} 100`}
                   />
                 </svg>
               </div>
@@ -787,7 +868,7 @@ export default function VideoAnalysis() {
             </div>
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                {generated.popularElements.length}
+                {displayPopularElements.length}
                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}> 个</span>
               </p>
               <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>爆款元素</p>
@@ -840,7 +921,7 @@ export default function VideoAnalysis() {
             </div>
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: C.ink, fontFamily: F.display, margin: 0, textShadow: C.textShadow }}>
-                {generated.narrativeStructure.label}
+                {displayNarrativeLabel}
               </p>
               <p style={{ marginTop: 6, fontSize: 12, color: 'rgba(255,255,255,0.84)', fontFamily: F.cn }}>叙事结构</p>
             </div>
@@ -954,9 +1035,9 @@ export default function VideoAnalysis() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, padding: 20 }}>
               {[
-                { key: '内容分类', val: generated.topicStrategy.category, color: C.ikb },
-                { key: '切入角度', val: generated.topicStrategy.angle, color: C.ikb },
-                { key: '目标受众', val: generated.topicStrategy.targetAudience, color: 'rgba(255,255,255,0.85)' },
+                { key: '内容分类', val: displayTopicStrategy.category, color: C.ikb },
+                { key: '切入角度', val: displayTopicStrategy.angle, color: C.ikb },
+                { key: '目标受众', val: displayTopicStrategy.targetAudience, color: 'rgba(255,255,255,0.85)' },
               ].map(({ key, val, color }) => (
                 <div
                   key={key}
@@ -972,7 +1053,7 @@ export default function VideoAnalysis() {
                 style={{ gridColumn: '1 / -1', borderRadius: 12, padding: 14 }}
               >
                 <LgLabel color="rgba(255,255,255,0.85)">综合评估</LgLabel>
-                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.topicStrategy.evaluation}</p>
+                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{displayTopicStrategy.evaluation}</p>
               </div>
             </div>
           </section>
@@ -1003,9 +1084,9 @@ export default function VideoAnalysis() {
               <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                   <span style={{ fontSize: 52, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, textShadow: C.textShadow }}>
-                    {generated.hookAnalysis.score}
+                    {displayHookAnalysis.score}
                   </span>
-                  <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.72)', fontFamily: F.cn }}>/{displayHookAnalysis.maxScore}</span>
                 </div>
                 <div>
                   <span
@@ -1022,14 +1103,14 @@ export default function VideoAnalysis() {
                       textShadow: C.textShadow,
                     }}
                   >
-                    {generated.hookAnalysis.type}
+                    {displayHookAnalysis.type}
                   </span>
                   <div style={{ marginTop: 8, height: 6, width: 192, borderRadius: 9999, background: 'rgba(168,197,224,0.15)' }}>
                     <div
                       style={{
                         height: 6,
                         borderRadius: 9999,
-                        width: `${(generated.hookAnalysis.score / generated.hookAnalysis.maxScore) * 100}%`,
+                        width: `${(displayHookAnalysis.score / displayHookAnalysis.maxScore) * 100}%`,
                         background: 'linear-gradient(to right, #d4e6ff, #a8c5e0)',
                       }}
                     />
@@ -1039,11 +1120,11 @@ export default function VideoAnalysis() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                   <LgLabel color={C.ikb}>钩子技法</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.hookAnalysis.technique}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{displayHookAnalysis.technique}</p>
                 </div>
                 <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                   <LgLabel color="rgba(255,255,255,0.85)">效果评估</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.hookAnalysis.evaluation}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{displayHookAnalysis.evaluation}</p>
                 </div>
               </div>
             </div>
@@ -1087,13 +1168,13 @@ export default function VideoAnalysis() {
                     textShadow: C.textShadow,
                   }}
                 >
-                  {generated.narrativeStructure.label}
+                  {displayNarrativeLabel}
                 </span>
               </div>
               <div style={{ marginBottom: 18 }}>
                 <LgLabel color={C.ikb}>叙事时间线</LgLabel>
                 <ol style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: 0, padding: 0, listStyle: 'none' }}>
-                  {generated.narrativeStructure.timeline.map((step, i) => (
+                  {displayTimeline.map((step, i) => (
                     <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                       <span
                         style={{
@@ -1122,7 +1203,7 @@ export default function VideoAnalysis() {
               </div>
               <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
                 <LgLabel color="rgba(255,255,255,0.85)">节奏评估</LgLabel>
-                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{generated.narrativeStructure.evaluation}</p>
+                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0 }}>{displayNarrativeEvaluation}</p>
               </div>
             </div>
           </section>
@@ -1154,7 +1235,7 @@ export default function VideoAnalysis() {
               <div>
                 <LgLabel color={C.ikb}>爆款元素</LgLabel>
                 <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginTop: 4 }}>
-                  {generated.popularElements.map((el, i) => (
+                  {displayPopularElements.map((el, i) => (
                     <Item key={i} style={{ height: '100%' }}>
                       <div className="lg-glass" style={{ borderRadius: 12, padding: 14, height: '100%', display: 'flex', flexDirection: 'column' }}>
                         <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1192,9 +1273,9 @@ export default function VideoAnalysis() {
                 style={{ borderRadius: 14, padding: 18 }}
               >
                 <LgLabel color={C.ikb}>爆款公式</LgLabel>
-                <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: '0 0 12px', textShadow: C.textShadow }}>{generated.popularFormula.title}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: '0 0 12px', textShadow: C.textShadow }}>{displayPopularFormula.title}</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {generated.popularFormula.chips.map((chip) => (
+                  {displayPopularFormula.chips.map((chip) => (
                     <span
                       key={chip}
                       style={{
@@ -1360,67 +1441,76 @@ export default function VideoAnalysis() {
 
               {/* 仿写结果展示 */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {/* 标题 */}
-                <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                  <LgLabel color={C.ikb}>标题</LgLabel>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.title}</p>
-                </div>
-
-                {/* 开头 */}
-                <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                  <LgLabel color="rgba(255,255,255,0.85)">开头 · 黄金3秒</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.intro}</p>
-                </div>
-
-                {/* 正文 */}
-                <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                  <LgLabel color={C.ikb}>正文</LgLabel>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {generated.rewriteResult.body.map((para, i) => (
-                      <p key={i} style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{para}</p>
-                    ))}
+                {displayRewriteVersion ? (
+                  <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                    <LgLabel color={C.ikb}>完整仿写文案</LgLabel>
+                    <p style={{ fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{displayRewriteVersion}</p>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* 标题 */}
+                    <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                      <LgLabel color={C.ikb}>标题</LgLabel>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.title}</p>
+                    </div>
 
-                {/* 转折/升华 */}
-                <div
-                  className="lg-glass"
-                  style={{ borderRadius: 12, padding: 14, background: 'rgba(168,197,224,0.12)' }}
-                >
-                  <LgLabel color={C.ikb}>转折 · 升华</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.twist}</p>
-                </div>
+                    {/* 开头 */}
+                    <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                      <LgLabel color="rgba(255,255,255,0.85)">开头 · 黄金3秒</LgLabel>
+                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.intro}</p>
+                    </div>
 
-                {/* 结尾 */}
-                <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                  <LgLabel color="rgba(255,255,255,0.85)">结尾 · 引导互动</LgLabel>
-                  <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.ending}</p>
-                </div>
+                    {/* 正文 */}
+                    <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                      <LgLabel color={C.ikb}>正文</LgLabel>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {generated.rewriteResult.body.map((para, i) => (
+                          <p key={i} style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{para}</p>
+                        ))}
+                      </div>
+                    </div>
 
-                {/* 话题标签 */}
-                <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
-                  <LgLabel color={C.ikb}>话题标签</LgLabel>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {generated.rewriteResult.hashtags.split(' ').map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          borderRadius: 9999,
-                          border: `0.5px solid rgba(168,197,224,0.4)`,
-                          background: 'rgba(168,197,224,0.12)',
-                          padding: '2px 10px',
-                          fontSize: 12,
-                          fontWeight: 500,
-                          color: C.ikb,
-                          fontFamily: F.cn,
-                          textShadow: C.textShadow,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                    {/* 转折/升华 */}
+                    <div
+                      className="lg-glass"
+                      style={{ borderRadius: 12, padding: 14, background: 'rgba(168,197,224,0.12)' }}
+                    >
+                      <LgLabel color={C.ikb}>转折 · 升华</LgLabel>
+                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.twist}</p>
+                    </div>
+
+                    {/* 结尾 */}
+                    <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                      <LgLabel color="rgba(255,255,255,0.85)">结尾 · 引导互动</LgLabel>
+                      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: F.cn, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{generated.rewriteResult.ending}</p>
+                    </div>
+
+                    {/* 话题标签 */}
+                    <div className="lg-glass" style={{ borderRadius: 12, padding: 14 }}>
+                      <LgLabel color={C.ikb}>话题标签</LgLabel>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {generated.rewriteResult.hashtags.split(' ').map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              borderRadius: 9999,
+                              border: `0.5px solid rgba(168,197,224,0.4)`,
+                              background: 'rgba(168,197,224,0.12)',
+                              padding: '2px 10px',
+                              fontSize: 12,
+                              fontWeight: 500,
+                              color: C.ikb,
+                              fontFamily: F.cn,
+                              textShadow: C.textShadow,
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </section>
