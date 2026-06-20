@@ -130,6 +130,7 @@ export default function Step1() {
   ];
 
   const uploadAssetMutation = trpc.asset.uploadAsset.useMutation();
+  const summarizeStep1AssetsMutation = trpc.asset.summarizeStep1Assets.useMutation();
 
   // PRD-37 US-P08: 支持 PDF/Word(.docx)/Excel(.xlsx)/Markdown(.md)
   const STEP1_FILE_ACCEPT = '.pdf,.doc,.docx,.xlsx,.xls,.md,.markdown';
@@ -152,10 +153,14 @@ export default function Step1() {
       const newEntries: Array<{ name: string; assetId: number }> = [];
       for (const file of files) {
         const dataUrl = await readFileAsBase64(file);
+        const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+        const inferredMime = (file.type && file.type !== 'application/octet-stream')
+          ? file.type
+          : (ext === 'md' || ext === 'markdown' ? 'text/markdown' : (file.type || 'application/octet-stream'));
         const result = await uploadAssetMutation.mutateAsync({
           fileDataUrl: dataUrl,
           fileName: file.name,
-          fileMime: file.type || 'application/octet-stream',
+          fileMime: inferredMime,
           fileSizeBytes: file.size,
           relatedStepKey: 'step1',
           assetSubtype: 'product_material',
@@ -180,10 +185,14 @@ export default function Step1() {
       const newEntries: Array<{ name: string; assetId: number }> = [];
       for (const file of files) {
         const dataUrl = await readFileAsBase64(file);
+        const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+        const inferredMime = (file.type && file.type !== 'application/octet-stream')
+          ? file.type
+          : (ext === 'md' || ext === 'markdown' ? 'text/markdown' : (file.type || 'application/octet-stream'));
         const result = await uploadAssetMutation.mutateAsync({
           fileDataUrl: dataUrl,
           fileName: file.name,
-          fileMime: file.type || 'application/octet-stream',
+          fileMime: inferredMime,
           fileSizeBytes: file.size,
           relatedStepKey: 'step1',
           assetSubtype: 'persona_file',
@@ -271,6 +280,11 @@ export default function Step1() {
 
   // ── US-P10 AC1: 跳转到爆款选题生成(Step5) ──────────────────────────────────
   function handleGoToTopicGen() {
+    // 与 handleSubmit 对齐：选了大类但未选子行业 → 提示，不跳转
+    if (selectedIndustry && hasSubIndustries && !hasSubSelection) {
+      setSubError('请选择子行业');
+      return;
+    }
     // 先保存当前行业选择(如有)，再跳转到 Step5 带上关联 assetId
     if (hasSelection && accountId !== null) {
       const subCustomFlag = selectedSubId === 'other' && subCustomValue !== '';
@@ -308,6 +322,17 @@ export default function Step1() {
       productMaterialAssetIds: productFiles.map((f) => f.assetId),
       personaFileAssetIds: personaFiles.map((f) => f.assetId),
     });
+    // PRD-37 US-P08: fire-and-forget LLM 梳理(有上传资料才调 · 不阻塞跳转)
+    const allAssetIds = [
+      ...productFiles.map((f) => f.assetId),
+      ...personaFiles.map((f) => f.assetId),
+    ];
+    if (allAssetIds.length > 0) {
+      summarizeStep1AssetsMutation.mutate({
+        productMaterialAssetIds: productFiles.map((f) => f.assetId),
+        personaFileAssetIds: personaFiles.map((f) => f.assetId),
+      });
+    }
     navigate('/step/3');
   }
 

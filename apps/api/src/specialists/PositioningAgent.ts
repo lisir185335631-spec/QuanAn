@@ -251,8 +251,8 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     const inputStr = JSON.stringify(piiMask(userInput));
     if (mode === 'industry') {
       // PRD-37 US-P04: 提取子行业上下文，注入 prompt 让市场分析更精准
-      const industryCategory = typeof userInput['industryCategory'] === 'string' ? userInput['industryCategory'] : undefined;
-      const industrySub = typeof userInput['industrySub'] === 'string' ? userInput['industrySub'] : undefined;
+      const industryCategory = typeof userInput['lastIndustryCategory'] === 'string' ? userInput['lastIndustryCategory'] : undefined;
+      const industrySub = typeof userInput['lastIndustrySub'] === 'string' ? userInput['lastIndustrySub'] : undefined;
       const subIndustryContext = (industryCategory || industrySub)
         ? [
             '',

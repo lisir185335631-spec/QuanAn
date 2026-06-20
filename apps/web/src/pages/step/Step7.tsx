@@ -62,43 +62,50 @@ function isCopywritingResult(x: unknown): x is CopywritingResult {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+// STEP_SCRIPT_TYPE_KEYS (schema): opinion/process/knowledge/story/comedy/product/review/expose/
+//   challenge/interview/daily/transform/debate/list/reaction/qna/collab/behind/trend_news/motivation
+// 前端展示7种·id 必须 ∈ STEP_SCRIPT_TYPE_KEYS (后端 enum 校验)
 const SCRIPT_TYPES: ScriptType[] = [
-  { id: 'opinion', name: '聊观点',   desc: '表达个人观点，引发共鸣，适合知识分享类账号' },
-  { id: 'process', name: '晒过程',   desc: '展示操作过程，平台超大流量体，适合教程类内容' },
-  { id: 'teach',   name: '教知识',   desc: '教学类内容，传递价值，适合专业领域分享' },
-  { id: 'story',   name: '讲故事',   desc: '故事型脚本，塑造人设，适合个人品牌打造' },
-  { id: 'joke',    name: '尬段子',   desc: '搞笑类内容，娱乐性强，适合泛娱乐账号' },
-  { id: 'product', name: '说产品',   desc: '以变现为目标的产品脚本，适合带货和商业推广' },
-  { id: 'debate',  name: '搞辩论',   desc: '正反观点对抗，引发讨论和互动' },
+  { id: 'opinion',   name: '聊观点',   desc: '表达个人观点，引发共鸣，适合知识分享类账号' },
+  { id: 'process',   name: '晒过程',   desc: '展示操作过程，平台超大流量体，适合教程类内容' },
+  { id: 'knowledge', name: '教知识',   desc: '教学类内容，传递价值，适合专业领域分享' },
+  { id: 'story',     name: '讲故事',   desc: '故事型脚本，塑造人设，适合个人品牌打造' },
+  { id: 'comedy',    name: '尬段子',   desc: '搞笑类内容，娱乐性强，适合泛娱乐账号' },
+  { id: 'product',   name: '说产品',   desc: '以变现为目标的产品脚本，适合带货和商业推广' },
+  { id: 'debate',    name: '搞辩论',   desc: '正反观点对抗，引发讨论和互动' },
 ];
 
 // Script type icons (Material Symbols)
 const SCRIPT_TYPE_ICONS: Record<string, string> = {
-  opinion: 'record_voice_over',
-  process: 'play_circle',
-  teach: 'school',
-  story: 'auto_stories',
-  joke: 'sentiment_very_satisfied',
-  product: 'shopping_bag',
-  debate: 'forum',
+  opinion:   'record_voice_over',
+  process:   'play_circle',
+  knowledge: 'school',
+  story:     'auto_stories',
+  comedy:    'sentiment_very_satisfied',
+  product:   'shopping_bag',
+  debate:    'forum',
 };
 
+// STEP_HOT_ELEMENT_KEYS (schema): greed/fear/curiosity/contrast/worst/leverage/resonance/empathy/
+//   small_big/low_cost_high/low_cost_unknown/anger/surprise/trend/controversy/reveal/list/
+//   challenge/transformation/scarcity/social_proof/authority/benefit
+// element id 必须 ∈ STEP_HOT_ELEMENT_KEYS (后端 enum 校验)·label 显示名称不变
 const ELEMENT_CATEGORIES: ElementCategory[] = [
   {
     id: 'classic',
     name: '经典元素',
     elements: [
-      { id: 'greed',          label: '贪念',         icon: 'monetization_on' },
-      { id: 'fear',           label: '恐惧',         icon: 'warning' },
-      { id: 'curiosity',      label: '猎奇',         icon: 'search' },
-      { id: 'contrast',       label: '反差',         icon: 'compare_arrows' },
-      { id: 'worst',          label: '最差',         icon: 'error_outline' },
-      { id: 'leverage',       label: '借势',         icon: 'local_fire_department' },
-      { id: 'resonance',      label: '共鸣',         icon: 'chat_bubble' },
-      { id: 'empathy',        label: '共情',         icon: 'handshake' },
-      { id: 'leverage_small', label: '以小搏大',     icon: 'track_changes' },
-      { id: 'roi_high',       label: '低成本高回报', icon: 'trending_up' },
-      { id: 'roi_unknown',    label: '低成本未知回报', icon: 'casino' },
+      { id: 'greed',            label: '贪念',           icon: 'monetization_on' },
+      { id: 'fear',             label: '恐惧',           icon: 'warning' },
+      { id: 'curiosity',        label: '猎奇',           icon: 'search' },
+      { id: 'contrast',         label: '反差',           icon: 'compare_arrows' },
+      { id: 'worst',            label: '最差',           icon: 'error_outline' },
+      { id: 'leverage',         label: '借势',           icon: 'local_fire_department' },
+      { id: 'resonance',        label: '共鸣',           icon: 'chat_bubble' },
+      { id: 'empathy',          label: '共情',           icon: 'handshake' },
+      { id: 'small_big',        label: '以小搏大',       icon: 'track_changes' },
+      { id: 'low_cost_high',    label: '低成本高回报',   icon: 'trending_up' },
+      { id: 'low_cost_unknown', label: '低成本未知回报', icon: 'casino' },
     ],
   },
   {
@@ -113,22 +120,22 @@ const ELEMENT_CATEGORIES: ElementCategory[] = [
     id: 'content',
     name: '内容策略',
     elements: [
-      { id: 'hot',         label: '热点',  icon: 'whatshot' },
-      { id: 'controversy', label: '争议',  icon: 'gavel' },
-      { id: 'reveal',      label: '揭秘',  icon: 'lock_open' },
-      { id: 'list',        label: '清单',  icon: 'checklist' },
-      { id: 'challenge',   label: '挑战',  icon: 'emoji_events' },
-      { id: 'transform',   label: '蜕变',  icon: 'change_circle' },
+      { id: 'trend',          label: '热点',  icon: 'whatshot' },
+      { id: 'controversy',    label: '争议',  icon: 'gavel' },
+      { id: 'reveal',         label: '揭秘',  icon: 'lock_open' },
+      { id: 'list',           label: '清单',  icon: 'checklist' },
+      { id: 'challenge',      label: '挑战',  icon: 'emoji_events' },
+      { id: 'transformation', label: '蜕变',  icon: 'change_circle' },
     ],
   },
   {
     id: 'conversion',
     name: '转化驱动',
     elements: [
-      { id: 'scarcity',  label: '稀缺',     icon: 'hourglass_bottom' },
-      { id: 'social',    label: '社会证明', icon: 'thumb_up' },
-      { id: 'authority', label: '权威',     icon: 'workspace_premium' },
-      { id: 'benefit',   label: '利益',     icon: 'card_giftcard' },
+      { id: 'scarcity',     label: '稀缺',     icon: 'hourglass_bottom' },
+      { id: 'social_proof', label: '社会证明', icon: 'thumb_up' },
+      { id: 'authority',    label: '权威',     icon: 'workspace_premium' },
+      { id: 'benefit',      label: '利益',     icon: 'card_giftcard' },
     ],
   },
 ];
@@ -137,7 +144,7 @@ const DEFAULT_FORM = {
   selectedScriptTypeId: 'debate',
   selectedElementIds: [
     'greed', 'fear', 'curiosity', 'contrast', 'worst',
-    'leverage', 'resonance', 'empathy', 'leverage_small',
+    'leverage', 'resonance', 'empathy', 'small_big',
   ],
   topic: '为什么有的人赚钱那么轻松',
   optimizeGoal: '',

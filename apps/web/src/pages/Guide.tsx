@@ -11,7 +11,7 @@ import {
   GUIDE_FLOW,
   GUIDE_FLOW_TITLE,
   GUIDE_SEARCH_PLACEHOLDER,
-  GUIDE_SECTIONS_13,
+  GUIDE_SECTIONS_12,
   GUIDE_TIPS_TITLE,
   type FAQ,
   type FlowStep,
@@ -41,7 +41,7 @@ const ACCENT_CYCLE = [C.ikb, C.yellow, C.accent3] as const;
 const KPI_ITEMS = [
   {
     label: '功能模块',
-    value: String(GUIDE_SECTIONS_13.length),
+    value: String(GUIDE_SECTIONS_12.length),
     unit: '个',
     icon: 'grid_view',
     color: C.ikb,
@@ -65,7 +65,7 @@ const KPI_ITEMS = [
   },
   {
     label: '最佳实践技巧',
-    value: String(GUIDE_SECTIONS_13.reduce((acc, s) => acc + s.tips.length, 0)),
+    value: String(GUIDE_SECTIONS_12.reduce((acc, s) => acc + s.tips.length, 0)),
     unit: '条',
     icon: 'lightbulb',
     color: C.ikb,
@@ -308,7 +308,7 @@ function FlowSection() {
 // ── SectionAccordion · 液态玻璃折叠卡 ────────────────────────────────────────
 function SectionAccordion({ section }: { section: GuideSection }) {
   const [isOpen, setIsOpen] = useState(true);
-  const sectionIdx = GUIDE_SECTIONS_13.findIndex((s) => s.id === section.id);
+  const sectionIdx = GUIDE_SECTIONS_12.findIndex((s) => s.id === section.id);
   const accentColor = ACCENT_CYCLE[sectionIdx % ACCENT_CYCLE.length];
 
   return (
@@ -556,10 +556,10 @@ export default function Guide() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filtered = searchQuery
-    ? GUIDE_SECTIONS_13.filter(
+    ? GUIDE_SECTIONS_12.filter(
         (s) => s.name.includes(searchQuery) || s.sub.includes(searchQuery),
       )
-    : GUIDE_SECTIONS_13;
+    : GUIDE_SECTIONS_12;
 
   return (
     <LiquidShell>

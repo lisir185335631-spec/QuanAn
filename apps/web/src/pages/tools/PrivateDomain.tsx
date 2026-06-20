@@ -81,7 +81,7 @@ const DEFAULT_FORM: PrivateDomainFormData = {
   targetUser: '25-35宝妈',
   scenario: '客户看了朋友圈后主动咨询、老客户3个月没复购',
   // D4 默认值 — 降低填写负担; 部分从账号带入占位
-  productPrice: 0,                // 默认 0 · 用户填写实际价格
+  productPrice: 299,              // 默认合理示例价格 · 用户根据实际产品修改 (后端 positive() 校验)
   ipPositioning: '专业护肤顾问', // 默认账号 IP 定位占位
   currentChannel: 'wechat',      // 默认主渠道微信
   monthlyTraffic: 0,             // 默认 0 · 可从账号流量带入
@@ -343,14 +343,18 @@ export default function PrivateDomain() {
     // productDescription: productName (必填)
     // targetAudience: targetUser || 默认空字符 (选填·后端 min(1) 故补占位)
     // scene: scenario (选填·optional)
-    // productPrice: 若用户未填则传 1 (后端 positive() 校验)
+    // productPrice: 必须 > 0 · 默认值已改为 299 · 不再静默替换 0→1
     // ipPositioning: 必填·后端 min(1)
     // currentChannel: enum 已对齐
     // monthlyTraffic: 整数 ≥0
+    if (productPrice <= 0) {
+      toast.error('请填写产品价格（必须大于 0）');
+      return;
+    }
     generateMutation.mutate({
       phase: activeScenario,
       productDescription: productName.trim(),
-      productPrice: productPrice > 0 ? productPrice : 1,
+      productPrice,
       targetAudience: targetUser.trim() || '目标用户待定',
       ipPositioning: ipPositioning.trim() || DEFAULT_FORM.ipPositioning,
       currentChannel,

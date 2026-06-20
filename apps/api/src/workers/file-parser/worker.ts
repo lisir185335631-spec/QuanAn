@@ -117,13 +117,17 @@ export async function processFileParserJob(payload: FileParserJobPayload): Promi
       assetParseFailed = true;
       logger.warn({ userId, fileName, traceId, parseErr }, 'file_parser_worker.engine_error');
     }
+  } else if (extractedText === '') {
+    // No fileBuffer AND no rawText → treat as parse failure; status must not be 'completed'
+    assetParseFailed = true;
+    logger.warn({ userId, fileName, traceId }, 'file_parser_worker.no_content');
   }
 
   // Write Asset.parsedText + parsingStatus after engine run (PRD-37 US-P07)
   // file:worker.ts — Asset解析流 写入点
   if (assetId !== undefined) {
     await prisma.asset.update({
-      where: { id: assetId },
+      where: { id: assetId, accountId },
       data: {
         parsedText: assetParseFailed ? null : extractedText,
         parsingStatus: assetParseFailed ? 'failed' : 'completed',

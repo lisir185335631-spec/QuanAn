@@ -172,7 +172,7 @@ describe('processFileParserJob', () => {
 
     expect(mockAssetUpdate).toHaveBeenCalledOnce();
     const call = (mockAssetUpdate.mock.calls[0] as [{ where: unknown; data: Record<string, unknown> }])[0];
-    expect(call.where).toEqual({ id: 99 });
+    expect(call.where).toEqual({ id: 99, accountId: 1 });
     expect(call.data.parsedText).toBe('sheet data row1,row2');
     expect(call.data.parsingStatus).toBe('completed');
     expect(call.data.parsingError).toBeNull();
@@ -190,7 +190,7 @@ describe('processFileParserJob', () => {
 
     expect(mockAssetUpdate).toHaveBeenCalledOnce();
     const call = (mockAssetUpdate.mock.calls[0] as [{ where: unknown; data: Record<string, unknown> }])[0];
-    expect(call.where).toEqual({ id: 77 });
+    expect(call.where).toEqual({ id: 77, accountId: 1 });
     expect(call.data.parsingStatus).toBe('failed');
     expect(call.data.parsedText).toBeNull();
     // deepLearnReviewQueue 仍写入（失败也走扫描）

@@ -1,6 +1,6 @@
 /**
  * guide constants · unit tests (sally 1:1 复刻 · 字面锁)
- * 对齐新常量: GUIDE_CHIP_TITLE / GUIDE_FLOW / GUIDE_SECTIONS_13 / GUIDE_FAQS_4 / GUIDE_TIPS_TITLE
+ * 对齐新常量: GUIDE_CHIP_TITLE / GUIDE_FLOW / GUIDE_SECTIONS_12 / GUIDE_FAQS_4 / GUIDE_TIPS_TITLE
  */
 import { describe, expect, it } from 'vitest';
 
@@ -14,7 +14,7 @@ import {
   GUIDE_FLOW_TITLE,
   GUIDE_MODULES,
   GUIDE_SEARCH_PLACEHOLDER,
-  GUIDE_SECTIONS_13,
+  GUIDE_SECTIONS_12,
   GUIDE_TIPS_TITLE,
 } from '../guide';
 
@@ -43,15 +43,15 @@ describe('guide constants · 字面锁', () => {
     expect(GUIDE_SEARCH_PLACEHOLDER).toBe('搜索功能说明...');
   });
 
-  it('GUIDE_SECTIONS_13 · 12 entries · section[0] = 系统概览', () => {
-    expect(GUIDE_SECTIONS_13).toHaveLength(12);
-    expect(GUIDE_SECTIONS_13[0]!.id).toBe('system_overview');
-    expect(GUIDE_SECTIONS_13[0]!.name).toBe('系统概览');
-    expect(GUIDE_SECTIONS_13[0]!.sub).toBe('了解AIP智能体的核心能力');
+  it('GUIDE_SECTIONS_12 · 12 entries · section[0] = 系统概览', () => {
+    expect(GUIDE_SECTIONS_12).toHaveLength(12);
+    expect(GUIDE_SECTIONS_12[0]!.id).toBe('system_overview');
+    expect(GUIDE_SECTIONS_12[0]!.name).toBe('系统概览');
+    expect(GUIDE_SECTIONS_12[0]!.sub).toBe('了解AIP智能体的核心能力');
   });
 
-  it('GUIDE_SECTIONS_13 · 每 section 有 id / icon / name / sub / steps / tips', () => {
-    GUIDE_SECTIONS_13.forEach((section) => {
+  it('GUIDE_SECTIONS_12 · 每 section 有 id / icon / name / sub / steps / tips', () => {
+    GUIDE_SECTIONS_12.forEach((section) => {
       expect(section).toHaveProperty('id');
       expect(section).toHaveProperty('icon');
       expect(section).toHaveProperty('name');
@@ -61,8 +61,8 @@ describe('guide constants · 字面锁', () => {
     });
   });
 
-  it('GUIDE_SECTIONS_13 · 12 section name 字面锁', () => {
-    const names = GUIDE_SECTIONS_13.map((s) => s.name);
+  it('GUIDE_SECTIONS_12 · 12 section name 字面锁', () => {
+    const names = GUIDE_SECTIONS_12.map((s) => s.name);
     expect(names).toContain('系统概览');
     expect(names).toContain('爆款库');
     expect(names).toContain('爆款解析');

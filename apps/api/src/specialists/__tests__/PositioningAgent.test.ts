@@ -127,3 +127,51 @@ describe('PositioningAgent recommend mode', () => {
     expect(invalid.success).toBe(false);
   });
 });
+
+// ── Issue-1 regression: lastIndustrySub field injection ───────────────────────
+// Verifies that userInput.lastIndustrySub (Step1InputSchema field) is correctly
+// picked up and injected as '[子行业上下文]' in the industry-mode user prompt.
+// Prior bug: code read userInput['industrySub'] (wrong key) → context never injected.
+
+describe('PositioningAgent industry mode — sub-industry context injection', () => {
+  const VALID_INDUSTRY_RESULT = {
+    industry: '美妆',
+    marketAnalysis:
+      '美妆护肤细分赛道竞争激烈，但国货美妆近年来凭借成分透明化与性价比快速崛起，精准定位高性价比成分党用户仍有较大增量空间。',
+    competitionLevel: 'high' as const,
+    recommendation:
+      '建议深耕"成分党"细分人群，以产品成分科普为切入口，结合真实测评建立差异化内容矩阵，快速积累精准粉丝群体。',
+  };
+
+  beforeEach(() => {
+    mockComplete.mockResolvedValue({
+      content: VALID_INDUSTRY_RESULT,
+      tokens: { prompt: 300, completion: 150, total: 450 },
+      model: 'claude-haiku-4-5',
+    });
+  });
+
+  it('(f) lastIndustrySub in userInput → prompt contains [子行业上下文] and sub-industry value', async () => {
+    const agent = new PositioningAgent();
+    await agent.execute({
+      accountId: 9999,
+      userId: 1,
+      mode: 'industry',
+      userInput: {
+        lastIndustry: '美妆',
+        lastIndustryCategory: '护肤',
+        lastIndustrySub: '成分党护肤',
+      },
+    });
+
+    expect(mockComplete).toHaveBeenCalled();
+    // Check the first call's userPrompt (industry mode sends exactly one LLM request when schema passes)
+    const callArg = mockComplete.mock.calls.find(
+      (c) => (c[0] as { userPrompt?: string }).userPrompt?.includes('[行业定位分析任务]'),
+    );
+    expect(callArg).toBeDefined();
+    const prompt = (callArg![0] as { userPrompt: string }).userPrompt;
+    expect(prompt).toContain('[子行业上下文]');
+    expect(prompt).toContain('成分党护肤');
+  });
+});

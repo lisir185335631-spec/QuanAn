@@ -199,7 +199,7 @@ export const GUIDE_FLOW: ReadonlyArray<FlowStep> = [
 // ── search ──────────────────────────────────────────────────────────────────
 export const GUIDE_SEARCH_PLACEHOLDER = '搜索功能说明...' as const;
 
-// ── 13 section ──────────────────────────────────────────────────────────────
+// ── 12 section ──────────────────────────────────────────────────────────────
 export interface SectionStep {
   title: string;
   desc: string;
@@ -214,7 +214,7 @@ export interface GuideSection {
   tips: ReadonlyArray<string>;
 }
 
-export const GUIDE_SECTIONS_13: ReadonlyArray<GuideSection> = [
+export const GUIDE_SECTIONS_12: ReadonlyArray<GuideSection> = [
   {
     id: 'system_overview',
     icon: Shield,

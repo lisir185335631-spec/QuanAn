@@ -258,6 +258,9 @@ export const assetRouter = router({
       if (productTexts.length > 0 || personaTexts.length > 0) {
         // 动态 import 避免循环依赖 + 保持 API KEY 就绪时才真调用
         const { positioningAgent } = await import('@/specialists/PositioningAgent');
+        // FRAGILE_COUPLING_DEBT: llmGateway is protected in BaseSpecialist; this cast bypasses
+        // TypeScript's access control. A public getter on BaseSpecialist (or a dedicated factory
+        // that returns the gateway directly) would eliminate this unsafe cast. Track as tech-debt.
         const llm = (positioningAgent as unknown as { llmGateway: ILLMGateway }).llmGateway;
 
         // Zod schemas for structured output (LLMCompleteRequest.responseFormat.schema is ZodType)

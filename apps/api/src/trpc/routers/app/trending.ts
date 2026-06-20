@@ -5,12 +5,17 @@
  * AC-7: favorite uses protectedProcedure (per-account RLS) · writes trending_favorites
  * US-P11: vendor enum 应用层校验(xinbang/cmm/official_douyin) + authorFollowers 阈值过滤
  * Legacy: fetch/listByIndustry/listByStyle preserved for backwards-compat
+ *
+ * 批5③ 修复(2026-06-20):
+ *   - DB select 补 authorFollowers + vendor (classifyItem 低粉分类必须能读到这两个字段)
+ *   - DB 为空 fallback 改调 defaultAdapter.fetchTrending → adapter 框架真在请求路径
+ *   - buildMockItems 补 vendor 字段 + mock 路径加 vendor 过滤
  */
 
 import { z } from 'zod';
 
 import { prisma } from '@/lib/prisma';
-import { VALID_VENDORS } from '@/workers/trending-scraper/adapters';
+import { VALID_VENDORS, defaultAdapter } from '@/workers/trending-scraper/adapters';
 import { globalProcedure, protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -98,8 +103,9 @@ function buildMockItems(count: number) {
   const industries = ['美妆个护', '服饰穿搭', '科技数码', '美食餐饮', '健身运动', '生活方式', '情感社交'];
 
   // authorFollowers 分层: 低粉(<10w) / 中粉(10w-50w) / 高粉(>50w) 按 i 分布
-  // 用于支持粉丝阈值过滤(maxAuthorFollowers)
   const followerTiers = [5000, 15000, 45000, 8000, 120000, 25000, 380000, 9500, 62000, 210000];
+  // 批5③: mock vendor 诚实标注 xinbang 占位·classifyItem 能拿到 vendor 字段
+  const mockVendor = 'xinbang' as const;
 
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
@@ -109,8 +115,8 @@ function buildMockItems(count: number) {
     contentText: `这是第${i + 1}条爆款内容的完整文案。原文内容展示在详情页，用户可复制后直接跳转到 Step 7 进行文案创作。这条内容之所以爆火，在于它精准切中了受众痛点，结合了热点话题和实用信息，带动了大量互动。`,
     industry: industries[i % industries.length]!,
     presentStyle: null as string | null,
-    // PRD-37 US-P11: authorFollowers 分层(支持粉丝阈值过滤)
     authorFollowers: followerTiers[i % followerTiers.length]!,
+    vendor: mockVendor,
     likeCount: Math.floor((Math.sin(i * 2.3) + 1) * 250000) + 10000,
     commentCount: Math.floor((Math.cos(i * 1.7) + 1) * 25000) + 1000,
     shareCount: Math.floor((Math.sin(i * 1.1) + 1) * 50000) + 5000,
@@ -132,9 +138,7 @@ export const trendingRouter = router({
       if (platforms && platforms.length > 0) where.platform = { in: platforms };
       if (industry) where.industry = { contains: industry, mode: 'insensitive' };
       if (search) where.title = { contains: search, mode: 'insensitive' };
-      // PRD-37 US-P11: 粉丝阈值过滤 — authorFollowers < maxAuthorFollowers (低粉爆款)
       if (maxAuthorFollowers !== undefined) where.authorFollowers = { lt: maxAuthorFollowers };
-      // PRD-37 US-P11: vendor 应用层过滤 — ∈ {xinbang, cmm, official_douyin}
       if (vendor) where.vendor = vendor;
 
       const sortField = sort === 'collectCount' ? 'likeCount' : (sort as 'likeCount' | 'commentCount' | 'shareCount');
@@ -145,29 +149,77 @@ export const trendingRouter = router({
           orderBy: { [sortField]: 'desc' },
           skip,
           take: pageSize,
-          select: { id: true, platform: true, sourceUrl: true, title: true, industry: true,
-            presentStyle: true, likeCount: true, commentCount: true, shareCount: true, crawledAt: true },
+          select: {
+            id: true, platform: true, sourceUrl: true, title: true, industry: true,
+            presentStyle: true, likeCount: true, commentCount: true, shareCount: true, crawledAt: true,
+            authorFollowers: true, vendor: true,
+          },
         }),
         prisma.trendingItem.count({ where }),
       ]);
 
       if (dbItems.length === 0 && total === 0) {
-        const mocks = buildMockItems(200);
-        let filteredMocks = platforms && platforms.length > 0
-          ? mocks.filter((m) => platforms.includes(m.platform))
-          : mocks;
-        // PRD-37 US-P11: 粉丝阈值过滤 (mock fallback 路径同步应用)
-        if (maxAuthorFollowers !== undefined) {
-          filteredMocks = filteredMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+        // 批5③: DB 为空 — 调 defaultAdapter.fetchTrending 让 adapter 框架真在请求路径
+        const adapterItems = await defaultAdapter.fetchTrending({
+          industry,
+          limit: pageSize,
+          maxAuthorFollowers,
+        });
+
+        let adapterMapped = adapterItems.map((a, i) => ({
+          id: i + 1,
+          platform: a.platform as Platform,
+          sourceUrl: a.sourceUrl ?? `https://mock.example.com/item/${i + 1}`,
+          title: a.title,
+          contentText: a.contentText ?? '',
+          industry: a.industry,
+          presentStyle: null as string | null,
+          authorFollowers: a.authorFollowers ?? 0,
+          vendor: a.vendor,
+          likeCount: a.likeCount,
+          commentCount: a.commentCount,
+          shareCount: a.shareCount,
+          collectCount: 0,
+          crawledAt: new Date(a.crawledAt),
+        }));
+
+        if (platforms && platforms.length > 0) {
+          adapterMapped = adapterMapped.filter((m) => platforms.includes(m.platform));
         }
-        const filteredMockTotal = filteredMocks.length;
-        const paged = filteredMocks.slice(skip, skip + pageSize);
+        if (vendor) {
+          adapterMapped = adapterMapped.filter((m) => m.vendor === vendor);
+        }
+
+        if (adapterMapped.length === 0) {
+          const mocks = buildMockItems(200);
+          let filteredMocks = platforms && platforms.length > 0
+            ? mocks.filter((m) => platforms.includes(m.platform))
+            : mocks;
+          if (maxAuthorFollowers !== undefined) {
+            filteredMocks = filteredMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+          }
+          if (vendor) {
+            filteredMocks = filteredMocks.filter((m) => m.vendor === vendor);
+          }
+          const filteredMockTotal = filteredMocks.length;
+          const paged = filteredMocks.slice(skip, skip + pageSize);
+          return {
+            items: paged.map((m, i) => ({ ...m, isFavorited: false, rank: skip + i + 1 })),
+            total: filteredMockTotal,
+            page,
+            pageSize,
+            totalPages: Math.ceil(filteredMockTotal / pageSize),
+          };
+        }
+
+        const filteredTotal = adapterMapped.length;
+        const paged = adapterMapped.slice(skip, skip + pageSize);
         return {
           items: paged.map((m, i) => ({ ...m, isFavorited: false, rank: skip + i + 1 })),
-          total: filteredMockTotal,
+          total: filteredTotal,
           page,
           pageSize,
-          totalPages: Math.ceil(filteredMockTotal / pageSize),
+          totalPages: Math.ceil(filteredTotal / pageSize),
         };
       }
 
@@ -193,9 +245,7 @@ export const trendingRouter = router({
       if (platforms && platforms.length > 0) where.platform = { in: platforms };
       if (industry) where.industry = { contains: industry, mode: 'insensitive' };
       if (search) where.title = { contains: search, mode: 'insensitive' };
-      // PRD-37 US-P11: 粉丝阈值过滤 — authorFollowers < maxAuthorFollowers (低粉爆款)
       if (maxAuthorFollowers !== undefined) where.authorFollowers = { lt: maxAuthorFollowers };
-      // PRD-37 US-P11: vendor 应用层过滤 — ∈ {xinbang, cmm, official_douyin}
       if (vendor) where.vendor = vendor;
 
       const sortField = sort === 'collectCount' ? 'likeCount' : (sort as 'likeCount' | 'commentCount' | 'shareCount');
@@ -206,23 +256,76 @@ export const trendingRouter = router({
           orderBy: { [sortField]: 'desc' },
           skip,
           take: pageSize,
-          select: { id: true, platform: true, sourceUrl: true, title: true, industry: true,
-            presentStyle: true, likeCount: true, commentCount: true, shareCount: true, crawledAt: true },
+          select: {
+            id: true, platform: true, sourceUrl: true, title: true, industry: true,
+            presentStyle: true, likeCount: true, commentCount: true, shareCount: true, crawledAt: true,
+            authorFollowers: true, vendor: true,
+          },
         }),
         prisma.trendingItem.count({ where }),
       ]);
 
       if (dbItems.length === 0 && total === 0) {
-        const mocks = buildMockItems(200);
-        let filteredFavMocks = platforms && platforms.length > 0
-          ? mocks.filter((m) => platforms.includes(m.platform))
-          : mocks;
-        // PRD-37 US-P11: 粉丝阈值过滤 (mock fallback 路径同步应用)
-        if (maxAuthorFollowers !== undefined) {
-          filteredFavMocks = filteredFavMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+        const adapterItems = await defaultAdapter.fetchTrending({
+          industry,
+          limit: pageSize,
+          maxAuthorFollowers,
+        });
+
+        let adapterMapped = adapterItems.map((a, i) => ({
+          id: i + 1,
+          platform: a.platform as Platform,
+          sourceUrl: a.sourceUrl ?? `https://mock.example.com/item/${i + 1}`,
+          title: a.title,
+          contentText: a.contentText ?? '',
+          industry: a.industry,
+          presentStyle: null as string | null,
+          authorFollowers: a.authorFollowers ?? 0,
+          vendor: a.vendor,
+          likeCount: a.likeCount,
+          commentCount: a.commentCount,
+          shareCount: a.shareCount,
+          collectCount: 0,
+          crawledAt: new Date(a.crawledAt),
+        }));
+
+        if (platforms && platforms.length > 0) {
+          adapterMapped = adapterMapped.filter((m) => platforms.includes(m.platform));
         }
-        const filteredFavMockTotal = filteredFavMocks.length;
-        const paged = filteredFavMocks.slice(skip, skip + pageSize);
+        if (vendor) {
+          adapterMapped = adapterMapped.filter((m) => m.vendor === vendor);
+        }
+
+        if (adapterMapped.length === 0) {
+          const mocks = buildMockItems(200);
+          let filteredFavMocks = platforms && platforms.length > 0
+            ? mocks.filter((m) => platforms.includes(m.platform))
+            : mocks;
+          if (maxAuthorFollowers !== undefined) {
+            filteredFavMocks = filteredFavMocks.filter((m) => m.authorFollowers < maxAuthorFollowers);
+          }
+          if (vendor) {
+            filteredFavMocks = filteredFavMocks.filter((m) => m.vendor === vendor);
+          }
+          const filteredFavMockTotal = filteredFavMocks.length;
+          const paged = filteredFavMocks.slice(skip, skip + pageSize);
+          const ids = paged.map((m) => m.id);
+          const favs = await prisma.trendingFavorite.findMany({
+            where: { accountId, trendingItemId: { in: ids } },
+            select: { trendingItemId: true },
+          });
+          const favSet = new Set(favs.map((f: { trendingItemId: number }) => f.trendingItemId));
+          return {
+            items: paged.map((m, i) => ({ ...m, isFavorited: favSet.has(m.id), rank: skip + i + 1 })),
+            total: filteredFavMockTotal,
+            page,
+            pageSize,
+            totalPages: Math.ceil(filteredFavMockTotal / pageSize),
+          };
+        }
+
+        const filteredFavTotal = adapterMapped.length;
+        const paged = adapterMapped.slice(skip, skip + pageSize);
         const ids = paged.map((m) => m.id);
         const favs = await prisma.trendingFavorite.findMany({
           where: { accountId, trendingItemId: { in: ids } },
@@ -231,10 +334,10 @@ export const trendingRouter = router({
         const favSet = new Set(favs.map((f: { trendingItemId: number }) => f.trendingItemId));
         return {
           items: paged.map((m, i) => ({ ...m, isFavorited: favSet.has(m.id), rank: skip + i + 1 })),
-          total: filteredFavMockTotal,
+          total: filteredFavTotal,
           page,
           pageSize,
-          totalPages: Math.ceil(filteredFavMockTotal / pageSize),
+          totalPages: Math.ceil(filteredFavTotal / pageSize),
         };
       }
 
@@ -265,7 +368,6 @@ export const trendingRouter = router({
       const { trendingItemId, action } = input;
       const accountId = ctx.activeAccountId!;
 
-      // Guard: reject dangling references to mock/non-existent items
       const exists = await prisma.trendingItem.findUnique({
         where: { id: trendingItemId },
         select: { id: true },
