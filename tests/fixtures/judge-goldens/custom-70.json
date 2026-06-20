@@ -1550,7 +1550,7 @@
     ]
   },
   {
-    "id": "custom-062",
+    "id": "custom-071",
     "specialistId": "PresentationAgent",
     "mode": "recommend",
     "input": {
@@ -1659,7 +1659,7 @@
     },
     "criteria": [
       "输出 3-5 推荐 style",
-      "style.id 严守 14 enum",
+      "style.id 严守 14 enum(talking_head/drama/tutorial/vlog/street_interview/comparison/list_style/mashup/screen_record/animation/reaction/before_after/pov/qa)",
       "matchScore 0-100",
       "rationale 字数 ≥ 20"
     ],
@@ -1684,7 +1684,7 @@
     },
     "criteria": [
       "输出 3-5 推荐 style",
-      "style.id 严守 14 enum",
+      "style.id 严守 14 enum(talking_head/drama/tutorial/vlog/street_interview/comparison/list_style/mashup/screen_record/animation/reaction/before_after/pov/qa)",
       "matchScore 0-100",
       "rationale 字数 ≥ 20"
     ],
@@ -1751,6 +1751,61 @@
       "evolution",
       "beauty",
       "feedback-loop"
+    ]
+  },
+  {
+    "id": "custom-068",
+    "specialistId": "EvolutionAgent",
+    "input": {
+      "feedbackLog": [
+        {
+          "contentId": "r001",
+          "type": "high_save_rate",
+          "value": 0.22
+        },
+        {
+          "contentId": "r002",
+          "type": "low_comment",
+          "value": 3
+        },
+        {
+          "contentId": "r003",
+          "type": "high_share",
+          "value": 0.18
+        }
+      ],
+      "samples": [
+        {
+          "id": "r001",
+          "topic": "职场穿搭攻略",
+          "engagement": "high"
+        },
+        {
+          "id": "r002",
+          "topic": "日常妆容分享",
+          "engagement": "low"
+        },
+        {
+          "id": "r003",
+          "topic": "平价好物推荐",
+          "engagement": "high"
+        }
+      ]
+    },
+    "criteria": [
+      "insights 至少 2 条，每条含具体数据引用",
+      "明确区分当前优势内容类型与待改进类型",
+      "给出下一步内容策略的可操作建议"
+    ],
+    "expectedKeyFields": [
+      "insights",
+      "nextContentStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "evolution",
+      "fashion",
+      "save-share-signal"
     ]
   },
   {
@@ -1835,6 +1890,38 @@
       "daily_task",
       "general",
       "cold-start"
+    ]
+  },
+  {
+    "id": "custom-072",
+    "specialistId": "DiagnosisAgent",
+    "input": {
+      "answers": {
+        "q1": "职场技能/职业发展",
+        "q2": "微信视频号+小红书",
+        "q3": "25-35岁职场人",
+        "q4": "面试技巧和职场晋升",
+        "q5": "每周1-2条",
+        "q6": "800粉",
+        "q7": "知识付费课程",
+        "q8": "内容缺乏差异化，与同赛道博主高度重合"
+      }
+    },
+    "criteria": [
+      "诊断报告包含 7 个维度评分（0-10分）",
+      "针对最低分维度给出 ≥2 条具体改进建议",
+      "输出包含差异化机会分析"
+    ],
+    "expectedKeyFields": [
+      "diagnosis",
+      "recommendations",
+      "differentiationOpportunity"
+    ],
+    "source": "custom",
+    "tags": [
+      "diagnosis",
+      "career",
+      "differentiation"
     ]
   }
 ]

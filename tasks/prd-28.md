@@ -42,7 +42,7 @@
 | **21 judge file 清单** (本轮重构删 voice-chat + video-acquisition · 实际改造 19 file) | analysis-structural · analysis-viral · branding · copywriting · copywriting-acquisition · copywriting-boom · copywriting-free · daily-task-agent · evolution-agent · feedback-evolution-loop · insight-injection · livestream · monetization · positioning · rag-injection · topic · video · video-production · video-storyboard(共 19 有效 · judge-runner.ts 不计) [重构删: video-acquisition · voice-chat]|
 | **100 金标准来源(双轨)** | 轨 1 sally 实测样本 30(/tmp/aiipznt-clone-research/api/api-probe-results.json 等抓自 sally step3/3b/4b/5/7)· 轨 2 自造 70(团队人工写覆盖 14 specialist · 每 specialist ~5 条) |
 | **CLI 跑批策略** | `pnpm eval:run --specialist=all --samples=100`(新增 script)· 走 LLMGateway lightweight tier · 写 prisma evaluation_runs + evaluation_samples · 单次跑 ≈ 20-30 min · cost ≈ $0.5-1 |
-| **inter-rater agreement** | 30 sample subset · 用户在 admin /admin/evaluation/inter-rater 页面手工评 0-10 分 · 跟 LLM Judge 同 sample 评分对比 · 计算 Cohen's kappa + Pearson correlation · 阈值 kappa ≥ 0.4(moderate agreement) |
+| **inter-rater agreement** | 30 sample subset · 用户在 admin /admin/evaluation/inter-rater 页面手工评 0-10 分 · 跟 LLM Judge 同 sample 评分对比 · 计算 Cohen's kappa + Pearson correlation · 阈值 κ≥0.6(2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史) |
 | **PRD-MASTER §4.4 补做定位** | PRD-MASTER C 项原写"PRD-13 启动前 · 100 条全部跑完" · 实际 PRD-13 跑完时未做 · PRD-28 是补做 · 不算流程违规 · 是延迟交付 |
 
 ### §0.3 evaluation 定调(D-265 · 真闭环锁)
@@ -128,7 +128,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 | evaluation_runs / evaluation_samples 表 | 不存在 | 存在 · prisma migration applied |
 | eval-run.ts CLI 跑批可跑 | 不存在 | **可跑 + 写库**(实测 5 sample smoke test) |
 | admin /admin/evaluation UI 3 路由 | 不存在 | **存在 + visual baseline**(/evaluation · /:runId · /inter-rater/:runId)|
-| inter-rater Cohen's kappa 计算 | 不存在 | **可计算 + 阈值 ≥ 0.4**(LLM Judge vs human 30 sample subset)|
+| inter-rater Cohen's kappa 计算 | 不存在 | **可计算 + 阈值 ≥ 0.6**(LLM Judge vs human 30 sample subset；κ≥0.6 2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史)|
 | /goal-verify §evaluation 集成 | 不存在 | **集成 + verify-prd-28.sh § 25 checks** |
 | pnpm test:judge 真闭环 | mock 永远 pass | **真 grade · skipIf 优雅**(无 KEY skip · 有 KEY 跑 56 sample) |
 | TD-027 status | 'resolved'(假)| **'resolved'(真闭环)**(2026-05-22 PRD-28 重新关闭)|
@@ -336,7 +336,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 
 ### US-005 medium · inter-rater agreement subset(30 sample)· 用户 spot-check 评分 UI + Cohen's kappa(D-270 字面锁)
 
-**As** ops/admin · **I want** /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(从 evaluation_samples 按 runId hash seed 固定取 30)· 提交后自动计算 Cohen's kappa + Pearson correlation · **so that** 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 kappa ≥ 0.4 moderate agreement · 通过 → LLM Judge 可信。
+**As** ops/admin · **I want** /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(从 evaluation_samples 按 runId hash seed 固定取 30)· 提交后自动计算 Cohen's kappa + Pearson correlation · **so that** 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 κ≥0.6(2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史) · 通过 → LLM Judge 可信。
 
 **risk_level** · medium
 
@@ -425,7 +425,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 - **FR-4** · tests/fixtures/judge-goldens/sally-30.json + custom-70.json 总 100 条 · schema 严守 GoldenSample · 14 specialist 配额按 PRD-MASTER §4.4-B
 - **FR-5** · prisma 新增 evaluation_runs + evaluation_samples 表 · RLS DISABLE · 索引按 D-267
 - **FR-6** · `pnpm --filter @quanan/api eval:run` CLI 可跑 100 sample 真调 · 写库 + 4 维度评分(结构 zod + 内容 LLM Judge + duration + cost)
-- **FR-7** · 4 维度评分阈值 · avgScore ≥ 6.0(LLM Judge) + passRate ≥ 70% + Cohen's kappa ≥ 0.4(inter-rater)
+- **FR-7** · 4 维度评分阈值 · avgScore ≥ 6.0(LLM Judge) + passRate ≥ 70% + Cohen's kappa ≥ 0.6(inter-rater；κ≥0.6 2026-06-20 对齐 KB eval-suite gate；原 PRD 0.4 为历史)
 - **FR-8** · admin /admin/evaluation 3 路由(/evaluation + /:runId + /inter-rater/:runId)RBAC role=ops/admin 限制
 - **FR-9** · inter-rater 30 sample subset · seeded random by runId hash · reproducible · Cohen's kappa + Pearson 计算
 - **FR-10** · /goal-verify §evaluation 维度集成 · 阈值不达标 WARN 不 FAIL(仅辅助维度)

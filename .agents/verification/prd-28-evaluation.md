@@ -191,7 +191,7 @@
 | mulberry32 PRNG seeded subset | ✅ 同 runId 永远取同 30 ids |
 | 13 unit tests all pass | ✅ cohenKappa(4) + subset(4) + pearson(4) + interpret(1) |
 | InterRaterPage hand-scoring UI | ✅ slider + comment + progress 30/30 |
-| computeAgreement threshold | ⏳ kappa ≥ 0.4 moderate · 需真实跑 eval:run + 手评才能验证 |
+| computeAgreement threshold | ⏳ **机制就绪 · 待真跑回填** — UI 门禁已对齐 κ≥0.6(KB eval-suite gate) · kappa 真值需 `pnpm eval:run` + ANTHROPIC_API_KEY + admin 人工打分 30 条后才可获得 · **绝不编造 kappa 数值** |
 
 ### §E.3 admin evaluation UI 可用状态
 
@@ -208,7 +208,7 @@
 1. **TD-103**: apps/admin 134 lint problems · PRD-26 累积 · 估时 1-2 day 修
 2. **TD-108**: ralph.py prompt size abort `> 12K 拒启` 功能未实施 · 留 PRD-29+ 实现
 3. **evaluation pipeline 端到端 smoke**: 需 ANTHROPIC_API_KEY 真调 · 本地 dev 暂未做
-4. **humanScore threshold validation**: kappa ≥ 0.4 moderate 阈值警告 UI 待 PRD-29+ 实现
+4. **humanScore threshold validation**: UI 门禁已升至 κ≥0.6(KB eval-suite gate · PRD-28 历史值 0.4)· kappa 真值需真跑回填(见 §E.2 computeAgreement threshold 说明)
 
 ---
 
