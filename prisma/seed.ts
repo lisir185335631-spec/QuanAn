@@ -186,6 +186,29 @@ async function seedUsers() {
 }
 
 // ====================================================
+// 1b. 后台管理员(AdminUser 表 · 后台 mock OAuth 登录用 · 修复原 seed 漏建)
+// ====================================================
+
+async function seedAdminUsers() {
+  console.log('▸ Seeding admin users (AdminUser 表 · 后台 mock OAuth) ...');
+
+  const admin = await prisma.adminUser.upsert({
+    where: { email: 'admin@test.com' },
+    create: {
+      email: 'admin@test.com',
+      role: 'super_admin', // allowedDomains 空 = all domains
+      allowedDomains: [],
+      isMock: true, // dev mock OAuth 必须 true(mockOAuthCallback 校验)
+      isActive: true,
+    },
+    update: { role: 'super_admin', isMock: true, isActive: true },
+  });
+
+  console.log(`  ✓ Admin user · admin=${admin.id} · admin@test.com · super_admin · mock(无密码·只输 email 登录)`);
+  return { admin };
+}
+
+// ====================================================
 // 2. 测试 IP 账号
 // ====================================================
 
@@ -603,6 +626,7 @@ async function main() {
   await seedIndustries();
   await seedMockIpAccounts();
   const users = await seedUsers();
+  await seedAdminUsers();
   await seedIpAccounts(users);
   await seedInviteCodes(users.admin.id);
   await seedRagConstants();
