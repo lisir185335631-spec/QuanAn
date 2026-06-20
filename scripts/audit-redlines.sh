@@ -159,7 +159,8 @@ if grep -rn "#00e5ff\|cyan-\|Orbitron\|Rajdhani" \
 else pass "R-16 · 视觉系统合规 (Aurelian Dark)"; fi
 
 # R-17 · trending 自建爬虫 (LD-017 · 走第三方授权)
-if grep -rn "puppeteer\|playwright" apps/api/src/workers/trending-scraper/ 2>/dev/null \
+# 精确化(2026-06-20·R-17 audit 子串误报修): 检测真 import/require(引号包裹包名)·合规注释提及"禁止 puppeteer"不算违规
+if grep -rnE "(from|require\()[[:space:]]*['\"](puppeteer|playwright)" apps/api/src/workers/trending-scraper/ 2>/dev/null \
     | grep -v "tests/" ; then
   fail "R-17 · trending 自建爬虫 · 触犯 LD-017"
 else pass "R-17 · trending 走第三方授权 (无 puppeteer/playwright)"; fi
