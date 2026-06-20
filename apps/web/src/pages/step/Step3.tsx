@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { LiquidShell } from '@/components/home-next/LiquidShell';
 import { C, F, Item, Magnetic, Reveal, RevealGroup } from '@/components/home-next/ikb/system';
 import { type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
-import { type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
 import { type IntroCopyEntry } from '@/components/step3/IntroCopySection';
 import {
   type NicknameEvaluation,
@@ -26,7 +25,6 @@ interface Step3Result {
   nicknames: NicknameEvaluation[];
   nicknameStrategy?: NicknameSelectionStrategy;
   avatar: AvatarDesignContent;
-  background: BackgroundImageContent;
   bioFormula?: string;
   bioEntries: IntroCopyEntry[];
   // 图 13 末尾 · 整个 H3-5 共享的 5 个核心关键词
@@ -134,49 +132,6 @@ function generateMockResult(): Step3Result {
       ],
       aiPrompt:
         'A professional headshot of a confident Asian man in his late 30s, wearing a smart business casual outfit (e.g., a dark blue blazer over a light shirt). He has a genuine, approachable smile and direct eye contact. The background is a soft, out-of-focus gradient of deep blue and charcoal gray, with subtle technological elements like abstract circuit lines or glowing data streams. Studio lighting, high resolution, sharp focus on the subject.',
-    },
-
-    // ── H3-4 背景图设计方案 ───────────────────────────────────────────────
-    background: {
-      风格理念: '科技感与商业价值结合的风格。选择这种风格是为了在视觉上体现AI智能体业务的科技属性，同时通过简洁的设计传达商业价值，避免过于冰冷的技术感。',
-      布局结构: '左侧放置个人IP核心Slogan或价值主张，右侧或下方放置服务关键词和联系方式。这种布局符合用户从左到右的阅读习惯，先看到价值，再了解服务和行动路径。',
-      色调: '主色调：深蓝、科技灰、墨绿。辅色调：少量亮色如金色或浅蓝。整体偏冷色调，营造科技、专业、信任感；但通过少量亮色提升活力和现代性。例如，深蓝色背景搭配白色或浅金色文字。',
-      主色调: '深蓝、科技灰、墨绿',
-      辅色调: '少量亮色如金色或浅蓝',
-      品牌元素: '抽象的科技网络结构、数据流、芯片纹理等科技感元素，以低饱和度、半透明方式呈现，巧妙增强视觉感。',
-      '字体/icon': '现代无衬线字体（如思源黑体 / Inter） + 科技感线性 icon · 字号大、留白足、对比强',
-      分镜建议: '抖音 1920x1080 / 小红书 1242x208 / 视频号 1242x208 · 3 平台尺寸独立适配',
-      文案内容: [
-        { title: '核心Slogan', desc: '一句精炼的话表达你的价值主张，如"AI智能体，企业增长引擎"，这是吸引用户停留的核心。' },
-        { title: '服务关键词', desc: '明确你的服务内容，如"定制智能体 | OPC培训 | AI工作流"，让用户快速了解你能提供什么。' },
-        { title: '联系方式/引流钩子', desc: '例如"添加微信领取免费AI诊断"，鼓励智能体咨询课程体验，建立后续转化的关键一步。' },
-        { title: '科技感元素', desc: '抽象的科技网络结构、数据流、芯片纹理等，以低饱和度、半透明方式呈现，巧妙增强视觉感。' },
-      ],
-      必含元素: [
-        { title: '核心Slogan', desc: '一句精炼的话表达你的价值主张。' },
-        { title: '服务关键词', desc: '明确你提供的服务内容。' },
-        { title: '联系方式/引流钩子', desc: '引导用户主动联系或体验。' },
-        { title: '科技感元素', desc: '增强视觉专业度。' },
-      ],
-      平台适配: [
-        {
-          platform: '抖音',
-          size: '1920x1080像素',
-          desc: '突出个人IP和核心服务的视觉冲击力，文字大而清晰，适合短视频用户快速浏览，搭配视觉化关键字，提高曝光与点击。',
-        },
-        {
-          platform: '小红书',
-          size: '1242x208像素',
-          desc: '小红书背景图通常较精致和明亮，可以加入更多个性化元素，文字简洁，搭配关键词。',
-        },
-        {
-          platform: '视频号',
-          size: '1242x208像素',
-          desc: '视频号背景图风格可与社交属性结合，可适当加入引导关注或互动元素，文字内容要简洁，加强视频播放页面客户。',
-        },
-      ],
-      aiPrompt:
-        "A sophisticated and modern banner image for an AI intelligent agent customization company. The design should feature abstract, glowing neural network patterns or data streams in deep blue and purple hues, subtly integrated into a dark, professional background. On the left side, bold, clean white text states 'AI Intelligent Agents: Boost Efficiency, Seize Opportunities!' Below it, smaller text reads 'Custom AI Agents | OPC Training | Workflow Automation'. The overall feel is high-tech, trustworthy, and forward-thinking.",
     },
 
     // ── H3-5 简介文案方案 ─────────────────────────────────────────────────
@@ -372,23 +327,6 @@ function adaptStep3Result(raw: Record<string, unknown>): Step3Result {
       }
     : mock.avatar;
 
-  // background: backend returns { prompt, platformVersions: string[3] }
-  const rawBg = raw.background as { prompt?: string; platformVersions?: string[] } | undefined;
-  const background: BackgroundImageContent = rawBg
-    ? {
-        风格理念: rawBg.prompt ?? mock.background.风格理念,
-        布局结构: mock.background.布局结构,
-        色调: mock.background.色调,
-        主色调: mock.background.主色调,
-        辅色调: mock.background.辅色调,
-        品牌元素: mock.background.品牌元素,
-        '字体/icon': mock.background['字体/icon'],
-        分镜建议: Array.isArray(rawBg.platformVersions)
-          ? rawBg.platformVersions.join(' · ')
-          : mock.background.分镜建议,
-      }
-    : mock.background;
-
   // bio: backend returns [{ platform, text }][6]
   const rawBio = Array.isArray(raw.bio)
     ? (raw.bio as Array<{ platform?: string; text?: string }>)
@@ -424,7 +362,6 @@ function adaptStep3Result(raw: Record<string, unknown>): Step3Result {
     nicknames,
     nicknameStrategy: mock.nicknameStrategy,
     avatar,
-    background,
     bioFormula: mock.bioFormula,
     bioEntries,
     bioCoreKeywords: mock.bioCoreKeywords,
@@ -1780,63 +1717,6 @@ export default function Step3() {
                 {generated.avatar.aiPrompt}
               </p>
             </div>
-          </div>
-
-          {/* 背景墙视觉 (col-4 · Module 03) */}
-          <div
-            className="col-span-4 lg-glass lg-spec"
-            style={{
-              borderRadius: 20,
-              padding: 24,
-            }}
-          >
-            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(168,197,224,0.18)', color: C.burgundyText }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">wallpaper</span>
-                </span>
-                背景墙视觉
-              </h3>
-              <span
-                style={{
-                  borderRadius: 999,
-                  padding: '4px 10px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  fontFamily: F.mono,
-                  background: 'rgba(168,197,224,0.18)',
-                  color: C.burgundyText,
-                }}
-              >
-                Module 03
-              </span>
-            </div>
-            {/* 背景预览 · 红蓝紫主渐变 */}
-            <div
-              style={{
-                position: 'relative',
-                marginBottom: 16,
-                display: 'flex',
-                aspectRatio: '16/9',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                borderRadius: 8,
-                border: `1px solid ${C.line}`,
-                background: C.grad,
-              }}
-            >
-              <div style={{ position: 'absolute', inset: 0, background: C.grad, opacity: 0.85 }} />
-              <div style={{ position: 'relative', zIndex: 10, padding: '0 16px', textAlign: 'center' }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', fontFamily: F.display }}>理性 · 认知 · 破局</div>
-                <div style={{ marginTop: 8, fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>
-                  Systematic Thinking
-                </div>
-              </div>
-            </div>
-            <p style={{ fontSize: 14, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', fontFamily: F.cn }}>{generated.background.风格理念}</p>
           </div>
 
           {/* 简介文案公式 (col-8 · Module 04) */}

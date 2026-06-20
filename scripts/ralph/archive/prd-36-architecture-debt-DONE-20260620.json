@@ -1,0 +1,347 @@
+{
+  "project": "QuanAn",
+  "branchName": "ralph/prd-36-correctness-quadfix",
+  "description": "PRD-36 · R1 正确性四连修：ContextAssembler 接通×4 / userId 透传消灭 23 处 userId:0 / embed() 接真 / 9 处吞异常补日志 / audit 增 R-11 检测。来源 REFACTOR-PLAN.md R1，只修正确性不改产品行为。",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "[PRD-36] SpecialistRequest 增 userId 透传(机械改先行)",
+      "description": "types.ts SpecialistRequest 加 userId:number;tRPC 调用处 ctx.user.id 注入;BaseSpecialist 链路透传;消灭 23 处 userId:0(PositioningAgent.ts:184 等)",
+      "acceptanceCriteria": [
+        "AC-1: apps/api/src/agents/base/types.ts SpecialistRequest 增 userId:number(required)",
+        "AC-2: 全部 tRPC 调用处从 ctx.user.id 注入,BaseSpecialist.execute→invokeLLM 透传",
+        "AC-3: grep -rn 'userId: 0' apps/api/src/specialists apps/api/src/agents 命中=0",
+        "AC-4: 新增 rate-limiter 单测:两个不同 userId 配额独立",
+        "AC-5: pnpm typecheck 全绿 + 既有 unit/integration 全过"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "M",
+      "files_to_modify": [
+        "apps/api/src/agents/base/types.ts",
+        "apps/api/src/specialists/base/BaseSpecialist.ts",
+        "apps/api/src/specialists/*.ts(23处 userId:0)",
+        "apps/api/src/trpc/routers/app/*(Specialist 调用处注入 ctx.user.id)"
+      ],
+      "files_to_create": [
+        "tests/unit/llm-gateway/rate-limiter-per-user.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:unit",
+      "anti_patterns": [
+        "不得把 userId 设为可选再兜底 0——必须 required 编译期暴露遗漏",
+        "不得改 rate-limiter 算法本身"
+      ],
+      "notes": "机械改先行,解锁 US-002 同文件冲突；agent 执行需 mkdir -p tests/unit/llm-gateway 父目录（当前不存在）"
+    },
+    {
+      "id": "US-002",
+      "title": "[PRD-36] ContextAssembler 接通 4 个绕过的 Specialist(核心)",
+      "description": "DeepLearn/PrivateDomain/Presentation/Monetization 的 invokeLLM 改消费 ctx(AssembledContext)为 systemPrompt 基底,模式对齐 CopywritingAgent;业务指令并入 assembler specialist 段;删 _buildSystemPrompt 整体替换",
+      "acceptanceCriteria": [
+        "AC-1: grep -n 'ctx\\.systemPrompt\\|ctx\\.userPrompt' apps/api/src/specialists/DeepLearnAgent.ts apps/api/src/specialists/PrivateDomainAgent.ts apps/api/src/specialists/PresentationAgent.ts apps/api/src/specialists/MonetizationAgent.ts 各文件至少命中 1 行 invokeLLM 参数中含 ctx.systemPrompt / ctx.userPrompt(对齐 CopywritingAgent 消费模式)",
+        "AC-2: 4 文件中 _ctx 弃用参数命名消失,_buildSystemPrompt 删除或降级为 assembler 输入片段",
+        "AC-3: [依赖 US-010] tests/judge/ 对应 4 个 judge 在 isMock=false 下全过(输出质量不回退);US-010 未解除 isMock 前本 AC 暂 backlog·不阻断合并",
+        "AC-4: 新增集成断言:EvolutionInsight 存在时 4 个 Specialist prompt 含进化档案内容",
+        "AC-5: 含手机/邮箱的 productDescription/targetAudience 提交后,LLM 收到的 userPrompt 中手机/邮箱已被 piiMask 脱敏(G2 PII 真漏洞验收;单测断言:piiMask 后 userPrompt 不含原始手机/邮箱字面)",
+        "AC-6: grep -rn 'where:\\s*{\\s*accountId' apps/api/src/services/context-assembler 命中数与 _fetchStepData 内 prisma 查询数相等,且无任何 prisma 查询仅含 'RLS handles it' 注释而省略 accountId 过滤(G15 防重构撞坏 RLS;grep 断言)",
+        "AC-T: pnpm typecheck 全绿",
+        "AC-V: 相关 unit/integration 全过(pnpm test:unit / test:integration 对应目录)"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [
+        "US-001"
+      ],
+      "blocked": false,
+      "risk_level": "medium",
+      "size_hint": "M",
+      "files_to_modify": [
+        "apps/api/src/specialists/DeepLearnAgent.ts",
+        "apps/api/src/specialists/PrivateDomainAgent.ts",
+        "apps/api/src/specialists/PresentationAgent.ts",
+        "apps/api/src/specialists/MonetizationAgent.ts"
+      ],
+      "files_to_create": [
+        "tests/integration/specialists/context-injection.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:integration",
+      "anti_patterns": [
+        "不得整体丢弃各 Specialist 的业务指令——并入 assembler specialist 段而非删除",
+        "不得改 ContextAssembler 本身的 7 路装配逻辑",
+        "判定标准=对齐 CopywritingAgent 的 ctx 消费模式,不要发明新模式"
+      ],
+      "notes": "核心 story;改完跑 4 个对应 judge(有 ANTHROPIC_API_KEY 时)确认输出质量不回退；agent 执行需 mkdir -p tests/integration/specialists 父目录（当前不存在）"
+    },
+    {
+      "id": "US-003",
+      "title": "[PRD-36] llmGateway.embed() 接通真实 embedding",
+      "description": "workers/llm-gateway/index.ts:249-252 全零向量占位改为调 workers/embedding OpenAI 实现(共享 key 读取)",
+      "acceptanceCriteria": [
+        "AC-1: embed() 调 workers/embedding 实现,删全零占位",
+        "AC-2: 单测 embed('测试文本') 返回非全零 1536 维(无 key skipIf)",
+        "AC-3: RAG 链路集成测试不回归",
+        "AC-T: pnpm typecheck 全绿",
+        "AC-V: 相关 unit/integration 全过(pnpm test:unit / test:integration 对应目录)"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "S",
+      "files_to_modify": [
+        "apps/api/src/workers/llm-gateway/index.ts(embed 249-252)"
+      ],
+      "files_to_create": [
+        "tests/unit/llm-gateway/embed.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:unit",
+      "anti_patterns": [
+        "不得在 gateway 里重写 embedding 逻辑——复用 workers/embedding 现有实现"
+      ],
+      "notes": "无 OPENAI_API_KEY 环境 skipIf"
+    },
+    {
+      "id": "US-004",
+      "title": "[PRD-36] 9 处 catch(()=>{}) 补日志",
+      "description": "approvals.ts:322,379,414 / feature-flag.service.ts:154,192,286,294 / approvalGateService.ts:291,358 改 logger.warn 带 trace,行为不变",
+      "acceptanceCriteria": [
+        "AC-1: 9 处全部改 catch((e)=>logger.warn(...)) 带 trace 上下文,沿用项目 logger",
+        "AC-2: grep -rn 'catch(() => {})' apps/api/src 命中=0；并人工确认多行空 catch（如 catch\\(\\) {\\n\\s*}）已同步补日志（approvalGateService.ts:222 等多行形式需 manual review）",
+        "AC-T: pnpm typecheck 全绿"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "S",
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/approvals.ts",
+        "apps/api/src/services/admin/feature-flag/feature-flag.service.ts",
+        "apps/api/src/services/admin/approval/approvalGateService.ts"
+      ],
+      "files_to_create": [],
+      "test_command": "pnpm typecheck && pnpm lint --filter @quanan/api",
+      "anti_patterns": [
+        "不得改为 throw——保持不抛出语义,只补 logger.warn"
+      ],
+      "notes": "9 处坐标见 tasks/prd-36.md 问题事实节"
+    },
+    {
+      "id": "US-005",
+      "title": "[PRD-36] audit-redlines.sh 增 R-11 绕过检测",
+      "description": "防回潮:specialists/*.ts 中 invokeLLM(_ctx 弃用参数模式检测;AGENTS.md §8 同步说明",
+      "acceptanceCriteria": [
+        "AC-1: audit-redlines.sh 新增 R-11 检测:specialists/*.ts 出现 invokeLLM(_ctx → FAIL",
+        "AC-2: 修复后代码 PASS,人为注入违例 FAIL(双向自测)",
+        "AC-3: AGENTS.md §8 audit_commands 增一行该检测说明",
+        "AC-T: pnpm typecheck 全绿"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [
+        "US-002"
+      ],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "S",
+      "files_to_modify": [
+        "scripts/audit-redlines.sh",
+        "AGENTS.md(§8 audit_commands 一行)"
+      ],
+      "files_to_create": [],
+      "test_command": "bash scripts/audit-redlines.sh",
+      "anti_patterns": [
+        "检测要锚定 invokeLLM(_ctx 弃用参数模式,不要误伤合法的 _ 前缀其他参数"
+      ],
+      "notes": "双向自测:修复后 PASS+注入违例 FAIL"
+    },
+    {
+      "id": "US-006",
+      "title": "[PRD-36] trending_favorites 补 RLS（R-21 真漏洞）",
+      "description": "manual_rls.sql 给 trending_favorites 表补 ENABLE ROW LEVEL SECURITY 及 account_id policy，使 R-21 audit 检测从 FAIL 变 PASS",
+      "acceptanceCriteria": [
+        "AC-1: manual_rls.sql 新增 ALTER TABLE trending_favorites ENABLE ROW LEVEL SECURITY; 及对应 account_id policy（模式对齐同文件其他业务表）",
+        "AC-2: bash scripts/audit-redlines.sh 的 R-21 检测 PASS（exit code 0，trending_favorites 不再出现在差集输出中）",
+        "AC-3: 迁移脚本/SQL 可幂等重跑（已有 policy 先 DROP IF EXISTS 再 CREATE）",
+        "AC-T: pnpm typecheck 全绿"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "S",
+      "files_to_modify": [
+        "prisma/migrations/manual_rls.sql"
+      ],
+      "files_to_create": [],
+      "test_command": "bash scripts/audit-redlines.sh",
+      "anti_patterns": [
+        "不得改动 trending_items 等全局共享表（对标数据非私有，有意无 RLS）",
+        "不得省略 policy 的 USING (account_id = current_setting('app.current_account_id')::uuid) 表达式"
+      ],
+      "notes": "R-21 已在 audit-redlines.sh 落地真检测（从 prisma/schema.prisma 提取 accountId 业务表与 manual_rls.sql ENABLE RLS 求差）；本 story 仅补遗漏的 trending_favorites"
+    },
+    {
+      "id": "US-007",
+      "title": "[PRD-36] G1 token 裁剪：ContextAssembler 超阈 graceful trim + 非 LLM API 日预算分桶",
+      "description": "ContextAssembler.assemble() 在组装完成后检查 contextTokens，超阈（~50K 字符软告警 / 200K 硬上限）时 graceful trim（优先截 RAG chunks，不 throw）；LLMGateway 为 trending/embedding/imageGen 等非 LLM API 建立独立日预算分桶（D9.3 C 层）",
+      "acceptanceCriteria": [
+        "AC-1: ContextAssembler.assemble() 超 50K 字符时 logger.warn 含 contextTokens 数值，超 200K 时截断 RAG/历史段后继续返回（不 throw）",
+        "AC-2: 单测：注入 210K 字符 RAG chunks 时 assemble() 正常返回且 result.systemPrompt.length < 210000",
+        "AC-3: LLMGateway 新增 nonLlmBudget 日分桶配置（trending/embedding/imageGen 各自上限），超限 logger.warn + 返回降级结果（不 throw）",
+        "AC-4: grep -n 'contextTokens' apps/api/src/services/context-assembler/ContextAssembler.ts 命中行包含阈值比较逻辑（非仅计数）",
+        "AC-T: pnpm typecheck 全绿",
+        "AC-V: pnpm test:unit 对应 context-assembler trim 单测全过"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "medium",
+      "size_hint": "M",
+      "files_to_modify": [
+        "apps/api/src/services/context-assembler/ContextAssembler.ts",
+        "apps/api/src/workers/llm-gateway/index.ts"
+      ],
+      "files_to_create": [
+        "tests/unit/context/context-assembler-trim.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:unit",
+      "anti_patterns": [
+        "trim 必须在 assemble 阶段完成后截分段，不能在 LLMGateway 内部静默截断导致输出截断",
+        "不得改 contextTokens 计数逻辑本身，只在计数后加阈值分支"
+      ],
+      "notes": "对应 AGENTS.md §13 G1；ADR-05 §三 D②修复 AC；trim 顺序：先截 RAG chunks → 再截 L3 历史，保留 L2 stepData 全量"
+    },
+    {
+      "id": "US-008",
+      "title": "[PRD-36] G9 熔断器实装：LLMGateway circuit-breaker 从注释改真实",
+      "description": "apps/api/src/workers/llm-gateway/index.ts 内熔断器（circuit-breaker）从注释占位改为真实实现（opossum 或自研），E2E 测试模拟 LLM 超时触发熔断后返回降级响应",
+      "acceptanceCriteria": [
+        "AC-1: LLMGateway 内 circuit-breaker 关键路径不再是纯注释——存在真实的 open/half-open/closed 状态机逻辑；可验证方式：单测模拟连续 5 次 LLM 超时后第 6 次调用立即返回降级响应（exit code 0），断言 failureCount >= 5 且状态为 open（grep -n 'circuit\\|open\\|half' apps/api/src/workers/llm-gateway/index.ts 命中行含赋值或条件判断非仅注释）",
+        "AC-2: 单测/集成测试：模拟 LLM 连续超时 5 次后，第 6 次调用在 circuit open 状态时立即返回降级响应（不等待超时），exit code 0",
+        "AC-3: circuit open 时 logger.error 含 'circuit open' 字样及 failureCount",
+        "AC-T: pnpm typecheck 全绿",
+        "AC-V: pnpm test:integration 对应 circuit-breaker 集成测试全过"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "medium",
+      "size_hint": "M",
+      "files_to_modify": [
+        "apps/api/src/workers/llm-gateway/index.ts"
+      ],
+      "files_to_create": [
+        "tests/integration/llm-gateway/circuit-breaker.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:integration",
+      "anti_patterns": [
+        "禁止把注释当实装（LD-012 audit 只检测文件存在，不检测 circuit-breaker 真实逻辑）",
+        "不得改三级降级策略（reasoning→standard→fallback）——circuit-breaker 是额外的 open/close 状态机"
+      ],
+      "notes": "对应 AGENTS.md §13 G9；LD-012；opossum 已是 node 生态主流 circuit-breaker 库，可直接引入；agent 执行需 mkdir -p tests/integration/llm-gateway 父目录（当前不存在）"
+    },
+    {
+      "id": "US-009",
+      "title": "[PRD-36] G13 演进 100 冻结：EvolutionAgent.execute count≥100 return skipped",
+      "description": "EvolutionAgent.execute() 最前检查 EvolutionProfile.evolutionCount，达到 100 时直接返回 {skipped: true}，防止无限 LLM 调用爆成本",
+      "acceptanceCriteria": [
+        "AC-1: EvolutionAgent.execute() 最前（进 LLM 调用前）有 evolutionCount >= 100 的检查，返回 {skipped: true, reason: 'evolution_frozen'}",
+        "AC-2: 单测：构造 evolutionCount=100 的 profile，调用 execute()，断言返回值 skipped===true 且未调用 invokeLLM",
+        "AC-3: 单测：构造 evolutionCount=99，execute() 正常继续（invokeLLM 被调用）",
+        "AC-T: pnpm typecheck 全绿",
+        "AC-V: pnpm test:unit 对应 evolution-freeze 单测全过"
+      ],
+      "priority": "high",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": false,
+      "risk_level": "low",
+      "size_hint": "S",
+      "files_to_modify": [
+        "apps/api/src/agents/evolution/EvolutionAgent.ts"
+      ],
+      "files_to_create": [
+        "tests/unit/agents/evolution-freeze.test.ts"
+      ],
+      "test_command": "pnpm typecheck && pnpm test:unit",
+      "anti_patterns": [
+        "冻结检查必须在 execute() 最前、进任何 LLM 调用前——不得在 invokeLLM 内部或事后检查",
+        "不得改反馈飞轮触发阈值 [5,20,50,100]（lib/evolution/trigger.ts）"
+      ],
+      "notes": "对应 AGENTS.md §13 G13；LD-019；AGENTS.md §13 注记：无冻结→无限 LLM 调用→爆成本"
+    },
+    {
+      "id": "US-010",
+      "title": "[PRD-36] BACKLOG: G11 evaluatePromptVersion isMock=false（LLM Judge 开启真实评测）",
+      "description": "[BACKLOG·不立即执行] tests/judge/*.judge.ts 全部改 isMock=false，夜跑 CI 覆盖 100 金标准 passThreshold 4.0；开启后会暴露真实 prompt 质量，需人工复核结果",
+      "acceptanceCriteria": [
+        "AC-1: tests/judge/*.judge.ts 全部 isMock=false（grep -rn 'isMock: true' tests/judge 命中=0）",
+        "AC-2: CI 夜跑任务执行 pnpm test:judge，结果写入 tests/judge/results/，passThreshold 4.0",
+        "AC-T: pnpm typecheck 全绿"
+      ],
+      "priority": "low",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [
+        "US-002"
+      ],
+      "blocked": true,
+      "risk_level": "medium",
+      "size_hint": "S",
+      "files_to_modify": [
+        "tests/judge/*.judge.ts"
+      ],
+      "files_to_create": [],
+      "test_command": "pnpm test:judge",
+      "anti_patterns": [
+        "开启前必须确保 US-002 ContextAssembler 接通完成，否则 judge 结果无参考价值"
+      ],
+      "notes": "BACKLOG：对应 AGENTS.md §13 G11；LD-016；blocked=true 直到 US-002 passes=true 且人工确认 judge 结果复核安排就绪"
+    },
+    {
+      "id": "US-011",
+      "title": "[PRD-36] BACKLOG: G12 canary 接 ab-stop-loss（自动回滚）",
+      "description": "[BACKLOG·不立即执行] canary worker 接入 ab-stop-loss 钩子，error_rate > 5% 自动触发回滚；监控接入 Datadog/Grafana；在 deploy pipeline before-promote 阶段配置",
+      "acceptanceCriteria": [
+        "AC-1: canary deploy 脚本含 ab-stop-loss hook，error_rate > 5% 时 pipeline 中止并触发回滚（CI/CD 配置文件可 grep ab-stop-loss 命中）",
+        "AC-2: 测试：模拟 canary error_rate=6%，验证 pipeline 返回非零 exit code（自动回滚触发）",
+        "AC-T: deploy pipeline lint 全过"
+      ],
+      "priority": "low",
+      "passes": true,
+      "retryCount": 0,
+      "depends_on": [],
+      "blocked": true,
+      "risk_level": "high",
+      "size_hint": "L",
+      "files_to_modify": [
+        ".github/workflows/deploy-canary.yml（或对应 deploy pipeline 配置文件）"
+      ],
+      "files_to_create": [],
+      "test_command": "bash scripts/test-canary-rollback.sh",
+      "anti_patterns": [
+        "ab-stop-loss 配置必须在 before-promote 阶段（不是 after-promote）",
+        "不得用 sleep+轮询替代真实 error_rate 检测"
+      ],
+      "notes": "BACKLOG：对应 AGENTS.md §13 G12；LD-019；blocked=true·depends_on=[]·外部依赖（Datadog/Grafana 监控接入），需人工解除 blocked——无法由 agent 自动解锁，须运维/SRE 确认监控就绪后手动将 blocked 改为 false"
+    }
+  ]
+}

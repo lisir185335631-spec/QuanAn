@@ -117,12 +117,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         desc: '粘贴文案，AI深度拆解爆款密码+一键仿写',
         href: '/video-analysis',
       },
-      {
-        icon: LayoutGrid,
-        title: '爆款呈现形式',
-        desc: '14种爆款呈现形式全解析',
-        href: '/present-styles',
-      },
     ],
   },
   {
@@ -173,12 +167,6 @@ export const HOME_MATRIX: ReadonlyArray<HomeMatrixGroup> = [
         title: '短视频制作',
         desc: '文案转分镜脚本和拍摄方案',
         href: '/video-production',
-      },
-      {
-        icon: Target,
-        title: '获客型视频',
-        desc: '精准获客短视频方案',
-        href: '/acquisition-video',
       },
     ],
   },

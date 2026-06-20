@@ -53,7 +53,6 @@ const ITEM_ICON: Record<string, string> = {
   '/step/5': 'local_fire_department',
   '/step/7': 'edit_document',
   '/video-analysis': 'document_scanner',
-  '/acquisition-video': 'video_camera_back',
   '/present-styles': 'view_carousel',
   '/step/1': 'category',
   '/step/3': 'badge',

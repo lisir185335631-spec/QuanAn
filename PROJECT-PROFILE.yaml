@@ -30,8 +30,8 @@ P12_kb_type: "混合"        # 67 案例+23 公式（结构化常量）+ pgvecto
 
 # --- 项目进度游标（L1 状态层）---
 progress:
-  current_phase: 8                      # 2026-06-19 阶段7 测试验收带债出门(universal⛔全过·H76 eval-suite/H79 Judge偏差 门禁债务·与 H77 红队集中阶段8)→进入阶段8 评审门禁+验收工件包集群
-  completed_phases: [0, 1, 2, 3, 4, 5, 6, 7]  # …2026-06-19 阶段6 出门(06清单⛔全过+3交付能力包闭合);2026-06-19 阶段7 带债出门(用户同意:07清单 universal A/B/F/G⛔全过 typecheck6/6·api1160/0·PII7家+输出端·注入过滤·鉴权·零回归;**门禁债务 H76 eval-suite[Golden Dataset≥20+Kappa≥0.6+CI门禁]/H79 Judge偏差校准[position·length·self-pref]→集中阶段8 与 H77 红队一起做**;H78 N/A创作容错·H80/H82轻债/部分;C/D/E软项 agent-browser端到端/量化指标/压测待补)
+  current_phase: 5                      # 2026-06-20 阶段回溯:产品需求线回阶段5补规划 PRD-37(批1快赢⑥⑦+批2地基①④)。根因=阶段5 原 PRD-36 只规划架构债务、漏重构.txt 8主题产品需求(规划层断裂·用户揪出)。架构债务线 PRD-36+阶段6-8 成果(C1-C7 commit)保留有效不重做
+  completed_phases: [0, 1, 2, 3, 4]  # [2026-06-20 阶段回溯·产品需求线回[0-4]补PRD-37·架构债务线5-8成果保留git/deliverables/phase_notes非丢失] 原架构线出门:…2026-06-19 阶段6 出门(06清单⛔全过+3交付能力包闭合);2026-06-19 阶段7 带债出门(用户同意:07清单 universal A/B/F/G⛔全过 typecheck6/6·api1160/0·PII7家+输出端·注入过滤·鉴权·零回归;**门禁债务 H76 eval-suite[Golden Dataset≥20+Kappa≥0.6+CI门禁]/H79 Judge偏差校准[position·length·self-pref]→集中阶段8 与 H77 红队一起做**;H78 N/A创作容错·H80/H82轻债/部分;C/D/E软项 agent-browser端到端/量化指标/压测待补)
   next_action: "2026-06-19 阶段6 开发执行出门(四波次重构+二轮对抗复审+清残留+3 交付能力包 G74注入过滤/G78成本熔断/G77输出合规 闭合阶段2 P0 backlog·06清单⛔全过)。下一步进入阶段7 测试验收:按双维映射取阶段7条目簇(E块RAG验收/D11安全验证/AC逐条),用验收报告核 prd 11 story 的 AC 实现证据(typecheck/单测/双向自测留痕),产出 docs/lifecycle/7-验收报告.md,过07清单。门禁债务:G81 DALL-E媒体质量闸门(轻债低优·DALL-E自带内容策略);commit 待用户触发(C清单commit规范软项·代码已 typecheck6/6+test1160/0+audit 验证)。横切安全合规清单阶段8项(B PII输出端已做/C注入五层部分/F密钥)+红队测试在阶段8验收。"
   # 以下 phase_notes 为上一轮(2026-06-11/12)走查记录，保留供溯源；本轮全量重走时逐阶段重新核验、按新发现覆盖更新
   phase_notes:

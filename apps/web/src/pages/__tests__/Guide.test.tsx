@@ -51,7 +51,7 @@ describe('Guide · sally 1:1 复刻', () => {
     );
   });
 
-  it('13 section name 全部渲染', () => {
+  it('12 section name 全部渲染', () => {
     renderGuide();
     const names = [
       '系统概览',
@@ -66,7 +66,7 @@ describe('Guide · sally 1:1 复刻', () => {
       'AI视频',
       '深度学习',
       '视频制作',
-      '获客视频',
+      // 获客视频 已随批1删除
     ];
     // getAllByText used for names that appear multiple times (e.g. 私域成交 is also a FlowCard)
     names.forEach((name) => {
@@ -74,10 +74,10 @@ describe('Guide · sally 1:1 复刻', () => {
     });
   });
 
-  it('实用技巧 · 13 个 TipsBox 渲染', () => {
+  it('实用技巧 · 12 个 TipsBox 渲染', () => {
     renderGuide();
     const tipsBoxes = screen.getAllByTestId('tips-box');
-    expect(tipsBoxes).toHaveLength(13);
+    expect(tipsBoxes).toHaveLength(12);
   });
 
   it('常见问题 · section 字面锁', () => {

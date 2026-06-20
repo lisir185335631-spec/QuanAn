@@ -15,8 +15,6 @@ export const HEADER_NAV: HeaderNavGroup[] = [
       { label: '爆款选题', href: '/step/5' },
       { label: '文案生成', href: '/step/7' },
       { label: '文案解析', href: '/video-analysis' },
-      { label: '获客视频', href: '/acquisition-video' },
-      { label: '呈现形式', href: '/present-styles' },
     ],
   },
   {

@@ -1,4 +1,3 @@
-export { default as AcquisitionVideo } from './AcquisitionVideo';
 export { default as AiVideo } from './AiVideo';
 export { default as Analysis } from './Analysis';
 export { default as BoomGenerate } from './BoomGenerate';
@@ -6,7 +5,6 @@ export { default as DeepLearning } from './DeepLearning';
 export { default as Generate } from './Generate';
 export { default as Knowledge } from './Knowledge';
 export { default as Monetization } from './Monetization';
-export { default as PresentStyles } from './PresentStyles';
 export { default as PrivateDomain } from './PrivateDomain';
 export { default as Trending } from './Trending';
 export { default as VideoProduction } from './VideoProduction';

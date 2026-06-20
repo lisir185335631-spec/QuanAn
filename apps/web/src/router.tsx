@@ -9,7 +9,7 @@
  */
 
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
@@ -30,7 +30,6 @@ const Step8 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Ste
 // ── Tool pages (13) — shared tools chunk ─────────────────────────────────────
 const Trending = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Trending'));
 // sally aiipznt /copywriting 也是 404 · 跳过 · catch-all 接管
-const PresentStyles = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PresentStyles'));
 const Monetization = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Monetization'));
 const PrivateDomain = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PrivateDomain'));
 const BoomGenerate = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/BoomGenerate'));
@@ -38,7 +37,6 @@ const Generate = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tool
 const Analysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Analysis'));
 const VideoAnalysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoAnalysis'));
 const VideoProduction = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoProduction'));
-const AcquisitionVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AcquisitionVideo'));
 const AiVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AiVideo'));
 const DeepLearning = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/DeepLearning'));
 const Knowledge = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Knowledge'));
@@ -157,20 +155,8 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/acquisition-video',
-    element: (
-      <Suspense fallback={<div className="min-h-screen bg-white" />}>
-        <AcquisitionVideo />
-      </Suspense>
-    ),
-  },
-  {
     path: '/present-styles',
-    element: (
-      <Suspense fallback={<div className="min-h-screen bg-white" />}>
-        <PresentStyles />
-      </Suspense>
-    ),
+    element: <Navigate to="/step/6" replace />,
   },
   {
     path: '/diagnosis',

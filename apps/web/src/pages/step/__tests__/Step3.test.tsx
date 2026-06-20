@@ -97,11 +97,6 @@ describe('Step3 integration (US-010b)', () => {
     expect(screen.getByRole('heading', { level: 3, name: /头像生成流/ })).toBeInTheDocument();
   });
 
-  it('renders 背景墙视觉 H3 (replaces 背景图设计方案)', () => {
-    renderStep3();
-    expect(screen.getByRole('heading', { level: 3, name: /背景墙视觉/ })).toBeInTheDocument();
-  });
-
   it('renders 简介文案公式 H3 (replaces 简介文案方案)', () => {
     renderStep3();
     expect(screen.getByRole('heading', { level: 3, name: /简介文案公式/ })).toBeInTheDocument();
@@ -125,7 +120,7 @@ describe('Step3 integration (US-010b)', () => {
     const h3Texts = h3Headings.map((h) => h.textContent ?? '');
     expect(h3Texts.some((t) => /矩阵命名/.test(t))).toBe(true);
     expect(h3Texts.some((t) => /头像生成流/.test(t))).toBe(true);
-    expect(h3Texts.some((t) => /背景墙视觉/.test(t))).toBe(true);
+    // 背景墙视觉 已随批1删除(背景图卡删除)
     expect(h3Texts.some((t) => /简介文案公式/.test(t))).toBe(true);
     expect(h3Texts.some((t) => /核心定位策略/.test(t))).toBe(true);
     expect(h3Texts.some((t) => /下一步执行/.test(t))).toBe(true);

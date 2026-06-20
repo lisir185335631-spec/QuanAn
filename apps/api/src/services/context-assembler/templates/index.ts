@@ -6,7 +6,6 @@
 
 import type { SpecialistId }      from '@/agents/base/types';
 
-import { ACQUISITION_VIDEO_TEMPLATE } from './acquisition-video';
 import { AI_VIDEO_TEMPLATE }          from './ai-video';
 import { ANALYSIS_TEMPLATE }          from './analysis';
 import { BRANDING_TEMPLATE }          from './branding';
@@ -42,7 +41,6 @@ export const SPECIALIST_TEMPLATES: Partial<Record<SpecialistId, SpecialistTempla
   AnalysisAgent:       ANALYSIS_TEMPLATE,
   // PRD-6 US-002 · AC-7: VideoAgent mode-specific templates
   'VideoAgent:production':  VIDEO_PRODUCTION_TEMPLATE,
-  'VideoAgent:acquisition': ACQUISITION_VIDEO_TEMPLATE,
   'VideoAgent:storyboard':  AI_VIDEO_TEMPLATE,
   // PRD-8 US-002 · AC-7: 3 L5 Specialist templates
   EvolutionAgent:      EVOLUTION_AGENT_TEMPLATE,
@@ -64,7 +62,6 @@ export {
   LIVESTREAM_TEMPLATE,
   ANALYSIS_TEMPLATE,
   VIDEO_PRODUCTION_TEMPLATE,
-  ACQUISITION_VIDEO_TEMPLATE,
   AI_VIDEO_TEMPLATE,
   DAILY_TASK_AGENT_TEMPLATE,
   DIAGNOSIS_TEMPLATE,

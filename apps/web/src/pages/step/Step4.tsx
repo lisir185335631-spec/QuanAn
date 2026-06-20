@@ -1055,7 +1055,7 @@ export default function Step4() {
           <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden>timeline</span>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0, textShadow: C.textShadow }}>三阶段执行路径</h2>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 每日任务 · 里程碑 · 内容计划 · KPI</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontFamily: F.cn }}>· 每日运营计划 · 里程碑 · 内容计划 · KPI</span>
           </div>
         </Reveal>
         <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -1092,11 +1092,11 @@ export default function Step4() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 22, padding: 24 }}>
-                    {/* 每日任务 */}
+                    {/* 每日运营计划 */}
                     <div>
                       <p style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: phaseAccentText, fontFamily: F.cn }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden>checklist</span>
-                        每日任务
+                        每日运营计划
                       </p>
                       <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
                         {phase.dailyTasks.map((task, ti) => (

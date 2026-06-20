@@ -7,7 +7,6 @@ import {
   Search,
   Shield,
   Sparkles,
-  Target,
   TrendingUp,
   Users,
   Video,
@@ -150,17 +149,6 @@ export const GUIDE_MODULES: GuideModule[] = [
       'AI拆解文案为视频段落',
       '生成分镜脚本和道具清单',
       '获取完整拍摄执行方案',
-    ],
-  },
-  {
-    icon: '🎯',
-    title: '获客视频',
-    desc: '精准获客短视频方案',
-    steps: [
-      '选择目标获客人群画像',
-      '输入产品核心卖点',
-      'AI生成获客型视频脚本',
-      '按平台优化发布策略',
     ],
   },
 ];
@@ -485,27 +473,6 @@ export const GUIDE_SECTIONS_13: ReadonlyArray<GuideSection> = [
       },
     ],
     tips: ['视频脚本要先写好再开拍，避免临场发挥', 'BGM建议结合内容情绪选择'],
-  },
-  {
-    id: 'acquisition_video',
-    icon: Target,
-    name: '获客视频',
-    sub: '制作高转化获客视频方案',
-    steps: [
-      {
-        title: '设定获客目标',
-        desc: '输入你的产品/服务、目标客户画像、核心卖点等信息。',
-      },
-      {
-        title: '生成获客方案',
-        desc: 'AI会生成包含视频脚本、投放策略、转化路径的完整获客方案。',
-      },
-      {
-        title: '执行和优化',
-        desc: '按照方案执行，根据数据反馈持续优化获客效果。',
-      },
-    ],
-    tips: ['获客视频的关键是清晰的钩子和明确的引导', '定期 A/B 测试不同钩子的转化效果'],
   },
 ];
 

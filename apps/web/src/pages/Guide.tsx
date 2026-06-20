@@ -32,7 +32,6 @@ const SECTION_ICON_MAP: Record<string, string> = {
   ai_video: 'movie',
   deep_learning: 'school',
   video_production: 'movie',
-  acquisition_video: 'target',
 };
 
 // ── 三色轮转(液态玻璃冷蓝体系)────────────────────────────────────────────

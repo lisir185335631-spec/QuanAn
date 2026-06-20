@@ -16,7 +16,6 @@ export const FUNCTION_MATRIX: FunctionGroup[] = [
     cards: [
       { icon: '🔥', title: '全网爆款库', desc: '一键抓取全平台爆款视频和文案', href: '/trending' },
       { icon: '🔍', title: '爆款文案解析', desc: '粘贴文案，AI深度拆解爆款密码+一键仿写', href: '/video-analysis' },
-      { icon: '🎨', title: '爆款呈现形式', desc: '14种爆款呈现形式全解析', href: '/present-styles' },
     ],
   },
   {
@@ -33,7 +32,6 @@ export const FUNCTION_MATRIX: FunctionGroup[] = [
       { icon: '🤖', title: 'AI智能生成', desc: '基于方法论一键生成爆款文案', href: '/generate' },
       { icon: '📊', title: '文案结构分析', desc: '多维度分析评分精准优化', href: '/analysis' },
       { icon: '🎬', title: '短视频制作', desc: '文案转分镜脚本和拍摄方案', href: '/video-production' },
-      { icon: '🎯', title: '获客型视频', desc: '精准获客短视频方案', href: '/acquisition-video' },
     ],
   },
   {

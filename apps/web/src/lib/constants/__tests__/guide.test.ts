@@ -43,8 +43,8 @@ describe('guide constants · 字面锁', () => {
     expect(GUIDE_SEARCH_PLACEHOLDER).toBe('搜索功能说明...');
   });
 
-  it('GUIDE_SECTIONS_13 · 13 entries · section[0] = 系统概览', () => {
-    expect(GUIDE_SECTIONS_13).toHaveLength(13);
+  it('GUIDE_SECTIONS_13 · 12 entries · section[0] = 系统概览', () => {
+    expect(GUIDE_SECTIONS_13).toHaveLength(12);
     expect(GUIDE_SECTIONS_13[0]!.id).toBe('system_overview');
     expect(GUIDE_SECTIONS_13[0]!.name).toBe('系统概览');
     expect(GUIDE_SECTIONS_13[0]!.sub).toBe('了解AIP智能体的核心能力');
@@ -61,7 +61,7 @@ describe('guide constants · 字面锁', () => {
     });
   });
 
-  it('GUIDE_SECTIONS_13 · 13 section name 字面锁', () => {
+  it('GUIDE_SECTIONS_13 · 12 section name 字面锁', () => {
     const names = GUIDE_SECTIONS_13.map((s) => s.name);
     expect(names).toContain('系统概览');
     expect(names).toContain('爆款库');
@@ -75,7 +75,7 @@ describe('guide constants · 字面锁', () => {
     expect(names).toContain('AI视频');
     expect(names).toContain('深度学习');
     expect(names).toContain('视频制作');
-    expect(names).toContain('获客视频');
+    // 获客视频 已随批1删除，不再出现
   });
 
   it('GUIDE_FAQS_4 · 4 entries · Q 字面锁', () => {
@@ -91,8 +91,8 @@ describe('guide constants · 字面锁', () => {
     expect(GUIDE_TIPS_TITLE).toBe('实用技巧');
   });
 
-  it('兼容旧 export · GUIDE_MODULES 保留(12) + FAQS 保留(4)', () => {
-    expect(GUIDE_MODULES).toHaveLength(12);
+  it('兼容旧 export · GUIDE_MODULES 保留(11，已删获客视频) + FAQS 保留(4)', () => {
+    expect(GUIDE_MODULES).toHaveLength(11);
     expect(FAQS).toHaveLength(4);
   });
 });

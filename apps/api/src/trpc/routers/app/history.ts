@@ -39,7 +39,6 @@ const TOOL_AGENT_MAP: Record<string, string[]> = {
   analysis: ['AnalysisAgent'],
   videoAnalysis: ['VideoAnalysisAgent'],
   videoProduction: ['VideoProductionAgent', 'VideoAgent'],
-  acquisitionVideo: ['VideoAgent'],
   aiVideo: ['VideoAgent'],
   deepLearning: ['DeepLearningAgent'],
   knowledge: ['KnowledgeAgent'],
