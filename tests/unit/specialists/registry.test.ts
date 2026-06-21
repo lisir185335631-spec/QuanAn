@@ -7,9 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { SPECIALISTS, STEP_AGENT_REGISTRY, findStepAgent } from '@/specialists/registry';
 
 describe('specialist registry · 热插拔', () => {
-  it('SPECIALISTS 集中登记了全部 13 个 specialist,且都有 execute', () => {
+  it('SPECIALISTS 集中登记了全部 12 个 specialist,且都有 execute(VoiceChat 下线后 13→12)', () => {
     const ids = Object.keys(SPECIALISTS) as (keyof typeof SPECIALISTS)[];
-    expect(ids).toHaveLength(13);
+    expect(ids).toHaveLength(12);
     for (const id of ids) expect(typeof SPECIALISTS[id].execute).toBe('function');
   });
 

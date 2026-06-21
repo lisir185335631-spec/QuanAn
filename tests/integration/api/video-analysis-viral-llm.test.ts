@@ -42,6 +42,12 @@ const INTEGRATION_VIRAL_RESULT = {
   ],
   rewriteVersion:
     '这是基于爆款元素心理学重写的仿写版文案，融入了好奇心钩子、反差情绪和共鸣引导三个核心要素，完整呈现了一套高转化内容结构，建议参考优化自己的账号内容。',
+  // analysisViralOutput schema requires viralStructure (PRD-37 US-P09 AC3)
+  viralStructure: {
+    hook: '标题制造信息缺口，前5秒触发强烈好奇心驱动点击',
+    body: '对比手法展现落差感，结合真实案例强化情绪共鸣',
+    cta: '关注账号获取更多爆款内容创作方法论',
+  },
 };
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────

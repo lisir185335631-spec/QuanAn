@@ -61,9 +61,10 @@ describe('eval-run dataset loading', () => {
     expect(data.every((s) => s.source === 'sally')).toBe(true);
   });
 
-  it('custom-70.json loads 70 samples with source=custom', () => {
+  it('custom-70.json loads 72 samples with source=custom', () => {
+    // fixture extended from 70 to 72 samples (custom-071, custom-072 added)
     const data = loadFixture(CUSTOM_PATH) as Array<{ source: string }>;
-    expect(data).toHaveLength(70);
+    expect(data).toHaveLength(72);
     expect(data.every((s) => s.source === 'custom')).toBe(true);
   });
 

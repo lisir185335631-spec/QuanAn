@@ -177,11 +177,16 @@ describe('ContextAssembler', () => {
     expect(ctx.systemPrompt).toContain('方法论');
   });
 
-  // AC-9: contextTokens = ceil((systemPrompt + userPrompt).length / 4)
-  it('contextTokens 等于 chars/4 粗算', async () => {
+  // AC-9: contextTokens = CJK-aware 加权估算(改进版 · G1)
+  // estimateTokens: ASCII ≈ 0.25 token, 非 ASCII(CJK) ≈ 1.5 token
+  it('contextTokens 等于 CJK 加权估算(ASCII*0.25 + CJK*1.5)', async () => {
     const ctx = await assembler.assemble(makeReq());
 
-    const expected = Math.ceil((ctx.systemPrompt.length + ctx.userPrompt.length) / 4);
+    function estimateTokens(text: string): number {
+      const raw = [...text].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? 0.25 : 1.5), 0);
+      return Math.ceil(raw);
+    }
+    const expected = estimateTokens(ctx.systemPrompt) + estimateTokens(ctx.userPrompt);
     expect(ctx.metadata.contextTokens).toBe(expected);
   });
 

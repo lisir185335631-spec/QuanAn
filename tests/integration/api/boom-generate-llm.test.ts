@@ -14,32 +14,30 @@ import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vites
 import nock from 'nock';
 import { prisma } from '@/lib/prisma';
 
-// ── Shared mock boom-mode output (5 candidates · each ≥ 200 chars) ─────────────
+// ── Shared mock boom-mode output (5 candidates · each as BoomCandidateSchema objects) ──
 
-// Each candidate must be ≥200 chars to pass BoomOutputSchema z.string().min(200)
-const _CAND_SUFFIX =
-  '\n\n好的爆款内容并非偶然，它一定在开场 5 秒内触发了某种强烈的心理反应：恐惧、好奇、共鸣或冲突感。' +
-  '掌握这些元素，你的内容就有更高概率被算法推给精准用户，完播率和互动率自然提升。' +
-  '从今天开始，每次构思内容先选定 2-3 个核心元素设计开场钩子。关注账号，持续获取更多内容创作实战干货。';
+// Helper to create a valid BoomCandidate object (min lengths: title 6-80, fields min 40, reason min 20)
+function makeBoomCandidate(n: number) {
+  const pad = '，帮助创作者快速掌握爆款内容方法论，打造高影响力的 IP 账号。'.repeat(2);
+  return {
+    title: `候选${n}·爆款文案示例标题`,
+    opening: `开场：这是候选${n}的开场钩子内容，吸引用户注意力` + pad,
+    development: `展开：候选${n}的主体内容，深入展示核心价值` + pad,
+    climax: `高潮：候选${n}的情绪爆发点，引发强烈共鸣` + pad,
+    ending: `结尾：候选${n}的行动召唤，引导用户关注互动` + pad,
+    reason: `推荐理由：候选${n}结合好奇心和对比反差，有效触发用户情绪反应`,
+    indexScore: `${75 + n}`,
+  };
+}
 
-const CAND1 =
-  '候选1·痛点共鸣型\n\n你花了大量时间做内容，发布后却只有个位数播放？原因只有一个：你还没找到属于自己账号的内容节奏。从今天开始用这套方法，帮你快速打造爆款内容，积累真实粉丝，建立账号影响力。' +
-  _CAND_SUFFIX;
-const CAND2 =
-  '候选2·数字冲击型\n\n90% 的创作者都犯了同一个错误——把太多精力放在画面制作上，却忽视了文案钩子的核心价值。开场 5 秒决定一切，掌握这个框架，你的完播率将提升 40% 以上。关注账号获取更多实战干货。' +
-  _CAND_SUFFIX;
-const CAND3 =
-  '候选3·对比反差型\n\n同样的话题，有人发出来 10 万播放，有人发出来只有 100。区别不在平台，不在运气，只在开场那句话有没有触发情绪反应。今天教你如何设计出高转化钩子，让内容被更多精准用户看见。' +
-  _CAND_SUFFIX;
-const CAND4 =
-  '候选4·好奇悬念型\n\n研究了 1000 条爆款内容，我发现它们都有一个共同结构：让用户在前 3 秒产生「我要知道答案」的冲动，然后用内容兑现这个承诺。点击关注，持续获取更多可直接套用的创作方法论。' +
-  _CAND_SUFFIX;
-const CAND5 =
-  '候选5·权威背书型\n\n内容创作方法论研究表明：基于心理学元素设计的内容，完播率平均高出普通内容 40% 以上。今天教你如何把这套方法落地到自己的 IP 账号，快速建立内容竞争优势和账号影响力。' +
-  _CAND_SUFFIX;
+const CAND1_OBJ = makeBoomCandidate(1);
+const CAND2_OBJ = makeBoomCandidate(2);
+const CAND3_OBJ = makeBoomCandidate(3);
+const CAND4_OBJ = makeBoomCandidate(4);
+const CAND5_OBJ = makeBoomCandidate(5);
 
 const INTEGRATION_BOOM_JSON = JSON.stringify({
-  candidates: [CAND1, CAND2, CAND3, CAND4, CAND5],
+  candidates: [CAND1_OBJ, CAND2_OBJ, CAND3_OBJ, CAND4_OBJ, CAND5_OBJ],
   metadata: {
     count: 5,
     elements: ['curiosity', 'contrast'],

@@ -7,18 +7,18 @@ import { describe, it, expect } from 'vitest';
 import { BACKGROUND_TASKS } from '@/background-tasks';
 
 describe('background tasks registry · 热插拔', () => {
-  it('集中登记 12 个后台任务,每个都有 name + register', () => {
-    expect(BACKGROUND_TASKS).toHaveLength(12);
+  it('集中登记 13 个后台任务,每个都有 name + register', () => {
+    expect(BACKGROUND_TASKS).toHaveLength(13);
     for (const t of BACKGROUND_TASKS) {
       expect(typeof t.name).toBe('string');
       expect(typeof t.register).toBe('function');
     }
   });
 
-  it('3 个 devOnly 进程内 worker(prod 各自独立容器),9 个常驻 cron', () => {
+  it('3 个 devOnly 进程内 worker(prod 各自独立容器),10 个常驻 cron/worker', () => {
     const devOnly = BACKGROUND_TASKS.filter((t) => t.devOnly).map((t) => t.name);
     expect(devOnly).toEqual(['image_gen_worker', 'daily_task_worker', 'deep_learning_worker']);
-    expect(BACKGROUND_TASKS.filter((t) => !t.devOnly)).toHaveLength(9);
+    expect(BACKGROUND_TASKS.filter((t) => !t.devOnly)).toHaveLength(10);
   });
 
   it('任务名唯一(便于日志/诊断定位)', () => {

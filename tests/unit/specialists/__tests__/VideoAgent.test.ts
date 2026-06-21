@@ -1,8 +1,8 @@
 /**
  * Unit tests — PRD-4 US-008 + PRD-6 US-002
- * VideoAgent: 4 mode (shooting / production / acquisition / storyboard)
+ * VideoAgent: 3 mode (shooting / production / storyboard)
  * PRD-4 AC-9: ≥ 4 tests
- * PRD-6 AC-8: +9 unit (production 3 + acquisition 3 + storyboard 3)
+ * PRD-6 AC-8: +6 unit (production 3 + storyboard 3) — acquisition mode 已随 PRD-37 删除
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -10,7 +10,6 @@ import {
   VideoAgent,
   ShootingOutputSchema,
   ProductionOutputSchema,
-  VideoAcquisitionOutputSchema,
   StoryboardOutputSchema,
 } from '@/specialists/VideoAgent';
 import { SchemaValidationError } from '@/specialists/base/errors';
@@ -224,47 +223,6 @@ describe('VideoAgent', () => {
     const res = await agent.execute({ ...BASE_REQ, mode: 'production' });
     expect(res.isFallback).toBe(true);
     expect(ProductionOutputSchema.safeParse(res.result).success).toBe(true);
-  });
-
-  // ── PRD-6 US-002: acquisition mode (+3) ──────────────────────────────────
-
-  it('acquisition happy: returns valid VideoAcquisitionOutput (script + cta + conversionPath + keyMessages)', async () => {
-    const acquisitionContent = {
-      // script must be >= 100 chars (VideoAcquisitionOutputSchema.min(100))
-      script: '你是否还在为内容没有粉丝而烦恼？今天分享一个经过验证的涨粉方法，帮助创作者实现精准增长，真正建立属于自己的内容影响力。我们的系统已帮助超过 500 位创作者成功起号，从 0 粉到万粉的突破，现在这个机会也属于你。立即扫码，免费获取你的专属涨粉方案。',
-      cta: '立即扫描下方二维码，免费获取你的专属涨粉方案',
-      conversionPath: '视频引流→扫码→咨询群→成交',
-      keyMessages: ['经验证的涨粉方法', '500+ 创作者见证', '免费专属方案'],
-    };
-    const agent = new VideoAgent(makeGateway([acquisitionContent]));
-    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
-
-    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
-    const result = res.result as typeof acquisitionContent;
-    expect(result.script.length).toBeGreaterThanOrEqual(100);
-    expect(result.cta.length).toBeGreaterThanOrEqual(10);
-    expect(result.keyMessages.length).toBeGreaterThanOrEqual(1);
-    expect(res.isFallback).toBe(false);
-  });
-
-  it('acquisition outputSchema getter: mode switch returns VideoAcquisitionOutputSchema', async () => {
-    const acquisitionContent = {
-      script: 'x'.repeat(100),
-      cta: 'y'.repeat(10),
-      conversionPath: '视频→扫码→成交',
-      keyMessages: ['卖点A', '卖点B'],
-    };
-    const agent = new VideoAgent(makeGateway([acquisitionContent]));
-    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
-    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
-  });
-
-  it('acquisition schema fail: missing keyMessages → fallback (US-015 AC-1)', async () => {
-    const badContent = { script: 'x'.repeat(100), cta: 'y'.repeat(10), conversionPath: '视频→成交', keyMessages: [] };
-    const agent = new VideoAgent(makeGateway([badContent, badContent]));
-    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
-    expect(res.isFallback).toBe(true);
-    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
   // ── PRD-6 US-002: storyboard mode (+3 + 1 schema-level test) ────────────

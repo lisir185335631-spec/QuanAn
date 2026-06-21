@@ -80,8 +80,10 @@ export const boomGenerateRouter = router({
       });
 
       const boomResult = agentRes.result as BoomOutput;
-      // D-032 updated: store structured candidates as JSON string in content
-      const content = JSON.stringify(boomResult.candidates);
+      // D-032: store candidates joined with '\n\n---\n\n' separator for frontend parsing
+      const content = boomResult.candidates
+        .map((c) => (typeof c === 'string' ? c : JSON.stringify(c)))
+        .join('\n\n---\n\n');
       const inputSummary = (input.theme ?? input.industry ?? 'boom').substring(0, 100);
 
       const row = await prisma.history.create({

@@ -109,6 +109,9 @@ describe('analysisStructuralOutput', () => {
         { dimension: 'CTA', issue: '结尾弱', suggestion: '明确行动指令' },
       ],
       rewriteSnippet: '改写后的示例片段，包含至少五十个字符以满足最小长度要求，确保测试通过。这里添加更多文字让它超过五十字符限制，完全达标。',
+      elements: ['钩子开场', '痛点共鸣'],
+      pros: ['结构清晰，层次分明。'],
+      cons: ['结尾引导不足。'],
     });
     expect(r.success).toBe(true);
   });
@@ -146,6 +149,11 @@ describe('analysisViralOutput', () => {
         structure: '钩子 → 痛点 → 案例 → CTA',
         hookType: 'opening_5s',
         viralFormula: '恐惧 + 权威背书 + 案例',
+      },
+      viralStructure: {
+        hook: '你是否曾担心错过这个机会？',
+        body: '通过社会证明建立信任，展示真实案例数据。',
+        cta: '立即关注获取详情',
       },
       insights: [
         { element: 'fear', explanation: '触发损失厌恶心理', impact: '高' },
@@ -211,8 +219,18 @@ describe('generateBoomInput', () => {
 // ── boomOutput ────────────────────────────────────────────────────────────────
 
 describe('boomOutput', () => {
+  // Each field must meet minimum character counts (JS .length):
+  // opening/development/climax/ending: min(40) · reason: min(20) · title: min(6) max(80) · indexScore: min(1) max(8)
   const makeCandidates = (n: number) =>
-    Array.from({ length: n }, (_, i) => '这是一个候选标题'.repeat(30).slice(0, 200 + i));
+    Array.from({ length: n }, (_, i) => ({
+      title: `候选${i + 1}号：揭秘快速涨粉核心`,
+      opening: 'A'.repeat(40),
+      development: 'B'.repeat(40),
+      climax: 'C'.repeat(40),
+      ending: 'D'.repeat(40),
+      reason: `候选${i + 1}：好奇心+社会证明双元素，结构完整。`,
+      indexScore: `${Math.min(9 - i, 8)}`,
+    }));
 
   it('passes with exactly 5 candidates', () => {
     const r = boomOutput.safeParse({

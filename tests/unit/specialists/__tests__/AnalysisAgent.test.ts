@@ -53,6 +53,11 @@ function makeViralOutput() {
       hookType: 'opening_5s',
       viralFormula: '好奇 + 反差 → 情绪共鸣 → 行动',
     },
+    viralStructure: {
+      hook: '你是否还在为内容没有播放量而烦恼？',
+      body: '通过对比反差结构展现落差感，引发情绪共鸣后给出解决方案。',
+      cta: '关注我获取更多干货',
+    },
     insights: [
       { element: 'curiosity', explanation: '标题制造信息缺口', impact: '高' as const },
       { element: 'contrast', explanation: '对比展现落差感', impact: '高' as const },
