@@ -63,3 +63,18 @@ jobs:
       # 全包类型检查(turbo 缓存):web / admin / api / clients / schemas / ui。
       - name: Typecheck (all packages)
         run: pnpm turbo run typecheck
+
+      # ── Lint ──────────────────────────────────────────────────────────────────
+      # 存量 214 lint error 待批次2清除 → continue-on-error 让失败可见但不阻断 CI。
+      # 批次2 清完存量后删除 continue-on-error 改 blocking(搜索 "批次2" 定位)。
+      - name: Lint (all packages)
+        continue-on-error: true  # 存量 214 error 清完后(批次2/3)删除此行转 blocking
+        run: pnpm turbo run lint
+
+      # ── Unit tests ────────────────────────────────────────────────────────────
+      # 需要 Node 运行时,无需 DB(单元测试 mock DB/LLM)。
+      # 当前 7 个真实测试失败待批次3修复 → continue-on-error 先让失败在 CI 可见。
+      # 批次3 修完后删除 continue-on-error 改 blocking(搜索 "批次3" 定位)。
+      - name: Unit tests
+        continue-on-error: true  # 存量 7 个真实测试失败清完后(批次3)删除此行转 blocking
+        run: pnpm test:unit

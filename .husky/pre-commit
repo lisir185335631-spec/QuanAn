@@ -1,2 +1,4 @@
 pnpm turbo run typecheck || exit 1
 pnpm audit:redlines || echo "⚠️ audit:redlines 有违规(存量 R-1/R-5/R-11 待阶段6清)·本次 commit 不阻断·勿新增违规"
+# lint 由 CI 的 lint job 负责:monorepo 根级 eslint 无 per-package tsconfig,
+# lint-staged 直跑根 eslint 会对 apps/** 文件 parse error。待配 per-package lint-staged 后再启用本地增量 lint。
