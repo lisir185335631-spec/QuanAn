@@ -6,6 +6,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type { AssembledContext, ILLMGateway, InvokeLLMResult, SpecialistConfig, SpecialistRequest } from './base/types';
@@ -129,7 +131,7 @@ export class DeepLearnAgent extends BaseSpecialist<DeepLearnBatchInput, DeepLear
 
   private _buildUserPrompt(input: DeepLearnBatchInput): string {
     const sampleTexts = input.samples
-      .map((s, i) => `## 样本 ${i + 1}（来源：${s.source}）\n${s.text}`)
+      .map((s, i) => `## 样本 ${i + 1}（来源：${piiMask(s.source)}）\n${piiMask(s.text)}`)
       .join('\n\n---\n\n');
 
     return [

@@ -17,6 +17,8 @@ import {
 } from '@quanan/schemas/specialist-io';
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -146,7 +148,7 @@ export class PresentationAgent extends BaseSpecialist<PresentationInput, Present
     return [
       '请根据以下信息推荐最适合的呈现形式：',
       '',
-      `文案内容：${input.text}`,
+      `文案内容：${piiMask(input.text)}`,
       `目标平台：${input.platform}`,
       '',
       '请推荐 3-5 个最匹配的呈现形式，以 JSON 格式返回 {recommendedStyles: [...]}',

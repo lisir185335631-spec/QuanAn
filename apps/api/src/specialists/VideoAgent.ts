@@ -25,6 +25,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -498,7 +500,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
   }
 
   private _buildShootingPrompt(userInput: VideoInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
+    const inputJson = JSON.stringify(piiMask(userInput));
     return [
       ctx.userPrompt,
       '',
@@ -531,7 +533,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
   }
 
   private _buildProductionPrompt(userInput: VideoInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
+    const inputJson = JSON.stringify(piiMask(userInput));
     return [
       ctx.userPrompt,
       '',
@@ -555,7 +557,7 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
   }
 
   private _buildStoryboardPrompt(userInput: VideoInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
+    const inputJson = JSON.stringify(piiMask(userInput));
     return [
       ctx.userPrompt,
       '',
