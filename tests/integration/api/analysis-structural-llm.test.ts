@@ -44,6 +44,10 @@ const INTEGRATION_STRUCTURAL_RESULT = {
   ],
   rewriteSnippet:
     '这是优化后的关键段落示例，融入了更清晰的数字钩子与情绪共鸣元素，行动引导明确具体，建议参考此结构进行全文改写。',
+  // analysisStructuralOutput schema requires elements/pros/cons (min(1) each)
+  elements: ['好奇心', '对比反差'],
+  pros: ['开场节奏明快，前5秒有效抓住注意力'],
+  cons: ['结尾行动引导力度不足，转化率偏低'],
 };
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────

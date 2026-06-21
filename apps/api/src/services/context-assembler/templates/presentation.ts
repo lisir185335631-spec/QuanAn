@@ -33,5 +33,10 @@ export const PRESENTATION_TEMPLATE = {
 请以 JSON 格式返回：
 {"recommendedStyles": [{"id": "<id>", "label": "<中文名>", "description": "<描述>", "tips": "<技巧>", "matchScore": <0-100>, "rationale": "<理由>"}, ...]}`,
 
-  methodology: '',
+  methodology: `呈现形式推荐方法论：
+1. 内容类型匹配：分析文案的核心形态（知识/故事/体验/测评），优先推荐与内容类型天然契合的呈现形式
+2. 平台适配：结合目标平台算法偏好（抖音倾向高完播率/小红书图文并重）筛选最优形式
+3. IP 定位对齐：新账号优先推荐 talking_head/tutorial（门槛低、人设打造快），成熟账号可尝试 drama/reaction
+4. 可执行性优先：推荐用户当前资源可落地的形式（无专业设备优先 talking_head/screen_record）
+5. 多样化组合：推荐 3-5 种，必须包含 1 个高匹配核心形式 + 1-2 个可探索形式`,
 } as const;

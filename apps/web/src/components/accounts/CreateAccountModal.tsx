@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { C, F } from '@/components/home/ikb/system';
+import { C, F } from '@/components/home-next/ikb/system';
 import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import '@/styles/ikb-hero.css';
+import '@/styles/liquid-glass.css';
 import { trpc } from '@/lib/trpc';
 
 interface CreateAccountModalProps {
@@ -122,7 +122,7 @@ export function CreateAccountModal({
       {/* Controlled mode: no built-in trigger (caller renders its own button) */}
       {!isControlled && (
         <Button
-          className="ikb-gradbtn ikb-focusring"
+          className="lg-gradbtn lg-focusring"
           style={{ color: '#fff' }}
           onClick={() => setOpen(true)}
           data-testid="create-account-trigger"
@@ -148,7 +148,7 @@ export function CreateAccountModal({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="如：赵语AI"
                 data-testid="create-account-name"
-                className="ikb-input"
+                className="lg-input"
                 style={{ borderColor: C.line }}
               />
             </div>
@@ -165,7 +165,7 @@ export function CreateAccountModal({
                   onChange={(e) => setIndustry(e.target.value)}
                   placeholder="如：企业服务"
                   data-testid="create-account-industry"
-                  className="ikb-input flex-1"
+                  className="lg-input flex-1"
                   style={{ borderColor: C.line }}
                 />
                 <Button
@@ -222,7 +222,7 @@ export function CreateAccountModal({
               variant="outline"
               onClick={handleCancel}
               data-testid="create-account-cancel"
-              className="ikb-focusring"
+              className="lg-focusring"
               style={{ border: `1px solid ${C.line}`, color: C.ink, background: 'transparent' }}
             >
               取消
@@ -231,7 +231,7 @@ export function CreateAccountModal({
               disabled={isDisabled || createMutation.isPending}
               onClick={() => void handleCreate()}
               data-testid="create-account-submit"
-              className="ikb-gradbtn ikb-focusring"
+              className="lg-gradbtn lg-focusring"
               style={{ color: '#fff' }}
             >
               {createMutation.isPending ? '创建中…' : '创建并开始'}

@@ -102,7 +102,7 @@ const TEXT_MAX = 10000;
 const TEXT_MIN_PARSE = 100;
 const TEXT_MIN_LEARN = 10;
 
-function SampleFormPioneer({
+function SampleForm({
   text,
   onTextChange,
   archiveName,
@@ -801,7 +801,7 @@ interface QueueArchiveCardProps {
   deletingId: number | null;
 }
 
-function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }: QueueArchiveCardProps) {
+function QueueArchiveCard({ row, onDelete, isDeletePending, deletingId }: QueueArchiveCardProps) {
   const [expanded, setExpanded] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const isDeleting = isDeletePending && deletingId === row.id;
@@ -977,7 +977,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
 
 // ── Inline: EmptyArchives (液态玻璃) ─────────────────────────────────────────
 
-function EmptyArchivesPioneer() {
+function EmptyArchives() {
   return (
     <div
       data-testid="empty-archives"
@@ -1018,7 +1018,7 @@ function EmptyArchivesPioneer() {
 
 // ── Inline: ArchiveSkeleton (液态玻璃) ────────────────────────────────────────
 
-function ArchiveSkeletonPioneer() {
+function ArchiveSkeleton() {
   return (
     <div data-testid="archives-skeleton" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {[1, 2].map((i) => (
@@ -1046,7 +1046,7 @@ function ArchiveSkeletonPioneer() {
 
 // ── Inline: ArchivesError (液态玻璃) ─────────────────────────────────────────
 
-function ArchivesErrorPioneer({ onRetry }: { onRetry: () => void }) {
+function ArchivesError({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="archives-error"
@@ -1092,7 +1092,7 @@ function ArchivesErrorPioneer({ onRetry }: { onRetry: () => void }) {
 
 // ── Inline: UsageInstructions (液态玻璃) ──────────────────────────────────────
 
-function UsageInstructionsPioneer() {
+function UsageInstructions() {
   return (
     <div
       data-testid="usage-instructions"
@@ -1165,7 +1165,7 @@ function UsageInstructionsPioneer() {
 
 // ── Inline: DeepLearningHeader (液态玻璃) ─────────────────────────────────────
 
-function DeepLearningHeaderPioneer() {
+function DeepLearningHeader() {
   return (
     <header
       data-testid="deep-learning-header"
@@ -1463,7 +1463,7 @@ export default function DeepLearning() {
         style={{ display: 'flex', flexDirection: 'column', gap: 32 }}
       >
         {/* ── Header ──────────────────────────────────────────── */}
-        <DeepLearningHeaderPioneer />
+        <DeepLearningHeader />
 
         {/* ── KPI 卡一排(4 卡) ────────────────────────────────── */}
         <RevealGroup style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 8 }}>
@@ -1612,7 +1612,7 @@ export default function DeepLearning() {
 
         {/* ── 样本表单 ─────────────────────────────────────────── */}
         <Reveal>
-          <SampleFormPioneer
+          <SampleForm
             text={text}
             onTextChange={setText}
             archiveName={archiveName}
@@ -1649,21 +1649,21 @@ export default function DeepLearning() {
             <span style={{ marginLeft: 8, fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.8)' }}>({archives.length})</span>
           </h2>
 
-          {isListLoading && <ArchiveSkeletonPioneer />}
+          {isListLoading && <ArchiveSkeleton />}
 
           {isListError && !isListLoading && (
-            <ArchivesErrorPioneer onRetry={() => void refetchList()} />
+            <ArchivesError onRetry={() => void refetchList()} />
           )}
 
           {!isListLoading && !isListError && archives.length === 0 && (
-            <EmptyArchivesPioneer />
+            <EmptyArchives />
           )}
 
           {!isListLoading && !isListError && archives.length > 0 && (
             <RevealGroup style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {archives.map((row) => (
                 <Item key={row.id}>
-                  <QueueArchiveCardPioneer
+                  <QueueArchiveCard
                     row={row}
                     onDelete={handleDelete}
                     isDeletePending={deleteMutation.isPending}
@@ -1677,7 +1677,7 @@ export default function DeepLearning() {
 
         {/* ── 使用说明 ─────────────────────────────────────────── */}
         <Reveal>
-          <UsageInstructionsPioneer />
+          <UsageInstructions />
         </Reveal>
 
         {/* ── 数据洞察 band ────────────────────────────────────── */}

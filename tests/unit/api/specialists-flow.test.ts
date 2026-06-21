@@ -10,6 +10,58 @@ vi.mock('@/jobs/deep-learning.job', () => ({
   DEEP_LEARNING_QUEUE_NAME: 'deep-learning',
 }));
 
+// Mock LLM gateway to avoid real network calls in unit tests.
+// Specialists catch LLM errors and fall back to fallbackTemplate → isFallback=true.
+vi.mock('@/workers/llm-gateway', () => ({
+  llmGateway: {
+    complete: vi.fn().mockRejectedValue(new Error('mock: LLM unavailable in unit tests')),
+    stream: vi.fn().mockRejectedValue(new Error('mock: LLM unavailable in unit tests')),
+  },
+  invalidateLlmKeyCache: vi.fn(),
+}));
+
+// Mock RAG worker to avoid embedding HTTP calls in unit tests.
+vi.mock('@/workers/rag', () => ({
+  ragRetrieveWorker: { retrieve: vi.fn().mockResolvedValue([]) },
+}));
+
+// Mock @/lib/prisma (singleton) so cost-logger doesn't hit real DB via FK.
+// Each test's ctx.prisma is the mocked per-test instance; this covers module-level prisma usage.
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    costLog: { create: vi.fn().mockResolvedValue({}) },
+    systemConfig: { findUnique: vi.fn().mockResolvedValue(null) },
+    evolutionProfile: { upsert: vi.fn().mockResolvedValue({ autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' }), findUnique: vi.fn().mockResolvedValue(null) },
+    evolutionInsight: { findMany: vi.fn().mockResolvedValue([]) },
+    deepLearningArchive: { findMany: vi.fn().mockResolvedValue([]), create: vi.fn().mockResolvedValue({ id: 1 }), update: vi.fn().mockResolvedValue({}) },
+    deepLearnReviewQueue: { create: vi.fn().mockResolvedValue({ id: 1 }), findMany: vi.fn().mockResolvedValue([]), update: vi.fn().mockResolvedValue({}), findFirst: vi.fn().mockResolvedValue(null) },
+    feedbackLog: { create: vi.fn().mockResolvedValue({ id: 1 }), findMany: vi.fn().mockResolvedValue([]) },
+    history: { create: vi.fn().mockResolvedValue({ id: 1 }), findMany: vi.fn().mockResolvedValue([]), delete: vi.fn().mockResolvedValue({}) },
+    diagnosisReport: { create: vi.fn().mockResolvedValue({ id: 1 }), findMany: vi.fn().mockResolvedValue([]), findFirst: vi.fn().mockResolvedValue(null) },
+    stepData: { findMany: vi.fn().mockResolvedValue([]) },
+    $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn({
+      costLog: { create: vi.fn().mockResolvedValue({}) },
+      evolutionProfile: { upsert: vi.fn().mockResolvedValue({}), findUnique: vi.fn().mockResolvedValue(null) },
+      evolutionInsight: { findMany: vi.fn().mockResolvedValue([]) },
+    })),
+  },
+}));
+
+// Mock logger to suppress noise in test output; include traceStore for trpc.ts middleware
+vi.mock('@/lib/logger', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/logger')>();
+  return {
+    ...actual,
+    logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  };
+});
+
+// Mock memory l4-profile to avoid DB calls
+vi.mock('@/memory/l4-profile', () => ({
+  getLatestInsight: vi.fn().mockResolvedValue(null),
+  getDeepLearningSamples: vi.fn().mockResolvedValue([]),
+}));
+
 import { describe, it, expect, vi } from 'vitest';
 import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
 import { diagnosisRouter } from '@/trpc/routers/app/diagnosis';

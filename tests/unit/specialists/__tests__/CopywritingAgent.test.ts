@@ -299,10 +299,21 @@ describe('CopywritingAgent', () => {
   // ── boom mode × 4 scenarios (PRD-5 US-002) ───────────────────────────────────
 
   function makeBoomContent() {
-    // each candidate must satisfy min(200) max(500) — 'C' × 210 safely within bounds
-    const cand = 'C'.repeat(210);
+    // each candidate must satisfy BoomCandidateOutputSchema:
+    // title: min(6) max(80), opening: min(40), development: min(40),
+    // climax: min(40), ending: min(40), reason: min(20), indexScore: min(1) max(8)
+    // Use ASCII strings to avoid Unicode character count ambiguity with zod min()
+    const cand = {
+      title: 'Boom Candidate: Core IP Growth Method',
+      opening: 'A'.repeat(40),
+      development: 'B'.repeat(40),
+      climax: 'C'.repeat(40),
+      ending: 'D'.repeat(40),
+      reason: 'Uses curiosity and social proof elements for high conversion.',
+      indexScore: '8',
+    };
     return {
-      candidates: [cand, cand, cand, cand, cand] as [string, string, string, string, string],
+      candidates: [cand, cand, cand, cand, cand] as [typeof cand, typeof cand, typeof cand, typeof cand, typeof cand],
       metadata: {
         count: 5 as const,
         elements: ['curiosity', 'contrast'] as ['curiosity', 'contrast'],

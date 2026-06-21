@@ -27,6 +27,15 @@ const EMERGENCY_SWITCH_KEYS = [
   'enable_fallback_prompt',
 ] as const;
 
+// SHIELD: 敏感配置(API key/secret/token)服务端脱敏 · 防 super_admin 经 Network Tab 读取明文(R-001 精神)。
+// LLM gateway 从 DB 直接读 key(loadLlmKey · 不经此 query),故脱敏不影响功能;UI 仅显示打码版,编辑时输新值覆盖。
+const SECRET_CONFIG_KEY_RE = /API_KEY|SECRET|TOKEN|PASSWORD/i;
+function maskSecretConfigValue(configKey: string, value: Prisma.JsonValue): Prisma.JsonValue {
+  // 仅对「字符串型」敏感配置脱敏;布尔/数值/对象型(如开关、限流参数)原样返回。
+  if (typeof value !== 'string' || value.length === 0 || !SECRET_CONFIG_KEY_RE.test(configKey)) return value;
+  return value.length <= 8 ? '******' : `${value.slice(0, 6)}******`;
+}
+
 function guardSuperAdmin(ctx: { activeAdminUser?: { role?: string } | null }): void {
   if (ctx.activeAdminUser?.role !== 'super_admin') {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'super_admin only' });
@@ -84,7 +93,7 @@ export const featureFlagsRouter = adminTrpcRouter({
     return configs.map((c) => ({
       id: c.id,
       configKey: c.configKey,
-      configValue: c.configValue,
+      configValue: maskSecretConfigValue(c.configKey, c.configValue),
       description: c.description,
       isEmergency: c.isEmergency,
       updatedByAdminId: c.updatedByAdminId,
@@ -133,7 +142,7 @@ export const featureFlagsRouter = adminTrpcRouter({
     return configs.map((c) => ({
       id: c.id,
       configKey: c.configKey,
-      configValue: c.configValue,
+      configValue: maskSecretConfigValue(c.configKey, c.configValue),
       description: c.description,
       isEmergency: c.isEmergency,
       updatedByAdminId: c.updatedByAdminId,

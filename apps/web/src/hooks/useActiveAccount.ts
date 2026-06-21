@@ -9,7 +9,7 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
-import { clearLsNamespace } from '@/lib/ls-namespace';
+import { clearLsNamespace, setActiveAccountId } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
 import type { ActiveAccountOutput } from '@quanan/clients/router-types';
@@ -41,7 +41,7 @@ export function useActiveAccount() {
         {
           onSuccess() {
             // AC-9: persist active account id for demo/tooling reads
-            localStorage.setItem('aiip_active_account_id', String(newAccountId));
+            setActiveAccountId(newAccountId);
             // AC-3: clear old LS namespace then full reload — new account state served fresh
             if (currentAccountId !== null) {
               clearLsNamespace(localStorage, currentAccountId);

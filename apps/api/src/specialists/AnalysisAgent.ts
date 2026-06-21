@@ -17,6 +17,8 @@
 
 import { z } from 'zod';
 
+import { piiMask } from '@/lib/compliance/pii-mask';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -391,8 +393,8 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
       return [
         '[爆款文案拆解任务 · viral mode]',
         '',
-        `爆款文案: ${String(input['lastCopy'] ?? '')}`,
-        `标题: ${String(input['lastTitle'] ?? '（未提供）')}`,
+        `爆款文案: ${piiMask(String(input['lastCopy'] ?? ''))}`,
+        `标题: ${piiMask(String(input['lastTitle'] ?? '（未提供）'))}`,
         '',
         '请以 JSON 格式返回拆解结果:',
         '{',
@@ -443,7 +445,7 @@ export class AnalysisAgent extends BaseSpecialist<AnalysisInput, AnalysisOutput>
     return [
       '[文案结构评分任务 · structural mode]',
       '',
-      `用户文案: ${String(input['copy'] ?? '')}`,
+      `用户文案: ${piiMask(String(input['copy'] ?? ''))}`,
       '',
       '请以 JSON 格式返回 6 维评分(各 0-100)+ 优化建议 + 爆款元素 + 优缺点:',
       '{',

@@ -76,8 +76,10 @@ export default defineConfig({
       thresholds: {
         global: { lines: 80, functions: 80, branches: 75, statements: 80 },
         // === LD-016 严格门禁 ===
-        'src/server/agents/**': { lines: 90, functions: 90, branches: 85, statements: 90 },
-        'src/lib/**': { lines: 95, functions: 95, branches: 90, statements: 95 },
+        // monorepo 真实路径 (原路径 src/server/agents/** 在 monorepo 不存在)
+        'apps/api/src/specialists/**': { lines: 90, functions: 90, branches: 85, statements: 90 },
+        'apps/api/src/lib/**': { lines: 95, functions: 95, branches: 90, statements: 95 },
+        'apps/web/src/lib/**': { lines: 95, functions: 95, branches: 90, statements: 95 },
       },
       exclude: [
         '**/*.test.ts',
@@ -94,6 +96,8 @@ export default defineConfig({
       'tests/e2e/**/*.test.ts',
       'tests/fixtures/**/__tests__/**/*.test.ts',
       'apps/api/src/**/__tests__/**/*.test.ts',
+      // ⏸️ apps/web 前端测试(74 文件)暂不纳入主 suite:多数 stale(import 已删的 page/constants)+
+      // 需专属 @/→apps/web/src alias + web 依赖解析。专项接线见 review P0「web 测试从未运行」(TODO)。
     ],
     passWithNoTests: true,
     testTimeout: 30000,

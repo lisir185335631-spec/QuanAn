@@ -167,10 +167,13 @@ describe('ContextAssembler RAG AC-6 — 5 unit tests', () => {
     expect(ctxWithRag.systemPrompt.length).toBeGreaterThan(ctxNoRag.systemPrompt.length);
     expect(ctxWithRag.metadata.contextTokens).toBeGreaterThan(ctxNoRag.metadata.contextTokens);
 
-    // Verify formula: contextTokens = ceil((systemPrompt + userPrompt).length / 4)
-    const expected = Math.ceil(
-      (ctxWithRag.systemPrompt.length + ctxWithRag.userPrompt.length) / 4,
-    );
+    // Verify formula: contextTokens = CJK-aware 加权估算(改进版 · G1)
+    // estimateTokens: ASCII ≈ 0.25 token, 非 ASCII(CJK) ≈ 1.5 token
+    function estimateTokens(text: string): number {
+      const raw = [...text].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? 0.25 : 1.5), 0);
+      return Math.ceil(raw);
+    }
+    const expected = estimateTokens(ctxWithRag.systemPrompt) + estimateTokens(ctxWithRag.userPrompt);
     expect(ctxWithRag.metadata.contextTokens).toBe(expected);
   });
 });

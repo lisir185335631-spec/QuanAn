@@ -72,6 +72,29 @@ export function lsUsedBytes(store: Storage): number {
   return chars * 2;
 }
 
+// ── Global (non-account-scoped) keys ─────────────────────────────────────────
+
+/**
+ * Persist the active account id for demo/tooling reads (AC-9).
+ * GLOBAL KEY — intentionally not account-scoped: this value identifies
+ * which account is currently active and therefore cannot be namespaced
+ * under any particular account prefix.
+ */
+const ACTIVE_ACCOUNT_KEY = 'aiip_active_account_id';
+
+/** Write the active account id to localStorage. */
+export function setActiveAccountId(id: number): void {
+  localStorage.setItem(ACTIVE_ACCOUNT_KEY, String(id));
+}
+
+/** Read the active account id from localStorage, or null if absent. */
+export function getActiveAccountId(): number | null {
+  const raw = localStorage.getItem(ACTIVE_ACCOUNT_KEY);
+  if (raw === null) return null;
+  const n = parseInt(raw, 10);
+  return isNaN(n) ? null : n;
+}
+
 /**
  * Prune non-active account namespaces when usage exceeds 5 MB (AC-8).
  * Active account namespace is always preserved.
