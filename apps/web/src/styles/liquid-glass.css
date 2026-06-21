@@ -230,6 +230,26 @@
     0 0 0 2px rgba(168, 197, 224, 0.55);
 }
 
+/* ── 表单输入欄 (ikb-input 的液態玻璃替換) ──────────────────────────────── */
+.lg-input {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.lg-input:focus-visible {
+  outline: 2px solid rgba(216, 232, 255, 0.9);
+  outline-offset: 1px;
+  border-color: rgba(216, 232, 255, 0.6);
+}
+
+/* ── 汎用フォーカスリング (ikb-focusring の液態玻璃替換) ─────────────────── */
+.lg-focusring:focus-visible {
+  outline: 2px solid rgba(216, 232, 255, 0.9);
+  outline-offset: 2px;
+}
+
 /* 尊重「减少动态」无障碍偏好 */
 @media (prefers-reduced-motion: reduce) {
   .lg-fluid,

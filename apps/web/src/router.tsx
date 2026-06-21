@@ -1,8 +1,8 @@
 /**
- * createBrowserRouter · 红蓝紫 IKB 全站路由
- * step/* 9 条均已迁移红蓝紫 IKB · 顶层独立路由 · StepLayout 已移除
+ * createBrowserRouter · iOS26 液态玻璃全站路由
+ * step/* 9 条均已迁移液态玻璃 · 顶层独立路由 · StepLayout 已移除
  * Route groups (chunks):
- *   step/*      → 9 条顶层独立路由(各自内置 IKBLayout 外壳，不挂 RootLayout)
+ *   step/*      → 9 条顶层独立路由(各自内置 LiquidShell 外壳，不挂 RootLayout)
  *   tools/*     → 13 tool pages (lazy individually, shared vite chunk via webpackChunkName)
  *   modules/*   → 6 new modules
  *   auxiliary   → /ip-plan, /404 catch-all
@@ -53,11 +53,11 @@ const History = lazy(() => import(/* webpackChunkName: "modules" */ '@/pages/mod
 const IpPlan = lazy(() => import('@/pages/IpPlan'));
 const Guide = lazy(() => import('@/pages/Guide'));
 
-// ── 红蓝紫 IKB dashboard(系统控制台 · Stitch 设计 · 新建路由)──
+// ── iOS26 液态玻璃 dashboard(系统控制台 · Stitch 设计 · 新建路由)──
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
 export const router = createBrowserRouter([
-  // ── 红蓝紫 IKB · 已迁移页面各自内置 IKBLayout 独立外壳(不挂 RootLayout) ──
+  // ── iOS26 液态玻璃 · 已迁移页面各自内置 LiquidShell 独立外壳(不挂 RootLayout) ──
   {
     path: '/step/1',
     element: (
@@ -214,7 +214,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · Guide 使用说明(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · Guide 使用说明(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/guide',
     element: (
@@ -223,7 +223,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · IP 方案进度总览(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · IP 方案进度总览(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/ip-plan',
     element: (
@@ -232,7 +232,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 爆款元素自动生成(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 爆款元素自动生成(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/boom-generate',
     element: (
@@ -241,7 +241,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · IP变现模型定制(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · IP变现模型定制(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/monetization',
     element: (
@@ -250,7 +250,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 全网爆款库(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 全网爆款库(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/trending',
     element: (
@@ -259,7 +259,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 我的选题库(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 我的选题库(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/my-topics',
     element: (
@@ -268,7 +268,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 历史记录(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 历史记录(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/history',
     element: (
@@ -277,7 +277,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 生成爆款文案(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 生成爆款文案(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/generate',
     element: (
@@ -286,7 +286,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 文案结构分析(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 文案结构分析(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/analysis',
     element: (
@@ -295,7 +295,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── 红蓝紫 IKB · 短视频一键制作(独立顶层路由 · IKBLayout 外壳)──
+  // ── iOS26 液态玻璃 · 短视频一键制作(独立顶层路由 · LiquidShell 外壳)──
   {
     path: '/video-production',
     element: (
@@ -304,7 +304,7 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  // ── '/' 布局路由(无外壳元素 → 渲染 Outlet)· index=首页 / '*'=404 · 均红蓝紫 IKB(各自内置 IKBLayout)──
+  // ── '/' 布局路由(无外壳元素 → 渲染 Outlet)· index=首页 / '*'=404 · 均 iOS26 液态玻璃(各自内置 LiquidShell)──
   {
     path: '/',
     children: [

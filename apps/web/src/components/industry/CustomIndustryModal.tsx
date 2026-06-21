@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { C, F } from '@/components/home/ikb/system';
+import { C, F } from '@/components/home-next/ikb/system';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import '@/styles/ikb-hero.css';
+import '@/styles/liquid-glass.css';
 import {
   STEP1_CUSTOM_MODAL_CANCEL,
   STEP1_CUSTOM_MODAL_CONFIRM,
@@ -81,21 +81,21 @@ export function CustomIndustryModal({
             if (e.key === 'Enter') handleConfirm();
           }}
           data-testid="custom-industry-input"
-          className="ikb-input"
+          className="lg-input"
           style={{ borderColor: C.line }}
         />
         <DialogFooter>
           <Button
             variant="outline"
             onClick={() => handleOpenChange(false)}
-            className="ikb-focusring"
+            className="lg-focusring"
             style={{ border: `1px solid ${C.line}`, color: C.ink, background: 'transparent' }}
           >
             {STEP1_CUSTOM_MODAL_CANCEL}
           </Button>
           <Button
             disabled={!input.trim()}
-            className="ikb-gradbtn ikb-focusring"
+            className="lg-gradbtn lg-focusring"
             style={{ color: '#fff' }}
             onClick={handleConfirm}
             data-testid="custom-industry-confirm"

@@ -3,9 +3,9 @@
  * 替代 window.confirm · 支持 destructive 删除类危险操作
  */
 
-import '@/styles/ikb-hero.css';
+import '@/styles/liquid-glass.css';
 
-import { C, F } from '@/components/home/ikb/system';
+import { C, F } from '@/components/home-next/ikb/system';
 import {
   Dialog,
   DialogContent,
@@ -55,7 +55,7 @@ export function ConfirmDialog({
           <button
             type="button"
             data-testid="confirm-dialog-cancel"
-            className="ikb-focusring"
+            className="lg-focusring"
             style={{
               border: `1px solid ${C.line}`,
               color: C.ink,
@@ -74,7 +74,7 @@ export function ConfirmDialog({
             <button
               type="button"
               data-testid="confirm-dialog-confirm"
-              className="ikb-focusring"
+              className="lg-focusring"
               style={{
                 background: '#D11E52',
                 color: '#fff',
@@ -96,7 +96,7 @@ export function ConfirmDialog({
             <button
               type="button"
               data-testid="confirm-dialog-confirm"
-              className="ikb-gradbtn ikb-focusring"
+              className="lg-gradbtn lg-focusring"
               style={{
                 color: '#fff',
                 border: 'none',

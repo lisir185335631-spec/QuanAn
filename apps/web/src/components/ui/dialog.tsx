@@ -2,8 +2,8 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import * as React from 'react';
 
-import { C } from '@/components/home/ikb/system';
-import '@/styles/ikb-hero.css';
+import { C } from '@/components/home-next/ikb/system';
+import '@/styles/liquid-glass.css';
 import { cn } from '@/lib/utils';
 
 const Dialog = DialogPrimitive.Root;
@@ -48,7 +48,7 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogClose
-        className="ikb-focusring absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100 disabled:pointer-events-none"
+        className="lg-focusring absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100 disabled:pointer-events-none"
         style={{ color: C.ink }}
       >
         <X className="h-4 w-4" />
